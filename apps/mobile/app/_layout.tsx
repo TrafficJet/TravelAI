@@ -154,6 +154,17 @@ export default function RootLayout() {
     }
   }, [isLoading, fontsLoaded]);
 
+  // Safety timeout: if fonts fail to load within 5 s, unblock navigation anyway.
+  // Without this, showBrandSplash never becomes false (BrandSplash never mounts)
+  // and the navigate() effect waits forever, leaving the app on a blank screen.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowBrandSplash(false);
+      SplashScreen.hideAsync().catch(() => {});
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Redirect logic — runs after brand splash disappears (showBrandSplash = false)
   // and after auth + fonts are ready.
   useEffect(() => {
