@@ -24,6 +24,8 @@ export function registerErrorHandler(fastify: FastifyInstance): void {
     }
 
     fastify.log.error(error);
+    // Also write to stdout so Railway's log stream always captures it
+    console.error('[unhandled error]', error);
     return reply.status(500).send({
       error: {
         code: 'INTERNAL_ERROR',

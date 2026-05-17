@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { register, login, refresh, logout, forgotPassword, resetPassword } from '../handlers/auth.handler';
 import { googleAuth, appleAuth } from '../handlers/oauth.handler';
 import { authenticate } from '../middleware/auth.middleware';
+import { prisma } from '../lib/prisma';
 
 // Per-route rate limit override for auth endpoints: 10 req/min per IP
 const authRateLimit = {
@@ -118,6 +119,12 @@ export async function authRoutes(fastify: FastifyInstance) {
       },
     },
     handler: googleAuth,
+  });
+
+  // GET /api/auth/ping-db — temporary diagnostic: verify Prisma connection and return user count
+  fastify.get('/ping-db', async (_request, reply) => {
+    const userCount = await prisma.user.count();
+    return reply.send({ ok: true, userCount });
   });
 
   // POST /api/auth/apple — OAuth via Apple identity token

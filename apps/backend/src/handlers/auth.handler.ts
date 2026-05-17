@@ -59,86 +59,130 @@ async function generateTokenPair(userId: string, email: string) {
 
 // POST /api/auth/register — create user + wallet + subscription in one transaction
 export async function register(request: FastifyRequest, reply: FastifyReply) {
-  const { email, password, name } = request.body as RegisterBody;
+  try {
+    const { email, password, name } = request.body as RegisterBody;
 
-  // Check if email is already taken
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    throw Errors.conflict('Пользователь с таким email уже зарегистрирован');
+    // Check if email is already taken
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      throw Errors.conflict('Пользователь с таким email уже зарегистрирован');
+    }
+
+    let hashedPassword: string;
+    try {
+      hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
+    } catch (bcryptErr) {
+      console.error('[register] bcrypt.hash failed:', bcryptErr);
+      throw bcryptErr;
+    }
+
+    // Smoke-test JWT signing BEFORE the transaction so a missing secret
+    // surfaces as a clear console.error rather than a silent transaction abort
+    try {
+      signAccessToken({ sub: '__probe__', email });
+    } catch (jwtErr) {
+      console.error('[register] JWT signing failed — check JWT_ACCESS_SECRET / JWT_REFRESH_SECRET env vars:', jwtErr);
+      throw jwtErr;
+    }
+
+    // Create user, wallet, subscription and refresh token atomically
+    const { user, tokens } = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          email,
+          name,
+          password: hashedPassword,
+        },
+      });
+
+      await tx.wallet.create({
+        data: { userId: newUser.id, balance: 0, currency: 'RUB' },
+      });
+
+      await tx.subscription.create({
+        data: { userId: newUser.id, plan: 'FREE', status: 'ACTIVE' },
+      });
+
+      // Re-sign tokens with the real userId now that we have it
+      const realJti = uuidv4();
+      const realAccessToken = signAccessToken({ sub: newUser.id, email: newUser.email });
+      const realRefreshToken = signRefreshToken({ sub: newUser.id, jti: realJti });
+
+      await tx.refreshToken.create({
+        data: {
+          id: realJti,
+          token: realRefreshToken,
+          userId: newUser.id,
+          expiresAt: getRefreshExpiresAt(),
+        },
+      });
+
+      return { user: newUser, tokens: { accessToken: realAccessToken, refreshToken: realRefreshToken } };
+    }).catch((txErr) => {
+      console.error('[register] prisma.$transaction failed:', txErr);
+      throw txErr;
+    });
+
+    // Fire-and-forget — welcome email should not block the response
+    emailService.sendWelcome(email, name).catch(() => {});
+
+    return reply.status(201).send({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: buildUserProfile(user),
+    });
+  } catch (err) {
+    // Re-throw AppErrors as-is so the error handler can format them correctly
+    const { AppError } = await import('../lib/errors');
+    if (err instanceof AppError) {
+      throw err;
+    }
+    console.error('[register] unexpected error:', err);
+    throw err;
   }
-
-  const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
-
-  // Create user, wallet, subscription and refresh token atomically
-  const { user, tokens } = await prisma.$transaction(async (tx) => {
-    const newUser = await tx.user.create({
-      data: {
-        email,
-        name,
-        password: hashedPassword,
-      },
-    });
-
-    await tx.wallet.create({
-      data: { userId: newUser.id, balance: 0, currency: 'RUB' },
-    });
-
-    await tx.subscription.create({
-      data: { userId: newUser.id, plan: 'FREE', status: 'ACTIVE' },
-    });
-
-    const jti = uuidv4();
-    const accessToken = signAccessToken({ sub: newUser.id, email: newUser.email });
-    const refreshToken = signRefreshToken({ sub: newUser.id, jti });
-
-    await tx.refreshToken.create({
-      data: {
-        id: jti,
-        token: refreshToken,
-        userId: newUser.id,
-        expiresAt: getRefreshExpiresAt(),
-      },
-    });
-
-    return { user: newUser, tokens: { accessToken, refreshToken } };
-  });
-
-  // Fire-and-forget — welcome email should not block the response
-  emailService.sendWelcome(email, name).catch(() => {});
-
-  return reply.status(201).send({
-    accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken,
-    user: buildUserProfile(user),
-  });
 }
 
 // POST /api/auth/login
 export async function login(request: FastifyRequest, reply: FastifyReply) {
-  const { email, password } = request.body as LoginBody;
+  try {
+    const { email, password } = request.body as LoginBody;
 
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || user.deletedAt !== null) {
-    throw Errors.unauthorized('Неверный email или пароль');
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user || user.deletedAt !== null) {
+      throw Errors.unauthorized('Неверный email или пароль');
+    }
+
+    // OAuth users cannot log in via email/password — guide them to the correct method
+    if (user.provider !== 'email') {
+      throw Errors.badRequest('Используйте вход через Google/Apple');
+    }
+
+    const passwordValid = await bcrypt.compare(password, user.password as string);
+    if (!passwordValid) {
+      throw Errors.unauthorized('Неверный email или пароль');
+    }
+
+    let tokens: { accessToken: string; refreshToken: string };
+    try {
+      tokens = await generateTokenPair(user.id, user.email);
+    } catch (err) {
+      console.error('[login] generateTokenPair failed:', err);
+      throw err;
+    }
+
+    return reply.send({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: buildUserProfile(user),
+    });
+  } catch (err) {
+    const { AppError } = await import('../lib/errors');
+    if (err instanceof AppError) {
+      throw err;
+    }
+    console.error('[login] unexpected error:', err);
+    throw err;
   }
-
-  // OAuth users cannot log in via email/password — guide them to the correct method
-  if (user.provider !== 'email') {
-    throw Errors.badRequest('Используйте вход через Google/Apple');
-  }
-
-  const passwordValid = await bcrypt.compare(password, user.password as string);
-  if (!passwordValid) {
-    throw Errors.unauthorized('Неверный email или пароль');
-  }
-
-  const tokens = await generateTokenPair(user.id, user.email);
-
-  return reply.send({
-    accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken,
-    user: buildUserProfile(user),
-  });
 }
 
 // POST /api/auth/refresh — rotate refresh token
