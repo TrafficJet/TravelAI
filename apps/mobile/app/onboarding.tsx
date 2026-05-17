@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Colors, TextPresets, Radius, Spacing } from '../constants';
 
 export const ONBOARDING_KEY = 'onboarding_done';
@@ -19,7 +18,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface Slide {
   id: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  emoji: string;
   title: string;
   description: string;
 }
@@ -27,24 +26,21 @@ interface Slide {
 const SLIDES: Slide[] = [
   {
     id: '1',
-    icon: 'airplane-outline',
-    title: 'Планируй путешествия голосом',
-    description:
-      'Просто скажи, куда хочешь поехать, и AI-помощник возьмёт всё на себя — маршрут, рейсы, отели.',
+    emoji: '✈️',
+    title: 'Путешествуй умнее',
+    description: 'AI-ассистент найдёт лучшие рейсы и отели за секунды',
   },
   {
     id: '2',
-    icon: 'search-outline',
-    title: 'AI найдёт лучшие рейсы',
-    description:
-      'Искусственный интеллект анализирует тысячи вариантов, чтобы выбрать оптимальное предложение именно для вас.',
+    emoji: '🤖',
+    title: 'Просто напиши запрос',
+    description: '«Хочу в Дубай на неделю в июне» — и всё готово',
   },
   {
     id: '3',
-    icon: 'lock-closed-outline',
-    title: 'Безопасная оплата',
-    description:
-      'Все платежи защищены шифрованием. Ваши данные в безопасности — мы следим за этим.',
+    emoji: '💳',
+    title: 'Бронируй в пару касаний',
+    description: 'Кошелёк, история бронирований, уведомления — всё в одном месте',
   },
 ];
 
@@ -52,7 +48,7 @@ function SlideItem({ item }: { item: Slide }) {
   return (
     <View style={[slideStyles.container, { width: SCREEN_WIDTH }]}>
       <View style={slideStyles.iconWrap}>
-        <Ionicons name={item.icon} size={72} color={Colors.primary} />
+        <Text style={slideStyles.emoji}>{item.emoji}</Text>
       </View>
       <Text style={slideStyles.title}>{item.title}</Text>
       <Text style={slideStyles.description}>{item.description}</Text>
@@ -76,8 +72,12 @@ const slideStyles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 36,
   },
+  emoji: {
+    fontSize: 64,
+    lineHeight: 72,
+  },
   title: {
-    ...TextPresets.displayHero,
+    ...TextPresets.h2,
     color: Colors.text,
     textAlign: 'center',
     marginBottom: 16,

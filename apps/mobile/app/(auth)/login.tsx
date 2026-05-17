@@ -89,6 +89,19 @@ export default function LoginScreen() {
             error={errors.password}
           />
 
+          <TouchableOpacity
+            style={styles.demoBtn}
+            onPress={() => {
+              setEmail('demo@travelai.com');
+              setPassword('Demo1234!');
+              setErrors({});
+            }}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.demoBtnTitle}>⚡ Войти как демо-пользователь</Text>
+            <Text style={styles.demoBtnEmail}>demo@travelai.com</Text>
+          </TouchableOpacity>
+
           <Button
             title="Войти"
             onPress={handleLogin}
@@ -152,6 +165,25 @@ const styles = StyleSheet.create({
   },
   form: {
     width: '100%',
+  },
+  demoBtn: {
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: `${Colors.primary}4D`,
+    borderRadius: Radius.card,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
+    alignItems: 'flex-start',
+  },
+  demoBtnTitle: {
+    ...TextPresets.bodyMedium,
+    color: Colors.primary,
+    marginBottom: 2,
+  },
+  demoBtnEmail: {
+    ...TextPresets.caption,
+    color: Colors.textMuted,
   },
   loginBtn: {
     marginTop: Spacing.sm,
