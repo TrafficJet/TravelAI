@@ -238,6 +238,17 @@ export async function getMessages(request: FastifyRequest, reply: FastifyReply) 
   });
 }
 
+// DELETE /api/chat/sessions/:id/messages — clear all messages in session (keeps session itself)
+export async function clearMessages(request: FastifyRequest, reply: FastifyReply) {
+  const userId = request.userId;
+  const { id: sessionId } = request.params as SessionParams;
+  const session = await prisma.chatSession.findUnique({ where: { id: sessionId } });
+  if (!session) throw Errors.notFound('Сессия чата');
+  if (session.userId !== userId) throw Errors.forbidden('Доступ запрещён');
+  await prisma.message.deleteMany({ where: { sessionId } });
+  return reply.send({ success: true });
+}
+
 // DELETE /api/chat/sessions/:id — delete session and its messages (CASCADE)
 export async function deleteSession(request: FastifyRequest, reply: FastifyReply) {
   const userId = request.userId;

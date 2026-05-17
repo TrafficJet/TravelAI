@@ -15,11 +15,11 @@ export const searchHotelsTool: Anthropic.Tool = {
       },
       check_in: {
         type: 'string',
-        description: 'Дата заезда в формате YYYY-MM-DD',
+        description: 'Дата заезда в формате YYYY-MM-DD. Если не указана — будет подставлено через 14 дней.',
       },
       check_out: {
         type: 'string',
-        description: 'Дата выезда в формате YYYY-MM-DD',
+        description: 'Дата выезда в формате YYYY-MM-DD. Если не указана — будет подставлено через 17 дней (3 ночи).',
       },
       guests: {
         type: 'number',
@@ -35,14 +35,14 @@ export const searchHotelsTool: Anthropic.Tool = {
         description: 'Максимальная цена за ночь в рублях',
       },
     },
-    required: ['city', 'check_in', 'check_out'],
+    required: ['city'],
   },
 };
 
 export interface SearchHotelsInput {
   city: string;
-  check_in: string;
-  check_out: string;
+  check_in?: string;
+  check_out?: string;
   guests?: number;
   stars?: number[];
   max_price_per_night?: number;
@@ -52,43 +52,44 @@ export interface SearchHotelsInput {
 export async function executeSearchHotels(
   input: SearchHotelsInput,
 ): Promise<ReturnType<typeof buildHotelResult> & { searchId: string; cacheHit: boolean }> {
-  // Fill in default check-in (+14 days) and check-out (+17 days) if not provided
-  if (!input.check_in) {
-    const d = new Date();
-    d.setDate(d.getDate() + 14);
-    input.check_in = d.toISOString().slice(0, 10);
-  }
-  if (!input.check_out) {
-    const d = new Date();
-    d.setDate(d.getDate() + 17);
-    input.check_out = d.toISOString().slice(0, 10);
-  }
+  // Default: check-in in 14 days, check-out in 17 days (3 nights)
+  const today = new Date();
+  const defaultCheckIn = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000)
+    .toISOString().slice(0, 10);
+  const defaultCheckOut = new Date(today.getTime() + 17 * 24 * 60 * 60 * 1000)
+    .toISOString().slice(0, 10);
 
-  const cacheKey = getCacheKey('hotel', input);
+  const resolvedInput = {
+    ...input,
+    check_in: input.check_in || defaultCheckIn,
+    check_out: input.check_out || defaultCheckOut,
+  };
+
+  const cacheKey = getCacheKey('hotel', resolvedInput);
   const cached = searchCache.get(cacheKey);
   if (cached) {
     return { ...(cached as ReturnType<typeof buildHotelResult>), searchId: `hotel_search_${Date.now()}`, cacheHit: true };
   }
 
   const hotels = await searchHotels({
-    city: input.city,
-    checkIn: input.check_in,
-    checkOut: input.check_out,
-    guests: { adults: input.guests ?? 2 },
-    starRating: input.stars,
-    maxPrice: input.max_price_per_night,
+    city: resolvedInput.city,
+    checkIn: resolvedInput.check_in,
+    checkOut: resolvedInput.check_out,
+    guests: { adults: resolvedInput.guests ?? 2 },
+    starRating: resolvedInput.stars,
+    maxPrice: resolvedInput.max_price_per_night,
   });
 
   const nights =
     Math.max(
       1,
       Math.round(
-        (new Date(input.check_out).getTime() - new Date(input.check_in).getTime()) /
+        (new Date(resolvedInput.check_out).getTime() - new Date(resolvedInput.check_in).getTime()) /
           (1000 * 60 * 60 * 24),
       ),
     );
 
-  const result = buildHotelResult(input, hotels, nights);
+  const result = buildHotelResult(resolvedInput, hotels, nights);
   searchCache.set(cacheKey, result);
   return { ...result, searchId: `hotel_search_${Date.now()}`, cacheHit: false };
 }
@@ -122,7 +123,7 @@ function normaliseMobileHotel(
 }
 
 function buildHotelResult(
-  input: SearchHotelsInput,
+  input: Required<Pick<SearchHotelsInput, 'city' | 'check_in' | 'check_out'>> & SearchHotelsInput,
   hotels: Awaited<ReturnType<typeof searchHotels>>,
   nights: number,
 ) {

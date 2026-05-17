@@ -1,8 +1,9 @@
 import type Anthropic from '@anthropic-ai/sdk';
 
 export interface TransferOption {
-  type: 'taxi' | 'shuttle' | 'private' | 'public';
+  type: 'taxi' | 'minivan' | 'vip' | 'shuttle';
   provider: string;
+  vehicle: string;
   price: number;
   currency: string;
   duration: number; // minutes
@@ -45,6 +46,27 @@ export interface SearchTransfersInput {
   datetime?: string;
 }
 
+// Airport base prices (taxi, one-way, city center) in EUR
+// and approximate drive durations (minutes) to city center
+const AIRPORT_DATA: Record<string, { basePrice: number; duration: number }> = {
+  BCN: { basePrice: 35, duration: 30 },
+  MAD: { basePrice: 40, duration: 40 },
+  CDG: { basePrice: 55, duration: 45 },
+  LHR: { basePrice: 65, duration: 50 },
+  AMS: { basePrice: 45, duration: 25 },
+  IST: { basePrice: 25, duration: 45 },
+  DXB: { basePrice: 30, duration: 35 },
+  BKK: { basePrice: 15, duration: 40 },
+  SVO: { basePrice: 50, duration: 60 },
+  DME: { basePrice: 45, duration: 55 },
+  WAW: { basePrice: 30, duration: 30 },
+  BER: { basePrice: 35, duration: 40 },
+  FCO: { basePrice: 40, duration: 35 },
+  JFK: { basePrice: 60, duration: 50 },
+  PRG: { basePrice: 25, duration: 30 },
+  VIE: { basePrice: 30, duration: 30 },
+};
+
 // Execute transfer search — mock data, real API (GetTransfer, Kiwitaxi) to be integrated later
 export async function executeSearchTransfers(input: SearchTransfersInput): Promise<{
   options: TransferOption[];
@@ -53,62 +75,66 @@ export async function executeSearchTransfers(input: SearchTransfersInput): Promi
 }> {
   const pax = input.passengers ?? 1;
 
-  const basePrices: Record<string, number> = {
-    BCN: 35,
-    MAD: 40,
-    CDG: 55,
-    LHR: 65,
-    AMS: 45,
-    IST: 25,
-    DXB: 30,
-    BKK: 15,
-    SVO: 50,
-    DME: 45,
-    WAW: 30,
-    BER: 35,
-    FCO: 40,
-    JFK: 60,
-    PRG: 25,
-    VIE: 30,
-  };
-
   // Detect airport code from the from/to strings
-  const allCodes = Object.keys(basePrices);
+  const allCodes = Object.keys(AIRPORT_DATA);
   const detectedCode = allCodes.find(
     (c) =>
       input.from.toUpperCase().includes(c) ||
       input.to.toUpperCase().includes(c),
   );
-  const basePrice = basePrices[detectedCode ?? 'BCN'] ?? 35;
+  const { basePrice, duration } = AIRPORT_DATA[detectedCode ?? 'BCN'] ?? { basePrice: 35, duration: 30 };
+
+  // Group multiplier for larger parties
   const groupMultiplier = pax > 3 ? 1.5 : 1;
 
+  // Clamp helper to keep prices within realistic ranges
+  const clamp = (val: number, min: number, max: number) =>
+    Math.round(Math.min(max, Math.max(min, val)));
+
   const options: TransferOption[] = [
+    // Standard taxi — €15–€45
     {
       type: 'taxi',
       provider: 'Bolt / Uber',
-      price: Math.round(basePrice * 0.8 * groupMultiplier),
+      vehicle: 'Toyota Camry',
+      price: clamp(basePrice * 0.9 * groupMultiplier, 15, 45),
       currency: 'EUR',
-      duration: 35,
+      duration,
       capacity: 4,
       description: 'Обычное такси через приложение. Самый бюджетный вариант.',
     },
+    // Minivan 7 seats — €25–€65
+    {
+      type: 'minivan',
+      provider: 'Transfer Express',
+      vehicle: 'Ford Transit',
+      price: clamp(basePrice * 1.3 * groupMultiplier, 25, 65),
+      currency: 'EUR',
+      duration: duration + 5,
+      capacity: 7,
+      description: 'Минивэн на 7 мест. Идеально для семьи или группы.',
+    },
+    // VIP Mercedes — €60–€150
+    {
+      type: 'vip',
+      provider: 'Premium Transfer',
+      vehicle: 'Mercedes E-Class',
+      price: clamp(basePrice * 2.0 * groupMultiplier, 60, 150),
+      currency: 'EUR',
+      duration: duration - 5 > 10 ? duration - 5 : duration,
+      capacity: 3,
+      description: 'VIP-трансфер на Mercedes. Встреча с табличкой, вода в салоне.',
+    },
+    // Shuttle bus — €5–€15
     {
       type: 'shuttle',
       provider: 'Airport Shuttle',
-      price: Math.round(basePrice * 0.4),
+      vehicle: 'Airport Shuttle',
+      price: clamp(basePrice * 0.35, 5, 15),
       currency: 'EUR',
-      duration: 55,
-      capacity: 8,
-      description: 'Шаттл с другими пассажирами. Дешевле, но дольше.',
-    },
-    {
-      type: 'private',
-      provider: 'Premium Transfer',
-      price: Math.round(basePrice * 1.8 * groupMultiplier),
-      currency: 'EUR',
-      duration: 30,
-      capacity: 6,
-      description: 'Персональный водитель, встреча с табличкой. Максимально комфортно.',
+      duration: duration + 25,
+      capacity: 16,
+      description: 'Шаттл с другими пассажирами. Самый дешёвый вариант, дольше в пути.',
     },
   ];
 

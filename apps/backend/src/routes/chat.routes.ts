@@ -5,6 +5,7 @@ import {
   getMessages,
   sendMessage,
   deleteSession,
+  clearMessages,
 } from '../handlers/chat.handler';
 import { authenticate } from '../middleware/auth.middleware';
 import { checkChatLimit, checkChatRateLimit } from '../middleware/rateLimiter';
@@ -105,6 +106,18 @@ export async function chatRoutes(fastify: FastifyInstance) {
       },
     },
     handler: getMessages,
+  });
+
+  // DELETE /api/chat/sessions/:id/messages — clear all messages in session (session itself is kept)
+  fastify.delete('/sessions/:id/messages', {
+    schema: {
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string', format: 'uuid' } },
+      },
+    },
+    handler: clearMessages,
   });
 
   // POST /api/chat/sessions/:id/messages — SSE stream (daily limit + per-minute rate limit)
