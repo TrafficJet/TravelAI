@@ -52,6 +52,18 @@ export interface SearchHotelsInput {
 export async function executeSearchHotels(
   input: SearchHotelsInput,
 ): Promise<ReturnType<typeof buildHotelResult> & { searchId: string; cacheHit: boolean }> {
+  // Fill in default check-in (+14 days) and check-out (+17 days) if not provided
+  if (!input.check_in) {
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    input.check_in = d.toISOString().slice(0, 10);
+  }
+  if (!input.check_out) {
+    const d = new Date();
+    d.setDate(d.getDate() + 17);
+    input.check_out = d.toISOString().slice(0, 10);
+  }
+
   const cacheKey = getCacheKey('hotel', input);
   const cached = searchCache.get(cacheKey);
   if (cached) {

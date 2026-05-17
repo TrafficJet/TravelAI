@@ -192,6 +192,13 @@ const CIS_AIRPORTS = new Set([
 export async function executeSearchFlights(
   input: SearchFlightsInput,
 ): Promise<ReturnType<typeof buildFlightResult> & { searchId: string; cacheHit: boolean }> {
+  // Fill in default departure date: 14 days from today
+  if (!input.departure_date) {
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    input.departure_date = d.toISOString().slice(0, 10);
+  }
+
   const cacheKey = getCacheKey('flight', input);
   const cached = searchCache.get(cacheKey);
   if (cached) {

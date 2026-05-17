@@ -54,6 +54,15 @@ const AIRLINES: Record<string, { name: string; code: string }> = {
   EK: { name: 'Emirates', code: 'EK' },
   S7: { name: 'S7 Airlines', code: 'S7' },
   U6: { name: 'Уральские авиалинии', code: 'U6' },
+  LO: { name: 'LOT Polish Airlines', code: 'LO' },
+  VY: { name: 'Vueling', code: 'VY' },
+  FR: { name: 'Ryanair', code: 'FR' },
+  IB: { name: 'Iberia', code: 'IB' },
+  BA: { name: 'British Airways', code: 'BA' },
+  AF: { name: 'Air France', code: 'AF' },
+  KL: { name: 'KLM', code: 'KL' },
+  OS: { name: 'Austrian Airlines', code: 'OS' },
+  EW: { name: 'Eurowings', code: 'EW' },
 };
 
 // Approximate flight routes with typical duration in minutes
@@ -63,6 +72,16 @@ const ROUTE_DATA: Record<string, { duration: number; airlines: string[] }> = {
   'SVO-LED': { duration: 75, airlines: ['SU', 'S7'] },
   'DME-IST': { duration: 195, airlines: ['TK', 'U6'] },
   'LED-IST': { duration: 225, airlines: ['TK', 'S7'] },
+  'WAW-BCN': { duration: 175, airlines: ['LO', 'VY', 'FR'] }, // Варшава-Барселона
+  'WAW-MAD': { duration: 195, airlines: ['LO', 'IB', 'FR'] },
+  'WAW-LHR': { duration: 150, airlines: ['LO', 'BA'] },
+  'WAW-CDG': { duration: 160, airlines: ['LO', 'AF'] },
+  'WAW-AMS': { duration: 130, airlines: ['LO', 'KL'] },
+  'WAW-FCO': { duration: 165, airlines: ['LO', 'FR'] },
+  'WAW-VIE': { duration: 100, airlines: ['LO', 'OS'] },
+  'WAW-BER': { duration: 95,  airlines: ['LO', 'EW'] },
+  'WAW-DXB': { duration: 310, airlines: ['EK', 'FZ'] },
+  'WAW-IST': { duration: 185, airlines: ['TK', 'LO'] },
   DEFAULT: { duration: 180, airlines: ['SU', 'S7'] },
 };
 
@@ -79,11 +98,23 @@ function formatISO(date: Date): string {
   return date.toISOString();
 }
 
+// European hub airport codes used for regional pricing
+const EUROPE_AIRPORTS = new Set([
+  'WAW', 'BER', 'PRG', 'VIE', 'AMS', 'FCO', 'MAD', 'BCN', 'CDG', 'LHR',
+  'LGW', 'ORY', 'MXP', 'FCO', 'ATH', 'BRU', 'ZRH', 'CPH', 'ARN', 'HEL',
+]);
+
 export async function searchFlightsMock(params: SearchFlightsParams): Promise<FlightOffer[]> {
   const { origin, destination, departureDate, passengers, cabinClass } = params;
   const route = getRouteData(origin, destination);
   const passengerCount = passengers.adults + (passengers.children ?? 0);
-  const basePrice = 8000 + Math.floor(Math.random() * 20000);
+
+  // Use EUR pricing for European origins, RUB for CIS/other
+  const isEurope = EUROPE_AIRPORTS.has(origin.toUpperCase());
+  const basePrice = isEurope
+    ? 49 + Math.floor(Math.random() * 300)
+    : 8000 + Math.floor(Math.random() * 20000);
+  const currency = isEurope ? 'EUR' : 'RUB';
 
   const offers: FlightOffer[] = route.airlines.slice(0, 3).map((airlineCode, idx) => {
     // Stagger departure times: 07:00, 12:30, 18:45
@@ -103,7 +134,7 @@ export async function searchFlightsMock(params: SearchFlightsParams): Promise<Fl
       offerId: uuidv4(),
       provider: 'DUFFEL' as const,
       totalPrice: totalPrice.toFixed(2),
-      currency: 'RUB',
+      currency,
       cabinClass: (cabinClass === 'business' || cabinClass === 'first' ? cabinClass : 'economy') as 'economy' | 'business' | 'first',
       segments: [
         {
