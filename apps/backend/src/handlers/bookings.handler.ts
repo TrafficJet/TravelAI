@@ -29,6 +29,7 @@ function buildSummary(
   const d = details as Record<string, unknown>;
 
   if (type === 'FLIGHT') {
+    // Format 1: segments array (from real Duffel bookings)
     const segments = d.segments as Array<{ origin: string; destination: string; departureAt: string }> | undefined;
     if (segments && segments.length > 0) {
       const first = segments[0];
@@ -38,6 +39,19 @@ function buildSummary(
           day: 'numeric',
           month: 'long',
         }),
+      };
+    }
+    // Format 2: flat origin/destination/departureDate (from seed or AI tool bookings)
+    const origin = d.origin as string | undefined;
+    const destination = d.destination as string | undefined;
+    const departureDate = (d.departureDate ?? d.departureAt) as string | undefined;
+    if (origin && destination) {
+      const subtitleDate = departureDate
+        ? new Date(departureDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })
+        : '';
+      return {
+        title: `${origin} → ${destination}`,
+        subtitle: subtitleDate,
       };
     }
   }

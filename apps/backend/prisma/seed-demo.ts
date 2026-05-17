@@ -113,6 +113,49 @@ async function main() {
     console.log(`User already has ${bookingCount} booking(s) — skipping.`);
   }
 
+  // 4.5 Wallet transactions — show history in app
+  const wallet = await prisma.wallet.findUnique({ where: { userId: user.id } });
+  if (wallet) {
+    const txCount = await prisma.walletTransaction.count({ where: { walletId: wallet.id } });
+    if (txCount === 0) {
+      await prisma.walletTransaction.createMany({
+        data: [
+          {
+            walletId: wallet.id,
+            amount: 100000,
+            type: 'TOPUP',
+            status: 'COMPLETED',
+            description: 'Пополнение счёта',
+          },
+          {
+            walletId: wallet.id,
+            amount: -45900,
+            type: 'DEBIT',
+            status: 'COMPLETED',
+            description: 'Рейс EK 132 SVO → DXB',
+          },
+          {
+            walletId: wallet.id,
+            amount: -85000,
+            type: 'DEBIT',
+            status: 'COMPLETED',
+            description: 'Atlantis The Palm, 3 ночи',
+          },
+          {
+            walletId: wallet.id,
+            amount: 30900,
+            type: 'TOPUP',
+            status: 'COMPLETED',
+            description: 'Возврат по бронированию',
+          },
+        ],
+      });
+      console.log('Created 4 wallet transactions.');
+    } else {
+      console.log('Wallet transactions already exist — skipping.');
+    }
+  }
+
   // 5. Search history
   const searchCount = await prisma.searchHistory.count({ where: { userId: user.id } });
   if (searchCount < 2) {

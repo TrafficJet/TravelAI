@@ -11,8 +11,8 @@ if (!process.env.JWT_REFRESH_SECRET) {
 const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
-// Access token TTL: 15 minutes
-const ACCESS_TTL = 15 * 60;
+// Access token TTL: 2 hours (extended for demo presentations)
+const ACCESS_TTL = 2 * 60 * 60;
 // Refresh token TTL: 30 days
 const REFRESH_TTL = 30 * 24 * 60 * 60;
 
