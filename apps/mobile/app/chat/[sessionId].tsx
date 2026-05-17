@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation, router } from 'expo-router';
 import { useChatStore } from '../../stores/chatStore';
 import { useWalletStore } from '../../stores/walletStore';
 import { useBookingStore } from '../../stores/bookingStore';
@@ -189,6 +189,7 @@ export default function ChatScreen() {
 
   // ── Session title ─────────────────────────────────────────────────────────
   useEffect(() => {
+    if (!sessionId) return;
     const session = (sessions ?? []).find((s) => s.id === sessionId);
     if (session) {
       setCurrentSession(session);

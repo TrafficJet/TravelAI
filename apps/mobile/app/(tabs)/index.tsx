@@ -8,6 +8,7 @@ import {
   Alert,
   RefreshControl,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useChatStore } from '../../stores/chatStore';
@@ -15,7 +16,6 @@ import { Colors, TextPresets, Typography, Radius, Spacing } from '../../constant
 import { useTheme } from '../../src/theme/ThemeContext';
 import { analytics, Events } from '../../src/analytics';
 import { SkeletonChatRow } from '../../components/ui/Skeleton';
-import { toast } from '../../lib/toast';
 import type { ChatSession } from '../../types';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -253,12 +253,12 @@ function SkeletonList() {
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function ChatListScreen() {
-  const { sessions, loadSessions, createSession, deleteSession } = useChatStore();
+  const { sessions, loadSessions, deleteSession, createSession } = useChatStore();
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
 
   const fetchSessions = useCallback(async () => {
     try {
@@ -267,9 +267,6 @@ export default function ChatListScreen() {
       // Silently fail — list will just be empty
     }
   }, [loadSessions]);
-
-  // Reset isCreating on mount so stale state from a previous render never blocks the FAB
-  useEffect(() => { setIsCreating(false); }, []);
 
   useEffect(() => {
     const timeout = setTimeout(() => setIsLoading(false), 5000);
@@ -287,43 +284,20 @@ export default function ChatListScreen() {
   }
 
   async function handleNewChat(initialMessage?: string) {
-    if (__DEV__) {
-      console.log('[FAB] + pressed, isCreating:', isCreating, 'timestamp:', Date.now());
-    }
-    console.log('[Chat] handleNewChat called, isCreating:', isCreating);
     if (isCreating) return;
     setIsCreating(true);
     try {
-      console.log('[Chat] calling createSession...');
-      const sessionId = await createSession(initialMessage);
-      console.log('[Chat] session created:', sessionId);
       analytics.track(Events.CHAT_OPENED, { hasInitialMessage: !!initialMessage });
-      // Navigate to the new session — use string URL for reliable web routing.
-      // Cast is required because expo-router typed routes don't include dynamic segments as plain strings.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      router.push(('/chat/' + sessionId) as any);
-    } catch (error: unknown) {
-      console.error('[Chat] createSession error:', error);
-      const axiosData =
-        error != null &&
-        typeof error === 'object' &&
-        'response' in error &&
-        error.response != null &&
-        typeof error.response === 'object' &&
-        'data' in error.response
-          ? (error.response.data as Record<string, unknown>)
-          : null;
-      const serverMessage =
-        (typeof axiosData?.error === 'string' && axiosData.error) ||
-        (typeof axiosData?.message === 'string' && axiosData.message) ||
-        null;
-      const msg = serverMessage ?? 'Не удалось создать новый чат. Попробуйте снова.';
-      if (typeof window !== 'undefined') {
-        window.alert('Ошибка: ' + msg);
-      } else {
-        Alert.alert('Ошибка', msg);
-      }
-      toast.error(msg);
+      const sessionId = await createSession();
+      const path = initialMessage
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ? (('/chat/' + sessionId + '?initialMessage=' + encodeURIComponent(initialMessage)) as any)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        : (('/chat/' + sessionId) as any);
+      router.push(path);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Не удалось создать чат. Попробуйте снова.';
+      Alert.alert('Ошибка', msg);
     } finally {
       setIsCreating(false);
     }
@@ -403,7 +377,7 @@ export default function ChatListScreen() {
                   </Text>
                 </View>
               ) : (
-                <EmptyState onChipPress={(text) => handleNewChat(text)} />
+                <EmptyState onChipPress={(text) => { void handleNewChat(text); }} />
               )
             }
             contentContainerStyle={
@@ -416,11 +390,14 @@ export default function ChatListScreen() {
       {/* FAB always visible — works even during loading */}
       <TouchableOpacity
         style={[styles.fab, isCreating && styles.fabDisabled]}
-        onPress={() => handleNewChat()}
-        disabled={isCreating}
+        onPress={() => { void handleNewChat(); }}
         activeOpacity={0.8}
+        disabled={isCreating}
       >
-        <Text style={styles.fabText}>{isCreating ? '...' : '+'}</Text>
+        {isCreating
+          ? <ActivityIndicator color="#FFFFFF" size="small" />
+          : <Text style={styles.fabText}>+</Text>
+        }
       </TouchableOpacity>
     </View>
   );
