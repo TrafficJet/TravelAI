@@ -80,11 +80,14 @@ function formatDepartureTime(dateStr: string): string {
  */
 function isBookingPast(booking: Booking): boolean {
   try {
+    if (!booking.details) return false;
     if (booking.type === 'FLIGHT') {
-      const details = booking.details as FlightDetails;
+      const details = booking.details as Partial<FlightDetails>;
+      if (!details.departureDate) return false;
       return new Date(details.departureDate).getTime() < Date.now();
     }
-    const details = booking.details as HotelDetails;
+    const details = booking.details as Partial<HotelDetails>;
+    if (!details.checkOut) return false;
     return new Date(details.checkOut).getTime() < Date.now();
   } catch {
     return false;
@@ -256,11 +259,16 @@ const STATUS_STRIPE_COLOR: Record<BookingStatus, string> = {
 };
 
 function FlightCardContent({ booking }: { booking: Booking }) {
-  const details = booking.details as FlightDetails;
+  const details = (booking.details ?? {}) as Partial<FlightDetails>;
   const departureStr = details.departureDate ?? '';
   const dateLabel = departureStr
     ? `${formatDepartureDate(departureStr)}, ${formatDepartureTime(departureStr)}`
     : '—';
+  const origin = details.origin ?? '—';
+  const destination = details.destination ?? '—';
+  const airline = details.airline ?? '';
+  const flightNumber = details.flightNumber ?? '';
+  const cabin = details.cabin ?? '';
 
   return (
     <View style={cardStyles.innerContent}>
@@ -271,11 +279,11 @@ function FlightCardContent({ booking }: { booking: Booking }) {
         </View>
         <View style={cardStyles.routeBlock}>
           <Text style={cardStyles.route} numberOfLines={1}>
-            {details.origin} → {details.destination}
+            {origin} → {destination}
           </Text>
           <Text style={cardStyles.subtitle} numberOfLines={1}>
-            {details.airline} {details.flightNumber}
-            {details.cabin ? ` · ${details.cabin}` : ''}
+            {[airline, flightNumber].filter(Boolean).join(' ')}
+            {cabin ? ` · ${cabin}` : ''}
           </Text>
         </View>
         <Text style={cardStyles.price}>
@@ -293,7 +301,15 @@ function FlightCardContent({ booking }: { booking: Booking }) {
 }
 
 function HotelCardContent({ booking }: { booking: Booking }) {
-  const details = booking.details as HotelDetails;
+  const details = (booking.details ?? {}) as Partial<HotelDetails>;
+  const name = details.name ?? 'Отель';
+  const address = details.address ?? '';
+  const checkIn = details.checkIn ?? '';
+  const checkOut = details.checkOut ?? '';
+  const datesLabel =
+    checkIn && checkOut
+      ? `${formatDepartureDate(checkIn)} — ${formatDepartureDate(checkOut)}`
+      : '—';
 
   return (
     <View style={cardStyles.innerContent}>
@@ -304,11 +320,13 @@ function HotelCardContent({ booking }: { booking: Booking }) {
         </View>
         <View style={cardStyles.routeBlock}>
           <Text style={cardStyles.route} numberOfLines={1}>
-            {details.name}
+            {name}
           </Text>
-          <Text style={cardStyles.subtitle} numberOfLines={1}>
-            {details.address}
-          </Text>
+          {address ? (
+            <Text style={cardStyles.subtitle} numberOfLines={1}>
+              {address}
+            </Text>
+          ) : null}
         </View>
         <Text style={cardStyles.price}>
           {formatPrice(booking.totalPrice, booking.currency)}
@@ -318,9 +336,7 @@ function HotelCardContent({ booking }: { booking: Booking }) {
       {/* Status + dates row */}
       <View style={cardStyles.metaRow}>
         <StatusBadge status={booking.status} />
-        <Text style={cardStyles.metaText}>
-          {formatDepartureDate(details.checkIn)} — {formatDepartureDate(details.checkOut)}
-        </Text>
+        <Text style={cardStyles.metaText}>{datesLabel}</Text>
       </View>
     </View>
   );
