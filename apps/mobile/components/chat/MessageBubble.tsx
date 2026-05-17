@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   Animated,
+  Easing,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
@@ -33,6 +34,112 @@ function getToolLabel(toolName?: string): string {
   if (lower.includes('transfer') || lower.includes('route')) return 'Рассчитываю маршрут...';
   return 'Обрабатываю...';
 }
+
+// ── Tool loading chip with blinking indicator ─────────────────────────────────
+
+function ToolLoadingChip({ toolName }: { toolName?: string }) {
+  const blinkAnim = useRef(new Animated.Value(1)).current;
+  const dot0Opacity = useRef(new Animated.Value(1)).current;
+  const dot1Opacity = useRef(new Animated.Value(0.75)).current;
+  const dot2Opacity = useRef(new Animated.Value(0.5)).current;
+
+  useEffect(() => {
+    function makePulse(val: Animated.Value, delay: number) {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(val, {
+            toValue: 0.15,
+            duration: 450,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(val, {
+            toValue: 1,
+            duration: 450,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.delay(900 - delay),
+        ]),
+      );
+    }
+
+    const blinkLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(blinkAnim, {
+          toValue: 0.4,
+          duration: 600,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(blinkAnim, {
+          toValue: 1,
+          duration: 600,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    const p0 = makePulse(dot0Opacity, 0);
+    const p1 = makePulse(dot1Opacity, 200);
+    const p2 = makePulse(dot2Opacity, 400);
+
+    blinkLoop.start();
+    p0.start();
+    p1.start();
+    p2.start();
+
+    return () => {
+      blinkLoop.stop();
+      p0.stop();
+      p1.stop();
+      p2.stop();
+    };
+  }, [blinkAnim, dot0Opacity, dot1Opacity, dot2Opacity]);
+
+  return (
+    <View style={toolChipStyles.row}>
+      <Animated.Text style={[toolChipStyles.icon, { opacity: blinkAnim }]}>🔍</Animated.Text>
+      <Text style={toolChipStyles.text}>{getToolLabel(toolName)}</Text>
+      <View style={toolChipStyles.dots}>
+        {[dot0Opacity, dot1Opacity, dot2Opacity].map((dotOpacity, i) => (
+          <Animated.View
+            key={i}
+            style={[toolChipStyles.dot, { opacity: dotOpacity }]}
+          />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+const toolChipStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  icon: {
+    fontSize: 13,
+  },
+  text: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+  },
+  dots: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.primary,
+  },
+});
 
 // ── Typing indicator ──────────────────────────────────────────────────────────
 
@@ -369,11 +476,10 @@ export function MessageBubble({ message, isStreaming, streamingText }: Props) {
         </Animated.View>
       );
     }
-    // Otherwise show the compact loading chip
+    // Otherwise show the animated loading chip
     return (
       <Animated.View style={[styles.toolRow, { opacity, transform: [{ translateY }] }]}>
-        <Text style={styles.toolIcon}>🔍</Text>
-        <Text style={styles.toolText}>{getToolLabel(message.toolName)}</Text>
+        <ToolLoadingChip toolName={message.toolName} />
       </Animated.View>
     );
   }
@@ -474,7 +580,7 @@ const styles = StyleSheet.create({
   timeAssistant: {
     fontSize: Typography.sizes.xs,
     color: Colors.textMuted,
-    textAlign: 'right',
+    textAlign: 'left',
     marginTop: 4,
   },
 

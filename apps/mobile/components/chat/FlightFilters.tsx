@@ -585,20 +585,81 @@ interface FlightFilterBarProps {
   activeCount?: number;
 }
 
+// ── Quick filter chips shown inline ──────────────────────────────────────────
+
+interface QuickChipProps {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}
+
+function QuickChip({ label, active, onPress }: QuickChipProps) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.75}
+      style={[styles.chip, active && styles.chipActive]}
+    >
+      <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
 export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCountProp }: FlightFilterBarProps) {
   const activeCount = activeCountProp ?? Object.values(filters).filter((v) => v !== undefined).length;
 
+  // Derive active states for quick chips
+  const isDirectActive = filters.maxStops === 0;
+  const isEconomActive = filters.cabinClass === 'economy';
+  const isCheapActive = filters.maxPrice !== undefined && filters.maxPrice <= 200;
+
   return (
     <View style={styles.barContainer}>
-      <TouchableOpacity
-        style={[styles.filterBtn, activeCount > 0 && styles.filterBtnActive]}
-        onPress={onOpenFilters}
-        activeOpacity={0.8}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.barScroll}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={[styles.filterBtnText, activeCount > 0 && styles.filterBtnTextActive]}>
-          {'⚙️'} Фильтры{activeCount > 0 ? ` (${activeCount})` : ''}
-        </Text>
-      </TouchableOpacity>
+        {/* Main filters button */}
+        <QuickChip
+          label={`✈️ Фильтры${activeCount > 0 ? ` (${activeCount})` : ''}`}
+          active={activeCount > 0}
+          onPress={onOpenFilters}
+        />
+
+        {/* Quick chip: direct flights */}
+        <QuickChip
+          label="Прямые рейсы"
+          active={isDirectActive}
+          onPress={onOpenFilters}
+        />
+
+        {/* Quick chip: economy */}
+        <QuickChip
+          label="Эконом"
+          active={isEconomActive}
+          onPress={onOpenFilters}
+        />
+
+        {/* Quick chip: cheap */}
+        <QuickChip
+          label="Дешевле €200"
+          active={isCheapActive}
+          onPress={onOpenFilters}
+        />
+
+        {/* Reset button — visible only when filters active */}
+        {activeCount > 0 && (
+          <TouchableOpacity
+            onPress={onOpenFilters}
+            activeOpacity={0.75}
+            style={styles.resetChip}
+          >
+            <Text style={styles.resetChipText}>Сбросить ✕</Text>
+          </TouchableOpacity>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -751,12 +812,57 @@ const styles = StyleSheet.create({
   },
 
   barContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
     backgroundColor: Colors.surface,
   },
+  barScroll: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  // Quick chip
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.card,
+  },
+  chipActive: {
+    borderColor: Colors.primary,
+    backgroundColor: Colors.primary,
+  },
+  chipText: {
+    color: Colors.textMuted,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  chipTextActive: {
+    color: Colors.textInverse,
+    fontWeight: '700',
+  },
+
+  // Reset chip
+  resetChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.error,
+    backgroundColor: `${Colors.error}18`,
+  },
+  resetChipText: {
+    color: Colors.error,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  // Legacy aliases (kept so styles object stays valid)
   filterBtn: {
     alignSelf: 'flex-start',
     paddingHorizontal: 14,

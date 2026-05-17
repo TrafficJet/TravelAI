@@ -20,6 +20,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+import Reanimated, { FadeInDown } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -309,9 +310,10 @@ interface SessionItemProps {
   session: ChatSession;
   onPress: () => void;
   onDelete: () => void;
+  index?: number;
 }
 
-function SessionItem({ session, onPress, onDelete }: SessionItemProps) {
+function SessionItem({ session, onPress, onDelete, index = 0 }: SessionItemProps) {
   const translateX = useRef(new Animated.Value(0)).current;
   const isOpen = useRef(false);
 
@@ -386,54 +388,58 @@ function SessionItem({ session, onPress, onDelete }: SessionItemProps) {
   }
 
   return (
-    <View style={itemStyles.outerWrap}>
-      {/* Delete button revealed behind card */}
-      <View style={itemStyles.deleteWrap}>
-        <TouchableOpacity
-          style={itemStyles.deleteBtn}
-          onPress={handleDelete}
-          activeOpacity={0.8}
-        >
-          <Text style={itemStyles.deleteBtnIcon}>🗑️</Text>
-          <Text style={itemStyles.deleteBtnText}>Удалить</Text>
-        </TouchableOpacity>
-      </View>
+    <Reanimated.View
+      entering={FadeInDown.delay(index * 60).duration(350).springify()}
+    >
+      <View style={itemStyles.outerWrap}>
+        {/* Delete button revealed behind card */}
+        <View style={itemStyles.deleteWrap}>
+          <TouchableOpacity
+            style={itemStyles.deleteBtn}
+            onPress={handleDelete}
+            activeOpacity={0.8}
+          >
+            <Text style={itemStyles.deleteBtnIcon}>🗑️</Text>
+            <Text style={itemStyles.deleteBtnText}>Удалить</Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* Card itself */}
-      <Animated.View
-        style={[itemStyles.cardAnimated, { transform: [{ translateX }] }]}
-        {...panResponder.panHandlers}
-      >
-        <TouchableOpacity
-          onPress={handlePress}
-          activeOpacity={0.85}
-          style={itemStyles.card}
+        {/* Card itself */}
+        <Animated.View
+          style={[itemStyles.cardAnimated, { transform: [{ translateX }] }]}
+          {...panResponder.panHandlers}
         >
-          {/* Left icon */}
-          <View style={itemStyles.iconCircle}>
-            <Text style={itemStyles.iconEmoji}>✈️</Text>
-          </View>
+          <TouchableOpacity
+            onPress={handlePress}
+            activeOpacity={0.85}
+            style={itemStyles.card}
+          >
+            {/* Left icon */}
+            <View style={itemStyles.iconCircle}>
+              <Text style={itemStyles.iconEmoji}>✈️</Text>
+            </View>
 
-          {/* Content */}
-          <View style={itemStyles.content}>
-            <Text style={itemStyles.title} numberOfLines={1}>
-              {session.title}
-            </Text>
-            {session.lastMessage ? (
-              <Text style={itemStyles.subtitle} numberOfLines={1}>
-                {session.lastMessage}
+            {/* Content */}
+            <View style={itemStyles.content}>
+              <Text style={itemStyles.title} numberOfLines={1}>
+                {session.title}
               </Text>
-            ) : null}
-          </View>
+              {session.lastMessage ? (
+                <Text style={itemStyles.subtitle} numberOfLines={1}>
+                  {session.lastMessage}
+                </Text>
+              ) : null}
+            </View>
 
-          {/* Right: time + chevron */}
-          <View style={itemStyles.rightCol}>
-            <Text style={itemStyles.time}>{formatItemTime(session.updatedAt)}</Text>
-            <Text style={itemStyles.chevron}>›</Text>
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
-    </View>
+            {/* Right: time + chevron */}
+            <View style={itemStyles.rightCol}>
+              <Text style={itemStyles.time}>{formatItemTime(session.updatedAt)}</Text>
+              <Text style={itemStyles.chevron}>›</Text>
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+    </Reanimated.View>
   );
 }
 
@@ -707,11 +713,12 @@ export default function ChatListScreen() {
           <FlatList
             data={filteredSessions}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <SessionItem
                 session={item}
                 onPress={() => handleSessionPress(item)}
                 onDelete={() => handleSessionDelete(item)}
+                index={index}
               />
             )}
             refreshControl={
@@ -719,6 +726,8 @@ export default function ChatListScreen() {
                 refreshing={isRefreshing}
                 onRefresh={handleRefresh}
                 tintColor={Colors.primary}
+                colors={[Colors.primary]}
+                progressBackgroundColor={Colors.surface}
               />
             }
             ListEmptyComponent={

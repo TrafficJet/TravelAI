@@ -35,7 +35,7 @@ function nightsCount(checkIn: string, checkOut: string): number {
 
 // ── StarRow ───────────────────────────────────────────────────────────────────
 
-function StarRow({ count }: { count: number }) {
+function StarRow({ count, rating }: { count: number; rating?: number }) {
   const n = Math.min(5, Math.max(0, Math.round(count)));
   const empty = 5 - n;
   return (
@@ -46,7 +46,9 @@ function StarRow({ count }: { count: number }) {
       {Array.from({ length: empty }).map((_, i) => (
         <Ionicons key={`e${i}`} name="star-outline" size={12} color={Colors.border} />
       ))}
-      <Text style={starStyles.label}>{count}-звёздочный</Text>
+      {rating !== undefined && (
+        <Text style={starStyles.rating}>{rating.toFixed(1)}/10</Text>
+      )}
     </View>
   );
 }
@@ -55,19 +57,20 @@ const starStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
+    gap: 3,
     flexShrink: 1,
   },
-  label: {
-    color: Colors.textMuted,
-    fontSize: 10,
-    marginLeft: 4,
+  rating: {
+    color: Colors.primary,
+    fontSize: 12,
+    fontWeight: '700',
+    marginLeft: 6,
   },
 });
 
 // ── AmenityChip ───────────────────────────────────────────────────────────────
 
-const AMENITY_ICONS: Record<string, string> = {
+const AMENITY_LABELS: Record<string, string> = {
   wifi: 'WiFi',
   pool: 'Бассейн',
   breakfast: 'Завтрак',
@@ -81,7 +84,7 @@ const AMENITY_ICONS: Record<string, string> = {
 
 function normalizeAmenity(raw: string): string {
   const key = raw.toLowerCase().replace(/[\s-]/g, '_');
-  return AMENITY_ICONS[key] ?? raw;
+  return AMENITY_LABELS[key] ?? raw;
 }
 
 function AmenityChip({ label }: { label: string }) {
@@ -96,14 +99,15 @@ const amenityStyles = StyleSheet.create({
   chip: {
     backgroundColor: Colors.elevated,
     borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderWidth: 1,
     borderColor: Colors.border,
   },
   chipText: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.medium,
   },
 });
 
@@ -134,8 +138,11 @@ export function HotelCard({ hotel, onBook }: Props) {
         amenities: hotel.amenities ? hotel.amenities.join(',') : '',
         description: hotel.description ?? '',
       },
-    });
+    } as never);
   }
+
+  // First 3 amenities for the chip row
+  const topAmenities = hotel.amenities ? hotel.amenities.slice(0, 3) : [];
 
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.82} style={styles.card}>
@@ -145,31 +152,42 @@ export function HotelCard({ hotel, onBook }: Props) {
         <FavoriteButton type="hotel" item={hotel} size={18} />
       </View>
 
-      {/* ── Header: icon + name + stars ── */}
-      <View style={styles.headerRow}>
+      {/* ── 1. Hotel name large + location ── */}
+      <View style={styles.headerSection}>
         <Text style={styles.hotelIcon}>🏨</Text>
-        <View style={styles.headerMiddle}>
+        <View style={styles.headerText}>
           <Text style={styles.hotelName} numberOfLines={2}>
             {hotel.name}
           </Text>
-          {hotel.stars !== undefined && hotel.stars > 0 && (
-            <StarRow count={hotel.stars} />
+          {(hotel.address || hotel.city) && (
+            <View style={styles.locationRow}>
+              <Ionicons name="location-outline" size={11} color={Colors.textMuted} />
+              <Text style={styles.locationText} numberOfLines={1}>
+                {[hotel.address, hotel.city].filter(Boolean).join(' · ')}
+              </Text>
+            </View>
           )}
         </View>
       </View>
 
-      {/* ── Location ── */}
-      {(hotel.address || hotel.city) && (
-        <View style={styles.locationRow}>
-          <Ionicons name="location-outline" size={12} color={Colors.textMuted} />
-          <Text style={styles.locationText} numberOfLines={1}>
-            {[hotel.address, hotel.city].filter(Boolean).join(' · ')}
-          </Text>
+      {/* ── 2. Stars + rating ── */}
+      {hotel.stars !== undefined && hotel.stars > 0 && (
+        <View style={styles.starsRow}>
+          <StarRow count={hotel.stars} rating={hotel.rating} />
         </View>
       )}
 
       {/* ── Divider ── */}
       <View style={styles.divider} />
+
+      {/* ── 3. Amenities chips (first 3) ── */}
+      {topAmenities.length > 0 && (
+        <View style={styles.amenitiesRow}>
+          {topAmenities.map((a, i) => (
+            <AmenityChip key={i} label={a} />
+          ))}
+        </View>
+      )}
 
       {/* ── Dates row ── */}
       {hotel.checkIn && hotel.checkOut && (
@@ -179,47 +197,34 @@ export function HotelCard({ hotel, onBook }: Props) {
             {formatDate(hotel.checkIn)} — {formatDate(hotel.checkOut)}
           </Text>
           {nights > 0 && (
-            <Text style={styles.nightsText}>({nights} {nights === 1 ? 'ночь' : nights < 5 ? 'ночи' : 'ночей'})</Text>
-          )}
-        </View>
-      )}
-
-      {/* ── Price row ── */}
-      <View style={styles.priceRow}>
-        <View style={styles.priceLeft}>
-          <Text style={styles.pricePerNight}>
-            {currencySymbol}{hotel.pricePerNight.toLocaleString('ru-RU')}
-            <Text style={styles.pricePerNightLabel}>/ночь</Text>
-          </Text>
-          {total !== undefined && (
-            <Text style={styles.totalPrice}>
-              Итого: {currencySymbol}{total.toLocaleString('ru-RU')}
+            <Text style={styles.nightsText}>
+              ({nights} {nights === 1 ? 'ночь' : nights < 5 ? 'ночи' : 'ночей'})
             </Text>
           )}
         </View>
-      </View>
-
-      {/* ── Amenities ── */}
-      {hotel.amenities && hotel.amenities.length > 0 && (
-        <>
-          <View style={styles.divider} />
-          <View style={styles.amenitiesRow}>
-            {hotel.amenities.slice(0, 5).map((a, i) => (
-              <AmenityChip key={i} label={a} />
-            ))}
-          </View>
-        </>
       )}
 
-      {/* ── Bottom action ── */}
+      {/* ── 4. Price per night (large, amber) ── */}
+      <View style={styles.priceRow}>
+        <Text style={styles.pricePerNight}>
+          {currencySymbol}{hotel.pricePerNight.toLocaleString('ru-RU')}
+          <Text style={styles.pricePerNightLabel}>/ночь</Text>
+        </Text>
+        {total !== undefined && (
+          <Text style={styles.totalPrice}>
+            Итого: {currencySymbol}{total.toLocaleString('ru-RU')}
+          </Text>
+        )}
+      </View>
+
+      {/* ── 5. "Посмотреть" button ── */}
       <View style={styles.bottomDivider} />
       <TouchableOpacity
         style={styles.bookBtn}
         onPress={onBook ?? handlePress}
         activeOpacity={0.8}
       >
-        <Text style={styles.bookBtnText}>Посмотреть и забронировать</Text>
-        <Text style={styles.bookBtnArrow}>→</Text>
+        <Text style={styles.bookBtnText}>Посмотреть →</Text>
       </TouchableOpacity>
 
     </TouchableOpacity>
@@ -247,8 +252,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
 
-  // Header
-  headerRow: {
+  // 1. Header
+  headerSection: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 8,
@@ -256,33 +261,35 @@ const styles = StyleSheet.create({
     paddingRight: 28,
   },
   hotelIcon: {
-    fontSize: 20,
-    lineHeight: 26,
+    fontSize: 22,
+    lineHeight: 28,
     flexShrink: 0,
   },
-  headerMiddle: {
+  headerText: {
     flex: 1,
     gap: 3,
   },
   hotelName: {
     color: Colors.text,
-    fontSize: Typography.sizes.base,
+    fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     fontFamily: 'Sora',
-    lineHeight: 20,
+    lineHeight: 22,
   },
-
-  // Location
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
-    marginBottom: 10,
   },
   locationText: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     flex: 1,
+  },
+
+  // 2. Stars row
+  starsRow: {
+    marginBottom: 10,
   },
 
   // Divider
@@ -292,12 +299,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
+  // 3. Amenities chips
+  amenitiesRow: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 10,
+    flexWrap: 'nowrap',
+  },
+
   // Dates
   datesRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    marginBottom: 8,
+    marginBottom: 10,
     flexWrap: 'wrap',
   },
   datesIcon: {
@@ -314,15 +329,12 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.xs,
   },
 
-  // Price row
+  // 4. Price row
   priceRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'baseline',
+    gap: 10,
     marginBottom: 0,
-  },
-  priceLeft: {
-    flex: 1,
-    gap: 2,
   },
   pricePerNight: {
     color: Colors.primary,
@@ -341,40 +353,25 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.sm,
   },
 
-  // Bottom action
+  // 5. Bottom button
   bottomDivider: {
     height: 1,
     backgroundColor: Colors.border,
-    marginTop: 14,
+    marginTop: 12,
     marginBottom: 10,
   },
   bookBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.primaryMuted,
-    borderWidth: 1,
-    borderColor: `${Colors.primary}50`,
+    backgroundColor: Colors.primary,
     borderRadius: 12,
     paddingVertical: 10,
-    gap: 6,
   },
   bookBtnText: {
-    color: Colors.primary,
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.semibold,
-    letterSpacing: 0.2,
-  },
-  bookBtnArrow: {
-    color: Colors.primary,
+    color: Colors.textInverse,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
-  },
-
-  // Amenities
-  amenitiesRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
+    letterSpacing: 0.3,
   },
 });
