@@ -248,6 +248,13 @@ interface BookingCardProps {
   index: number;
 }
 
+const STATUS_STRIPE_COLOR: Record<BookingStatus, string> = {
+  CONFIRMED: '#10B981',
+  PENDING:   '#F59E0B',
+  CANCELLED: '#F43F5E',
+  FAILED:    '#F43F5E',
+};
+
 function FlightCardContent({ booking }: { booking: Booking }) {
   const details = booking.details as FlightDetails;
   const departureStr = details.departureDate ?? '';
@@ -256,45 +263,32 @@ function FlightCardContent({ booking }: { booking: Booking }) {
     : '—';
 
   return (
-    <>
-      {/* Row 1: route + status */}
+    <View style={cardStyles.innerContent}>
+      {/* Top row: icon + route + price */}
       <View style={cardStyles.topRow}>
-        <View style={cardStyles.routeWrap}>
-          <Text style={cardStyles.typeIcon}>✈️</Text>
-          <Text style={cardStyles.route}>
+        <View style={cardStyles.iconCircle}>
+          <Text style={cardStyles.iconEmoji}>✈️</Text>
+        </View>
+        <View style={cardStyles.routeBlock}>
+          <Text style={cardStyles.route} numberOfLines={1}>
             {details.origin} → {details.destination}
           </Text>
+          <Text style={cardStyles.subtitle} numberOfLines={1}>
+            {details.airline} {details.flightNumber}
+            {details.cabin ? ` · ${details.cabin}` : ''}
+          </Text>
         </View>
-        <StatusBadge status={booking.status} />
-      </View>
-
-      {/* Subtitle: airline + cabin */}
-      <Text style={cardStyles.subtitle} numberOfLines={1}>
-        {details.airline} {details.flightNumber}
-        {details.cabin ? ` · ${details.cabin}` : ''}
-      </Text>
-
-      {/* Divider */}
-      <View style={cardStyles.divider} />
-
-      {/* Details rows */}
-      <View style={cardStyles.detailRow}>
-        <Text style={cardStyles.detailIcon}>📅</Text>
-        <Text style={cardStyles.detailText}>{dateLabel}</Text>
-      </View>
-      <View style={cardStyles.detailRow}>
-        <Text style={cardStyles.detailIcon}>💺</Text>
-        <Text style={cardStyles.detailText}>
-          {details.passengers} {details.passengers === 1 ? 'пассажир' : 'пассажира'}
-        </Text>
-      </View>
-      <View style={cardStyles.detailRow}>
-        <Text style={cardStyles.detailIcon}>💰</Text>
-        <Text style={[cardStyles.detailText, cardStyles.price]}>
+        <Text style={cardStyles.price}>
           {formatPrice(booking.totalPrice, booking.currency)}
         </Text>
       </View>
-    </>
+
+      {/* Status + date row */}
+      <View style={cardStyles.metaRow}>
+        <StatusBadge status={booking.status} />
+        <Text style={cardStyles.metaText}>{dateLabel}</Text>
+      </View>
+    </View>
   );
 }
 
@@ -302,50 +296,38 @@ function HotelCardContent({ booking }: { booking: Booking }) {
   const details = booking.details as HotelDetails;
 
   return (
-    <>
-      {/* Row 1: name + status */}
+    <View style={cardStyles.innerContent}>
+      {/* Top row: icon + name + price */}
       <View style={cardStyles.topRow}>
-        <View style={cardStyles.routeWrap}>
-          <Text style={cardStyles.typeIcon}>🏨</Text>
+        <View style={cardStyles.iconCircle}>
+          <Text style={cardStyles.iconEmoji}>🏨</Text>
+        </View>
+        <View style={cardStyles.routeBlock}>
           <Text style={cardStyles.route} numberOfLines={1}>
             {details.name}
           </Text>
+          <Text style={cardStyles.subtitle} numberOfLines={1}>
+            {details.address}
+          </Text>
         </View>
-        <StatusBadge status={booking.status} />
-      </View>
-
-      {/* Subtitle: address */}
-      <Text style={cardStyles.subtitle} numberOfLines={1}>
-        {details.address}
-      </Text>
-
-      {/* Divider */}
-      <View style={cardStyles.divider} />
-
-      {/* Details rows */}
-      <View style={cardStyles.detailRow}>
-        <Text style={cardStyles.detailIcon}>📅</Text>
-        <Text style={cardStyles.detailText}>
-          {formatDepartureDate(details.checkIn)} — {formatDepartureDate(details.checkOut)}
-        </Text>
-      </View>
-      <View style={cardStyles.detailRow}>
-        <Text style={cardStyles.detailIcon}>🛏️</Text>
-        <Text style={cardStyles.detailText}>
-          {details.rooms} ном. · {details.guests} гост.
-        </Text>
-      </View>
-      <View style={cardStyles.detailRow}>
-        <Text style={cardStyles.detailIcon}>💰</Text>
-        <Text style={[cardStyles.detailText, cardStyles.price]}>
+        <Text style={cardStyles.price}>
           {formatPrice(booking.totalPrice, booking.currency)}
         </Text>
       </View>
-    </>
+
+      {/* Status + dates row */}
+      <View style={cardStyles.metaRow}>
+        <StatusBadge status={booking.status} />
+        <Text style={cardStyles.metaText}>
+          {formatDepartureDate(details.checkIn)} — {formatDepartureDate(details.checkOut)}
+        </Text>
+      </View>
+    </View>
   );
 }
 
 function BookingCard({ booking, onPress, index }: BookingCardProps) {
+  const stripeColor = STATUS_STRIPE_COLOR[booking.status];
   return (
     <Animated.View
       entering={FadeInDown.delay(Math.min(index * 80, 400)).springify()}
@@ -356,24 +338,14 @@ function BookingCard({ booking, onPress, index }: BookingCardProps) {
         activeOpacity={0.85}
         style={cardStyles.card}
       >
+        {/* Left status stripe */}
+        <View style={[cardStyles.statusStripe, { backgroundColor: stripeColor }]} />
+
         {booking.type === 'FLIGHT' ? (
           <FlightCardContent booking={booking} />
         ) : (
           <HotelCardContent booking={booking} />
         )}
-
-        {/* Divider before CTA */}
-        <View style={cardStyles.divider} />
-
-        {/* CTA row */}
-        <TouchableOpacity
-          onPress={onPress}
-          activeOpacity={0.7}
-          style={cardStyles.ctaRow}
-        >
-          <Text style={cardStyles.ctaText}>Детали бронирования</Text>
-          <Text style={cardStyles.ctaArrow}>→</Text>
-        </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -385,80 +357,76 @@ const cardStyles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   card: {
-    backgroundColor: Colors.card,
-    borderRadius: Radius.card,
-    padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    backgroundColor: '#1C1C2E',
+    borderRadius: 16,
+    overflow: 'hidden',
+    flexDirection: 'row',
+  },
+  statusStripe: {
+    width: 4,
+    borderRadius: 0,
+  },
+  innerContent: {
+    flex: 1,
+    padding: 16,
+    gap: 10,
   },
   topRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 4,
-    gap: Spacing.sm,
-  },
-  routeWrap: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    flex: 1,
+    gap: 10,
   },
-  typeIcon: {
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(245,158,11,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  iconEmoji: {
     fontSize: 18,
   },
-  route: {
-    ...TextPresets.bodyMedium,
-    color: Colors.text,
-    fontWeight: '600' as const,
+  routeBlock: {
     flex: 1,
+    gap: 2,
+  },
+  route: {
+    fontFamily: 'Inter',
+    fontSize: 15,
+    fontWeight: '700' as const,
+    color: Colors.text,
+    lineHeight: 20,
   },
   subtitle: {
-    ...TextPresets.small,
+    fontFamily: 'Inter',
+    fontSize: 12,
+    fontWeight: '400' as const,
     color: Colors.textMuted,
-    marginBottom: 10,
-    marginLeft: 24,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginVertical: 10,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 6,
-  },
-  detailIcon: {
-    fontSize: 14,
-    width: 20,
-    textAlign: 'center',
-  },
-  detailText: {
-    ...TextPresets.small,
-    color: Colors.text,
-    flex: 1,
+    lineHeight: 16,
   },
   price: {
+    fontFamily: 'Inter',
+    fontSize: 17,
+    fontWeight: '700' as const,
     color: Colors.primary,
-    fontWeight: '600' as const,
+    flexShrink: 0,
+    textAlign: 'right',
   },
-  ctaRow: {
+  metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 2,
+    gap: 8,
   },
-  ctaText: {
-    ...TextPresets.small,
-    color: Colors.primary,
-    fontWeight: '500' as const,
-  },
-  ctaArrow: {
-    fontSize: 16,
-    color: Colors.primary,
+  metaText: {
+    fontFamily: 'Inter',
+    fontSize: 11,
     fontWeight: '400' as const,
+    color: Colors.textMuted,
+    flex: 1,
+    textAlign: 'right',
   },
 });
 

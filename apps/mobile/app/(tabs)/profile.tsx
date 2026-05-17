@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../stores/authStore';
 import { Colors } from '../../constants/colors';
@@ -57,24 +58,6 @@ const NOTIF_PRICES_KEY = 'notif_prices';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/** Deterministic colour from a string — same input always yields same colour. */
-function hashColor(str: string): string {
-  const palette = [
-    '#F59E0B',
-    '#14B8A6',
-    '#10B981',
-    '#F97316',
-    '#B45309',
-    '#0F766E',
-    '#FCD34D',
-    '#5EEAD4',
-  ];
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash * 31 + str.charCodeAt(i)) & 0x7fffffff;
-  }
-  return palette[hash % palette.length];
-}
 
 function maskPassport(value: string): string {
   if (!value) return '';
@@ -96,7 +79,7 @@ function formatDate(dateStr?: string): string {
 
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
-function Avatar({ name, size = 96 }: { name?: string; size?: number }) {
+function Avatar({ name, size = 90 }: { name?: string; size?: number }) {
   const safeName = name ?? '';
   const initials =
     safeName
@@ -107,22 +90,22 @@ function Avatar({ name, size = 96 }: { name?: string; size?: number }) {
       .toUpperCase()
       .slice(0, 2) || '?';
 
-  const bgColor = safeName ? hashColor(safeName) : Colors.primary;
-
   return (
-    <View
+    <LinearGradient
+      colors={['#F59E0B', '#D97706']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={[
         avatarStyles.container,
         {
-          backgroundColor: bgColor,
           width: size,
           height: size,
           borderRadius: size / 2,
         },
       ]}
     >
-      <Text style={[avatarStyles.initials, { fontSize: size * 0.35 }]}>{initials}</Text>
-    </View>
+      <Text style={[avatarStyles.initials, { fontSize: size * 0.33 }]}>{initials}</Text>
+    </LinearGradient>
   );
 }
 
@@ -799,7 +782,7 @@ export default function ProfileScreen() {
       >
         {/* ── Profile header ──────────────────────────────────────────── */}
         <View style={styles.avatarSection}>
-          <Avatar name={user.name} size={96} />
+          <Avatar name={user.name} size={90} />
 
           {/* Name + pencil */}
           <View style={styles.nameRow}>
@@ -1150,8 +1133,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   name: {
+    fontFamily: 'Sora',
     color: Colors.text,
-    fontSize: Typography.sizes.xl,
+    fontSize: 22,
     fontWeight: Typography.weights.bold,
   },
   pencilBtn: {
@@ -1161,15 +1145,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   email: {
+    fontFamily: 'Inter',
     color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
+    fontSize: 14,
     marginBottom: 14,
     marginTop: 4,
   },
   subscriptionBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 9999,
     marginTop: 6,
     borderWidth: 1,
   },

@@ -110,7 +110,7 @@ export default function LoginScreen() {
 
           <View style={styles.dividerRow}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>или</Text>
+            <Text style={styles.dividerText}>— или —</Text>
             <View style={styles.dividerLine} />
           </View>
 
@@ -136,7 +136,7 @@ export default function LoginScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => router.push('/(auth)/register')}
+            onPress={() => Alert.alert('Скоро', 'Регистрация будет доступна в ближайшем обновлении.')}
             style={styles.registerLink}
           >
             <Text style={styles.registerText}>
@@ -166,27 +166,25 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.lg,
   },
   logoWrap: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: Colors.primaryMuted,
-    borderWidth: 1.5,
-    borderColor: `${Colors.primary}50`,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#F59E0B',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 24,
+    elevation: 12,
   },
   logo: {
-    fontSize: Typography.sizes['4xl'],
+    fontSize: 36,
   },
   title: {
     fontFamily: 'Sora',
-    fontSize: Typography.sizes['2xl'],
+    fontSize: 34,
     fontWeight: Typography.weights.bold,
     color: Colors.text,
     marginBottom: Spacing.xs,
@@ -220,12 +218,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 1.5,
     borderColor: '#14B8A6',
-    borderRadius: Radius.button,
-    paddingVertical: 14,
+    borderRadius: 28,
     paddingHorizontal: Spacing.md,
     marginBottom: Spacing.md,
     alignItems: 'center',
-    minHeight: Spacing.buttonHeight,
+    height: 56,
     justifyContent: 'center',
   },
   demoBtnDisabled: {
@@ -244,6 +241,9 @@ const styles = StyleSheet.create({
   loginBtn: {
     marginTop: Spacing.sm,
     marginBottom: Spacing.sm,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#F59E0B',
   },
   forgotLink: {
     alignItems: 'center',

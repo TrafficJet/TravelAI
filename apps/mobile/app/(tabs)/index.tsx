@@ -70,12 +70,6 @@ function getGreeting(): string {
   return 'Добрый вечер';
 }
 
-function getTodayDate(): string {
-  return new Date().toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-  });
-}
 
 interface CustomHeaderProps {
   onNotificationsPress: () => void;
@@ -88,14 +82,14 @@ function CustomHeader({ onNotificationsPress, userInitials, userName, unreadCoun
   const insets = useSafeAreaInsets();
   const greeting = userName
     ? `${getGreeting()}, ${userName.split(' ')[0]}!`
-    : getTodayDate();
+    : `${getGreeting()}!`;
 
   return (
     <View style={[headerStyles.container, { paddingTop: insets.top + 6 }]}>
       {/* Left: brand */}
       <View style={headerStyles.left}>
-        <Text style={headerStyles.brand}>TravelAI</Text>
-        <Text style={headerStyles.brandSub}>{greeting}</Text>
+        <Text style={headerStyles.brand}>{greeting}</Text>
+        <Text style={headerStyles.brandSub}>Ваш AI-помощник в путешествиях</Text>
       </View>
       {/* Right: bell + avatar */}
       <View style={headerStyles.right}>
@@ -425,9 +419,11 @@ function SessionItem({ session, onPress, onDelete }: SessionItemProps) {
             <Text style={itemStyles.title} numberOfLines={1}>
               {session.title}
             </Text>
-            <Text style={itemStyles.subtitle} numberOfLines={1}>
-              {session.lastMessage ?? 'Нет сообщений'}
-            </Text>
+            {session.lastMessage ? (
+              <Text style={itemStyles.subtitle} numberOfLines={1}>
+                {session.lastMessage}
+              </Text>
+            ) : null}
           </View>
 
           {/* Right: time + chevron */}
@@ -509,12 +505,14 @@ const itemStyles = StyleSheet.create({
   title: {
     fontFamily: 'Inter',
     fontSize: 15,
-    fontWeight: '600' as const,
+    fontWeight: '700' as const,
     color: Colors.text,
     lineHeight: 20,
   },
   subtitle: {
-    ...TextPresets.caption,
+    fontFamily: 'Inter',
+    fontSize: 13,
+    fontWeight: '400' as const,
     color: Colors.textMuted,
     lineHeight: 16,
   },
