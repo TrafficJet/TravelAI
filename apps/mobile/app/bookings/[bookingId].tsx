@@ -154,7 +154,7 @@ function HotelDetailsBlock({ details }: { details: HotelDetails }) {
       <InfoRow label="Гостей" value={String(details.guests)} />
       <InfoRow
         label="Цена/ночь"
-        value={`${details.pricePerNight.toLocaleString('ru-RU')} руб.`}
+        value={`${details.pricePerNight.toLocaleString('ru-RU')} USD`}
         last
       />
     </View>

@@ -6,13 +6,20 @@ import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-const DEMO_EMAIL = 'demo@travelai.com';
+const DEMO_EMAIL = 'demo@travelai.app';
 const DEMO_PASSWORD = 'Demo1234!';
 const DEMO_NAME = 'Demo User';
 const BCRYPT_ROUNDS = 10;
 
 async function main() {
   console.log('Starting demo seed...');
+
+  // Cleanup old chat sessions so demo starts fresh
+  const existingUser = await prisma.user.findUnique({ where: { email: DEMO_EMAIL } });
+  if (existingUser) {
+    await prisma.chatSession.deleteMany({ where: { userId: existingUser.id } });
+    console.log('Cleared old chat sessions for demo user.');
+  }
 
   // 1. Create or find the demo user
   let user = await prisma.user.findUnique({ where: { email: DEMO_EMAIL } });
@@ -32,19 +39,19 @@ async function main() {
     console.log(`Created user: ${user.email} (id: ${user.id})`);
   }
 
-  // 2. Wallet — create if missing, otherwise set balance to 50 000 RUB
+  // 2. Wallet — create if missing, otherwise set balance to 5 000 USD
   const existingWallet = await prisma.wallet.findUnique({ where: { userId: user.id } });
   if (existingWallet) {
     await prisma.wallet.update({
       where: { userId: user.id },
-      data: { balance: 50000, currency: 'RUB' },
+      data: { balance: 5000, currency: 'USD' },
     });
-    console.log('Updated existing wallet balance to 50 000 RUB.');
+    console.log('Updated existing wallet balance to 5 000 USD.');
   } else {
     await prisma.wallet.create({
-      data: { userId: user.id, balance: 50000, currency: 'RUB' },
+      data: { userId: user.id, balance: 5000, currency: 'USD' },
     });
-    console.log('Created wallet with balance 50 000 RUB.');
+    console.log('Created wallet with balance 5 000 USD.');
   }
 
   // 3. Subscription PREMIUM — upsert so demo account always has full access
@@ -73,8 +80,8 @@ async function main() {
         type: BookingType.FLIGHT,
         status: BookingStatus.CONFIRMED,
         provider: BookingProvider.AVIASALES,
-        totalPrice: 45900,
-        currency: 'RUB',
+        totalPrice: 499,
+        currency: 'USD',
         details: {
           origin: 'SVO',
           destination: 'DXB',
@@ -96,8 +103,8 @@ async function main() {
         type: BookingType.HOTEL,
         status: BookingStatus.CONFIRMED,
         provider: BookingProvider.BOOKING,
-        totalPrice: 85000,
-        currency: 'RUB',
+        totalPrice: 920,
+        currency: 'USD',
         details: {
           hotelName: 'Atlantis The Palm',
           city: 'Дубай',
@@ -123,28 +130,28 @@ async function main() {
         data: [
           {
             walletId: wallet.id,
-            amount: 100000,
+            amount: 1000,
             type: 'TOPUP',
             status: 'COMPLETED',
             description: 'Пополнение счёта',
           },
           {
             walletId: wallet.id,
-            amount: -45900,
+            amount: -499,
             type: 'DEBIT',
             status: 'COMPLETED',
             description: 'Рейс EK 132 SVO → DXB',
           },
           {
             walletId: wallet.id,
-            amount: -85000,
+            amount: -920,
             type: 'DEBIT',
             status: 'COMPLETED',
             description: 'Atlantis The Palm, 3 ночи',
           },
           {
             walletId: wallet.id,
-            amount: 30900,
+            amount: 350,
             type: 'TOPUP',
             status: 'COMPLETED',
             description: 'Возврат по бронированию',
@@ -166,13 +173,13 @@ async function main() {
           userId: user.id,
           query: 'Рейсы Москва → Дубай июнь 2026',
           type: 'flight',
-          results: { count: 12, topPrice: 38500, currency: 'RUB' },
+          results: { count: 12, topPrice: 420, currency: 'USD' },
         },
         {
           userId: user.id,
           query: 'Отели Дубай 15-18 июня 2026',
           type: 'hotel',
-          results: { count: 47, topPrice: 22000, currency: 'RUB' },
+          results: { count: 47, topPrice: 240, currency: 'USD' },
         },
         {
           userId: user.id,

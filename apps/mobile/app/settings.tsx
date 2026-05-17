@@ -261,7 +261,7 @@ export default function SettingsScreen() {
     }
     debounceRef.current = setTimeout(async () => {
       try {
-        await api.patch('/api/users/me/preferences', settingsToPrefsPayload(updated));
+        await api.patch('/users/me/preferences', settingsToPrefsPayload(updated));
         await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
       } catch {
         // Offline — AsyncStorage already updated below in handleChange
@@ -321,7 +321,7 @@ export default function SettingsScreen() {
   async function performDeleteAccount(password: string) {
     setIsDeleting(true);
     try {
-      await api.delete('/api/users/me', { data: { password } });
+      await api.delete('/users/me', { data: { password } });
       // Success — clear everything and go to login
       await logout();
       router.replace('/(auth)/login');

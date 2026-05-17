@@ -20,7 +20,7 @@ const PLANS: SubscriptionPlan[] = [
     id: 'FREE',
     name: 'Free',
     price: 0,
-    currency: 'RUB',
+    currency: 'USD',
     dailyLimit: 10,
     features: [
       '10 запросов в день',
@@ -32,8 +32,8 @@ const PLANS: SubscriptionPlan[] = [
   {
     id: 'PRO',
     name: 'Pro',
-    price: 299,
-    currency: 'RUB',
+    price: 3,
+    currency: 'USD',
     dailyLimit: 100,
     features: [
       '100 запросов в день',
@@ -45,8 +45,8 @@ const PLANS: SubscriptionPlan[] = [
   {
     id: 'PREMIUM',
     name: 'Premium',
-    price: 599,
-    currency: 'RUB',
+    price: 7,
+    currency: 'USD',
     unlimited: true,
     priority: true,
     features: [
@@ -276,7 +276,7 @@ function PlanCard({ plan, isActive, entering }: PlanCardProps) {
           ) : (
             <>
               <Text style={[cardStyles.priceText, { color: accent }]}>
-                {plan.price.toLocaleString('ru-RU')} ₽
+                ${plan.price.toLocaleString('ru-RU')}
               </Text>
               <Text style={cardStyles.pricePeriod}>/мес</Text>
             </>

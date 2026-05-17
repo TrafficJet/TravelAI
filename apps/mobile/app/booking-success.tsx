@@ -151,10 +151,10 @@ export default function BookingSuccessScreen() {
   const bookingId = str(raw.bookingId);
   const type = str(raw.type, 'FLIGHT') as 'FLIGHT' | 'HOTEL';
   const totalPriceStr = str(raw.totalPrice, '0');
-  const currency = str(raw.currency, 'RUB');
+  const currency = str(raw.currency, 'USD');
 
   const totalPrice = parseFloat(totalPriceStr) || 0;
-  const currencySymbol = currency === 'RUB' ? '₽' : currency;
+  const currencySymbol = currency === 'USD' ? '$' : currency;
   const shortId = bookingId.toUpperCase().slice(0, 8);
   const typeLabel = type === 'HOTEL' ? 'Отель' : 'Рейс';
 

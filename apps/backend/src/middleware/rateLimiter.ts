@@ -4,7 +4,7 @@ import { Errors } from '../lib/errors';
 
 // FREE tier limits
 const FREE_MESSAGES_PER_DAY = 10;
-const FREE_ACTIVE_SESSIONS = 20;
+const FREE_ACTIVE_SESSIONS = 100; // generous demo limit
 const FREE_BOOKINGS_PER_MONTH = 2;
 
 // ---------------------------------------------------------------------------
@@ -46,6 +46,7 @@ export async function checkChatRateLimit(
 
   if (bucket.count > CHAT_RATE_LIMIT) {
     reply.status(429).send({ error: 'Too many messages, please slow down' });
+    return;
   }
 }
 
@@ -77,6 +78,7 @@ export async function checkChatLimit(request: FastifyRequest, reply: FastifyRepl
       `Превышен дневной лимит сообщений (${FREE_MESSAGES_PER_DAY} для бесплатного тарифа). Перейдите на Premium.`,
     );
     reply.status(err.statusCode).send(err.toJSON());
+    return;
   }
 }
 
@@ -89,7 +91,12 @@ export async function checkSessionLimit(
 
   const subscription = await prisma.subscription.findUnique({ where: { userId } });
 
-  if (subscription?.plan === 'PREMIUM' && subscription.status === 'ACTIVE') {
+  // No subscription record at all — new user, no limits yet
+  if (!subscription) {
+    return;
+  }
+
+  if (subscription.plan === 'PREMIUM' && subscription.status === 'ACTIVE') {
     return;
   }
 
@@ -100,6 +107,7 @@ export async function checkSessionLimit(
       `Превышен лимит активных сессий (${FREE_ACTIVE_SESSIONS} для бесплатного тарифа). Перейдите на Premium или удалите старые чаты.`,
     );
     reply.status(err.statusCode).send(err.toJSON());
+    return;
   }
 }
 
@@ -133,6 +141,7 @@ export async function checkBookingLimit(
       `Превышен лимит бронирований в месяц (${FREE_BOOKINGS_PER_MONTH} для бесплатного тарифа). Перейдите на Premium.`,
     );
     reply.status(err.statusCode).send(err.toJSON());
+    return;
   }
 }
 

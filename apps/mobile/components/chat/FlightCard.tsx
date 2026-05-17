@@ -89,7 +89,7 @@ const stopStyles = StyleSheet.create({
 
 export function FlightCard({ flight, onBook }: Props) {
   const iataCode = flight.flightNumber.slice(0, 2) || flight.airline.slice(0, 2);
-  const currencySymbol = flight.currency === 'RUB' ? '₽' : flight.currency;
+  const currencySymbol = flight.currency === 'USD' ? '$' : flight.currency;
 
   function handlePress() {
     router.push({

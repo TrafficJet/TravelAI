@@ -88,7 +88,8 @@ export const useAuthStore = create<AuthStore>((set, get) => {
             const user = await authService.getMe();
             if (__DEV__) console.log('[Auth] loadStoredAuth user (after refresh):', user?.email);
             set({ user, isAuthenticated: true, isLoading: false });
-          } catch {
+          } catch (refreshErr) {
+            console.error('[Auth] Token refresh failed, logging out', refreshErr);
             await storage.removeItem(SECURE_STORE_KEYS.ACCESS_TOKEN);
             await storage.removeItem(SECURE_STORE_KEYS.REFRESH_TOKEN);
             set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });

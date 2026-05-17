@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { router } from 'expo-router';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { sendBookingConfirmation } from '../../services/notifications.service';
@@ -216,6 +217,11 @@ export function BookingConfirmModal({
                 !hasEnoughBalance && styles.confirmBtnDisabled,
               ]}
               onPress={() => {
+                if (!hasEnoughBalance) {
+                  onCancel();
+                  router.push('/wallet/topup' as any);
+                  return;
+                }
                 analytics.track(Events.BOOKING_STARTED, {
                   type: booking.type,
                   price: booking.totalPrice,
@@ -223,7 +229,7 @@ export function BookingConfirmModal({
                 });
                 handleConfirm();
               }}
-              disabled={isLoading || !hasEnoughBalance}
+              disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#fff" size="small" />

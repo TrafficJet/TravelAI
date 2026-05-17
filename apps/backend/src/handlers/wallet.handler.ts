@@ -156,8 +156,11 @@ export async function topupWallet(request: FastifyRequest, reply: FastifyReply) 
     }),
   ]);
 
+  const newBalance = updatedWallet.balance.toString();
   return reply.send({
-    newBalance: updatedWallet.balance.toString(),
+    message: 'Кошелёк пополнен',
+    balance: newBalance,
+    newBalance: newBalance, // keep for backward compat
     transaction: formatTransaction(transaction),
     allowedAmounts: ALLOWED_TOPUP_AMOUNTS,
     _mockPaymentId: paymentResult.yookassaPaymentId,

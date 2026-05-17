@@ -50,7 +50,7 @@ function PriceMarker({ price, currency, selected, onPress }: PriceMarkerProps) {
     transform: [{ scale: scale.value }],
   }));
 
-  const currencySymbol = currency === 'RUB' ? '₽' : currency;
+  const currencySymbol = currency === 'USD' ? '$' : currency;
   const label =
     price >= 1000
       ? `${Math.round(price / 1000)}к ${currencySymbol}`
@@ -128,7 +128,7 @@ interface MiniCardProps {
 }
 
 function MiniCard({ hotel, onClose, onOpen }: MiniCardProps) {
-  const currencySymbol = hotel.currency === 'RUB' ? '₽' : hotel.currency;
+  const currencySymbol = hotel.currency === 'USD' ? '$' : hotel.currency;
   return (
     <Animated.View entering={FadeInDown.springify()} style={miniCardStyles.wrapper}>
       <TouchableOpacity

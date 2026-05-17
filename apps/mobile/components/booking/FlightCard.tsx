@@ -159,7 +159,7 @@ export function FlightCard({ booking, onPress }: Props) {
           : Number(booking.totalPrice).toLocaleString('ru-RU');
       await Share.share({
         message:
-          `${details.origin} → ${details.destination}, ${formatDate(details.departureDate)}, от ${price}₽`,
+          `${details.origin} → ${details.destination}, ${formatDate(details.departureDate)}, от $${price}`,
       });
     } catch {
       // Share dialog dismissed or error — no visible feedback needed

@@ -20,7 +20,7 @@ const BASE_SYSTEM_PROMPT = `Ты — AI-ассистент для путешес
 - При показе результатов поиска кратко опиши топ-3 варианта с ценой.
 - Если пользователь говорит "забронировать", "оформить", "купить" — используй инструмент create_booking.
 - Перед бронированием проверь баланс кошелька через get_wallet_balance.
-- Всегда указывай итоговую цену в рублях.
+- Always show prices in USD ($).
 - Коды аэропортов определяй самостоятельно: Москва = SVO/DME, Санкт-Петербург = LED, Стамбул = IST, Дубай = DXB.
 
 Поиск мультигород (сложные маршруты):
@@ -62,7 +62,7 @@ export function buildSystemPrompt(contextData?: SessionContextData): string {
     contextData.walletBalance !== null
   ) {
     sections.push(
-      `\nТекущий баланс кошелька пользователя: ${contextData.walletBalance.toFixed(2)} ₽. Используй эту информацию при бронировании.`,
+      `\nТекущий баланс кошелька пользователя: $${contextData.walletBalance.toFixed(2)}. Используй эту информацию при бронировании.`,
     );
   }
 
@@ -70,7 +70,7 @@ export function buildSystemPrompt(contextData?: SessionContextData): string {
     const active = contextData.priceAlerts.filter((a) => a.active);
     if (active.length > 0) {
       const alertLines = active
-        .map((a) => `  • ${a.origin}→${a.destination} до ${a.maxPrice} ₽`)
+        .map((a) => `  • ${a.origin}→${a.destination} up to $${a.maxPrice}`)
         .join('\n');
       sections.push(
         `\nАктивные ценовые алерты пользователя (${active.length}):\n${alertLines}\nЕсли пользователь спрашивает о маршрутах с совпадающими алертами — упомяни это.`,

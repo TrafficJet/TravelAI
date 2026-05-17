@@ -79,7 +79,7 @@ export const authService = {
     return data;
   },
 
-  async updateMe(payload: { name?: string; phone?: string }): Promise<UserProfile> {
+  async updateMe(payload: { name?: string; phone?: string }): Promise<Omit<UserProfile, 'wallet' | 'subscription'>> {
     const { data } = await api.patch<{ user: { id: string; email: string; name: string; phone: string | null; createdAt: string } }>('/users/me', payload);
     return {
       id: data.user.id,
@@ -87,8 +87,6 @@ export const authService = {
       name: data.user.name,
       phone: data.user.phone ?? undefined,
       createdAt: data.user.createdAt,
-      wallet: { balance: 0, currency: 'RUB' },
-      subscription: { plan: 'FREE', status: 'ACTIVE', expiresAt: undefined },
     };
   },
 };

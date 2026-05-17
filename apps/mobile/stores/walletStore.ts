@@ -14,7 +14,7 @@ interface WalletStore {
 
 export const useWalletStore = create<WalletStore>((set) => ({
   balance: 0,
-  currency: 'RUB',
+  currency: 'USD',
   transactions: [],
   isLoading: false,
 

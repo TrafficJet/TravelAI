@@ -99,7 +99,7 @@ export async function sendBookingConfirmation(
 
   await schedulePushNotification(
     'Бронь подтверждена',
-    `${booking.airline} · ${booking.from} → ${booking.to}${dateStr ? ` · ${dateStr}` : ''} · ${booking.price.toLocaleString('ru-RU')} ₽`,
+    `${booking.airline} · ${booking.from} → ${booking.to}${dateStr ? ` · ${dateStr}` : ''} · $${booking.price.toLocaleString('ru-RU')}`,
     { screen: 'bookings', type: 'booking_confirmed' },
     1,
   );
@@ -111,7 +111,7 @@ export async function sendBookingConfirmation(
 export async function sendPaymentConfirmation(amount: number): Promise<void> {
   await schedulePushNotification(
     'Кошелёк пополнен',
-    `На ваш счёт зачислено ${amount.toLocaleString('ru-RU')} ₽`,
+    `На ваш счёт зачислено $${amount.toLocaleString('ru-RU')}`,
     { screen: 'wallet', type: 'payment_confirmed' },
     1,
   );

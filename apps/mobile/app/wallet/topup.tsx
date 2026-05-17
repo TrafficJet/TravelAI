@@ -19,7 +19,7 @@ import { Typography } from '../../constants/typography';
 import { sendPaymentConfirmation } from '../../services/notifications.service';
 import { toast } from '../../lib/toast';
 
-const PRESETS = [1000, 3000, 5000, 10000];
+const PRESETS = [10, 30, 50, 100];
 
 export default function TopupScreen() {
   const [amount, setAmount] = useState('');
@@ -36,8 +36,8 @@ export default function TopupScreen() {
       Alert.alert('Ошибка', 'Введите корректную сумму');
       return;
     }
-    if (numAmount < 100) {
-      Alert.alert('Ошибка', 'Минимальная сумма пополнения — 100 руб.');
+    if (numAmount < 1) {
+      Alert.alert('Ошибка', 'Минимальная сумма пополнения — $1');
       return;
     }
 
@@ -53,7 +53,7 @@ export default function TopupScreen() {
         // Mock mode — balance credited immediately.
         await load();
         await sendPaymentConfirmation(numAmount);
-        toast.success(`Кошелёк пополнен на ${numAmount.toLocaleString('ru-RU')} руб.`);
+        toast.success(`Кошелёк пополнен на $${numAmount.toLocaleString('ru-RU')}`);
         router.back();
       }
     } catch (err: unknown) {
@@ -92,7 +92,7 @@ export default function TopupScreen() {
             keyboardType="numeric"
             maxLength={8}
           />
-          <Text style={styles.currencySymbol}>₽</Text>
+          <Text style={styles.currencySymbol}>$</Text>
         </View>
 
         {/* Presets */}

@@ -268,8 +268,16 @@ export default function ChatListScreen() {
     }
   }, [loadSessions]);
 
+  // Reset isCreating on mount so stale state from a previous render never blocks the FAB
+  useEffect(() => { setIsCreating(false); }, []);
+
   useEffect(() => {
-    fetchSessions().finally(() => setIsLoading(false));
+    const timeout = setTimeout(() => setIsLoading(false), 5000);
+    fetchSessions().finally(() => {
+      clearTimeout(timeout);
+      setIsLoading(false);
+    });
+    return () => clearTimeout(timeout);
   }, [fetchSessions]);
 
   async function handleRefresh() {
@@ -279,24 +287,23 @@ export default function ChatListScreen() {
   }
 
   async function handleNewChat(initialMessage?: string) {
+    if (__DEV__) {
+      console.log('[FAB] + pressed, isCreating:', isCreating, 'timestamp:', Date.now());
+    }
+    console.log('[Chat] handleNewChat called, isCreating:', isCreating);
     if (isCreating) return;
     setIsCreating(true);
     try {
+      console.log('[Chat] calling createSession...');
       const sessionId = await createSession(initialMessage);
+      console.log('[Chat] session created:', sessionId);
       analytics.track(Events.CHAT_OPENED, { hasInitialMessage: !!initialMessage });
-      // Navigate and pass initial message as a param so chat screen can pre-fill
-      if (initialMessage) {
-        router.push({
-          pathname: '/chat/[sessionId]',
-          params: { sessionId, initialMessage },
-        });
-      } else {
-        router.push({
-          pathname: '/chat/[sessionId]',
-          params: { sessionId },
-        });
-      }
+      // Navigate to the new session — use string URL for reliable web routing.
+      // Cast is required because expo-router typed routes don't include dynamic segments as plain strings.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      router.push(('/chat/' + sessionId) as any);
     } catch (error: unknown) {
+      console.error('[Chat] createSession error:', error);
       const axiosData =
         error != null &&
         typeof error === 'object' &&
@@ -310,17 +317,20 @@ export default function ChatListScreen() {
         (typeof axiosData?.error === 'string' && axiosData.error) ||
         (typeof axiosData?.message === 'string' && axiosData.message) ||
         null;
-      toast.error(serverMessage ?? 'Не удалось создать новый чат. Попробуйте снова.');
+      const msg = serverMessage ?? 'Не удалось создать новый чат. Попробуйте снова.';
+      if (typeof window !== 'undefined') {
+        window.alert('Ошибка: ' + msg);
+      } else {
+        Alert.alert('Ошибка', msg);
+      }
+      toast.error(msg);
     } finally {
       setIsCreating(false);
     }
   }
 
   function handleSessionPress(session: ChatSession) {
-    router.push({
-      pathname: '/chat/[sessionId]',
-      params: { sessionId: session.id },
-    });
+    router.push(('/chat/' + session.id) as any);
   }
 
   function handleSessionLongPress(session: ChatSession) {
@@ -356,55 +366,54 @@ export default function ChatListScreen() {
 
   const hasAnySessions = (sessions ?? []).length > 0;
 
-  if (isLoading) {
-    return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <SkeletonList />
-      </View>
-    );
-  }
-
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Search bar — only shown when there are sessions */}
-      {hasAnySessions && (
-        <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+      {isLoading ? (
+        <SkeletonList />
+      ) : (
+        <>
+          {/* Search bar — only shown when there are sessions */}
+          {hasAnySessions && (
+            <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+          )}
+
+          <FlatList
+            data={filteredSessions}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <SessionItem
+                session={item}
+                onPress={() => handleSessionPress(item)}
+                onLongPress={() => handleSessionLongPress(item)}
+              />
+            )}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+                tintColor={Colors.primary}
+              />
+            }
+            ListEmptyComponent={
+              hasAnySessions ? (
+                // Has sessions but search returned nothing
+                <View style={styles.noResults}>
+                  <Text style={styles.noResultsText}>
+                    По запросу "{searchQuery}" ничего не найдено
+                  </Text>
+                </View>
+              ) : (
+                <EmptyState onChipPress={(text) => handleNewChat(text)} />
+              )
+            }
+            contentContainerStyle={
+              filteredSessions.length === 0 ? styles.emptyContainer : null
+            }
+          />
+        </>
       )}
 
-      <FlatList
-        data={filteredSessions}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <SessionItem
-            session={item}
-            onPress={() => handleSessionPress(item)}
-            onLongPress={() => handleSessionLongPress(item)}
-          />
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            tintColor={Colors.primary}
-          />
-        }
-        ListEmptyComponent={
-          hasAnySessions ? (
-            // Has sessions but search returned nothing
-            <View style={styles.noResults}>
-              <Text style={styles.noResultsText}>
-                По запросу "{searchQuery}" ничего не найдено
-              </Text>
-            </View>
-          ) : (
-            <EmptyState onChipPress={(text) => handleNewChat(text)} />
-          )
-        }
-        contentContainerStyle={
-          filteredSessions.length === 0 ? styles.emptyContainer : null
-        }
-      />
-
+      {/* FAB always visible — works even during loading */}
       <TouchableOpacity
         style={[styles.fab, isCreating && styles.fabDisabled]}
         onPress={() => handleNewChat()}
@@ -449,7 +458,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
-    elevation: 6,
+    elevation: 10,
+    zIndex: 999,
   },
   fabDisabled: {
     opacity: 0.6,

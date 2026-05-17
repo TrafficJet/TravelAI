@@ -147,7 +147,7 @@ export default function FlightDetailScreen() {
   const stops = raw.stops ? str(raw.stops) : undefined;
   const durationMin = raw.durationMin ? str(raw.durationMin) : undefined;
   const price = str(raw.price);
-  const currency = str(raw.currency, 'RUB');
+  const currency = str(raw.currency, 'USD');
   const bookingId = raw.bookingId ? str(raw.bookingId) : undefined;
 
   const stopsNum = stops !== undefined ? parseInt(stops, 10) : 0;
@@ -158,7 +158,7 @@ export default function FlightDetailScreen() {
     : `flight-${flightNumber}-${departureDate}`.replace(/\s+/g, '-');
 
   const formattedPrice = priceNum > 0
-    ? `${priceNum.toLocaleString('ru-RU')} ${currency === 'RUB' ? '₽' : currency}`
+    ? `${priceNum.toLocaleString('ru-RU')} ${currency === 'USD' ? '$' : currency}`
     : price || '—';
 
   const flightForFavorite: FlightOffer = {

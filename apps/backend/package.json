@@ -10,7 +10,8 @@
     "test": "jest",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "seed:demo": "ts-node -r tsconfig-paths/register prisma/seed-demo.ts"
   },
   "dependencies": {
     "@a2seven/yoo-checkout": "^1.1.4",

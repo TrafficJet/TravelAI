@@ -196,7 +196,7 @@ export default function HotelDetailScreen() {
   const city = str(raw.city);
   const stars = parseInt(str(raw.stars, '0'), 10);
   const pricePerNight = parseFloat(str(raw.pricePerNight, '0'));
-  const currency = str(raw.currency, 'RUB');
+  const currency = str(raw.currency, 'USD');
   const checkIn = str(raw.checkIn);
   const checkOut = str(raw.checkOut);
   const rooms = str(raw.rooms, '1');
@@ -214,7 +214,7 @@ export default function HotelDetailScreen() {
   const amenities = amenitiesStr ? amenitiesStr.split(',').map((a) => a.trim()).filter(Boolean) : [];
   const nights = calcNights(checkIn, checkOut);
 
-  const currencySymbol = currency === 'RUB' ? '₽' : currency;
+  const currencySymbol = currency === 'USD' ? '$' : currency;
   const formattedPricePerNight = pricePerNight > 0
     ? `${pricePerNight.toLocaleString('ru-RU')} ${currencySymbol}`
     : '—';

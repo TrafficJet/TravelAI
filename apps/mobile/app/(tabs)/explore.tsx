@@ -287,13 +287,13 @@ export default function ExploreScreen() {
 
   useEffect(() => {
     api
-      .get<PopularFlight[]>('/api/flights/popular')
+      .get<PopularFlight[]>('/flights/popular')
       .then(({ data }) => setFlights(data))
       .catch(() => {}) // non-fatal — list stays empty
       .finally(() => setFlightsLoading(false));
 
     api
-      .get<PopularHotel[]>('/api/hotels/popular')
+      .get<PopularHotel[]>('/hotels/popular')
       .then(({ data }) => setHotels(data))
       .catch(() => {})
       .finally(() => setHotelsLoading(false));

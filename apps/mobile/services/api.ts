@@ -71,6 +71,13 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
+      const refreshTimeout = setTimeout(() => {
+        if (isRefreshing) {
+          isRefreshing = false;
+          processQueue(new Error('Refresh timeout'));
+        }
+      }, 10_000);
+
       try {
         await doRefresh?.();
         processQueue(null);
@@ -85,6 +92,7 @@ api.interceptors.response.use(
         await doLogout?.();
         return Promise.reject(refreshError);
       } finally {
+        clearTimeout(refreshTimeout);
         isRefreshing = false;
       }
     }

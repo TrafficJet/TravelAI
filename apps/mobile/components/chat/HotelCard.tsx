@@ -46,7 +46,7 @@ function nightsCount(checkIn: string, checkOut: string): number {
 export function HotelCard({ hotel, onBook }: Props) {
   const nights =
     hotel.checkIn && hotel.checkOut ? nightsCount(hotel.checkIn, hotel.checkOut) : 0;
-  const currencySymbol = hotel.currency === 'RUB' ? '₽' : hotel.currency;
+  const currencySymbol = hotel.currency === 'USD' ? '$' : hotel.currency;
 
   function handlePress() {
     router.push({

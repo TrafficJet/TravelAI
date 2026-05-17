@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Stack, router } from 'expo-router';
 import { Linking, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastContainer } from '../components/ui/Toast';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -140,55 +141,57 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <NotificationsProvider>
-        <StatusBar style="light" />
-        <View style={{ flex: 1 }}>
-        <Stack
-          screenOptions={{
-            headerStyle: { backgroundColor: Colors.background },
-            headerTintColor: Colors.text,
-            headerTitleStyle: { fontWeight: '600' },
-            contentStyle: { backgroundColor: Colors.background },
-            headerShadowVisible: false,
-          }}
-        >
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="chat/[sessionId]"
-            options={{ title: 'Чат', headerBackTitle: 'Назад' }}
-          />
-          <Stack.Screen
-            name="bookings/[bookingId]"
-            options={{ title: 'Детали брони', headerBackTitle: 'Назад' }}
-          />
-          <Stack.Screen
-            name="subscription/plans"
-            options={{ title: 'Подписка', headerBackTitle: 'Назад' }}
-          />
-          <Stack.Screen
-            name="wallet/topup"
-            options={{ title: 'Пополнение', headerBackTitle: 'Назад' }}
-          />
-          <Stack.Screen
-            name="flight-detail"
-            options={{ title: 'Детали рейса', headerShown: false }}
-          />
-          <Stack.Screen
-            name="hotel-detail"
-            options={{ title: 'Детали отеля', headerShown: false }}
-          />
-          <Stack.Screen
-            name="booking-success"
-            options={{ title: 'Бронирование', headerShown: false, gestureEnabled: false }}
-          />
-          <Stack.Screen name="+not-found" options={{ title: 'Не найдено' }} />
-        </Stack>
-        <ToastContainer />
-        </View>
-      </NotificationsProvider>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <NotificationsProvider>
+          <StatusBar style="light" />
+          <View style={{ flex: 1 }}>
+            <Stack
+              screenOptions={{
+                headerStyle: { backgroundColor: Colors.background },
+                headerTintColor: Colors.text,
+                headerTitleStyle: { fontWeight: '600' },
+                contentStyle: { backgroundColor: Colors.background },
+                headerShadowVisible: false,
+              }}
+            >
+              <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="chat/[sessionId]"
+                options={{ title: 'Чат', headerBackTitle: 'Назад' }}
+              />
+              <Stack.Screen
+                name="bookings/[bookingId]"
+                options={{ title: 'Детали брони', headerBackTitle: 'Назад' }}
+              />
+              <Stack.Screen
+                name="subscription/plans"
+                options={{ title: 'Подписка', headerBackTitle: 'Назад' }}
+              />
+              <Stack.Screen
+                name="wallet/topup"
+                options={{ title: 'Пополнение', headerBackTitle: 'Назад' }}
+              />
+              <Stack.Screen
+                name="flight-detail"
+                options={{ title: 'Детали рейса', headerShown: false }}
+              />
+              <Stack.Screen
+                name="hotel-detail"
+                options={{ title: 'Детали отеля', headerShown: false }}
+              />
+              <Stack.Screen
+                name="booking-success"
+                options={{ title: 'Бронирование', headerShown: false, gestureEnabled: false }}
+              />
+              <Stack.Screen name="+not-found" options={{ title: 'Не найдено' }} />
+            </Stack>
+            <ToastContainer />
+          </View>
+        </NotificationsProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

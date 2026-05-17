@@ -136,7 +136,7 @@ interface HotelRowProps {
 }
 
 function HotelRow({ hotel, index, onRemove }: HotelRowProps) {
-  const currencySymbol = hotel.currency === 'RUB' ? '₽' : hotel.currency;
+  const currencySymbol = hotel.currency === 'USD' ? '$' : hotel.currency;
 
   function handlePress() {
     router.push({
@@ -199,7 +199,7 @@ interface FlightRowProps {
 }
 
 function FlightRow({ flight, index, onRemove }: FlightRowProps) {
-  const currencySymbol = flight.currency === 'RUB' ? '₽' : flight.currency;
+  const currencySymbol = flight.currency === 'USD' ? '$' : flight.currency;
 
   function handlePress() {
     router.push({
