@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Stack, router } from 'expo-router';
-import { Linking, View } from 'react-native';
+import { Linking, View, Text, StyleSheet, Animated } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastContainer } from '../components/ui/Toast';
 import { StatusBar } from 'expo-status-bar';
@@ -36,9 +36,81 @@ initSentry();
 
 SplashScreen.preventAutoHideAsync();
 
+// ─── Animated brand splash ────────────────────────────────────────────────────
+
+function BrandSplash({ onFinish }: { onFinish: () => void }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // fade in 600ms → hold 800ms → fade out 400ms
+    Animated.sequence([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.delay(800),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start(() => onFinish());
+  }, [opacity, onFinish]);
+
+  return (
+    <View style={splashStyles.root}>
+      <StatusBar style="light" />
+      <Animated.View style={[splashStyles.content, { opacity }]}>
+        <Text style={splashStyles.plane}>✈</Text>
+        <Text style={splashStyles.brand}>TravelAI</Text>
+        <Text style={splashStyles.tagline}>AI-ассистент путешественника</Text>
+      </Animated.View>
+    </View>
+  );
+}
+
+const splashStyles = StyleSheet.create({
+  root: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#0A0A14',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 999,
+  },
+  content: {
+    alignItems: 'center',
+  },
+  plane: {
+    fontSize: 80,
+    color: '#F59E0B',
+    marginBottom: 20,
+  },
+  brand: {
+    fontFamily: 'Sora_Bold',
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#F4F4F8',
+    letterSpacing: -0.5,
+    marginBottom: 10,
+  },
+  tagline: {
+    fontFamily: 'Sora',
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#8B8BA7',
+    letterSpacing: 0.2,
+  },
+});
+
+// ─── Root layout ──────────────────────────────────────────────────────────────
+
 export default function RootLayout() {
   const { isAuthenticated, isLoading, loadStoredAuth } = useAuthStore();
   const responseListenerRef = useRef<EventSubscription | null>(null);
+
+  // Controls whether to show the custom brand splash
+  const [showBrandSplash, setShowBrandSplash] = useState(true);
 
   const [fontsLoaded] = useFonts({
     'Sora':           Sora_400Regular,
@@ -75,15 +147,17 @@ export default function RootLayout() {
     loadStoredAuth();
   }, [loadStoredAuth]);
 
+  // Hide the native splash once fonts + auth are ready, then show brand splash
   useEffect(() => {
     if (!isLoading && fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [isLoading, fontsLoaded]);
 
-  // Redirect logic: check onboarding flag before going to auth/tabs
+  // Redirect logic — runs after brand splash disappears (showBrandSplash = false)
+  // and after auth + fonts are ready.
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || showBrandSplash) return;
 
     async function navigate() {
       // Restore saved language before navigating so the first screen is localised
@@ -125,7 +199,7 @@ export default function RootLayout() {
     }
 
     void navigate();
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, showBrandSplash]);
 
   // Deep link listeners
   useEffect(() => {
@@ -187,6 +261,11 @@ export default function RootLayout() {
               <Stack.Screen name="+not-found" options={{ title: 'Не найдено' }} />
             </Stack>
             <ToastContainer />
+
+            {/* Brand splash overlays everything until animation completes */}
+            {fontsLoaded && showBrandSplash && (
+              <BrandSplash onFinish={() => setShowBrandSplash(false)} />
+            )}
           </View>
         </NotificationsProvider>
       </ThemeProvider>

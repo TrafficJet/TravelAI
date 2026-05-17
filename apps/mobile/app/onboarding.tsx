@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,48 +6,69 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
-  ListRenderItemInfo,
+  Animated,
   StatusBar,
+  ListRenderItemInfo,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import { Colors, TextPresets, Radius, Spacing } from '../constants';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuthStore } from '../stores/authStore';
+import { Colors, TextPresets, Spacing } from '../constants';
 
 export const ONBOARDING_KEY = 'onboarding_done';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// ─── Slide data ───────────────────────────────────────────────────────────────
 
 interface Slide {
   id: string;
   emoji: string;
   title: string;
   description: string;
+  gradientEnd: string;
 }
 
 const SLIDES: Slide[] = [
   {
     id: '1',
-    emoji: '✈️',
-    title: 'Путешествуй умнее',
+    emoji: '🌍',
+    title: 'Твой личный AI-помощник в путешествиях',
     description:
-      'AI-ассистент найдёт лучшие рейсы и отели за секунды — просто опиши, куда хочешь',
+      'Просто скажи куда хочешь — TravelAI подберёт рейсы, отели и трансфер за секунды',
+    gradientEnd: '#1A0D00',
   },
   {
     id: '2',
-    emoji: '🤖',
-    title: 'Просто напиши запрос',
+    emoji: '🗺️',
+    title: 'Полный маршрут от двери до двери',
     description:
-      '«Хочу в Дубай на неделю в июне» — получи подборку вариантов с ценами прямо в чате',
+      'Такси в аэропорт, рейс, отель, трансфер по прилёту — всё в одном чате',
+    gradientEnd: '#001A1A',
   },
   {
     id: '3',
-    emoji: '💳',
-    title: 'Бронируй в пару касаний',
+    emoji: '🤖',
+    title: 'AI замечает то, о чём вы забываете',
     description:
-      'Кошелёк, история бронирований, уведомления о рейсах — всё в одном месте',
+      'Прилёт в 8:00, заселение в 14:00? AI предупредит и предложит хранение багажа или ранний заезд',
+    gradientEnd: '#0D001A',
+  },
+  {
+    id: '4',
+    emoji: '⚡',
+    title: 'Бронируй в 2 касания',
+    description:
+      'Рейсы, отели, рестораны, аренда авто — подтверди одним нажатием',
+    gradientEnd: '#1A1100',
   },
 ];
+
+const TOTAL = SLIDES.length;
+
+// ─── Single slide component ───────────────────────────────────────────────────
 
 function SlideItem({ item }: { item: Slide }) {
   return (
@@ -69,177 +90,263 @@ const slideStyles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   iconWrap: {
-    width: 136,
-    height: 136,
-    borderRadius: 68,
-    backgroundColor: '#F59E0B1A',
+    width: 144,
+    height: 144,
+    borderRadius: 72,
+    backgroundColor: 'rgba(245,158,11,0.10)',
     borderWidth: 1.5,
-    borderColor: '#F59E0B33',
+    borderColor: 'rgba(245,158,11,0.20)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 40,
-    shadowColor: '#F59E0B',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    elevation: 6,
+    marginBottom: 44,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.22,
+    shadowRadius: 20,
+    elevation: 8,
   },
   emoji: {
-    fontSize: 64,
-    lineHeight: 72,
+    fontSize: 72,
+    lineHeight: 80,
   },
   title: {
-    ...TextPresets.h2,
-    fontFamily: 'Sora',
-    fontWeight: '600',
+    fontFamily: 'Sora_Bold',
+    fontSize: 26,
+    fontWeight: '700',
+    lineHeight: 34,
     color: Colors.text,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 18,
+    letterSpacing: -0.3,
   },
   description: {
     ...TextPresets.body,
     color: Colors.textMuted,
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 26,
   },
 });
 
+// ─── Main screen ──────────────────────────────────────────────────────────────
+
 export default function OnboardingScreen() {
+  const insets = useSafeAreaInsets();
+  const { isAuthenticated } = useAuthStore();
+
   const flatListRef = useRef<FlatList<Slide>>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  async function finish() {
+  // Animated value tracking scroll position (0 → TOTAL-1)
+  const scrollX = useRef(new Animated.Value(0)).current;
+
+  // ── Finish onboarding ──────────────────────────────────────────────────────
+  const finish = useCallback(async () => {
     try {
       await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
     } catch {
       // non-fatal
     }
-    router.replace('/(auth)/login');
-  }
-
-  function goNext() {
-    if (currentIndex < SLIDES.length - 1) {
-      const next = currentIndex + 1;
-      setCurrentIndex(next);
-      flatListRef.current?.scrollToIndex({ index: next, animated: true });
+    if (isAuthenticated) {
+      router.replace('/(tabs)');
     } else {
-      finish();
+      router.replace('/(auth)/login');
     }
-  }
+  }, [isAuthenticated]);
 
-  const isLast = currentIndex === SLIDES.length - 1;
+  // ── Next slide / finish ────────────────────────────────────────────────────
+  const goNext = useCallback(() => {
+    if (currentIndex < TOTAL - 1) {
+      const next = currentIndex + 1;
+      flatListRef.current?.scrollToIndex({ index: next, animated: true });
+      setCurrentIndex(next);
+    } else {
+      void finish();
+    }
+  }, [currentIndex, finish]);
+
+  // ── Track FlatList scroll to update dots & index ───────────────────────────
+  const onMomentumScrollEnd = useCallback(
+    (e: { nativeEvent: { contentOffset: { x: number } } }) => {
+      const idx = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+      setCurrentIndex(idx);
+    },
+    [],
+  );
+
+  const isLast = currentIndex === TOTAL - 1;
+
+  // ── Gradient interpolation ─────────────────────────────────────────────────
+  // Each slide occupies SCREEN_WIDTH of scroll. We interpolate gradientEnd
+  // color across the slide boundaries.
+  const gradientEndColor = scrollX.interpolate({
+    inputRange: SLIDES.map((_, i) => i * SCREEN_WIDTH),
+    outputRange: SLIDES.map((s) => s.gradientEnd),
+    extrapolate: 'clamp',
+  });
 
   return (
-    <LinearGradient
-      colors={['#0A0A14', '#2D1A0A']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.root}
-    >
-      <StatusBar barStyle="light-content" backgroundColor="#0A0A14" />
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" backgroundColor={Colors.background} />
+
+      {/* Animated background gradient — reacts to scroll position */}
+      <Animated.View
+        style={[StyleSheet.absoluteFill, { zIndex: 0 }]}
+        // AnimatedView does not accept string-interpolated colors directly
+        // We render a static fallback gradient and overlay a tinted layer.
+      >
+        <LinearGradient
+          colors={[Colors.background, SLIDES[currentIndex].gradientEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0.6, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      </Animated.View>
+
+      {/* Skip button */}
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+        {!isLast ? (
+          <TouchableOpacity
+            onPress={() => void finish()}
+            activeOpacity={0.7}
+            hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
+            style={styles.skipBtn}
+          >
+            <Text style={styles.skipText}>Пропустить</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.skipBtn} />
+        )}
+      </View>
+
+      {/* Slides */}
       <FlatList<Slide>
         ref={flatListRef}
         data={SLIDES}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }: ListRenderItemInfo<Slide>) => <SlideItem item={item} />}
+        renderItem={({ item }: ListRenderItemInfo<Slide>) => (
+          <SlideItem item={item} />
+        )}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(e) => {
-          const idx = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
-          setCurrentIndex(idx);
-        }}
+        bounces={false}
+        onMomentumScrollEnd={onMomentumScrollEnd}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false },
+        )}
+        scrollEventThrottle={16}
         style={styles.flatList}
+        getItemLayout={(_, index) => ({
+          length: SCREEN_WIDTH,
+          offset: SCREEN_WIDTH * index,
+          index,
+        })}
       />
 
       {/* Dot indicators */}
       <View style={styles.dots}>
-        {SLIDES.map((_, i) => (
-          <View
-            key={i}
-            style={[styles.dot, i === currentIndex && styles.dotActive]}
-          />
-        ))}
+        {SLIDES.map((_, i) => {
+          const isActive = i === currentIndex;
+          return (
+            <View
+              key={i}
+              style={[
+                styles.dot,
+                isActive ? styles.dotActive : styles.dotInactive,
+              ]}
+            />
+          );
+        })}
       </View>
 
-      {/* Navigation buttons */}
-      <View style={styles.footer}>
-        {!isLast && (
-          <TouchableOpacity onPress={finish} activeOpacity={0.7}>
-            <Text style={styles.skipText}>Пропустить</Text>
-          </TouchableOpacity>
-        )}
+      {/* Footer: Next / Start button */}
+      <View
+        style={[
+          styles.footer,
+          { paddingBottom: Math.max(insets.bottom, 20) + 32 },
+        ]}
+      >
         <TouchableOpacity
           style={[styles.nextBtn, isLast && styles.nextBtnFull]}
           onPress={goNext}
           activeOpacity={0.85}
         >
-          <Text style={styles.nextBtnText}>
-            {isLast ? 'Начать' : 'Далее'}
-          </Text>
+          <Text style={styles.nextBtnText}>{isLast ? 'Начать' : 'Далее'}</Text>
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: Colors.background,
+  },
+  header: {
+    alignItems: 'flex-end',
+    paddingHorizontal: Spacing.screenPaddingH,
+    zIndex: 10,
+  },
+  skipBtn: {
+    minWidth: 80,
+    alignItems: 'flex-end',
+  },
+  skipText: {
+    ...TextPresets.bodyMedium,
+    color: Colors.textMuted,
   },
   flatList: {
     flex: 1,
+    zIndex: 1,
   },
   dots: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 28,
+    marginBottom: 24,
+    zIndex: 1,
   },
   dot: {
-    width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#2A2A42',
+  },
+  dotInactive: {
+    width: 8,
+    backgroundColor: Colors.border,
   },
   dotActive: {
     width: 24,
-    borderRadius: 4,
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.primary,
   },
   footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: Spacing.screenPaddingH,
-    paddingBottom: 52,
-    gap: 12,
-  },
-  skipText: {
-    ...TextPresets.bodyMedium,
-    color: Colors.textMuted,
+    zIndex: 1,
   },
   nextBtn: {
-    backgroundColor: '#F59E0B',
-    paddingVertical: 14,
-    paddingHorizontal: 36,
-    borderRadius: Radius.button,
+    backgroundColor: Colors.primary,
+    paddingVertical: 16,
+    borderRadius: 32,
     alignItems: 'center',
-    minHeight: Spacing.buttonHeight,
     justifyContent: 'center',
-    shadowColor: '#F59E0B',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 14,
+    elevation: 6,
   },
   nextBtnFull: {
-    flex: 1,
-    marginLeft: 0,
+    // already full-width by default since footer fills horizontal padding
   },
   nextBtnText: {
-    ...TextPresets.button,
-    color: '#0A0A14',
+    fontFamily: 'Sora_Bold',
+    fontSize: 17,
+    fontWeight: '700',
+    color: Colors.textInverse,
+    letterSpacing: 0.2,
   },
 });
