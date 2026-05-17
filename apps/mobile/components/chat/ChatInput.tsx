@@ -1,15 +1,24 @@
-import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useImperativeHandle,
+  forwardRef,
+  useRef,
+} from 'react';
 import {
   View,
   TextInput,
   TouchableOpacity,
   StyleSheet,
   Platform,
+  Alert,
+  Animated,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Ionicons } from '@expo/vector-icons';
+import { ChatSuggestions } from './ChatSuggestions';
 
 export interface ChatInputHandle {
   /** Programmatically set input text without sending */
@@ -25,13 +34,20 @@ interface Props {
   disabled?: boolean;
   /** When provided, pre-fills the input on mount */
   initialMessage?: string;
+  /** Contextual suggestions shown above the input */
+  suggestions?: string[];
+  /** Called when user taps a suggestion chip */
+  onSuggestionSelect?: (suggestion: string) => void;
 }
 
 export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
-  { onSend, disabled = false, initialMessage },
+  { onSend, disabled = false, initialMessage, suggestions = [], onSuggestionSelect },
   ref,
 ) {
   const [text, setText] = useState(initialMessage ?? '');
+
+  // Scale animation for send button
+  const sendScale = useRef(new Animated.Value(1)).current;
 
   // Sync if initialMessage changes (e.g. navigation params update)
   useEffect(() => {
@@ -51,39 +67,123 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
     },
   }));
 
+  function animateSend(onComplete: () => void) {
+    Animated.sequence([
+      Animated.timing(sendScale, {
+        toValue: 0.9,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(sendScale, {
+        toValue: 1.0,
+        duration: 120,
+        useNativeDriver: true,
+      }),
+    ]).start(() => onComplete());
+  }
+
   function handleSend() {
     const trimmed = text.trim();
     if (!trimmed || disabled) return;
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onSend(trimmed);
-    setText('');
+    animateSend(() => {
+      onSend(trimmed);
+      setText('');
+    });
   }
 
+  function handleVoice() {
+    Alert.alert('Голосовой ввод', 'Скоро будет доступен');
+  }
+
+  function handleAttachment() {
+    Alert.alert('Вложение', 'Выберите тип', [
+      {
+        text: 'Фото маршрута',
+        onPress: () => Alert.alert('Фото маршрута', 'Скоро будет доступно'),
+      },
+      {
+        text: 'Документ',
+        onPress: () => Alert.alert('Документ', 'Скоро будет доступно'),
+      },
+      {
+        text: 'Локация',
+        onPress: () => Alert.alert('Локация', 'Скоро будет доступно'),
+      },
+      { text: 'Отмена', style: 'cancel' },
+    ]);
+  }
+
+  function handleSuggestionSelect(suggestion: string) {
+    setText(suggestion);
+    if (onSuggestionSelect) {
+      onSuggestionSelect(suggestion);
+    }
+  }
+
+  const hasText = text.trim().length > 0;
+  const sendDisabled = disabled || !hasText;
+
   return (
-    <View style={styles.container}>
-      <TextInput
-        value={text}
-        onChangeText={setText}
-        placeholder="Найдите рейс или отель..."
-        placeholderTextColor="#8B8BA7"
-        style={styles.input}
-        multiline
-        maxLength={2000}
-        editable={!disabled}
-        returnKeyType="default"
-        blurOnSubmit={false}
-      />
-      <TouchableOpacity
-        onPress={handleSend}
-        disabled={disabled || !text.trim()}
-        style={[
-          styles.sendButton,
-          (disabled || !text.trim()) && styles.sendButtonDisabled,
-        ]}
-        activeOpacity={0.8}
-      >
-        <Ionicons name="send" size={18} color="#0A0A14" />
-      </TouchableOpacity>
+    <View>
+      {/* Contextual suggestions */}
+      {suggestions.length > 0 && (
+        <ChatSuggestions
+          suggestions={suggestions}
+          onSelect={handleSuggestionSelect}
+        />
+      )}
+
+      {/* Input row */}
+      <View style={styles.container}>
+        {/* Voice button — visible only when no text */}
+        {!hasText && (
+          <TouchableOpacity
+            onPress={handleVoice}
+            style={styles.iconButton}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons name="mic-outline" size={22} color={Colors.textMuted} />
+          </TouchableOpacity>
+        )}
+
+        {/* Text input — pill shape */}
+        <TextInput
+          value={text}
+          onChangeText={setText}
+          placeholder="Куда летим? Например: Варшава → Барселона"
+          placeholderTextColor={Colors.textMuted}
+          style={[styles.input, !hasText && styles.inputWithVoice]}
+          multiline
+          maxLength={2000}
+          editable={!disabled}
+          returnKeyType="default"
+          blurOnSubmit={false}
+        />
+
+        {/* Attachment button */}
+        <TouchableOpacity
+          onPress={handleAttachment}
+          style={styles.iconButton}
+          activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="add-outline" size={22} color={Colors.textMuted} />
+        </TouchableOpacity>
+
+        {/* Send button */}
+        <Animated.View style={{ transform: [{ scale: sendScale }] }}>
+          <TouchableOpacity
+            onPress={handleSend}
+            disabled={sendDisabled}
+            style={[styles.sendButton, sendDisabled && styles.sendButtonDisabled]}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="send" size={18} color={Colors.textInverse} />
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
     </View>
   );
 });
@@ -92,21 +192,30 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    paddingTop: 10,
     backgroundColor: Colors.surface,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
+    gap: 8,
     ...Platform.select({
       ios: {
         paddingBottom: 24,
       },
     }),
   },
+  iconButton: {
+    width: 36,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
   input: {
     flex: 1,
-    backgroundColor: '#252538',
-    borderRadius: 32,
+    backgroundColor: Colors.surface,
+    borderRadius: 28,
     paddingHorizontal: 16,
     paddingVertical: 10,
     paddingTop: 10,
@@ -115,17 +224,20 @@ const styles = StyleSheet.create({
     maxHeight: 120,
     borderWidth: 1,
     borderColor: Colors.border,
-    marginRight: 10,
+  },
+  inputWithVoice: {
+    // no additional style needed, just a semantic alias
   },
   sendButton: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.primary,
     width: 40,
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   sendButtonDisabled: {
-    opacity: 0.4,
+    backgroundColor: Colors.textDisabled,
   },
 });

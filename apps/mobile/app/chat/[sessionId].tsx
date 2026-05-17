@@ -90,6 +90,14 @@ const SUGGESTIONS = [
   'Амстердам → Прага',
 ];
 
+const CHAT_SUGGESTIONS = [
+  'Добавь трансфер из аэропорта',
+  'Покажи отели в центре',
+  'Есть прямые рейсы?',
+  'Нужен обратный билет',
+  'Какой бюджет нужен?',
+];
+
 interface EmptyStateProps {
   onSelectSuggestion: (text: string) => void;
 }
@@ -504,6 +512,16 @@ export default function ChatScreen() {
         onSend={handleSend}
         disabled={isStreaming}
         initialMessage={initialMessage}
+        suggestions={
+          !isStreaming &&
+          safeMessages.length > 0 &&
+          safeMessages[safeMessages.length - 1]?.role === 'assistant'
+            ? CHAT_SUGGESTIONS
+            : []
+        }
+        onSuggestionSelect={(suggestion) => {
+          chatInputRef.current?.setText(suggestion);
+        }}
       />
 
       {pendingBooking && (
