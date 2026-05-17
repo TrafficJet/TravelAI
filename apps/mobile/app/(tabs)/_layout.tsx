@@ -181,6 +181,7 @@ export default function TabsLayout() {
         name="bookings"
         options={{
           title: t('tabs.bookings'),
+          headerShown: false,
           tabBarIcon: (props) => (
             <TabIconWithIndicator {...props} icon="calendar-outline" iconFocused="calendar" />
           ),

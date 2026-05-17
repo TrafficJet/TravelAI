@@ -5,74 +5,233 @@ import {
   FlatList,
   StyleSheet,
   RefreshControl,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBookingStore } from '../../stores/bookingStore';
 import { bookingService } from '../../services/bookingService';
-import { FlightCard } from '../../components/booking/FlightCard';
-import { HotelCard } from '../../components/booking/HotelCard';
 import { SkeletonBookingItem } from '../../components/ui/Skeleton';
 import { Colors } from '../../constants/colors';
-import { Typography } from '../../constants/typography';
+import { Typography, TextPresets } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
 import { toast } from '../../lib/toast';
-import { EmptyState } from '../../components/ui/EmptyState';
-import { useTranslation } from 'react-i18next';
 import type { Booking, BookingStatus, FlightDetails, HotelDetails } from '../../types';
 
-type FilterTab = 'ALL' | 'CONFIRMED' | 'CANCELLED';
+// ── Types ─────────────────────────────────────────────────────────────────────
 
-const FILTER_TABS: { key: FilterTab; label: string }[] = [
-  { key: 'ALL', label: 'Все' },
-  { key: 'CONFIRMED', label: 'Активные' },
+type FilterTab = 'ALL' | 'ACTIVE' | 'PAST' | 'CANCELLED';
+
+interface FilterTabConfig {
+  key: FilterTab;
+  label: string;
+}
+
+const FILTER_TABS: FilterTabConfig[] = [
+  { key: 'ALL',       label: 'Все' },
+  { key: 'ACTIVE',    label: 'Активные' },
+  { key: 'PAST',      label: 'Прошлые' },
   { key: 'CANCELLED', label: 'Отменённые' },
 ];
 
-const STATUS_BADGE_CONFIG: Record<BookingStatus, { bg: string; color: string }> = {
-  CONFIRMED: { bg: 'rgba(16,185,129,0.15)',  color: '#10B981' },
-  PENDING:   { bg: 'rgba(245,158,11,0.15)',  color: '#F59E0B' },
-  CANCELLED: { bg: 'rgba(244,63,94,0.15)',   color: '#F43F5E' },
-  FAILED:    { bg: 'rgba(244,63,94,0.15)',   color: '#F43F5E' },
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const STATUS_BADGE_CONFIG: Record<BookingStatus, { bg: string; color: string; label: string }> = {
+  CONFIRMED: { bg: 'rgba(16,185,129,0.15)',  color: '#10B981', label: 'ПОДТВЕРЖДЕНО' },
+  PENDING:   { bg: 'rgba(245,158,11,0.15)',  color: '#F59E0B', label: 'ОЖИДАЕТ' },
+  CANCELLED: { bg: 'rgba(244,63,94,0.15)',   color: '#F43F5E', label: 'ОТМЕНЕНО' },
+  FAILED:    { bg: 'rgba(244,63,94,0.15)',   color: '#F43F5E', label: 'ОШИБКА' },
 };
 
-const STATUS_LABELS: Record<BookingStatus, string> = {
-  PENDING:   'ОЖИДАЕТ',
-  CONFIRMED: 'ПОДТВЕРЖДЕНО',
-  CANCELLED: 'ОТМЕНЕНО',
-  FAILED:    'ОШИБКА',
-};
+function getTypeIcon(booking: Booking): string {
+  if (booking.type === 'HOTEL') return '🏨';
+  return '✈️';
+}
+
+function formatPrice(price: number | string, currency: string): string {
+  const num = typeof price === 'number' ? price : Number(price);
+  const symbol = currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
+  return `${symbol}${num.toFixed(2)}`;
+}
+
+function formatDepartureDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+function formatDepartureTime(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * "Past" means the departure/check-in date is before today.
+ */
+function isBookingPast(booking: Booking): boolean {
+  try {
+    if (booking.type === 'FLIGHT') {
+      const details = booking.details as FlightDetails;
+      return new Date(details.departureDate).getTime() < Date.now();
+    }
+    const details = booking.details as HotelDetails;
+    return new Date(details.checkOut).getTime() < Date.now();
+  } catch {
+    return false;
+  }
+}
+
+function filterBookings(bookings: Booking[], tab: FilterTab): Booking[] {
+  switch (tab) {
+    case 'ACTIVE':
+      return bookings.filter(
+        (b) => (b.status === 'CONFIRMED' || b.status === 'PENDING') && !isBookingPast(b),
+      );
+    case 'PAST':
+      return bookings.filter(
+        (b) => b.status === 'CONFIRMED' && isBookingPast(b),
+      );
+    case 'CANCELLED':
+      return bookings.filter((b) => b.status === 'CANCELLED' || b.status === 'FAILED');
+    default:
+      return bookings;
+  }
+}
+
+const PAGE_SIZE = 20;
+
+// ── Custom Header ─────────────────────────────────────────────────────────────
+
+function BookingsHeader() {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View style={[headerStyles.container, { paddingTop: insets.top + 6 }]}>
+      <View>
+        <Text style={headerStyles.title}>Мои Брони</Text>
+        <Text style={headerStyles.subtitle}>История поездок</Text>
+      </View>
+    </View>
+  );
+}
+
+const headerStyles = StyleSheet.create({
+  container: {
+    paddingHorizontal: Spacing.md,
+    paddingBottom: 10,
+    backgroundColor: Colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.divider,
+  },
+  title: {
+    fontFamily: 'Sora',
+    fontSize: 20,
+    fontWeight: '700' as const,
+    color: Colors.text,
+    letterSpacing: -0.3,
+  },
+  subtitle: {
+    ...TextPresets.label,
+    color: Colors.textMuted,
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+});
+
+// ── Filter Tabs ───────────────────────────────────────────────────────────────
+
+interface FilterTabsProps {
+  active: FilterTab;
+  onChange: (tab: FilterTab) => void;
+}
+
+function FilterTabs({ active, onChange }: FilterTabsProps) {
+  return (
+    <View style={tabStyles.row}>
+      {FILTER_TABS.map((tab) => {
+        const isActive = active === tab.key;
+        return (
+          <TouchableOpacity
+            key={tab.key}
+            style={tabStyles.tab}
+            onPress={() => onChange(tab.key)}
+            activeOpacity={0.7}
+          >
+            <Text style={[tabStyles.label, isActive && tabStyles.labelActive]}>
+              {tab.label}
+            </Text>
+            {isActive && <View style={tabStyles.underline} />}
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+const tabStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.divider,
+  },
+  tab: {
+    marginRight: Spacing.lg,
+    paddingVertical: 12,
+    alignItems: 'center',
+    position: 'relative',
+  },
+  label: {
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
+    color: Colors.textMuted,
+  },
+  labelActive: {
+    color: Colors.primary,
+    fontWeight: Typography.weights.semibold,
+  },
+  underline: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: Colors.primary,
+  },
+});
+
+// ── Status Badge ──────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: BookingStatus }) {
-  const { bg, color } = STATUS_BADGE_CONFIG[status];
+  const { bg, color, label } = STATUS_BADGE_CONFIG[status];
+  const checkmark = status === 'CONFIRMED' ? ' ✓' : '';
   return (
     <View style={[badgeStyles.wrap, { backgroundColor: bg }]}>
-      <View style={[badgeStyles.dot, { backgroundColor: color }]} />
-      <Text style={[badgeStyles.label, { color }]}>{STATUS_LABELS[status]}</Text>
+      <Text style={[badgeStyles.label, { color }]}>
+        {label}{checkmark}
+      </Text>
     </View>
   );
 }
 
 const badgeStyles = StyleSheet.create({
   wrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 22,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: Radius.chip,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.tag,
     alignSelf: 'flex-start',
-    marginTop: Spacing.xs,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginRight: 5,
   },
   label: {
     fontSize: Typography.sizes.xs,
@@ -81,40 +240,356 @@ const badgeStyles = StyleSheet.create({
   },
 });
 
-function getBookingSearchText(booking: Booking): string {
-  if (booking.type === 'FLIGHT') {
-    const d = booking.details as FlightDetails;
-    return `${d.origin} ${d.destination} ${d.airline} ${d.flightNumber}`.toLowerCase();
-  }
-  const d = booking.details as HotelDetails;
-  return `${d.name} ${d.address}`.toLowerCase();
+// ── Booking Card ──────────────────────────────────────────────────────────────
+
+interface BookingCardProps {
+  booking: Booking;
+  onPress: () => void;
+  index: number;
 }
 
-const PAGE_SIZE = 20;
+function FlightCardContent({ booking }: { booking: Booking }) {
+  const details = booking.details as FlightDetails;
+  const departureStr = details.departureDate ?? '';
+  const dateLabel = departureStr
+    ? `${formatDepartureDate(departureStr)}, ${formatDepartureTime(departureStr)}`
+    : '—';
+
+  return (
+    <>
+      {/* Row 1: route + status */}
+      <View style={cardStyles.topRow}>
+        <View style={cardStyles.routeWrap}>
+          <Text style={cardStyles.typeIcon}>✈️</Text>
+          <Text style={cardStyles.route}>
+            {details.origin} → {details.destination}
+          </Text>
+        </View>
+        <StatusBadge status={booking.status} />
+      </View>
+
+      {/* Subtitle: airline + cabin */}
+      <Text style={cardStyles.subtitle} numberOfLines={1}>
+        {details.airline} {details.flightNumber}
+        {details.cabin ? ` · ${details.cabin}` : ''}
+      </Text>
+
+      {/* Divider */}
+      <View style={cardStyles.divider} />
+
+      {/* Details rows */}
+      <View style={cardStyles.detailRow}>
+        <Text style={cardStyles.detailIcon}>📅</Text>
+        <Text style={cardStyles.detailText}>{dateLabel}</Text>
+      </View>
+      <View style={cardStyles.detailRow}>
+        <Text style={cardStyles.detailIcon}>💺</Text>
+        <Text style={cardStyles.detailText}>
+          {details.passengers} {details.passengers === 1 ? 'пассажир' : 'пассажира'}
+        </Text>
+      </View>
+      <View style={cardStyles.detailRow}>
+        <Text style={cardStyles.detailIcon}>💰</Text>
+        <Text style={[cardStyles.detailText, cardStyles.price]}>
+          {formatPrice(booking.totalPrice, booking.currency)}
+        </Text>
+      </View>
+    </>
+  );
+}
+
+function HotelCardContent({ booking }: { booking: Booking }) {
+  const details = booking.details as HotelDetails;
+
+  return (
+    <>
+      {/* Row 1: name + status */}
+      <View style={cardStyles.topRow}>
+        <View style={cardStyles.routeWrap}>
+          <Text style={cardStyles.typeIcon}>🏨</Text>
+          <Text style={cardStyles.route} numberOfLines={1}>
+            {details.name}
+          </Text>
+        </View>
+        <StatusBadge status={booking.status} />
+      </View>
+
+      {/* Subtitle: address */}
+      <Text style={cardStyles.subtitle} numberOfLines={1}>
+        {details.address}
+      </Text>
+
+      {/* Divider */}
+      <View style={cardStyles.divider} />
+
+      {/* Details rows */}
+      <View style={cardStyles.detailRow}>
+        <Text style={cardStyles.detailIcon}>📅</Text>
+        <Text style={cardStyles.detailText}>
+          {formatDepartureDate(details.checkIn)} — {formatDepartureDate(details.checkOut)}
+        </Text>
+      </View>
+      <View style={cardStyles.detailRow}>
+        <Text style={cardStyles.detailIcon}>🛏️</Text>
+        <Text style={cardStyles.detailText}>
+          {details.rooms} ном. · {details.guests} гост.
+        </Text>
+      </View>
+      <View style={cardStyles.detailRow}>
+        <Text style={cardStyles.detailIcon}>💰</Text>
+        <Text style={[cardStyles.detailText, cardStyles.price]}>
+          {formatPrice(booking.totalPrice, booking.currency)}
+        </Text>
+      </View>
+    </>
+  );
+}
+
+function BookingCard({ booking, onPress, index }: BookingCardProps) {
+  return (
+    <Animated.View
+      entering={FadeInDown.delay(Math.min(index * 80, 400)).springify()}
+      style={cardStyles.animatedWrap}
+    >
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={0.85}
+        style={cardStyles.card}
+      >
+        {booking.type === 'FLIGHT' ? (
+          <FlightCardContent booking={booking} />
+        ) : (
+          <HotelCardContent booking={booking} />
+        )}
+
+        {/* Divider before CTA */}
+        <View style={cardStyles.divider} />
+
+        {/* CTA row */}
+        <TouchableOpacity
+          onPress={onPress}
+          activeOpacity={0.7}
+          style={cardStyles.ctaRow}
+        >
+          <Text style={cardStyles.ctaText}>Детали бронирования</Text>
+          <Text style={cardStyles.ctaArrow}>→</Text>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+const cardStyles = StyleSheet.create({
+  animatedWrap: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
+  },
+  card: {
+    backgroundColor: Colors.card,
+    borderRadius: Radius.card,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 4,
+    gap: Spacing.sm,
+  },
+  routeWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flex: 1,
+  },
+  typeIcon: {
+    fontSize: 18,
+  },
+  route: {
+    ...TextPresets.bodyMedium,
+    color: Colors.text,
+    fontWeight: '600' as const,
+    flex: 1,
+  },
+  subtitle: {
+    ...TextPresets.small,
+    color: Colors.textMuted,
+    marginBottom: 10,
+    marginLeft: 24,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: 10,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 6,
+  },
+  detailIcon: {
+    fontSize: 14,
+    width: 20,
+    textAlign: 'center',
+  },
+  detailText: {
+    ...TextPresets.small,
+    color: Colors.text,
+    flex: 1,
+  },
+  price: {
+    color: Colors.primary,
+    fontWeight: '600' as const,
+  },
+  ctaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 2,
+  },
+  ctaText: {
+    ...TextPresets.small,
+    color: Colors.primary,
+    fontWeight: '500' as const,
+  },
+  ctaArrow: {
+    fontSize: 16,
+    color: Colors.primary,
+    fontWeight: '400' as const,
+  },
+});
+
+// ── Empty State ───────────────────────────────────────────────────────────────
+
+function BookingsEmptyState() {
+  return (
+    <View style={emptyStyles.container}>
+      <LinearGradient
+        colors={['rgba(245,158,11,0.20)', 'rgba(245,158,11,0.05)']}
+        style={emptyStyles.iconWrap}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <Text style={emptyStyles.icon}>🎫</Text>
+      </LinearGradient>
+
+      <Text style={emptyStyles.title}>Пока нет бронирований</Text>
+      <Text style={emptyStyles.subtitle}>
+        Запросите рейс или отель в чате
+      </Text>
+
+      <TouchableOpacity
+        style={emptyStyles.btn}
+        onPress={() => router.push('/(tabs)')}
+        activeOpacity={0.8}
+      >
+        <LinearGradient
+          colors={['#F59E0B', '#D97706']}
+          style={emptyStyles.btnGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+        >
+          <Text style={emptyStyles.btnText}>Открыть чат</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const emptyStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+    marginTop: 40,
+    gap: 16,
+  },
+  iconWrap: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(245,158,11,0.25)',
+    marginBottom: 8,
+  },
+  icon: {
+    fontSize: 48,
+  },
+  title: {
+    fontFamily: 'Sora',
+    fontSize: 22,
+    fontWeight: '600' as const,
+    color: Colors.text,
+    textAlign: 'center',
+  },
+  subtitle: {
+    ...TextPresets.body,
+    color: Colors.textMuted,
+    textAlign: 'center',
+  },
+  btn: {
+    borderRadius: Radius.button,
+    overflow: 'hidden',
+    marginTop: 8,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  btnGradient: {
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    borderRadius: Radius.button,
+    alignItems: 'center',
+  },
+  btnText: {
+    fontFamily: 'Sora',
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.textInverse,
+    letterSpacing: 0.2,
+  },
+});
+
+// ── Skeleton list ─────────────────────────────────────────────────────────────
+
+function SkeletonList() {
+  return (
+    <View style={{ paddingTop: 12 }}>
+      {Array.from({ length: 4 }).map((_, i) => (
+        <SkeletonBookingItem key={i} />
+      ))}
+    </View>
+  );
+}
+
+// ── Main Screen ───────────────────────────────────────────────────────────────
 
 export default function BookingsScreen() {
   const { bookings, load, isLoading, appendBookings } = useBookingStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [filter, setFilter] = useState<FilterTab>('ALL');
-  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const { t } = useTranslation();
 
-  const fetchPage = useCallback(
-    async (pageNum: number) => {
-      try {
-        const response = await bookingService.getBookings({ page: pageNum, limit: PAGE_SIZE });
-        setHasMore(pageNum < response.totalPages);
-        return response.bookings ?? [];
-      } catch {
-        toast.error('Ошибка загрузки бронирований');
-        return [];
-      }
-    },
-    [],
-  );
+  const fetchPage = useCallback(async (pageNum: number) => {
+    try {
+      const response = await bookingService.getBookings({ page: pageNum, limit: PAGE_SIZE });
+      setHasMore(pageNum < response.totalPages);
+      return response.bookings ?? [];
+    } catch {
+      toast.error('Ошибка загрузки бронирований');
+      return [];
+    }
+  }, []);
 
   const fetchBookings = useCallback(async () => {
     try {
@@ -128,7 +603,7 @@ export default function BookingsScreen() {
   }, [load]);
 
   useEffect(() => {
-    fetchBookings();
+    void fetchBookings();
   }, [fetchBookings]);
 
   async function handleRefresh() {
@@ -151,96 +626,50 @@ export default function BookingsScreen() {
     router.push(`/bookings/${booking.id}`);
   }
 
-  const filtered = useMemo(() => {
-    const all = bookings ?? [];
-    const byFilter = filter === 'ALL' ? all : all.filter((b) => b.status === filter);
-    if (!search.trim()) return byFilter;
-    const q = search.toLowerCase();
-    return byFilter.filter((b) => getBookingSearchText(b).includes(q));
-  }, [bookings, filter, search]);
+  const filtered = useMemo(
+    () => filterBookings(bookings ?? [], filter),
+    [bookings, filter],
+  );
 
   if (isLoading && (bookings ?? []).length === 0) {
     return (
       <View style={styles.container}>
-        {Array.from({ length: 4 }).map((_, i) => (
-          <SkeletonBookingItem key={i} />
-        ))}
+        <BookingsHeader />
+        <FilterTabs active={filter} onChange={setFilter} />
+        <SkeletonList />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {/* Search */}
-      <View style={styles.searchWrap}>
-        <Ionicons name="search" size={16} color={Colors.textMuted} style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Поиск по маршруту или отелю..."
-          placeholderTextColor={Colors.textMuted}
-          value={search}
-          onChangeText={setSearch}
-          returnKeyType="search"
-          clearButtonMode="while-editing"
-        />
-      </View>
-
-      {/* Filter chips */}
-      <View style={styles.filterRow}>
-        {FILTER_TABS.map((tab) => (
-          <TouchableOpacity
-            key={tab.key}
-            style={[styles.chip, filter === tab.key && styles.chipActive]}
-            onPress={() => setFilter(tab.key)}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.chipText, filter === tab.key && styles.chipTextActive]}>
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <BookingsHeader />
+      <FilterTabs active={filter} onChange={setFilter} />
 
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => {
-          const content = item.type === 'FLIGHT' ? (
-            <View>
-              <FlightCard booking={item} onPress={() => handleBookingPress(item)} />
-              <View style={styles.badgeWrap}>
-                <StatusBadge status={item.status} />
-              </View>
-            </View>
-          ) : (
-            <View>
-              <HotelCard booking={item} onPress={() => handleBookingPress(item)} />
-              <View style={styles.badgeWrap}>
-                <StatusBadge status={item.status} />
-              </View>
-            </View>
-          );
-
-          return (
-            <Animated.View entering={FadeInDown.delay(Math.min(index * 80, 400)).springify()}>
-              {content}
-            </Animated.View>
-          );
-        }}
+        renderItem={({ item, index }) => (
+          <BookingCard
+            booking={item}
+            index={index}
+            onPress={() => handleBookingPress(item)}
+          />
+        )}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
-            onRefresh={handleRefresh}
+            onRefresh={() => { void handleRefresh(); }}
             tintColor={Colors.primary}
             colors={[Colors.primary]}
           />
         }
-        contentInset={{ top: 12, bottom: 12 }}
         contentContainerStyle={
           filtered.length === 0 ? styles.emptyContainer : styles.listContent
         }
-        onEndReached={handleLoadMore}
+        onEndReached={() => { void handleLoadMore(); }}
         onEndReachedThreshold={0.3}
+        ListHeaderComponent={<View style={{ height: Spacing.sm }} />}
         ListFooterComponent={
           isLoadingMore ? (
             <View style={styles.loadingMore}>
@@ -248,15 +677,7 @@ export default function BookingsScreen() {
             </View>
           ) : null
         }
-        ListEmptyComponent={
-          <EmptyState
-            icon="briefcase-outline"
-            title={t('bookings.empty')}
-            subtitle={t('bookings.emptyDesc')}
-            onAction={() => router.push('/(tabs)')}
-            actionLabel="Начни поиск в чате"
-          />
-        }
+        ListEmptyComponent={<BookingsEmptyState />}
       />
     </View>
   );
@@ -265,62 +686,10 @@ export default function BookingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A14',
-  },
-  searchWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1C1C2E',
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.sm,
-    borderRadius: Radius.input,
-    borderWidth: 1,
-    borderColor: '#2A2A42',
-    paddingHorizontal: Spacing.sm,
-  },
-  searchIcon: {
-    marginRight: Spacing.sm,
-  },
-  searchInput: {
-    flex: 1,
-    color: Colors.text,
-    fontSize: Typography.sizes.base,
-    paddingVertical: Spacing.sm,
-  },
-  filterRow: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.sm,
-    gap: Spacing.sm,
-  },
-  chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: Radius.chip,
-    backgroundColor: '#1C1C2E',
-    borderWidth: 1,
-    borderColor: '#2A2A42',
-  },
-  chipActive: {
-    backgroundColor: '#F59E0B',
-    borderColor: '#F59E0B',
-  },
-  chipText: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.medium,
-  },
-  chipTextActive: {
-    color: '#0A0A14',
-  },
-  badgeWrap: {
-    paddingHorizontal: 16,
-    marginTop: -4,
-    marginBottom: 8,
+    backgroundColor: Colors.background,
   },
   listContent: {
-    paddingBottom: 12,
+    paddingBottom: 24,
   },
   emptyContainer: {
     flexGrow: 1,
