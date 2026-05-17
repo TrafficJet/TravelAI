@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Tabs } from 'expo-router';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Tabs, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   useAnimatedStyle,
@@ -203,6 +203,16 @@ export default function TabsLayout() {
           title: t('tabs.profile'),
           tabBarIcon: (props) => (
             <TabIconWithIndicator {...props} icon="person-outline" iconFocused="person" />
+          ),
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => router.push('/settings')}
+              activeOpacity={0.7}
+              style={{ marginRight: 16, padding: 4 }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="settings-outline" size={22} color={Colors.primary} />
+            </TouchableOpacity>
           ),
         }}
       />

@@ -10,9 +10,12 @@ import {
   Platform,
   TextInput,
   Modal,
+  StatusBar,
+  Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
 import { useTheme } from '../src/theme/ThemeContext';
@@ -22,6 +25,7 @@ import { useAuthStore } from '../stores/authStore';
 import api from '../services/api';
 
 const SETTINGS_KEY = 'user_settings';
+const APP_VERSION = '1.0.0';
 
 type ThemeOption = 'light' | 'dark' | 'system';
 type LanguageOption = 'ru' | 'en';
@@ -87,7 +91,6 @@ interface DeleteAccountModalProps {
 }
 
 function DeleteAccountModal({ visible, onCancel, onConfirm }: DeleteAccountModalProps) {
-  const { colors } = useTheme();
   const [password, setPassword] = useState('');
 
   function handleConfirm() {
@@ -110,24 +113,15 @@ function DeleteAccountModal({ visible, onCancel, onConfirm }: DeleteAccountModal
       onRequestClose={handleCancel}
     >
       <View style={modalStyles.overlay}>
-        <View style={[modalStyles.container, { backgroundColor: colors.card }]}>
-          <Text style={[modalStyles.title, { color: colors.text }]}>
-            Удалить аккаунт
-          </Text>
-          <Text style={[modalStyles.subtitle, { color: colors.textSecondary }]}>
+        <View style={[modalStyles.container, { backgroundColor: Colors.card }]}>
+          <Text style={[modalStyles.title, { color: Colors.text }]}>Удалить аккаунт</Text>
+          <Text style={[modalStyles.subtitle, { color: Colors.textMuted }]}>
             Введите пароль для подтверждения. Это действие нельзя отменить.
           </Text>
           <TextInput
-            style={[
-              modalStyles.input,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                color: colors.text,
-              },
-            ]}
+            style={[modalStyles.input, { backgroundColor: Colors.surface, borderColor: Colors.border, color: Colors.text }]}
             placeholder="Пароль"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={Colors.textMuted}
             secureTextEntry
             value={password}
             onChangeText={setPassword}
@@ -135,11 +129,11 @@ function DeleteAccountModal({ visible, onCancel, onConfirm }: DeleteAccountModal
           />
           <View style={modalStyles.buttons}>
             <TouchableOpacity
-              style={[modalStyles.btn, { borderColor: colors.border }]}
+              style={[modalStyles.btn, { borderColor: Colors.border }]}
               onPress={handleCancel}
               activeOpacity={0.7}
             >
-              <Text style={[modalStyles.btnText, { color: colors.text }]}>Отмена</Text>
+              <Text style={[modalStyles.btnText, { color: Colors.text }]}>Отмена</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[modalStyles.btn, modalStyles.btnDanger]}
@@ -207,10 +201,284 @@ const modalStyles = StyleSheet.create({
   },
 });
 
+// ── Reusable row components ───────────────────────────────────────────────────
+
+interface RowItem {
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  iconColor?: string;
+  label: string;
+  sublabel?: string;
+  onPress?: () => void;
+  rightElement?: React.ReactNode;
+  isLast?: boolean;
+  disabled?: boolean;
+  labelColor?: string;
+}
+
+function SettingsRow({
+  icon,
+  iconColor = Colors.primary,
+  label,
+  sublabel,
+  onPress,
+  rightElement,
+  isLast,
+  disabled,
+  labelColor,
+}: RowItem) {
+  return (
+    <TouchableOpacity
+      style={[
+        rowStyles.row,
+        !isLast && rowStyles.rowBorder,
+        disabled && rowStyles.rowDisabled,
+      ]}
+      onPress={onPress}
+      activeOpacity={onPress ? 0.7 : 1}
+      disabled={disabled || !onPress}
+    >
+      <View style={[rowStyles.iconWrap, { backgroundColor: `${iconColor}18` }]}>
+        <Ionicons name={icon} size={18} color={iconColor} />
+      </View>
+      <View style={rowStyles.labelBlock}>
+        <Text style={[rowStyles.label, labelColor ? { color: labelColor } : undefined]}>
+          {label}
+        </Text>
+        {sublabel ? (
+          <Text style={rowStyles.sublabel}>{sublabel}</Text>
+        ) : null}
+      </View>
+      <View style={rowStyles.right}>
+        {rightElement ?? (
+          onPress ? (
+            <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+          ) : null
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+const rowStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+  },
+  rowBorder: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.border,
+  },
+  rowDisabled: {
+    opacity: 0.45,
+  },
+  iconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    flexShrink: 0,
+  },
+  labelBlock: {
+    flex: 1,
+  },
+  label: {
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
+    color: Colors.text,
+  },
+  sublabel: {
+    fontSize: Typography.sizes.xs,
+    color: Colors.textMuted,
+    marginTop: 1,
+  },
+  right: {
+    marginLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+});
+
+// ── Preset button group (Theme / Language) ────────────────────────────────────
+
+interface PresetGroupProps<T extends string> {
+  options: { value: T; label: string }[];
+  selected: T;
+  onSelect: (v: T) => void;
+}
+
+function PresetGroup<T extends string>({ options, selected, onSelect }: PresetGroupProps<T>) {
+  return (
+    <View style={presetStyles.row}>
+      {options.map((opt, idx) => {
+        const isActive = opt.value === selected;
+        return (
+          <TouchableOpacity
+            key={opt.value}
+            style={[
+              presetStyles.btn,
+              idx < options.length - 1 && presetStyles.btnGap,
+              isActive && presetStyles.btnActive,
+            ]}
+            onPress={() => onSelect(opt.value)}
+            activeOpacity={0.75}
+          >
+            <Text style={[presetStyles.btnText, isActive && presetStyles.btnTextActive]}>
+              {opt.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+const presetStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+  },
+  btn: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
+    alignItems: 'center',
+  },
+  btnGap: {
+    marginRight: 8,
+  },
+  btnActive: {
+    borderColor: Colors.primary,
+    backgroundColor: `${Colors.primary}15`,
+  },
+  btnText: {
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.semibold,
+    color: Colors.textMuted,
+  },
+  btnTextActive: {
+    color: Colors.primary,
+  },
+});
+
+// ── Section wrapper ───────────────────────────────────────────────────────────
+
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function Section({ title, children }: SectionProps) {
+  return (
+    <View style={sectionStyles.section}>
+      <Text style={sectionStyles.title}>{title}</Text>
+      <View style={sectionStyles.card}>{children}</View>
+    </View>
+  );
+}
+
+const sectionStyles = StyleSheet.create({
+  section: {
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.bold,
+    color: Colors.textMuted,
+    letterSpacing: Typography.letterSpacing.wider,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  card: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: 'hidden',
+  },
+});
+
+// ── Option row inside a card (with inline label + preset group below) ─────────
+
+interface OptionGroupRowProps<T extends string> {
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  iconColor?: string;
+  label: string;
+  options: { value: T; label: string }[];
+  selected: T;
+  onSelect: (v: T) => void;
+  isLast?: boolean;
+}
+
+function OptionGroupRow<T extends string>({
+  icon,
+  iconColor = Colors.primary,
+  label,
+  options,
+  selected,
+  onSelect,
+  isLast,
+}: OptionGroupRowProps<T>) {
+  return (
+    <View style={[optGroupStyles.wrapper, !isLast && optGroupStyles.wrapperBorder]}>
+      <View style={optGroupStyles.header}>
+        <View style={[optGroupStyles.iconWrap, { backgroundColor: `${iconColor}18` }]}>
+          <Ionicons name={icon} size={18} color={iconColor} />
+        </View>
+        <Text style={optGroupStyles.label}>{label}</Text>
+      </View>
+      <View style={optGroupStyles.presetArea}>
+        <PresetGroup options={options} selected={selected} onSelect={onSelect} />
+      </View>
+    </View>
+  );
+}
+
+const optGroupStyles = StyleSheet.create({
+  wrapper: {
+    paddingHorizontal: 16,
+    paddingTop: 13,
+    paddingBottom: 14,
+  },
+  wrapperBorder: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.border,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  iconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    flexShrink: 0,
+  },
+  label: {
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
+    color: Colors.text,
+  },
+  presetArea: {
+    paddingLeft: 46,
+  },
+});
+
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function SettingsScreen() {
-  const { colors, setTheme: applyTheme } = useTheme();
+  const { setTheme: applyTheme } = useTheme();
   const logout = useAuthStore((s) => s.logout);
 
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
@@ -218,14 +486,12 @@ export default function SettingsScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Debounce timer ref for PATCH
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Load preferences on mount ─────────────────────────────────────────────
 
   useEffect(() => {
     async function loadPreferences() {
-      // Try to get from AsyncStorage as fallback first
       let fallback: UserSettings = DEFAULT_SETTINGS;
       try {
         const raw = await AsyncStorage.getItem(SETTINGS_KEY);
@@ -241,10 +507,8 @@ export default function SettingsScreen() {
         const { data } = await api.get<PreferencesResponse>('/api/users/me/preferences');
         const loaded = prefsToSettings(data.preferences);
         setSettings(loaded);
-        // Keep AsyncStorage in sync
         await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(loaded));
       } catch {
-        // Offline or error — use fallback
         setSettings(fallback);
       } finally {
         setIsLoaded(true);
@@ -256,32 +520,26 @@ export default function SettingsScreen() {
   // ── Save with debounce ────────────────────────────────────────────────────
 
   const debouncedPatch = useCallback((updated: UserSettings) => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       try {
         await api.patch('/users/me/preferences', settingsToPrefsPayload(updated));
         await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
       } catch {
-        // Offline — AsyncStorage already updated below in handleChange
+        // offline — AsyncStorage already written below
       }
     }, 500);
   }, []);
 
   function handleChange(updated: UserSettings) {
     setSettings(updated);
-    // Always write to AsyncStorage immediately for offline fallback
     AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(updated)).catch(() => {});
     debouncedPatch(updated);
   }
 
-  // Cleanup debounce on unmount
   useEffect(() => {
     return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
+      if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, []);
 
@@ -290,9 +548,7 @@ export default function SettingsScreen() {
   function handleNotifChange(
     key: keyof Pick<UserSettings, 'notifPrices' | 'notifBookings' | 'notifSystem'>,
   ) {
-    return (value: boolean) => {
-      handleChange({ ...settings, [key]: value });
-    };
+    return (value: boolean) => handleChange({ ...settings, [key]: value });
   }
 
   function handleThemeSelect(theme: ThemeOption) {
@@ -301,7 +557,7 @@ export default function SettingsScreen() {
     const labels: Record<ThemeOption, string> = {
       light: 'Светлая тема',
       dark: 'Тёмная тема',
-      system: 'Тема по умолчанию системы',
+      system: 'Системная тема',
     };
     toast.info(labels[theme]);
   }
@@ -322,7 +578,6 @@ export default function SettingsScreen() {
     setIsDeleting(true);
     try {
       await api.delete('/users/me', { data: { password } });
-      // Success — clear everything and go to login
       await logout();
       router.replace('/(auth)/login');
     } catch (err: unknown) {
@@ -335,7 +590,6 @@ export default function SettingsScreen() {
         'status' in err.response
           ? (err.response as { status: number }).status
           : 0;
-
       if (status === 401 || status === 403) {
         toast.error('Неверный пароль');
       } else {
@@ -357,9 +611,7 @@ export default function SettingsScreen() {
             text: 'Удалить',
             style: 'destructive',
             onPress: (password?: string) => {
-              if (password && password.trim()) {
-                performDeleteAccount(password.trim());
-              }
+              if (password && password.trim()) performDeleteAccount(password.trim());
             },
           },
         ],
@@ -375,209 +627,165 @@ export default function SettingsScreen() {
   if (!isLoaded) return null;
 
   const themeOptions: { value: ThemeOption; label: string }[] = [
-    { value: 'light', label: 'Светлая' },
     { value: 'dark', label: 'Тёмная' },
+    { value: 'light', label: 'Светлая' },
     { value: 'system', label: 'Авто' },
   ];
 
   const langOptions: { value: LanguageOption; label: string }[] = [
-    { value: 'ru', label: 'Русский' },
-    { value: 'en', label: 'English' },
+    { value: 'ru', label: 'RU' },
+    { value: 'en', label: 'EN' },
   ];
 
   return (
     <>
-      <ScrollView
-        style={[styles.container, { backgroundColor: colors.background }]}
-        contentContainerStyle={styles.content}
-      >
-        {/* Header */}
-        <View style={styles.pageHeader}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.backBtnText, { color: colors.primary }]}>{'← Назад'}</Text>
-          </TouchableOpacity>
-          <Text style={[styles.pageTitle, { color: colors.text }]}>Настройки</Text>
-          <View style={styles.headerPlaceholder} />
-        </View>
+      <StatusBar barStyle="light-content" />
 
-        {/* Notifications section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-            Уведомления
-          </Text>
-          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <View style={styles.switchRow}>
-              <View style={styles.switchLabel}>
-                <Text style={[styles.switchTitle, { color: colors.text }]}>
-                  Изменение цен
-                </Text>
-                <Text style={[styles.switchSubtitle, { color: colors.textSecondary }]}>
-                  Снижение цен на рейсы и отели
-                </Text>
-              </View>
+      {/* Custom header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backBtn}
+          activeOpacity={0.7}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={22} color={Colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Настройки</Text>
+        <View style={styles.headerRight} />
+      </View>
+
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* APPEARANCE */}
+        <Section title="Внешний вид">
+          <OptionGroupRow
+            icon="color-palette-outline"
+            iconColor={Colors.secondary}
+            label="Тема"
+            options={themeOptions}
+            selected={settings.theme}
+            onSelect={handleThemeSelect}
+            isLast={false}
+          />
+          <OptionGroupRow
+            icon="language-outline"
+            iconColor={Colors.info}
+            label="Язык"
+            options={langOptions}
+            selected={settings.language}
+            onSelect={handleLanguageSelect}
+            isLast
+          />
+        </Section>
+
+        {/* NOTIFICATIONS */}
+        <Section title="Уведомления">
+          <SettingsRow
+            icon="pricetag-outline"
+            iconColor={Colors.primary}
+            label="Изменение цен"
+            sublabel="Снижение цен на рейсы и отели"
+            rightElement={
               <Switch
                 value={settings.notifPrices}
                 onValueChange={handleNotifChange('notifPrices')}
                 trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
                 thumbColor={settings.notifPrices ? Colors.primary : Colors.textMuted}
               />
-            </View>
-
-            <View style={styles.switchRow}>
-              <View style={styles.switchLabel}>
-                <Text style={[styles.switchTitle, { color: colors.text }]}>
-                  Бронирования
-                </Text>
-                <Text style={[styles.switchSubtitle, { color: colors.textSecondary }]}>
-                  Статус и изменения по броням
-                </Text>
-              </View>
+            }
+          />
+          <SettingsRow
+            icon="airplane-outline"
+            iconColor={Colors.secondary}
+            label="Бронирования"
+            sublabel="Статус и изменения по броням"
+            rightElement={
               <Switch
                 value={settings.notifBookings}
                 onValueChange={handleNotifChange('notifBookings')}
                 trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
                 thumbColor={settings.notifBookings ? Colors.primary : Colors.textMuted}
               />
-            </View>
-
-            <View style={[styles.switchRow, styles.switchRowLast]}>
-              <View style={styles.switchLabel}>
-                <Text style={[styles.switchTitle, { color: colors.text }]}>
-                  Системные
-                </Text>
-                <Text style={[styles.switchSubtitle, { color: colors.textSecondary }]}>
-                  Обновления приложения и сервиса
-                </Text>
-              </View>
+            }
+          />
+          <SettingsRow
+            icon="notifications-outline"
+            iconColor={Colors.textMuted}
+            label="Системные"
+            sublabel="Обновления приложения и сервиса"
+            isLast
+            rightElement={
               <Switch
                 value={settings.notifSystem}
                 onValueChange={handleNotifChange('notifSystem')}
                 trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
                 thumbColor={settings.notifSystem ? Colors.primary : Colors.textMuted}
               />
-            </View>
-          </View>
-        </View>
+            }
+          />
+        </Section>
 
-        {/* Interface section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-            Интерфейс
-          </Text>
-          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            {/* Theme */}
-            <View
-              style={[
-                styles.optionGroup,
-                styles.optionGroupBorder,
-                { borderBottomColor: colors.border },
-              ]}
-            >
-              <Text style={[styles.optionGroupLabel, { color: colors.text }]}>Тема</Text>
-              <View style={styles.segmentRow}>
-                {themeOptions.map((opt) => {
-                  const isActive = settings.theme === opt.value;
-                  return (
-                    <TouchableOpacity
-                      key={opt.value}
-                      style={[
-                        styles.segmentBtn,
-                        { borderColor: colors.border, backgroundColor: colors.surface },
-                        isActive && styles.segmentBtnActive,
-                      ]}
-                      onPress={() => handleThemeSelect(opt.value)}
-                      activeOpacity={0.75}
-                    >
-                      <Text
-                        style={[
-                          styles.segmentBtnText,
-                          { color: colors.textSecondary },
-                          isActive && styles.segmentBtnTextActive,
-                        ]}
-                      >
-                        {opt.label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </View>
+        {/* SECURITY */}
+        <Section title="Безопасность">
+          <SettingsRow
+            icon="lock-closed-outline"
+            iconColor={Colors.warning}
+            label="Изменить пароль"
+            onPress={() => router.push('/(auth)/forgot-password')}
+          />
+          <SettingsRow
+            icon="shield-checkmark-outline"
+            iconColor={Colors.textMuted}
+            label="Двухфакторная аутентификация"
+            sublabel="Скоро"
+            isLast
+            disabled
+          />
+        </Section>
 
-            {/* Language */}
-            <View style={styles.optionGroup}>
-              <Text style={[styles.optionGroupLabel, { color: colors.text }]}>Язык</Text>
-              <View style={styles.segmentRow}>
-                {langOptions.map((opt) => {
-                  const isActive = settings.language === opt.value;
-                  return (
-                    <TouchableOpacity
-                      key={opt.value}
-                      style={[
-                        styles.segmentBtn,
-                        { borderColor: colors.border, backgroundColor: colors.surface },
-                        isActive && styles.segmentBtnActive,
-                      ]}
-                      onPress={() => handleLanguageSelect(opt.value)}
-                      activeOpacity={0.75}
-                    >
-                      <Text
-                        style={[
-                          styles.segmentBtnText,
-                          { color: colors.textSecondary },
-                          isActive && styles.segmentBtnTextActive,
-                        ]}
-                      >
-                        {opt.label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </View>
-          </View>
-        </View>
+        {/* ABOUT */}
+        <Section title="О приложении">
+          <SettingsRow
+            icon="information-circle-outline"
+            iconColor={Colors.info}
+            label="Версия"
+            rightElement={
+              <Text style={styles.versionText}>{APP_VERSION}</Text>
+            }
+          />
+          <SettingsRow
+            icon="mail-outline"
+            iconColor={Colors.secondary}
+            label="Написать нам"
+            onPress={() => Linking.openURL('mailto:support@travelai.app')}
+          />
+          <SettingsRow
+            icon="document-text-outline"
+            iconColor={Colors.textMuted}
+            label="Политика конфиденциальности"
+            isLast
+            onPress={() => Linking.openURL('https://travelai.app/privacy')}
+          />
+        </Section>
 
-        {/* Account section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-            Аккаунт
-          </Text>
-          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <TouchableOpacity
-              style={[
-                styles.actionRow,
-                styles.actionRowBorder,
-                { borderBottomColor: colors.border },
-              ]}
-              onPress={() => router.push('/(auth)/forgot-password')}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.actionRowText, { color: colors.text }]}>
-                Сменить пароль
-              </Text>
-              <Text style={[styles.actionRowChevron, { color: colors.textSecondary }]}>›</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionRow, isDeleting && styles.actionRowDisabled]}
-              onPress={handleDeleteAccount}
-              disabled={isDeleting}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.actionRowText, styles.actionRowTextDanger]}>
-                {isDeleting ? 'Удаление...' : 'Удалить аккаунт'}
-              </Text>
-              <Text style={[styles.actionRowChevron, { color: Colors.error }]}>›</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        {/* ACCOUNT — danger zone */}
+        <Section title="Аккаунт">
+          <SettingsRow
+            icon="trash-outline"
+            iconColor={Colors.error}
+            label={isDeleting ? 'Удаление...' : 'Удалить аккаунт'}
+            labelColor={Colors.error}
+            isLast
+            disabled={isDeleting}
+            onPress={handleDeleteAccount}
+          />
+        </Section>
       </ScrollView>
 
-      {/* Android password modal */}
       {Platform.OS !== 'ios' && (
         <DeleteAccountModal
           visible={showDeleteModal}
@@ -592,134 +800,51 @@ export default function SettingsScreen() {
   );
 }
 
+// ── Styles ────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: 24,
-    paddingBottom: 48,
-    paddingTop: Platform.OS === 'android' ? 48 : 60,
-  },
-  pageHeader: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 28,
-  },
-  backBtn: {
-    paddingVertical: 4,
-    paddingRight: 12,
-    minWidth: 80,
-  },
-  backBtnText: {
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.semibold,
-  },
-  pageTitle: {
-    fontSize: Typography.sizes.lg,
-    fontWeight: Typography.weights.bold,
-  },
-  headerPlaceholder: {
-    minWidth: 80,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: 10,
-  },
-  card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 14,
+    backgroundColor: Colors.background,
+    paddingTop: Platform.OS === 'android' ? 48 : 58,
+    paddingBottom: 14,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: Colors.border,
   },
-  switchRowLast: {
-    borderBottomWidth: 0,
-  },
-  switchLabel: {
-    flex: 1,
-    marginRight: 12,
-  },
-  switchTitle: {
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.medium,
-  },
-  switchSubtitle: {
-    fontSize: Typography.sizes.xs,
-    marginTop: 2,
-  },
-  optionGroup: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  optionGroupBorder: {
-    borderBottomWidth: 1,
-  },
-  optionGroupLabel: {
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.medium,
-    marginBottom: 12,
-  },
-  segmentRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  segmentBtn: {
-    flex: 1,
-    paddingVertical: 9,
-    paddingHorizontal: 6,
-    borderRadius: 10,
-    borderWidth: 1.5,
+  backBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: Colors.surface,
     alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  segmentBtnActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
+    color: Colors.text,
   },
-  segmentBtnText: {
+  headerRight: {
+    width: 38,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  content: {
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 48,
+  },
+  versionText: {
     fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.semibold,
-  },
-  segmentBtnTextActive: {
-    color: Colors.textInverse,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
-  actionRowBorder: {
-    borderBottomWidth: 1,
-  },
-  actionRowDisabled: {
-    opacity: 0.5,
-  },
-  actionRowText: {
-    fontSize: Typography.sizes.base,
+    color: Colors.textMuted,
     fontWeight: Typography.weights.medium,
-  },
-  actionRowTextDanger: {
-    color: Colors.error,
-  },
-  actionRowChevron: {
-    fontSize: Typography.sizes.xl,
-    fontWeight: Typography.weights.regular,
-    lineHeight: 24,
   },
 });
