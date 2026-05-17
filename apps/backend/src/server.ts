@@ -32,6 +32,10 @@ import { favoritesRoutes } from './routes/favorites.routes';
 // Workers
 import { registerPriceAlertWorker } from './workers/priceAlert.worker';
 
+// Seed
+import { ensureDemoUser } from './lib/seedDemo';
+import { prisma } from './lib/prisma';
+
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = '0.0.0.0';
 
@@ -139,6 +143,9 @@ async function start() {
     console.error(`[STARTUP] Starting listener on ${HOST}:${PORT}...`);
     await fastify.listen({ port: PORT, host: HOST });
     console.error(`[STARTUP] Server is up and listening on http://${HOST}:${PORT}`);
+
+    // Seed demo user with PREMIUM subscription on every startup (idempotent)
+    await ensureDemoUser(prisma);
 
     // Start background workers after server is listening
     registerPriceAlertWorker();
