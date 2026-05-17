@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
+import { ChatToolResult } from './ToolResultCard';
 import type { Message } from '../../types';
 
 interface Props {
@@ -309,8 +310,18 @@ export function MessageBubble({ message, isStreaming, streamingText }: Props) {
   const displayContent =
     isStreaming && streamingText !== undefined ? streamingText : message.content;
 
-  // ── Tool chip ────────────────────────────────────────────────────────────
+  // ── Tool message ─────────────────────────────────────────────────────────
   if (message.role === 'tool') {
+    // If the message carries a tool result with actual data — render rich cards
+    if (message.toolResult !== undefined && message.toolName) {
+      return (
+        <ChatToolResult
+          toolName={message.toolName}
+          result={message.toolResult}
+        />
+      );
+    }
+    // Otherwise show the compact loading chip
     return (
       <View style={styles.toolRow}>
         <Text style={styles.toolIcon}>🔍</Text>

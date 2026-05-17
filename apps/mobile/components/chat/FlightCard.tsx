@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
@@ -12,84 +11,71 @@ interface Props {
   onBook?: () => void;
 }
 
-const IATA_PALETTE = [
-  '#6366F1', '#0EA5E9', '#10B981', '#F59E0B',
-  '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6',
-];
-
-function iataColor(code: string): string {
-  let hash = 0;
-  for (let i = 0; i < code.length; i++) {
-    hash = (hash * 31 + code.charCodeAt(i)) & 0xffffffff;
-  }
-  return IATA_PALETTE[Math.abs(hash) % IATA_PALETTE.length];
-}
-
-function AirlineLogo({ code }: { code: string }) {
-  const letters = code.slice(0, 2).toUpperCase();
-  const bg = iataColor(code);
-  return (
-    <View style={[logoStyles.wrap, { backgroundColor: bg }]}>
-      <Text style={logoStyles.letters}>{letters}</Text>
-    </View>
-  );
-}
-
-const logoStyles = StyleSheet.create({
-  wrap: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  letters: {
-    color: Colors.textInverse,
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: 0.5,
-  },
-});
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('ru-RU', {
-    day: '2-digit',
-    month: 'short',
-  });
-}
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatDuration(minutes: number): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  return h > 0 ? `${h}ч ${m}мин` : `${m}мин`;
+  if (h > 0 && m > 0) return `${h}ч ${m}м`;
+  if (h > 0) return `${h}ч`;
+  return `${m}м`;
 }
 
-function StopsBadge({ stops }: { stops: number }) {
-  const label =
-    stops === 0 ? 'Прямой' : stops === 1 ? '1 пересадка' : `${stops} пересадки`;
-  const color = stops === 0 ? Colors.success : stops === 1 ? Colors.warning : Colors.error;
+function formatCurrency(currency: string): string {
+  if (currency === 'USD') return '$';
+  if (currency === 'EUR') return '€';
+  if (currency === 'RUB') return '₽';
+  return currency;
+}
+
+function cabinLabel(cabin: string): string {
+  const c = cabin.toLowerCase();
+  if (c === 'economy' || c === 'econom') return 'Эконом';
+  if (c === 'business') return 'Бизнес';
+  if (c === 'first') return 'Первый класс';
+  return cabin;
+}
+
+// ── RouteArrow ────────────────────────────────────────────────────────────────
+
+function RouteArrow() {
   return (
-    <View style={[stopStyles.wrap, { backgroundColor: `${color}22` }]}>
-      <Text style={[stopStyles.text, { color }]}>{label}</Text>
+    <View style={arrowStyles.wrap}>
+      <View style={arrowStyles.line} />
+      <View style={arrowStyles.arrowHead} />
     </View>
   );
 }
 
-const stopStyles = StyleSheet.create({
+const arrowStyles = StyleSheet.create({
   wrap: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 4,
   },
-  text: {
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.border,
+  },
+  arrowHead: {
+    width: 0,
+    height: 0,
+    borderTopWidth: 4,
+    borderBottomWidth: 4,
+    borderLeftWidth: 6,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderLeftColor: Colors.border,
+    marginLeft: -1,
   },
 });
 
+// ── FlightCard ────────────────────────────────────────────────────────────────
+
 export function FlightCard({ flight, onBook }: Props) {
-  const iataCode = flight.flightNumber.slice(0, 2) || flight.airline.slice(0, 2);
-  const currencySymbol = flight.currency === 'USD' ? '$' : flight.currency;
+  const currencySymbol = formatCurrency(flight.currency);
 
   function handlePress() {
     router.push({
@@ -112,168 +98,187 @@ export function FlightCard({ flight, onBook }: Props) {
   }
 
   return (
-    <TouchableOpacity onPress={handlePress} activeOpacity={0.8} style={styles.card}>
-      {/* Favorite button — top right corner */}
-      <View style={styles.favBtn}>
-        <FavoriteButton type="flight" item={flight} size={20} />
-      </View>
+    <TouchableOpacity onPress={handlePress} activeOpacity={0.82} style={styles.card}>
 
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <AirlineLogo code={iataCode} />
-          <View>
-            <Text style={styles.airline}>{flight.airline}</Text>
-            <Text style={styles.flightNum}>{flight.flightNumber}</Text>
-          </View>
+      {/* ── Top row: flight info + price + buy button ── */}
+      <View style={styles.topRow}>
+        <View style={styles.topLeft}>
+          <Text style={styles.flightNumber}>✈  {flight.flightNumber}</Text>
+          <Text style={styles.airlineName}>{flight.airline}</Text>
+        </View>
+
+        <View style={styles.topRight}>
+          <Text style={styles.price}>
+            {currencySymbol}{flight.price.toLocaleString('ru-RU')}
+          </Text>
+          <TouchableOpacity
+            style={styles.buyBtn}
+            onPress={onBook ?? handlePress}
+            activeOpacity={0.8}
+            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+          >
+            <Text style={styles.buyBtnText}>Купить →</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Favorite — absolute top-right corner */}
+        <View style={styles.favWrap}>
+          <FavoriteButton type="flight" item={flight} size={18} />
         </View>
       </View>
 
-      {/* Route */}
+      {/* ── Cabin row ── */}
+      <View style={styles.cabinRow}>
+        <Text style={styles.cabinText}>{cabinLabel(flight.cabin)}</Text>
+      </View>
+
+      {/* ── Divider ── */}
+      <View style={styles.divider} />
+
+      {/* ── Route row ── */}
       <View style={styles.routeRow}>
+        {/* Origin */}
         <View style={styles.routePoint}>
-          <Text style={styles.city}>{flight.origin}</Text>
-          <Text style={styles.date}>{formatDate(flight.departureDate)}</Text>
-          {flight.departureTime && <Text style={styles.time}>{flight.departureTime}</Text>}
+          <Text style={styles.iataCode}>{flight.origin}</Text>
+          {flight.departureTime ? (
+            <Text style={styles.routeTime}>{flight.departureTime}</Text>
+          ) : null}
         </View>
 
+        {/* Center: duration + arrow */}
         <View style={styles.routeCenter}>
-          <Ionicons name="airplane" size={18} color={Colors.primary} />
           {flight.durationMin !== undefined && (
             <Text style={styles.duration}>{formatDuration(flight.durationMin)}</Text>
           )}
+          <RouteArrow />
         </View>
 
+        {/* Destination */}
         <View style={[styles.routePoint, styles.routePointRight]}>
-          <Text style={styles.city}>{flight.destination}</Text>
-          {flight.returnDate && (
-            <Text style={styles.date}>обр. {formatDate(flight.returnDate)}</Text>
-          )}
-          {flight.arrivalTime && <Text style={styles.time}>{flight.arrivalTime}</Text>}
+          <Text style={styles.iataCode}>{flight.destination}</Text>
+          {flight.arrivalTime ? (
+            <Text style={styles.routeTime}>{flight.arrivalTime}</Text>
+          ) : null}
         </View>
       </View>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <View style={styles.footerLeft}>
-          <StopsBadge stops={flight.stops ?? 0} />
-        </View>
-        <Text style={styles.price}>
-          {flight.price.toLocaleString('ru-RU')} {currencySymbol}
-        </Text>
-        {onBook && (
-          <TouchableOpacity style={styles.bookBtn} onPress={onBook}>
-            <Text style={styles.bookBtnText}>Забронировать</Text>
-          </TouchableOpacity>
-        )}
-      </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#1C1C2E',
-    borderRadius: 16,
-    padding: 16,
-    marginHorizontal: 16,
-    marginVertical: 6,
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 14,
+    marginHorizontal: 0,
+    marginVertical: 4,
     borderWidth: 1,
-    borderColor: '#2A2A42',
+    borderColor: Colors.border,
   },
-  favBtn: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    zIndex: 1,
-  },
-  header: {
+
+  // Top row
+  topRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 14,
-    paddingRight: 32,
+    alignItems: 'flex-start',
+    marginBottom: 4,
+    paddingRight: 28,
   },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+  topLeft: {
+    flex: 1,
   },
-  airline: {
+  flightNumber: {
     color: Colors.text,
-    fontSize: Typography.sizes.sm,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 0.3,
+  },
+  airlineName: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    marginTop: 1,
+  },
+  topRight: {
+    alignItems: 'flex-end',
+    gap: 5,
+  },
+  price: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.lg,
+    fontWeight: Typography.weights.bold,
+    lineHeight: 22,
+  },
+  buyBtn: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  buyBtnText: {
+    color: Colors.textInverse,
+    fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
   },
-  flightNum: {
+  favWrap: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+  },
+
+  // Cabin row
+  cabinRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  cabinText: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
   },
+
+  // Divider
+  divider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginBottom: 12,
+  },
+
+  // Route row
   routeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
   },
   routePoint: {
-    flex: 1,
+    alignItems: 'flex-start',
+    minWidth: 44,
   },
   routePointRight: {
     alignItems: 'flex-end',
   },
-  routeCenter: {
-    alignItems: 'center',
-    paddingHorizontal: 8,
-  },
-  city: {
+  iataCode: {
     color: Colors.text,
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
     fontFamily: 'Sora',
+    lineHeight: 28,
   },
-  date: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
-    marginTop: 2,
-  },
-  time: {
+  routeTime: {
     color: Colors.text,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
     marginTop: 1,
   },
+  routeCenter: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    gap: 4,
+  },
   duration: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
-    marginTop: 2,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#2A2A42',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  footerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  price: {
-    color: '#F59E0B',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.bold,
-  },
-  bookBtn: {
-    backgroundColor: '#F59E0B',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 32,
-  },
-  bookBtnText: {
-    color: '#0A0A14',
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.semibold,
+    textAlign: 'center',
   },
 });

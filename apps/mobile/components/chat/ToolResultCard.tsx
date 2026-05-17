@@ -3,7 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
-import type { FlightDetails, HotelDetails } from '../../types';
+import { FlightCard } from './FlightCard';
+import { HotelCard } from './HotelCard';
+import type { FlightDetails, HotelDetails, FlightOffer, Hotel } from '../../types';
 
 // ── Search result summary cards (shown when AI returns search results) ─────────
 
@@ -182,6 +184,8 @@ const summaryStyles = StyleSheet.create({
   },
 });
 
+// ── ToolResultCard (legacy — kept for backward compatibility) ──────────────────
+
 interface FlightResultProps {
   type: 'flight';
   data: FlightDetails;
@@ -208,7 +212,7 @@ function formatDate(dateStr: string): string {
 
 function StarRating({ stars }: { stars: number }) {
   return (
-    <Text style={styles.stars}>{'★'.repeat(stars)}{'☆'.repeat(5 - stars)}</Text>
+    <Text style={legacyStyles.stars}>{'★'.repeat(stars)}{'☆'.repeat(5 - stars)}</Text>
   );
 }
 
@@ -216,37 +220,37 @@ export function ToolResultCard(props: ToolResultCardProps) {
   if (props.type === 'flight') {
     const { data, price, currency, onBook } = props;
     return (
-      <View style={styles.card}>
-        <View style={styles.header}>
-          <Text style={styles.typeLabel}>РЕЙС</Text>
-          <Text style={styles.airline}>{data.airline}</Text>
+      <View style={legacyStyles.card}>
+        <View style={legacyStyles.header}>
+          <Text style={legacyStyles.typeLabel}>РЕЙС</Text>
+          <Text style={legacyStyles.airline}>{data.airline}</Text>
         </View>
-        <View style={styles.routeRow}>
-          <View style={styles.routePoint}>
-            <Text style={styles.city}>{data.origin}</Text>
-            <Text style={styles.date}>{formatDate(data.departureDate)}</Text>
+        <View style={legacyStyles.routeRow}>
+          <View style={legacyStyles.routePoint}>
+            <Text style={legacyStyles.city}>{data.origin}</Text>
+            <Text style={legacyStyles.date}>{formatDate(data.departureDate)}</Text>
           </View>
-          <View style={styles.arrowContainer}>
-            <Text style={styles.arrow}>→</Text>
-            <Text style={styles.flightNum}>{data.flightNumber}</Text>
+          <View style={legacyStyles.arrowContainer}>
+            <Text style={legacyStyles.arrow}>→</Text>
+            <Text style={legacyStyles.flightNum}>{data.flightNumber}</Text>
           </View>
-          <View style={styles.routePoint}>
-            <Text style={styles.city}>{data.destination}</Text>
+          <View style={legacyStyles.routePoint}>
+            <Text style={legacyStyles.city}>{data.destination}</Text>
             {data.returnDate && (
-              <Text style={styles.date}>обр. {formatDate(data.returnDate)}</Text>
+              <Text style={legacyStyles.date}>обр. {formatDate(data.returnDate)}</Text>
             )}
           </View>
         </View>
-        <View style={styles.detailsRow}>
-          <Text style={styles.detail}>Класс: {data.cabin}</Text>
-          <Text style={styles.detail}>Пасс.: {data.passengers}</Text>
+        <View style={legacyStyles.detailsRow}>
+          <Text style={legacyStyles.detail}>Класс: {data.cabin}</Text>
+          <Text style={legacyStyles.detail}>Пасс.: {data.passengers}</Text>
         </View>
-        <View style={styles.footer}>
-          <Text style={styles.price}>
+        <View style={legacyStyles.footer}>
+          <Text style={legacyStyles.price}>
             {price.toLocaleString('ru-RU')} {currency}
           </Text>
-          <TouchableOpacity style={styles.bookBtn} onPress={onBook}>
-            <Text style={styles.bookBtnText}>Забронировать</Text>
+          <TouchableOpacity style={legacyStyles.bookBtn} onPress={onBook}>
+            <Text style={legacyStyles.bookBtnText}>Забронировать</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -273,42 +277,42 @@ export function ToolResultCard(props: ToolResultCardProps) {
   }
 
   return (
-    <TouchableOpacity style={styles.card} onPress={handleHotelPress} activeOpacity={0.85}>
-      <View style={styles.header}>
-        <Text style={styles.typeLabel}>ОТЕЛЬ</Text>
+    <TouchableOpacity style={legacyStyles.card} onPress={handleHotelPress} activeOpacity={0.85}>
+      <View style={legacyStyles.header}>
+        <Text style={legacyStyles.typeLabel}>ОТЕЛЬ</Text>
         <StarRating stars={data.stars} />
       </View>
-      <Text style={styles.hotelName}>{data.name}</Text>
-      <Text style={styles.address}>{data.address}</Text>
-      <View style={styles.detailsRow}>
-        <Text style={styles.detail}>
+      <Text style={legacyStyles.hotelName}>{data.name}</Text>
+      <Text style={legacyStyles.address}>{data.address}</Text>
+      <View style={legacyStyles.detailsRow}>
+        <Text style={legacyStyles.detail}>
           {formatDate(data.checkIn)} — {formatDate(data.checkOut)}
         </Text>
-        <Text style={styles.detail}>
+        <Text style={legacyStyles.detail}>
           {data.rooms} ном., {data.guests} гост.
         </Text>
       </View>
-      <View style={styles.footer}>
-        <Text style={styles.price}>
+      <View style={legacyStyles.footer}>
+        <Text style={legacyStyles.price}>
           {data.pricePerNight.toLocaleString('ru-RU')} {currency}/ночь
         </Text>
-        <TouchableOpacity style={styles.bookBtn} onPress={onBook}>
-          <Text style={styles.bookBtnText}>Забронировать</Text>
+        <TouchableOpacity style={legacyStyles.bookBtn} onPress={onBook}>
+          <Text style={legacyStyles.bookBtnText}>Забронировать</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 }
 
-const styles = StyleSheet.create({
+const legacyStyles = StyleSheet.create({
   card: {
-    backgroundColor: '#1C1C2E',
+    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 6,
     borderWidth: 1,
-    borderColor: '#2A2A42',
+    borderColor: Colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -317,7 +321,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   typeLabel: {
-    color: '#F59E0B',
+    color: Colors.primary,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 1,
@@ -353,7 +357,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   arrow: {
-    color: '#F59E0B',
+    color: Colors.primary,
     fontSize: Typography.sizes.xl,
   },
   flightNum: {
@@ -387,22 +391,146 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#2A2A42',
+    borderTopColor: Colors.border,
   },
   price: {
-    color: '#F59E0B',
+    color: Colors.primary,
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   bookBtn: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.primary,
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 32,
   },
   bookBtnText: {
-    color: '#0A0A14',
+    color: Colors.textInverse,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
+  },
+});
+
+// ── ChatToolResult ─────────────────────────────────────────────────────────────
+// Used in MessageBubble to render tool results inline in the chat.
+
+interface ChatToolResultProps {
+  toolName: string;
+  result: unknown;
+}
+
+function isFlightOfferArray(data: unknown): data is FlightOffer[] {
+  if (!Array.isArray(data) || data.length === 0) return false;
+  const first = data[0] as Record<string, unknown>;
+  return (
+    typeof first === 'object' &&
+    first !== null &&
+    typeof first['origin'] === 'string' &&
+    typeof first['destination'] === 'string' &&
+    typeof first['price'] === 'number'
+  );
+}
+
+function isHotelArray(data: unknown): data is Hotel[] {
+  if (!Array.isArray(data) || data.length === 0) return false;
+  const first = data[0] as Record<string, unknown>;
+  return (
+    typeof first === 'object' &&
+    first !== null &&
+    typeof first['name'] === 'string' &&
+    typeof first['pricePerNight'] === 'number'
+  );
+}
+
+function extractOffers(result: unknown): unknown[] | null {
+  if (Array.isArray(result)) return result;
+  // Backend may wrap in { offers: [...] } or { hotels: [...] } or { data: [...] }
+  if (result !== null && typeof result === 'object') {
+    const r = result as Record<string, unknown>;
+    if (Array.isArray(r['offers'])) return r['offers'];
+    if (Array.isArray(r['hotels'])) return r['hotels'];
+    if (Array.isArray(r['flights'])) return r['flights'];
+    if (Array.isArray(r['data'])) return r['data'];
+  }
+  return null;
+}
+
+export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
+  const lower = toolName.toLowerCase();
+  const isFlight = lower.includes('flight');
+  const isHotel = lower.includes('hotel');
+
+  const offers = extractOffers(result);
+
+  // ── Flight results ──
+  if (isFlight && offers !== null && isFlightOfferArray(offers)) {
+    return (
+      <View style={chatResultStyles.wrap}>
+        {offers.slice(0, 3).map((flight, i) => (
+          <FlightCard key={flight.id ?? i} flight={flight} />
+        ))}
+        {offers.length > 3 && (
+          <Text style={chatResultStyles.moreText}>+ ещё {offers.length - 3} рейсов</Text>
+        )}
+      </View>
+    );
+  }
+
+  // ── Hotel results ──
+  if (isHotel && offers !== null && isHotelArray(offers)) {
+    return (
+      <View style={chatResultStyles.wrap}>
+        {offers.slice(0, 3).map((hotel, i) => (
+          <HotelCard key={hotel.id ?? i} hotel={hotel} />
+        ))}
+        {offers.length > 3 && (
+          <Text style={chatResultStyles.moreText}>+ ещё {offers.length - 3} отелей</Text>
+        )}
+      </View>
+    );
+  }
+
+  // ── Fallback chip ──
+  return (
+    <View style={chatResultStyles.chip}>
+      <Text style={chatResultStyles.chipIcon}>{isFlight ? '✈️' : isHotel ? '🏨' : '🔍'}</Text>
+      <Text style={chatResultStyles.chipText}>Поиск завершён</Text>
+    </View>
+  );
+}
+
+const chatResultStyles = StyleSheet.create({
+  wrap: {
+    gap: 0,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  moreText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    textAlign: 'center',
+    paddingVertical: 6,
+  },
+  chip: {
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginHorizontal: 16,
+    marginVertical: 4,
+  },
+  chipIcon: {
+    fontSize: 13,
+  },
+  chipText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.medium,
   },
 });

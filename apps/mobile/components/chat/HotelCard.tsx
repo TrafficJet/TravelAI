@@ -12,29 +12,19 @@ interface Props {
   onBook?: () => void;
 }
 
-function StarRow({ count }: { count: number }) {
-  const n = Math.min(5, Math.max(0, Math.round(count)));
-  return (
-    <View style={starStyles.row}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Text key={i} style={[starStyles.star, i < n && starStyles.starActive]}>
-          ★
-        </Text>
-      ))}
-    </View>
-  );
-}
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-const starStyles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 1 },
-  star: { fontSize: 13, color: Colors.border },
-  starActive: { color: Colors.warning },
-});
+function formatCurrency(currency: string): string {
+  if (currency === 'USD') return '$';
+  if (currency === 'EUR') return '€';
+  if (currency === 'RUB') return '₽';
+  return currency;
+}
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('ru-RU', {
-    day: '2-digit',
-    month: 'short',
+    day: 'numeric',
+    month: 'long',
   });
 }
 
@@ -43,10 +33,80 @@ function nightsCount(checkIn: string, checkOut: string): number {
   return Math.max(1, Math.round(ms / (1000 * 60 * 60 * 24)));
 }
 
+// ── StarRow ───────────────────────────────────────────────────────────────────
+
+function StarRow({ count }: { count: number }) {
+  const n = Math.min(5, Math.max(0, Math.round(count)));
+  return (
+    <View style={starStyles.row}>
+      {Array.from({ length: n }).map((_, i) => (
+        <Text key={i} style={starStyles.star}>⭐</Text>
+      ))}
+    </View>
+  );
+}
+
+const starStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    gap: 1,
+    flexShrink: 1,
+  },
+  star: {
+    fontSize: 11,
+    lineHeight: 14,
+  },
+});
+
+// ── AmenityChip ───────────────────────────────────────────────────────────────
+
+const AMENITY_ICONS: Record<string, string> = {
+  wifi: 'WiFi',
+  pool: 'Бассейн',
+  breakfast: 'Завтрак',
+  spa: 'Спа',
+  parking: 'Парковка',
+  gym: 'Фитнес',
+  restaurant: 'Ресторан',
+  bar: 'Бар',
+  airport_shuttle: 'Шаттл',
+};
+
+function normalizeAmenity(raw: string): string {
+  const key = raw.toLowerCase().replace(/[\s-]/g, '_');
+  return AMENITY_ICONS[key] ?? raw;
+}
+
+function AmenityChip({ label }: { label: string }) {
+  return (
+    <View style={amenityStyles.chip}>
+      <Text style={amenityStyles.chipText}>{normalizeAmenity(label)}</Text>
+    </View>
+  );
+}
+
+const amenityStyles = StyleSheet.create({
+  chip: {
+    backgroundColor: Colors.elevated,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  chipText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+  },
+});
+
+// ── HotelCard ─────────────────────────────────────────────────────────────────
+
 export function HotelCard({ hotel, onBook }: Props) {
   const nights =
     hotel.checkIn && hotel.checkOut ? nightsCount(hotel.checkIn, hotel.checkOut) : 0;
-  const currencySymbol = hotel.currency === 'USD' ? '$' : hotel.currency;
+  const currencySymbol = formatCurrency(hotel.currency);
+  const total = nights > 0 ? hotel.pricePerNight * nights : undefined;
 
   function handlePress() {
     router.push({
@@ -71,154 +131,215 @@ export function HotelCard({ hotel, onBook }: Props) {
   }
 
   return (
-    <TouchableOpacity onPress={handlePress} activeOpacity={0.8} style={styles.card}>
-      {/* Favorite button — top right corner */}
-      <View style={styles.favBtn}>
-        <FavoriteButton type="hotel" item={hotel} size={20} />
+    <TouchableOpacity onPress={handlePress} activeOpacity={0.82} style={styles.card}>
+
+      {/* Favorite — absolute top-right */}
+      <View style={styles.favWrap}>
+        <FavoriteButton type="hotel" item={hotel} size={18} />
       </View>
 
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.typeIcon}>🏨</Text>
-        {hotel.stars !== undefined && hotel.stars > 0 && <StarRow count={hotel.stars} />}
+      {/* ── Header: icon + name + stars ── */}
+      <View style={styles.headerRow}>
+        <Text style={styles.hotelIcon}>🏨</Text>
+        <View style={styles.headerMiddle}>
+          <Text style={styles.hotelName} numberOfLines={2}>
+            {hotel.name}
+          </Text>
+          {hotel.stars !== undefined && hotel.stars > 0 && (
+            <StarRow count={hotel.stars} />
+          )}
+        </View>
       </View>
 
-      <Text style={styles.hotelName} numberOfLines={2}>{hotel.name}</Text>
-
+      {/* ── Location ── */}
       {(hotel.address || hotel.city) && (
         <View style={styles.locationRow}>
           <Ionicons name="location-outline" size={12} color={Colors.textMuted} />
-          <Text style={styles.address} numberOfLines={1}>
-            {[hotel.address, hotel.city].filter(Boolean).join(', ')}
+          <Text style={styles.locationText} numberOfLines={1}>
+            {[hotel.address, hotel.city].filter(Boolean).join(' · ')}
           </Text>
         </View>
       )}
 
+      {/* ── Divider ── */}
+      <View style={styles.divider} />
+
+      {/* ── Dates row ── */}
       {hotel.checkIn && hotel.checkOut && (
         <View style={styles.datesRow}>
-          <Text style={styles.dates}>
+          <Text style={styles.datesIcon}>📅</Text>
+          <Text style={styles.datesText}>
             {formatDate(hotel.checkIn)} — {formatDate(hotel.checkOut)}
           </Text>
-          {nights > 0 && <Text style={styles.nights}>{nights} ночей</Text>}
+          {nights > 0 && (
+            <Text style={styles.nightsText}>({nights} {nights === 1 ? 'ночь' : nights < 5 ? 'ночи' : 'ночей'})</Text>
+          )}
         </View>
       )}
 
-      <View style={styles.footer}>
-        {hotel.rating !== undefined && (
-          <View style={styles.ratingBadge}>
-            <Ionicons name="star" size={11} color={Colors.warning} />
-            <Text style={styles.ratingText}>{hotel.rating.toFixed(1)}</Text>
-          </View>
-        )}
-        <Text style={styles.price}>
-          {hotel.pricePerNight.toLocaleString('ru-RU')} {currencySymbol}/ночь
+      {/* ── Price row ── */}
+      <View style={styles.priceRow}>
+        <Text style={styles.priceIcon}>💰</Text>
+        <Text style={styles.pricePerNight}>
+          {currencySymbol}{hotel.pricePerNight.toLocaleString('ru-RU')}/ночь
         </Text>
-        {onBook && (
-          <TouchableOpacity style={styles.bookBtn} onPress={onBook}>
-            <Text style={styles.bookBtnText}>Забронировать</Text>
-          </TouchableOpacity>
+        {total !== undefined && (
+          <Text style={styles.totalPrice}>
+            {' '}Итого: {currencySymbol}{total.toLocaleString('ru-RU')}
+          </Text>
         )}
+        <TouchableOpacity
+          style={styles.buyBtn}
+          onPress={onBook ?? handlePress}
+          activeOpacity={0.8}
+          hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+        >
+          <Text style={styles.buyBtnText}>Купить →</Text>
+        </TouchableOpacity>
       </View>
+
+      {/* ── Amenities ── */}
+      {hotel.amenities && hotel.amenities.length > 0 && (
+        <>
+          <View style={styles.divider} />
+          <View style={styles.amenitiesRow}>
+            {hotel.amenities.slice(0, 5).map((a, i) => (
+              <AmenityChip key={i} label={a} />
+            ))}
+          </View>
+        </>
+      )}
+
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#1C1C2E',
-    borderRadius: 16,
-    padding: 16,
-    marginHorizontal: 16,
-    marginVertical: 6,
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 14,
+    marginHorizontal: 0,
+    marginVertical: 4,
     borderWidth: 1,
-    borderColor: '#2A2A42',
+    borderColor: Colors.border,
   },
-  favBtn: {
+
+  // Fav
+  favWrap: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: 10,
+    right: 10,
     zIndex: 1,
   },
-  header: {
+
+  // Header
+  headerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 8,
-    marginBottom: 8,
-    paddingRight: 32,
+    marginBottom: 6,
+    paddingRight: 28,
   },
-  typeIcon: {
-    fontSize: 18,
+  hotelIcon: {
+    fontSize: 20,
+    lineHeight: 26,
+    flexShrink: 0,
+  },
+  headerMiddle: {
+    flex: 1,
+    gap: 3,
   },
   hotelName: {
     color: Colors.text,
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
     fontFamily: 'Sora',
-    marginBottom: 4,
-    paddingRight: 32,
+    lineHeight: 20,
   },
+
+  // Location
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
-    marginBottom: 8,
+    marginBottom: 10,
   },
-  address: {
+  locationText: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     flex: 1,
   },
-  datesRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+
+  // Divider
+  divider: {
+    height: 1,
+    backgroundColor: Colors.border,
     marginBottom: 10,
   },
-  dates: {
+
+  // Dates
+  datesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginBottom: 8,
+    flexWrap: 'wrap',
+  },
+  datesIcon: {
+    fontSize: 13,
+  },
+  datesText: {
     color: Colors.text,
     fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.medium,
+    flexShrink: 1,
   },
-  nights: {
+  nightsText: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
   },
-  footer: {
+
+  // Price row
+  priceRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#2A2A42',
+    gap: 4,
+    marginBottom: 0,
     flexWrap: 'wrap',
-    gap: 8,
   },
-  ratingBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    backgroundColor: `${Colors.warning}22`,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
+  priceIcon: {
+    fontSize: 13,
   },
-  ratingText: {
-    color: Colors.warning,
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
-  },
-  price: {
-    color: '#F59E0B',
+  pricePerNight: {
+    color: Colors.primary,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
-  bookBtn: {
-    backgroundColor: '#F59E0B',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 32,
-  },
-  bookBtnText: {
-    color: '#0A0A14',
+  totalPrice: {
+    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
+    flex: 1,
+  },
+  buyBtn: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    marginLeft: 4,
+  },
+  buyBtnText: {
+    color: Colors.textInverse,
+    fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
+  },
+
+  // Amenities
+  amenitiesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
   },
 });
