@@ -21,6 +21,7 @@ export const Typography = {
     xl:    24,  // H2
     '2xl': 32,  // H1
     '3xl': 40,  // Display
+    '4xl': 48,  // Hero / logo icon
   },
 
   // ─── Font Weights ─────────────────────────────────────────────────────────
