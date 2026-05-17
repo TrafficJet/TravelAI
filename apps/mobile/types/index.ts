@@ -122,7 +122,8 @@ export type SSEEvent =
   | { type: 'tool_result'; toolUseId: string; result: unknown }
   | { type: 'booking_draft'; booking: BookingDraft; bookingId: string }
   | { type: 'done' }
-  | { type: 'error'; message: string };
+  | { type: 'error'; message: string }
+  | { type: 'session_title_update'; title: string };
 
 export interface PaginatedResponse<T> {
   data: T[];

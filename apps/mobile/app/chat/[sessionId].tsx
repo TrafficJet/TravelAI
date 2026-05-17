@@ -224,6 +224,7 @@ export default function ChatScreen() {
     updateMessage,
     setPendingBooking,
     sessions,
+    updateSessionTitle,
   } = useChatStore();
 
   const { balance, currency: walletCurrency, load: loadWallet } = useWalletStore();
@@ -416,6 +417,11 @@ export default function ChatScreen() {
           },
           onDone: () => {
             commitStreamingMessage();
+          },
+          onSessionTitleUpdate: (title: string) => {
+            if (!sessionId) return;
+            updateSessionTitle(sessionId, title);
+            navigation.setOptions({ title });
           },
           onError: (message) => {
             setStreaming(false);

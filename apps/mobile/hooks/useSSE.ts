@@ -12,6 +12,7 @@ interface SSEHandlers {
   onBookingDraft: (booking: BookingDraft, bookingId: string) => void;
   onDone: () => void;
   onError: (message: string) => void;
+  onSessionTitleUpdate?: (title: string) => void;
 }
 
 export interface StreamFilters {
@@ -72,6 +73,9 @@ function processSSEChunk(
           return true;
         case 'error':
           handlers.onError(event.message);
+          break;
+        case 'session_title_update':
+          handlers.onSessionTitleUpdate?.(event.title);
           break;
       }
     }

@@ -26,6 +26,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChatStore } from '../../stores/chatStore';
 import { useAuthStore } from '../../stores/authStore';
+import { useNotificationsContext } from '../../context/NotificationsContext';
 import { Colors, TextPresets, Typography, Radius, Spacing } from '../../constants';
 import { useTheme } from '../../src/theme/ThemeContext';
 import { analytics, Events } from '../../src/analytics';
@@ -62,20 +63,39 @@ function getInitials(name: string): string {
 
 // ── Custom Header ─────────────────────────────────────────────────────────────
 
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Доброе утро';
+  if (hour < 18) return 'Добрый день';
+  return 'Добрый вечер';
+}
+
+function getTodayDate(): string {
+  return new Date().toLocaleDateString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+  });
+}
+
 interface CustomHeaderProps {
   onNotificationsPress: () => void;
   userInitials: string;
+  userName?: string;
+  unreadCount: number;
 }
 
-function CustomHeader({ onNotificationsPress, userInitials }: CustomHeaderProps) {
+function CustomHeader({ onNotificationsPress, userInitials, userName, unreadCount }: CustomHeaderProps) {
   const insets = useSafeAreaInsets();
+  const greeting = userName
+    ? `${getGreeting()}, ${userName.split(' ')[0]}!`
+    : getTodayDate();
 
   return (
     <View style={[headerStyles.container, { paddingTop: insets.top + 6 }]}>
       {/* Left: brand */}
       <View style={headerStyles.left}>
         <Text style={headerStyles.brand}>TravelAI</Text>
-        <Text style={headerStyles.brandSub}>AI-ассистент</Text>
+        <Text style={headerStyles.brandSub}>{greeting}</Text>
       </View>
       {/* Right: bell + avatar */}
       <View style={headerStyles.right}>
@@ -86,6 +106,13 @@ function CustomHeader({ onNotificationsPress, userInitials }: CustomHeaderProps)
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Text style={headerStyles.bellIcon}>🔔</Text>
+          {unreadCount > 0 && (
+            <View style={headerStyles.badge}>
+              <Text style={headerStyles.badgeText}>
+                {unreadCount > 9 ? '9+' : String(unreadCount)}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
         <View style={headerStyles.avatar}>
           <Text style={headerStyles.avatarText}>{userInitials}</Text>
@@ -138,6 +165,26 @@ const headerStyles = StyleSheet.create({
   },
   bellIcon: {
     fontSize: 16,
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: Colors.error,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+    borderWidth: 1.5,
+    borderColor: Colors.background,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '700' as const,
+    lineHeight: 12,
   },
   avatar: {
     width: 36,
@@ -556,6 +603,7 @@ export default function ChatListScreen() {
   const { sessions, loadSessions, deleteSession, createSession } = useChatStore();
   const { user } = useAuthStore();
   const { colors } = useTheme();
+  const { unreadCount } = useNotificationsContext();
 
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -646,6 +694,8 @@ export default function ChatListScreen() {
       <CustomHeader
         onNotificationsPress={() => router.push('/notifications' as never)}
         userInitials={userInitials}
+        userName={user?.name}
+        unreadCount={unreadCount}
       />
 
       {isLoading ? (

@@ -22,6 +22,101 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { MultiCityForm } from '../../components/chat/MultiCityForm';
 import api from '../../services/api';
 
+// ── Static route data ─────────────────────────────────────────────────────────
+
+interface StaticRoute {
+  origin: string;
+  destination: string;
+  city: string;
+  price: string;
+  duration: string;
+}
+
+const WARSAW_ROUTES: StaticRoute[] = [
+  { origin: 'WAW', destination: 'BCN', city: 'Барселона', price: 'от €49', duration: '3ч' },
+  { origin: 'WAW', destination: 'LHR', city: 'Лондон', price: 'от €49', duration: '2ч 40м' },
+  { origin: 'WAW', destination: 'FCO', city: 'Рим', price: 'от €49', duration: '2ч 45м' },
+  { origin: 'WAW', destination: 'AMS', city: 'Амстердам', price: 'от €49', duration: '2ч 10м' },
+];
+
+const KYIV_ROUTES: StaticRoute[] = [
+  { origin: 'KBP', destination: 'BCN', city: 'Барселона', price: 'от €59', duration: '3ч 30м' },
+  { origin: 'KBP', destination: 'IST', city: 'Стамбул', price: 'от €80', duration: '2ч 20м' },
+];
+
+// ── Static route card ─────────────────────────────────────────────────────────
+
+interface StaticRouteCardProps {
+  item: StaticRoute;
+  onPress: () => void;
+  index: number;
+}
+
+function StaticRouteCard({ item, onPress, index }: StaticRouteCardProps) {
+  return (
+    <Animated.View entering={FadeInDown.delay(index * 70).springify()}>
+      <TouchableOpacity style={routeCardStyles.card} onPress={onPress} activeOpacity={0.75}>
+        <View style={routeCardStyles.routeRow}>
+          <Text style={routeCardStyles.iata}>{item.origin}</Text>
+          <Ionicons name="arrow-forward" size={12} color={Colors.primary} style={routeCardStyles.arrow} />
+          <Text style={routeCardStyles.iata}>{item.destination}</Text>
+        </View>
+        <Text style={routeCardStyles.city} numberOfLines={1}>{item.city}</Text>
+        <View style={routeCardStyles.footer}>
+          <Text style={routeCardStyles.price}>{item.price}</Text>
+          <Text style={routeCardStyles.duration}>{item.duration}</Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+const routeCardStyles = StyleSheet.create({
+  card: {
+    backgroundColor: Colors.card,
+    borderRadius: Radius.card,
+    padding: Spacing.md,
+    marginRight: Spacing.sm,
+    width: 148,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    minHeight: 100,
+    justifyContent: 'space-between',
+  },
+  routeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  iata: {
+    color: Colors.text,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.bold,
+  },
+  arrow: {
+    marginHorizontal: 4,
+  },
+  city: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    marginBottom: Spacing.sm,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  price: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.bold,
+  },
+  duration: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+  },
+});
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface PopularFlight {
@@ -367,6 +462,48 @@ export default function ExploreScreen() {
           <Ionicons name="map-outline" size={18} color="#fff" />
           <Text style={styles.mapBtnText}>Карта</Text>
         </TouchableOpacity>
+      </Animated.View>
+
+      {/* Warsaw routes */}
+      <Animated.View entering={FadeInDown.delay(40).springify()} style={styles.section}>
+        <SectionHeader title="Популярные маршруты из Варшавы" />
+        <FlatList
+          data={WARSAW_ROUTES}
+          keyExtractor={(item) => `${item.origin}-${item.destination}`}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalList}
+          renderItem={({ item, index }) => (
+            <StaticRouteCard
+              item={item}
+              index={index}
+              onPress={() =>
+                openChat(`Найди рейс из Варшавы ${item.origin} → ${item.destination} (${item.city})`)
+              }
+            />
+          )}
+        />
+      </Animated.View>
+
+      {/* Kyiv routes */}
+      <Animated.View entering={FadeInDown.delay(60).springify()} style={styles.section}>
+        <SectionHeader title="Популярные направления из Киева" />
+        <FlatList
+          data={KYIV_ROUTES}
+          keyExtractor={(item) => `${item.origin}-${item.destination}`}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalList}
+          renderItem={({ item, index }) => (
+            <StaticRouteCard
+              item={item}
+              index={index}
+              onPress={() =>
+                openChat(`Найди рейс из Киева ${item.origin} → ${item.destination} (${item.city})`)
+              }
+            />
+          )}
+        />
       </Animated.View>
 
       {/* Popular flights */}

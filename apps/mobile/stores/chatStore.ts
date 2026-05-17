@@ -20,6 +20,7 @@ interface ChatStore {
   addMessage: (message: Message) => void;
   updateMessage: (id: string, updates: Partial<Message>) => void;
   setPendingBooking: (booking: BookingDraft | null) => void;
+  updateSessionTitle: (sessionId: string, title: string) => void;
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -101,4 +102,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     })),
 
   setPendingBooking: (booking) => set({ pendingBooking: booking }),
+
+  updateSessionTitle: (sessionId: string, title: string) => {
+    set((state) => ({
+      sessions: state.sessions.map((s) =>
+        s.id === sessionId ? { ...s, title } : s,
+      ),
+      currentSession:
+        state.currentSession?.id === sessionId
+          ? { ...state.currentSession, title }
+          : state.currentSession,
+    }));
+  },
 }));
