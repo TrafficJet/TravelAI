@@ -70,7 +70,6 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
   const isIncoming = transaction.type === 'TOPUP';
   const amountColor = isIncoming ? Colors.success : Colors.error;
   const amountPrefix = isIncoming ? '+' : '-';
-  const icon = getTransactionIcon(transaction.type, transaction.description);
   const currencySymbol = CURRENCY_SYMBOLS[transaction.currency] ?? transaction.currency;
 
   function formatDate(dateStr: string): string {
@@ -84,8 +83,8 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
 
   return (
     <View style={txStyles.row}>
-      <View style={[txStyles.iconContainer, { backgroundColor: `${amountColor}20` }]}>
-        <Text style={txStyles.iconEmoji}>{icon}</Text>
+      <View style={[txStyles.iconContainer, { backgroundColor: `${amountColor}20`, borderWidth: 1, borderColor: `${amountColor}35` }]}>
+        <Text style={[txStyles.signText, { color: amountColor }]}>{amountPrefix}</Text>
       </View>
       <View style={txStyles.info}>
         <Text style={txStyles.label} numberOfLines={1}>{transaction.description}</Text>
@@ -108,19 +107,28 @@ const txStyles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    marginHorizontal: Spacing.md,
+    marginBottom: 8,
+    backgroundColor: '#1C1C2E',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   iconContainer: {
     width: 44,
     height: 44,
-    borderRadius: Radius.avatar,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   iconEmoji: {
     fontSize: 20,
+  },
+  signText: {
+    fontSize: 22,
+    fontWeight: Typography.weights.bold,
+    lineHeight: 26,
   },
   info: {
     flex: 1,
@@ -397,28 +405,36 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
 
   return (
     <LinearGradient
-      colors={['#1C1C2E', '#2D1A0A']}
+      colors={['#1C1C0A', '#2D1A0A']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={heroStyles.card}
     >
-      <Text style={heroStyles.label}>Баланс кошелька</Text>
+      {/* Wallet icon — top right */}
+      <View style={heroStyles.walletIconWrap}>
+        <Text style={heroStyles.walletIcon}>👛</Text>
+      </View>
+
+      {/* Balance */}
       <Text style={heroStyles.amount}>
         {symbol}{formatted}
       </Text>
+      <Text style={heroStyles.availableLabel}>Доступный баланс</Text>
+
+      {/* Action buttons */}
       <View style={heroStyles.actionsRow}>
         <TouchableOpacity
           style={heroStyles.topUpBtn}
           onPress={onTopUp}
           activeOpacity={0.8}
         >
-          <Text style={heroStyles.topUpBtnText}>💳  Пополнить</Text>
+          <Text style={heroStyles.topUpBtnText}>+ Пополнить</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={heroStyles.withdrawBtn}
+          style={heroStyles.historyBtn}
           activeOpacity={0.8}
         >
-          <Text style={heroStyles.withdrawBtnText}>📤  Вывести</Text>
+          <Text style={heroStyles.historyBtnText}>История</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -432,21 +448,38 @@ const heroStyles = StyleSheet.create({
     marginBottom: Spacing.lg,
     borderRadius: Radius.cardLg,
     padding: Spacing.lg,
+    paddingTop: 20,
     borderWidth: 1,
-    borderColor: `${Colors.primary}30`,
+    borderColor: `${Colors.primary}40`,
   },
-  label: {
-    color: Colors.textMuted,
-    fontSize: 14,
-    fontWeight: Typography.weights.medium,
-    marginBottom: 12,
-    letterSpacing: 0.3,
+  walletIconWrap: {
+    position: 'absolute',
+    top: 18,
+    right: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: `${Colors.primary}20`,
+    borderWidth: 1,
+    borderColor: `${Colors.primary}40`,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  walletIcon: {
+    fontSize: 22,
   },
   amount: {
-    color: Colors.text,
-    fontSize: 36,
+    fontFamily: 'Sora_Bold',
+    color: Colors.primary,
+    fontSize: 42,
     fontWeight: Typography.weights.bold,
-    letterSpacing: -0.5,
+    letterSpacing: -1,
+    marginBottom: 4,
+    marginRight: 52,
+  },
+  availableLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
     marginBottom: Spacing.lg,
   },
   actionsRow: {
@@ -457,7 +490,7 @@ const heroStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.primary,
     paddingVertical: 12,
-    borderRadius: Radius.button,
+    borderRadius: 24,
     alignItems: 'center',
   },
   topUpBtnText: {
@@ -465,15 +498,15 @@ const heroStyles = StyleSheet.create({
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
-  withdrawBtn: {
+  historyBtn: {
     flex: 1,
     paddingVertical: 12,
-    borderRadius: Radius.button,
+    borderRadius: 24,
     borderWidth: 1.5,
-    borderColor: Colors.text,
+    borderColor: `${Colors.text}50`,
     alignItems: 'center',
   },
-  withdrawBtnText: {
+  historyBtnText: {
     color: Colors.text,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,

@@ -56,12 +56,20 @@ function StaticRouteCard({ item, onPress, index }: StaticRouteCardProps) {
   return (
     <Animated.View entering={FadeInDown.delay(index * 70).springify()}>
       <TouchableOpacity style={routeCardStyles.card} onPress={onPress} activeOpacity={0.75}>
-        <View style={routeCardStyles.routeRow}>
-          <Text style={routeCardStyles.iata}>{item.origin}</Text>
-          <Ionicons name="arrow-forward" size={12} color={Colors.primary} style={routeCardStyles.arrow} />
-          <Text style={routeCardStyles.iata}>{item.destination}</Text>
+        {/* Route code row with right arrow */}
+        <View style={routeCardStyles.headerRow}>
+          <View style={routeCardStyles.routeRow}>
+            <Text style={routeCardStyles.iata}>{item.origin}</Text>
+            <Text style={routeCardStyles.separator}> → </Text>
+            <Text style={routeCardStyles.iata}>{item.destination}</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={14} color={Colors.textMuted} />
         </View>
+
+        {/* City name */}
         <Text style={routeCardStyles.city} numberOfLines={1}>{item.city}</Text>
+
+        {/* Price + duration */}
         <View style={routeCardStyles.footer}>
           <Text style={routeCardStyles.price}>{item.price}</Text>
           <Text style={routeCardStyles.duration}>{item.duration}</Text>
@@ -75,31 +83,39 @@ const routeCardStyles = StyleSheet.create({
   card: {
     backgroundColor: Colors.card,
     borderRadius: Radius.card,
-    padding: Spacing.md,
+    padding: 14,
     marginRight: Spacing.sm,
-    width: 148,
+    width: 168,
     borderWidth: 1,
     borderColor: Colors.border,
-    minHeight: 100,
+    minHeight: 110,
     justifyContent: 'space-between',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
   },
   routeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.xs,
   },
   iata: {
     color: Colors.text,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
+    letterSpacing: 0.3,
   },
-  arrow: {
-    marginHorizontal: 4,
+  separator: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.bold,
   },
   city: {
     color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
-    marginBottom: Spacing.sm,
+    fontSize: Typography.sizes.sm,
+    marginBottom: 8,
   },
   footer: {
     flexDirection: 'row',
@@ -108,12 +124,12 @@ const routeCardStyles = StyleSheet.create({
   },
   price: {
     color: Colors.primary,
-    fontSize: Typography.sizes.xs,
+    fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
   duration: {
     color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
+    fontSize: Typography.sizes.sm,
   },
 });
 
@@ -308,17 +324,42 @@ const QUICK_FILTERS: QuickFilter[] = [
 
 // ── Section header ────────────────────────────────────────────────────────────
 
-function SectionHeader({ title }: { title: string }) {
-  return <Text style={sectionStyles.title}>{title}</Text>;
+function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <View style={sectionStyles.wrapper}>
+      <View style={sectionStyles.accent} />
+      <View>
+        <Text style={sectionStyles.title}>{title}</Text>
+        {subtitle ? <Text style={sectionStyles.subtitle}>{subtitle}</Text> : null}
+      </View>
+    </View>
+  );
 }
 
 const sectionStyles = StyleSheet.create({
-  title: {
-    color: Colors.text,
-    fontSize: Typography.sizes.lg,
-    fontWeight: Typography.weights.bold,
+  wrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     marginBottom: Spacing.sm,
     marginTop: Spacing.xs,
+  },
+  accent: {
+    width: 3,
+    height: 20,
+    borderRadius: 2,
+    backgroundColor: Colors.primary,
+  },
+  title: {
+    color: Colors.text,
+    fontFamily: 'Sora_SemiBold',
+    fontSize: Typography.sizes.lg,
+    fontWeight: Typography.weights.bold,
+  },
+  subtitle: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+    marginTop: 1,
   },
 });
 
@@ -466,7 +507,7 @@ export default function ExploreScreen() {
 
       {/* Warsaw routes */}
       <Animated.View entering={FadeInDown.delay(40).springify()} style={styles.section}>
-        <SectionHeader title="Популярные маршруты из Варшавы" />
+        <SectionHeader title="Популярные из Варшавы" subtitle="Лучшие направления этой недели" />
         <FlatList
           data={WARSAW_ROUTES}
           keyExtractor={(item) => `${item.origin}-${item.destination}`}
@@ -487,7 +528,7 @@ export default function ExploreScreen() {
 
       {/* Kyiv routes */}
       <Animated.View entering={FadeInDown.delay(60).springify()} style={styles.section}>
-        <SectionHeader title="Популярные направления из Киева" />
+        <SectionHeader title="Популярные из Киева" subtitle="Прямые и со стыковкой" />
         <FlatList
           data={KYIV_ROUTES}
           keyExtractor={(item) => `${item.origin}-${item.destination}`}
