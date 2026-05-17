@@ -62,7 +62,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
         value={text}
         onChangeText={setText}
         placeholder="Найдите рейс или отель..."
-        placeholderTextColor={Colors.textMuted}
+        placeholderTextColor="#8B8BA7"
         style={styles.input}
         multiline
         maxLength={2000}
@@ -79,7 +79,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
         ]}
         activeOpacity={0.8}
       >
-        <Ionicons name="send" size={20} color={Colors.textInverse} />
+        <Ionicons name="send" size={18} color="#0A0A14" />
       </TouchableOpacity>
     </View>
   );
@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: Colors.card,
-    borderRadius: 20,
+    backgroundColor: '#252538',
+    borderRadius: 32,
     paddingHorizontal: 16,
     paddingVertical: 10,
     paddingTop: 10,
@@ -115,10 +115,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   sendButton: {
-    backgroundColor: Colors.primary,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    backgroundColor: '#F59E0B',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },

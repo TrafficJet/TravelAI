@@ -34,24 +34,24 @@ const FILTER_TABS: { key: FilterTab; label: string }[] = [
   { key: 'CANCELLED', label: 'Отменённые' },
 ];
 
-const STATUS_BADGE_COLORS: Record<BookingStatus, string> = {
-  PENDING: Colors.warning,
-  CONFIRMED: Colors.success,
-  CANCELLED: Colors.error,
-  FAILED: Colors.error,
+const STATUS_BADGE_CONFIG: Record<BookingStatus, { bg: string; color: string }> = {
+  CONFIRMED: { bg: 'rgba(16,185,129,0.15)',  color: '#10B981' },
+  PENDING:   { bg: 'rgba(245,158,11,0.15)',  color: '#F59E0B' },
+  CANCELLED: { bg: 'rgba(244,63,94,0.15)',   color: '#F43F5E' },
+  FAILED:    { bg: 'rgba(244,63,94,0.15)',   color: '#F43F5E' },
 };
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
-  PENDING: 'Ожидает',
-  CONFIRMED: 'Подтверждено',
-  CANCELLED: 'Отменено',
-  FAILED: 'Ошибка',
+  PENDING:   'ОЖИДАЕТ',
+  CONFIRMED: 'ПОДТВЕРЖДЕНО',
+  CANCELLED: 'ОТМЕНЕНО',
+  FAILED:    'ОШИБКА',
 };
 
 function StatusBadge({ status }: { status: BookingStatus }) {
-  const color = STATUS_BADGE_COLORS[status];
+  const { bg, color } = STATUS_BADGE_CONFIG[status];
   return (
-    <View style={[badgeStyles.wrap, { backgroundColor: `${color}22` }]}>
+    <View style={[badgeStyles.wrap, { backgroundColor: bg }]}>
       <View style={[badgeStyles.dot, { backgroundColor: color }]} />
       <Text style={[badgeStyles.label, { color }]}>{STATUS_LABELS[status]}</Text>
     </View>
@@ -62,8 +62,8 @@ const badgeStyles = StyleSheet.create({
   wrap: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 22,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
     borderRadius: Radius.chip,
     alignSelf: 'flex-start',
     marginTop: Spacing.xs,
@@ -77,6 +77,7 @@ const badgeStyles = StyleSheet.create({
   label: {
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
+    letterSpacing: 0.5,
   },
 });
 
@@ -264,18 +265,18 @@ export default function BookingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#0A0A14',
   },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
+    backgroundColor: '#1C1C2E',
     marginHorizontal: Spacing.md,
     marginTop: Spacing.sm,
     marginBottom: Spacing.sm,
     borderRadius: Radius.input,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#2A2A42',
     paddingHorizontal: Spacing.sm,
   },
   searchIcon: {
@@ -297,13 +298,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: Radius.chip,
-    backgroundColor: Colors.surface,
+    backgroundColor: '#1C1C2E',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#2A2A42',
   },
   chipActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
+    backgroundColor: '#F59E0B',
+    borderColor: '#F59E0B',
   },
   chipText: {
     color: Colors.textMuted,
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.medium,
   },
   chipTextActive: {
-    color: Colors.textInverse,
+    color: '#0A0A14',
   },
   badgeWrap: {
     paddingHorizontal: 16,

@@ -9,6 +9,7 @@ import {
   ListRenderItemInfo,
   StatusBar,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { Colors, TextPresets, Radius, Spacing } from '../constants';
@@ -89,6 +90,8 @@ const slideStyles = StyleSheet.create({
   },
   title: {
     ...TextPresets.h2,
+    fontFamily: 'Sora',
+    fontWeight: '600',
     color: Colors.text,
     textAlign: 'center',
     marginBottom: 16,
@@ -127,8 +130,13 @@ export default function OnboardingScreen() {
   const isLast = currentIndex === SLIDES.length - 1;
 
   return (
-    <View style={styles.root}>
-      <StatusBar barStyle="light-content" backgroundColor={Colors.background} />
+    <LinearGradient
+      colors={['#0A0A14', '#2D1A0A']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.root}
+    >
+      <StatusBar barStyle="light-content" backgroundColor="#0A0A14" />
       <FlatList<Slide>
         ref={flatListRef}
         data={SLIDES}
@@ -171,14 +179,13 @@ export default function OnboardingScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   flatList: {
     flex: 1,
@@ -194,7 +201,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.border,
+    backgroundColor: '#2A2A42',
   },
   dotActive: {
     width: 24,

@@ -75,11 +75,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   bubbleUser: {
-    backgroundColor: Colors.primary,
+    backgroundColor: '#F59E0B',
     borderBottomRightRadius: 4,
   },
   bubbleAssistant: {
-    backgroundColor: Colors.surface,
+    backgroundColor: '#1C1C2E',
     borderBottomLeftRadius: 4,
     borderWidth: 1,
     borderColor: Colors.border,
@@ -89,17 +89,17 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   contentUser: {
-    color: Colors.text,
+    color: '#0A0A14',
   },
   contentAssistant: {
-    color: Colors.text,
+    color: '#F4F4F8',
   },
   time: {
     fontSize: Typography.sizes.xs,
     marginTop: 4,
   },
   timeUser: {
-    color: Colors.textMuted,
+    color: 'rgba(10,10,20,0.55)',
     textAlign: 'right',
   },
   timeAssistant: {

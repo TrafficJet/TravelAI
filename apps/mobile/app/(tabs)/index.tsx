@@ -78,7 +78,7 @@ const emptyStyles = StyleSheet.create({
     marginTop: 40,
   },
   icon: {
-    fontSize: 60,
+    fontSize: 48,
     marginBottom: 16,
   },
   title: {
@@ -89,7 +89,7 @@ const emptyStyles = StyleSheet.create({
   },
   subtitle: {
     ...TextPresets.body,
-    color: Colors.textMuted,
+    color: '#8B8BA7',
     textAlign: 'center',
     marginBottom: 28,
   },
@@ -100,16 +100,16 @@ const emptyStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   chip: {
-    backgroundColor: Colors.card,
+    backgroundColor: '#1C1C2E',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#2A2A42',
     paddingHorizontal: 16,
     paddingVertical: 9,
     borderRadius: Radius.chip,
   },
   chipText: {
     ...TextPresets.buttonSm,
-    color: Colors.textMuted,
+    color: '#8B8BA7',
   },
 });
 
@@ -395,7 +395,7 @@ export default function ChatListScreen() {
         disabled={isCreating}
       >
         {isCreating
-          ? <ActivityIndicator color="#FFFFFF" size="small" />
+          ? <ActivityIndicator color="#0A0A14" size="small" />
           : <Text style={styles.fabText}>+</Text>
         }
       </TouchableOpacity>
@@ -406,7 +406,7 @@ export default function ChatListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#0A0A14',
   },
   emptyContainer: {
     flexGrow: 1,
@@ -427,11 +427,11 @@ const styles = StyleSheet.create({
     bottom: Spacing.md,
     width: 56,
     height: 56,
-    borderRadius: Radius.fab,
-    backgroundColor: Colors.primary,
+    borderRadius: 9999,
+    backgroundColor: '#F59E0B',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.primary,
+    shadowColor: '#F59E0B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   fabText: {
-    color: Colors.textInverse,
+    color: '#0A0A14',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.regular,
     marginTop: -2,

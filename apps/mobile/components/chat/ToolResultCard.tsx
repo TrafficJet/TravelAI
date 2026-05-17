@@ -125,13 +125,13 @@ export function ToolResultCard(props: ToolResultCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
+    backgroundColor: '#1C1C2E',
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 6,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#2A2A42',
   },
   header: {
     flexDirection: 'row',
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   typeLabel: {
-    color: Colors.primary,
+    color: '#F59E0B',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 1,
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   arrow: {
-    color: Colors.primary,
+    color: '#F59E0B',
     fontSize: Typography.sizes.xl,
   },
   flightNum: {
@@ -210,21 +210,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: '#2A2A42',
   },
   price: {
-    color: Colors.primary,
+    color: '#F59E0B',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   bookBtn: {
-    backgroundColor: Colors.primary,
+    backgroundColor: '#F59E0B',
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 10,
+    borderRadius: 32,
   },
   bookBtnText: {
-    color: Colors.textInverse,
+    color: '#0A0A14',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },

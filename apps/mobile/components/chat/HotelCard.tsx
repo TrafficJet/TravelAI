@@ -125,13 +125,13 @@ export function HotelCard({ hotel, onBook }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
+    backgroundColor: '#1C1C2E',
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 6,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#2A2A42',
   },
   favBtn: {
     position: 'absolute',
@@ -151,8 +151,9 @@ const styles = StyleSheet.create({
   },
   hotelName: {
     color: Colors.text,
-    fontSize: Typography.sizes.md,
+    fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
+    fontFamily: 'Sora',
     marginBottom: 4,
     paddingRight: 32,
   },
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: '#2A2A42',
     flexWrap: 'wrap',
     gap: 8,
   },
@@ -205,18 +206,18 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.semibold,
   },
   price: {
-    color: Colors.primary,
+    color: '#F59E0B',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
   bookBtn: {
-    backgroundColor: Colors.primary,
+    backgroundColor: '#F59E0B',
     paddingVertical: 6,
     paddingHorizontal: 14,
-    borderRadius: 10,
+    borderRadius: 32,
   },
   bookBtnText: {
-    color: Colors.textInverse,
+    color: '#0A0A14',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
