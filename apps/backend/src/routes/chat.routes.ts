@@ -7,16 +7,16 @@ import {
   deleteSession,
 } from '../handlers/chat.handler';
 import { authenticate } from '../middleware/auth.middleware';
-import { checkChatLimit, checkSessionLimit, checkChatRateLimit } from '../middleware/rateLimiter';
+import { checkChatLimit, checkChatRateLimit } from '../middleware/rateLimiter';
 
 // Chat routes — all require authentication
 export async function chatRoutes(fastify: FastifyInstance) {
   fastify.addHook('preHandler', authenticate);
 
-  // POST /api/chat/sessions — create new session (with session limit check)
+  // POST /api/chat/sessions — create new session (no session count limit)
   // Optional contextData enriches the Claude system prompt for this session.
   fastify.post('/sessions', {
-    preHandler: [checkSessionLimit],
+    preHandler: [],
     schema: {
       body: {
         type: 'object',
