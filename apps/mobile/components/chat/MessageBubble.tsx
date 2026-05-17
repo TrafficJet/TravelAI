@@ -203,6 +203,18 @@ function RichText({ content, isUser }: RichTextProps) {
       {lines.map((line, index) => {
         const key = index;
 
+        // Heading # (H1)
+        if (/^# /.test(line) && !line.startsWith('## ')) {
+          const text = line.replace(/^#\s+/, '');
+          return (
+            <RichLine
+              key={key}
+              text={text}
+              baseStyle={contentStyles.headingH1}
+            />
+          );
+        }
+
         // Heading ## or ###
         if (line.startsWith('## ') || line.startsWith('### ')) {
           const text = line.replace(/^#{2,3}\s+/, '');
@@ -266,6 +278,14 @@ const contentStyles = StyleSheet.create({
     color: '#0A0A14',
     fontSize: Typography.sizes.base,
     lineHeight: 22,
+  },
+  headingH1: {
+    color: Colors.text,
+    fontSize: (Typography.sizes['2xl'] as number | undefined) ?? 22,
+    fontWeight: '700',
+    lineHeight: 30,
+    marginBottom: 6,
+    marginTop: 8,
   },
   heading: {
     color: Colors.text,

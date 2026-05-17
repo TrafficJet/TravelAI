@@ -9,6 +9,7 @@ import {
   Text,
   Animated,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
@@ -23,6 +24,7 @@ import { BookingConfirmModal } from '../../components/chat/BookingConfirmModal';
 import { FlightFilterBar, FlightFiltersSheet, type FlightFilters } from '../../components/chat/FlightFilters';
 import { HotelFilterBar, HotelFiltersSheet, type HotelFilters } from '../../components/chat/HotelFiltersSheet';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { SkeletonChatMessage } from '../../components/ui/Skeleton';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { analytics, Events } from '../../src/analytics';
@@ -90,12 +92,13 @@ const SUGGESTIONS = [
   'Амстердам → Прага',
 ];
 
-const CHAT_SUGGESTIONS = [
+const CONTEXT_SUGGESTIONS = [
   'Добавь трансфер из аэропорта',
-  'Покажи отели в центре',
+  'Покажи отели дешевле',
   'Есть прямые рейсы?',
   'Нужен обратный билет',
-  'Какой бюджет нужен?',
+  'Что взять с собой?',
+  'Лучший район для отеля?',
 ];
 
 interface EmptyStateProps {
@@ -127,6 +130,57 @@ function EmptyState({ onSelectSuggestion }: EmptyStateProps) {
     </View>
   );
 }
+
+// ── Post-message suggestions ──────────────────────────────────────────────────
+
+function PostMessageSuggestions({ onSelect }: { onSelect: (text: string) => void }) {
+  return (
+    <View style={suggStyles.wrap}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={suggStyles.row}
+      >
+        {CONTEXT_SUGGESTIONS.map((s) => (
+          <TouchableOpacity
+            key={s}
+            style={suggStyles.chip}
+            onPress={() => onSelect(s)}
+            activeOpacity={0.7}
+          >
+            <Text style={suggStyles.chipText}>{s}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
+const suggStyles = StyleSheet.create({
+  wrap: {
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    backgroundColor: Colors.surface,
+  },
+  row: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  chip: {
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: `${Colors.primary}40`,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+  },
+  chipText: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.medium,
+  },
+});
 
 const emptyStyles = StyleSheet.create({
   container: {
@@ -225,6 +279,7 @@ export default function ChatScreen() {
     setPendingBooking,
     sessions,
     updateSessionTitle,
+    deleteSession,
   } = useChatStore();
 
   const { balance, currency: walletCurrency, load: loadWallet } = useWalletStore();
@@ -290,32 +345,98 @@ export default function ChatScreen() {
   }, []);
 
   // ── Session title ─────────────────────────────────────────────────────────
+  const handleHeaderMenu = useCallback(() => {
+    if (!sessionId) return;
+    Alert.alert(
+      currentSession?.title ?? 'Чат',
+      undefined,
+      [
+        {
+          text: 'Очистить историю',
+          onPress: () => {
+            Alert.alert(
+              'Очистить историю?',
+              'Все сообщения в этом чате будут удалены.',
+              [
+                { text: 'Отмена', style: 'cancel' },
+                {
+                  text: 'Очистить',
+                  style: 'destructive',
+                  onPress: () => {
+                    // Reload empty messages list without deleting the session
+                    loadMessages(sessionId).catch(() => {});
+                  },
+                },
+              ],
+            );
+          },
+        },
+        {
+          text: 'Удалить чат',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Удалить чат?',
+              'Этот чат и все сообщения будут удалены безвозвратно.',
+              [
+                { text: 'Отмена', style: 'cancel' },
+                {
+                  text: 'Удалить',
+                  style: 'destructive',
+                  onPress: () => {
+                    deleteSession(sessionId)
+                      .catch(() => {})
+                      .finally(() => router.back());
+                  },
+                },
+              ],
+            );
+          },
+        },
+        { text: 'Отмена', style: 'cancel' },
+      ],
+      { cancelable: true },
+    );
+  }, [sessionId, currentSession, deleteSession, loadMessages]);
+
   useEffect(() => {
     if (!sessionId) return;
     const session = (sessions ?? []).find((s) => s.id === sessionId);
+    const title = session?.title ?? currentSession?.title ?? 'Новый чат';
     if (session) {
       setCurrentSession(session);
-      navigation.setOptions({
-        title: session.title,
-        headerTitleStyle: {
-          fontFamily: 'Sora',
-          fontSize: 16,
-          fontWeight: '600' as const,
-          color: Colors.text,
-        },
-        headerRight: () => (
-          <TouchableOpacity
-            style={chatHeaderStyles.menuBtn}
-            onPress={() => {}}
-            activeOpacity={0.7}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Text style={chatHeaderStyles.menuBtnText}>•••</Text>
-          </TouchableOpacity>
-        ),
-      });
     }
-  }, [sessionId, sessions, setCurrentSession, navigation]);
+    navigation.setOptions({
+      title,
+      headerBackTitle: '',
+      headerTitleStyle: {
+        fontFamily: 'Sora',
+        fontSize: 16,
+        fontWeight: '600' as const,
+        color: Colors.text,
+      },
+      headerLeft: () => (
+        <TouchableOpacity
+          style={chatHeaderStyles.backBtn}
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Text style={chatHeaderStyles.backBtnText}>{'←'}</Text>
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity
+          style={chatHeaderStyles.menuBtn}
+          onPress={handleHeaderMenu}
+          activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Text style={chatHeaderStyles.menuBtnText}>•••</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -484,10 +605,6 @@ export default function ChatScreen() {
       : []),
   ];
 
-  if (isLoading) {
-    return <LoadingSpinner fullScreen />;
-  }
-
   void currentSession;
 
   // Badge counts
@@ -497,6 +614,30 @@ export default function ChatScreen() {
     (hotelFilters.stars !== undefined ? 1 : 0) +
     (hotelFilters.amenities?.length ?? 0) +
     (hotelFilters.sortBy !== undefined ? 1 : 0);
+
+  // ── Skeleton loading state ────────────────────────────────────────────────
+  if (isLoading) {
+    return (
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      >
+        <View style={styles.skeletonWrap}>
+          <SkeletonChatMessage />
+          <View style={styles.skeletonUserRow}>
+            <View style={styles.skeletonUserBubble} />
+          </View>
+          <SkeletonChatMessage />
+        </View>
+      </KeyboardAvoidingView>
+    );
+  }
+
+  const showPostSuggestions =
+    safeMessages.length > 0 &&
+    !isStreaming &&
+    safeMessages[safeMessages.length - 1]?.role === 'assistant';
 
   return (
     <KeyboardAvoidingView
@@ -521,7 +662,7 @@ export default function ChatScreen() {
         {hotelActiveCount > 0 && <View style={styles.spacer} />}
       </View>
 
-      {displayMessages.length === 0 && !isLoading ? (
+      {displayMessages.length === 0 ? (
         <EmptyState
           onSelectSuggestion={(suggestion) => {
             chatInputRef.current?.setText(suggestion);
@@ -545,21 +686,20 @@ export default function ChatScreen() {
         />
       )}
 
+      {/* Context suggestions shown after AI replies */}
+      {showPostSuggestions && (
+        <PostMessageSuggestions
+          onSelect={(suggestion) => {
+            chatInputRef.current?.setText(suggestion);
+          }}
+        />
+      )}
+
       <ChatInput
         ref={chatInputRef}
         onSend={handleSend}
         disabled={isStreaming}
         initialMessage={initialMessage}
-        suggestions={
-          !isStreaming &&
-          safeMessages.length > 0 &&
-          safeMessages[safeMessages.length - 1]?.role === 'assistant'
-            ? CHAT_SUGGESTIONS
-            : []
-        }
-        onSuggestionSelect={(suggestion) => {
-          chatInputRef.current?.setText(suggestion);
-        }}
       />
 
       {pendingBooking && (
@@ -593,6 +733,15 @@ export default function ChatScreen() {
 }
 
 const chatHeaderStyles = StyleSheet.create({
+  backBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  backBtnText: {
+    color: Colors.primary,
+    fontSize: 22,
+    fontWeight: Typography.weights.bold,
+  },
   menuBtn: {
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -628,5 +777,21 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     height: 8,
+  },
+  // Skeleton loading state
+  skeletonWrap: {
+    flex: 1,
+    paddingTop: 20,
+  },
+  skeletonUserRow: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  skeletonUserBubble: {
+    width: '55%',
+    height: 44,
+    borderRadius: 18,
+    backgroundColor: `${Colors.primary}33`,
   },
 });

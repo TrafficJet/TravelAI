@@ -425,9 +425,11 @@ function isFlightOfferArray(data: unknown): data is FlightOffer[] {
   return (
     typeof first === 'object' &&
     first !== null &&
-    typeof first['origin'] === 'string' &&
-    typeof first['destination'] === 'string' &&
-    typeof first['price'] === 'number'
+    // Accept price:number (new normalised format) or totalPrice:string (legacy)
+    (typeof first['price'] === 'number' || typeof first['totalPrice'] === 'string') &&
+    // origin may live on top level or inside segments[0]
+    (typeof first['origin'] === 'string' ||
+      (Array.isArray(first['segments']) && (first['segments'] as unknown[])[0] !== undefined))
   );
 }
 
@@ -437,8 +439,9 @@ function isHotelArray(data: unknown): data is Hotel[] {
   return (
     typeof first === 'object' &&
     first !== null &&
-    typeof first['name'] === 'string' &&
-    typeof first['pricePerNight'] === 'number'
+    // Accept name (new format) or hotelName (legacy)
+    (typeof first['name'] === 'string' || typeof first['hotelName'] === 'string') &&
+    (typeof first['pricePerNight'] === 'number' || typeof first['pricePerNight'] === 'string')
   );
 }
 
@@ -455,10 +458,305 @@ function extractOffers(result: unknown): unknown[] | null {
   return null;
 }
 
+// ── Transfer option card ───────────────────────────────────────────────────────
+
+interface TransferOptionCardProps {
+  option: Record<string, unknown>;
+  index: number;
+}
+
+function TransferOptionCard({ option, index }: TransferOptionCardProps) {
+  const typeIcons: Record<string, string> = {
+    taxi: '🚕',
+    bus: '🚌',
+    train: '🚆',
+    shuttle: '🚐',
+    private: '🚗',
+    metro: '🚇',
+  };
+  const rawType = typeof option['type'] === 'string' ? option['type'] : `Вариант ${index + 1}`;
+  const icon = typeIcons[rawType.toLowerCase()] ?? '🚗';
+  const price =
+    typeof option['price'] === 'number'
+      ? option['price'].toLocaleString('ru-RU')
+      : typeof option['price'] === 'string'
+      ? option['price']
+      : '—';
+  const currency = typeof option['currency'] === 'string' ? option['currency'] : '';
+  const duration = typeof option['duration'] === 'string' ? option['duration'] : null;
+
+  return (
+    <View style={transferCardStyles.card}>
+      <View style={transferCardStyles.left}>
+        <Text style={transferCardStyles.icon}>{icon}</Text>
+        <View>
+          <Text style={transferCardStyles.type}>{rawType}</Text>
+          {duration ? <Text style={transferCardStyles.duration}>{duration}</Text> : null}
+        </View>
+      </View>
+      <Text style={transferCardStyles.price}>
+        {price} {currency}
+      </Text>
+    </View>
+  );
+}
+
+const transferCardStyles = StyleSheet.create({
+  card: {
+    backgroundColor: Colors.card,
+    borderRadius: 12,
+    padding: 12,
+    marginHorizontal: 16,
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  left: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  icon: {
+    fontSize: 22,
+  },
+  type: {
+    color: Colors.text,
+    fontSize: Typography.sizes.sm,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  duration: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    marginTop: 2,
+  },
+  price: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.base,
+    fontWeight: '700',
+  },
+});
+
+// ── Activity card ──────────────────────────────────────────────────────────────
+
+interface ActivityCardProps {
+  activity: Record<string, unknown>;
+  index: number;
+}
+
+function ActivityCard({ activity, index }: ActivityCardProps) {
+  const name =
+    typeof activity['name'] === 'string'
+      ? activity['name']
+      : typeof activity['title'] === 'string'
+      ? activity['title']
+      : `Активность ${index + 1}`;
+  const price =
+    typeof activity['price'] === 'number'
+      ? activity['price'].toLocaleString('ru-RU')
+      : typeof activity['price'] === 'string'
+      ? activity['price']
+      : null;
+  const currency = typeof activity['currency'] === 'string' ? activity['currency'] : '';
+  const description =
+    typeof activity['description'] === 'string' ? activity['description'] : null;
+  const duration = typeof activity['duration'] === 'string' ? activity['duration'] : null;
+
+  return (
+    <View style={activityCardStyles.card}>
+      <View style={activityCardStyles.header}>
+        <Text style={activityCardStyles.icon}>🎯</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={activityCardStyles.name} numberOfLines={2}>
+            {name}
+          </Text>
+          {duration ? <Text style={activityCardStyles.meta}>{duration}</Text> : null}
+        </View>
+        {price ? (
+          <Text style={activityCardStyles.price}>
+            {price} {currency}
+          </Text>
+        ) : null}
+      </View>
+      {description ? (
+        <Text style={activityCardStyles.description} numberOfLines={2}>
+          {description}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+const activityCardStyles = StyleSheet.create({
+  card: {
+    backgroundColor: Colors.card,
+    borderRadius: 12,
+    padding: 12,
+    marginHorizontal: 16,
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  icon: {
+    fontSize: 22,
+    marginTop: 1,
+  },
+  name: {
+    color: Colors.text,
+    fontSize: Typography.sizes.sm,
+    fontWeight: '600',
+    flex: 1,
+  },
+  meta: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    marginTop: 2,
+  },
+  price: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.sm,
+    fontWeight: '700',
+    flexShrink: 0,
+  },
+  description: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    marginTop: 6,
+    lineHeight: 16,
+  },
+});
+
+// ── Journey timing warning card ────────────────────────────────────────────────
+
+interface JourneyTimingResult {
+  warning?: string;
+  recommendation?: string;
+  departureTime?: string;
+  arrivalTime?: string;
+  connectionTime?: string;
+  isTight?: boolean;
+}
+
+function JourneyTimingCard({ data }: { data: JourneyTimingResult }) {
+  const isTight = data.isTight ?? false;
+  return (
+    <View style={[timingStyles.card, isTight && timingStyles.cardWarning]}>
+      <View style={timingStyles.row}>
+        <Text style={timingStyles.icon}>{isTight ? '⚠️' : 'ℹ️'}</Text>
+        <Text style={[timingStyles.title, isTight && timingStyles.titleWarning]}>
+          {isTight ? 'Стыковка под угрозой' : 'Время в пути'}
+        </Text>
+      </View>
+      {data.connectionTime ? (
+        <Text style={timingStyles.meta}>Время стыковки: {data.connectionTime}</Text>
+      ) : null}
+      {data.warning ? (
+        <Text style={timingStyles.warning}>{data.warning}</Text>
+      ) : null}
+      {data.recommendation ? (
+        <Text style={timingStyles.recommendation}>{data.recommendation}</Text>
+      ) : null}
+    </View>
+  );
+}
+
+const timingStyles = StyleSheet.create({
+  card: {
+    backgroundColor: Colors.card,
+    borderRadius: 12,
+    padding: 14,
+    marginHorizontal: 16,
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  cardWarning: {
+    borderColor: '#F59E0B66',
+    backgroundColor: '#F59E0B11',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 6,
+  },
+  icon: { fontSize: 16 },
+  title: {
+    color: Colors.text,
+    fontSize: Typography.sizes.sm,
+    fontWeight: '700',
+  },
+  titleWarning: {
+    color: Colors.primary,
+  },
+  meta: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    marginBottom: 4,
+  },
+  warning: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.sm,
+    lineHeight: 18,
+  },
+  recommendation: {
+    color: Colors.text,
+    fontSize: Typography.sizes.xs,
+    marginTop: 6,
+    lineHeight: 16,
+    fontStyle: 'italic',
+  },
+});
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+function isTransferArray(data: unknown[]): boolean {
+  if (data.length === 0) return false;
+  const first = data[0] as Record<string, unknown>;
+  return (
+    typeof first === 'object' &&
+    first !== null &&
+    (typeof first['type'] === 'string' || typeof first['vehicleType'] === 'string') &&
+    (typeof first['price'] === 'number' || typeof first['price'] === 'string')
+  );
+}
+
+function isActivityArray(data: unknown[]): boolean {
+  if (data.length === 0) return false;
+  const first = data[0] as Record<string, unknown>;
+  return (
+    typeof first === 'object' &&
+    first !== null &&
+    (typeof first['name'] === 'string' || typeof first['title'] === 'string')
+  );
+}
+
+function isJourneyTimingResult(data: unknown): data is JourneyTimingResult {
+  if (!data || typeof data !== 'object') return false;
+  const d = data as Record<string, unknown>;
+  return (
+    typeof d['warning'] === 'string' ||
+    typeof d['recommendation'] === 'string' ||
+    typeof d['connectionTime'] === 'string' ||
+    typeof d['isTight'] === 'boolean'
+  );
+}
+
 export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
   const lower = toolName.toLowerCase();
   const isFlight = lower.includes('flight');
   const isHotel = lower.includes('hotel');
+  const isTransfer = lower.includes('transfer');
+  const isJourneyTiming = lower.includes('journey') || lower.includes('timing');
+  const isActivities = lower.includes('activit');
 
   const offers = extractOffers(result);
 
@@ -490,10 +788,58 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
     );
   }
 
+  // ── Transfer results ──
+  if (isTransfer && offers !== null && isTransferArray(offers)) {
+    const items = offers as Record<string, unknown>[];
+    return (
+      <View style={chatResultStyles.wrap}>
+        <View style={chatResultStyles.sectionHeader}>
+          <Text style={chatResultStyles.sectionIcon}>🚗</Text>
+          <Text style={chatResultStyles.sectionTitle}>Варианты трансфера</Text>
+        </View>
+        {items.slice(0, 4).map((opt, i) => (
+          <TransferOptionCard key={i} option={opt} index={i} />
+        ))}
+        {items.length > 4 && (
+          <Text style={chatResultStyles.moreText}>+ ещё {items.length - 4} вариантов</Text>
+        )}
+      </View>
+    );
+  }
+
+  // ── Journey timing ──
+  if (isJourneyTiming && isJourneyTimingResult(result)) {
+    return (
+      <View style={chatResultStyles.wrap}>
+        <JourneyTimingCard data={result} />
+      </View>
+    );
+  }
+
+  // ── Activities ──
+  if (isActivities && offers !== null && isActivityArray(offers)) {
+    const items = offers as Record<string, unknown>[];
+    return (
+      <View style={chatResultStyles.wrap}>
+        <View style={chatResultStyles.sectionHeader}>
+          <Text style={chatResultStyles.sectionIcon}>🎯</Text>
+          <Text style={chatResultStyles.sectionTitle}>Активности</Text>
+        </View>
+        {items.slice(0, 3).map((act, i) => (
+          <ActivityCard key={i} activity={act} index={i} />
+        ))}
+        {items.length > 3 && (
+          <Text style={chatResultStyles.moreText}>+ ещё {items.length - 3} активностей</Text>
+        )}
+      </View>
+    );
+  }
+
   // ── Fallback chip ──
+  const fallbackIcon = isFlight ? '✈️' : isHotel ? '🏨' : isTransfer ? '🚗' : isActivities ? '🎯' : '🔍';
   return (
     <View style={chatResultStyles.chip}>
-      <Text style={chatResultStyles.chipIcon}>{isFlight ? '✈️' : isHotel ? '🏨' : '🔍'}</Text>
+      <Text style={chatResultStyles.chipIcon}>{fallbackIcon}</Text>
       <Text style={chatResultStyles.chipText}>Поиск завершён</Text>
     </View>
   );
@@ -502,8 +848,25 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
 const chatResultStyles = StyleSheet.create({
   wrap: {
     gap: 0,
-    paddingHorizontal: 12,
+    paddingHorizontal: 0,
     paddingVertical: 6,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    marginBottom: 4,
+  },
+  sectionIcon: {
+    fontSize: 14,
+  },
+  sectionTitle: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: '600' as const,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase' as const,
   },
   moreText: {
     color: Colors.textMuted,
