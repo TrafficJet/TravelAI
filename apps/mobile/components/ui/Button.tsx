@@ -12,7 +12,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { Colors, Spacing, Radius, TextPresets, Shadows } from '../../constants';
+import { Colors, Spacing, Radius, TextPresets } from '../../constants';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive';
 
@@ -111,7 +111,11 @@ const styles = StyleSheet.create({
   },
   primary: {
     backgroundColor: Colors.primary,
-    ...Shadows.primary,
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 16,
+    shadowOpacity: 0.25,
+    elevation: 8,
   },
   secondary: {
     backgroundColor: Colors.surface,

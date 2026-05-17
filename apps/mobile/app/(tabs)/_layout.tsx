@@ -143,7 +143,7 @@ function TabIconWithIndicator(props: TabIconProps) {
 
 export default function TabsLayout() {
   const { t } = useTranslation();
-  const { unreadCount } = useNotificationsContext();
+  useNotificationsContext(); // keep context subscribed for background badge updates
 
   return (
     <Tabs
@@ -153,12 +153,11 @@ export default function TabsLayout() {
         headerTitleStyle: { fontWeight: Typography.weights.bold },
         headerShadowVisible: false,
         tabBarStyle: {
-          backgroundColor: Colors.background,
-          borderTopColor: Colors.border,
+          backgroundColor: Colors.surface,
+          borderTopColor: Colors.divider,
           borderTopWidth: 1,
-          height: 80,
-          paddingBottom: 16,
-          paddingTop: 8,
+          height: 64,
+          paddingBottom: 8,
         },
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,
@@ -178,20 +177,11 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
-        options={{
-          title: t('tabs.explore', { defaultValue: 'Поиск' }),
-          tabBarIcon: (props) => (
-            <TabIconWithIndicator {...props} icon="compass-outline" iconFocused="compass" />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="bookings"
         options={{
           title: t('tabs.bookings'),
           tabBarIcon: (props) => (
-            <TabIconWithIndicator {...props} icon="briefcase-outline" iconFocused="briefcase" />
+            <TabIconWithIndicator {...props} icon="calendar-outline" iconFocused="calendar" />
           ),
         }}
       />
@@ -205,38 +195,6 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="notifications"
-        options={{
-          title: t('tabs.notifications', { defaultValue: 'Уведомления' }),
-          tabBarIcon: (props) => (
-            <TabIconWithIndicator
-              {...props}
-              icon="notifications-outline"
-              iconFocused="notifications"
-              badge={unreadCount}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="search-history"
-        options={{
-          title: t('tabs.history', { defaultValue: 'История' }),
-          tabBarIcon: (props) => (
-            <TabIconWithIndicator {...props} icon="time-outline" iconFocused="time" />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="favorites"
-        options={{
-          title: t('tabs.favorites', { defaultValue: 'Избранное' }),
-          tabBarIcon: (props) => (
-            <TabIconWithIndicator {...props} icon="heart-outline" iconFocused="heart" />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="profile"
         options={{
           title: t('tabs.profile'),
@@ -244,6 +202,23 @@ export default function TabsLayout() {
             <TabIconWithIndicator {...props} icon="person-outline" iconFocused="person" />
           ),
         }}
+      />
+      {/* Hidden tabs — kept for routing but not shown in tab bar */}
+      <Tabs.Screen
+        name="explore"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="search-history"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="favorites"
+        options={{ href: null }}
       />
     </Tabs>
   );

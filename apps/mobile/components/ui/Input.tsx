@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
   },
   inputFocused: {
     borderColor: Colors.primary,
+    borderWidth: 1.5,
   },
   inputError: {
     borderColor: Colors.error,

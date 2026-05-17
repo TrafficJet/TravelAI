@@ -20,12 +20,11 @@ import i18n from '../src/i18n';
 import '../global.css';
 import {
   useFonts,
-  PlusJakartaSans_400Regular,
-  PlusJakartaSans_500Medium,
-  PlusJakartaSans_600SemiBold,
-  PlusJakartaSans_700Bold,
-  PlusJakartaSans_800ExtraBold,
-} from '@expo-google-fonts/plus-jakarta-sans';
+  Sora_400Regular,
+  Sora_500Medium,
+  Sora_600SemiBold,
+  Sora_700Bold,
+} from '@expo-google-fonts/sora';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -42,11 +41,10 @@ export default function RootLayout() {
   const responseListenerRef = useRef<EventSubscription | null>(null);
 
   const [fontsLoaded] = useFonts({
-    PlusJakartaSans_400Regular,
-    PlusJakartaSans_500Medium,
-    PlusJakartaSans_600SemiBold,
-    PlusJakartaSans_700Bold,
-    PlusJakartaSans_800ExtraBold,
+    'Sora':           Sora_400Regular,
+    'Sora_Medium':    Sora_500Medium,
+    'Sora_SemiBold':  Sora_600SemiBold,
+    'Sora_Bold':      Sora_700Bold,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,

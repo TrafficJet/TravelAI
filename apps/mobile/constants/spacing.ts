@@ -28,7 +28,7 @@ export const Spacing = {
 
   // ─── Layout: Структурные константы ───────────────────────────────────────
   // Используй для StyleSheet.create в layout-компонентах
-  screenPaddingH:    20,  // горизонтальный padding экрана (ScrollView, FlatList)
+  screenPaddingH:    24,  // горизонтальный padding экрана (ScrollView, FlatList)
   screenPaddingV:    24,  // вертикальный padding первого/последнего блока
   cardPadding:       16,  // внутренний padding карточки (все стороны)
   cardPaddingLg:     20,  // расширенный padding для feature-карточек
