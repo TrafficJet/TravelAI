@@ -145,6 +145,6 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
   textDestructive: {
-    color: '#FFFFFF',
+    color: Colors.textInverse,
   },
 });

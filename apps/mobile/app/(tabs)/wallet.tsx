@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     marginHorizontal: Spacing.lg,
     paddingVertical: 14,
-    borderRadius: Radius.input,
+    borderRadius: Radius.button,
     alignItems: 'center',
     marginBottom: Spacing.lg,
   },

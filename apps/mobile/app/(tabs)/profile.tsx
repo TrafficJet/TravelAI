@@ -269,7 +269,7 @@ const modalStyles = StyleSheet.create({
   saveBtn: {
     backgroundColor: Colors.primary,
     paddingVertical: Spacing.md,
-    borderRadius: Radius.card,
+    borderRadius: Radius.button,
     alignItems: 'center',
   },
   saveBtnDisabled: {
@@ -444,14 +444,18 @@ export default function ProfileScreen() {
     ]);
   }
 
-  if (!user) return null;
+  if (!user) return (
+    <View style={{ flex: 1, backgroundColor: '#0A0A14', justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator color="#F59E0B" />
+    </View>
+  );
 
   const isPremium = user.subscription?.plan === 'PREMIUM';
 
   return (
     <>
       <ScrollView
-        style={[styles.container, { backgroundColor: colors.background }]}
+        style={[styles.container, { backgroundColor: Colors.background }]}
         contentContainerStyle={styles.content}
       >
         {/* Avatar + name */}
@@ -926,7 +930,7 @@ const styles = StyleSheet.create({
   upgradeBtn: {
     backgroundColor: Colors.primary,
     paddingVertical: Spacing.sm,
-    borderRadius: Radius.md,
+    borderRadius: Radius.button,
     alignItems: 'center',
   },
   upgradeBtnText: {
@@ -1050,7 +1054,7 @@ const bookingStyles = StyleSheet.create({
   saveBtn: {
     marginTop: Spacing.md,
     backgroundColor: Colors.primary,
-    borderRadius: Radius.card,
+    borderRadius: Radius.button,
     paddingVertical: 14,
     alignItems: 'center',
   },

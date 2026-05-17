@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   demoBtn: {
     backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: '#F59E0B',
+    borderColor: '#14B8A6',
     borderRadius: Radius.button,
     paddingVertical: 14,
     paddingHorizontal: Spacing.md,
@@ -189,11 +189,11 @@ const styles = StyleSheet.create({
   },
   demoBtnTitle: {
     ...TextPresets.button,
-    color: '#F59E0B',
+    color: '#14B8A6',
   },
   demoBtnHint: {
     ...TextPresets.caption,
-    color: '#F59E0B',
+    color: '#14B8A6',
     opacity: 0.75,
     marginTop: 2,
   },
