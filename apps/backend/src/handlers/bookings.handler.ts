@@ -115,6 +115,7 @@ export async function getBookings(request: FastifyRequest, reply: FastifyReply) 
       type: b.type,
       status: b.status,
       provider: b.provider,
+      details: b.details,
       totalPrice: Number(b.totalPrice),
       currency: b.currency,
       createdAt: b.createdAt.toISOString(),

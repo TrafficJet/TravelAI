@@ -608,6 +608,7 @@ const bmStyles = StyleSheet.create({
 
 const PLAN_LABELS: Record<string, string> = {
   FREE: 'Бесплатный',
+  PRO: 'Про',
   PREMIUM: 'Премиум',
 };
 
@@ -772,7 +773,7 @@ export default function ProfileScreen() {
     );
   }
 
-  const isPremium = user.subscription?.plan === 'PREMIUM';
+  const isPremium = user.subscription?.plan === 'PREMIUM' || user.subscription?.plan === 'PRO';
 
   // ── render helpers ──────────────────────────────────────────────────────────
 
@@ -813,6 +814,24 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* Subscription badge */}
+          <View
+            style={[
+              styles.subscriptionBadge,
+              isPremium ? styles.subscriptionBadgePremium : styles.subscriptionBadgeFree,
+            ]}
+          >
+            <Text
+              style={[
+                styles.subscriptionBadgeText,
+                isPremium ? styles.subscriptionBadgeTextPremium : styles.subscriptionBadgeTextFree,
+              ]}
+            >
+              {isPremium ? 'PREMIUM' : 'FREE'}
+            </Text>
+          </View>
+
+          {/* Email */}
           <Text style={[styles.email, { color: colors.textSecondary }]}>{user.email}</Text>
 
           {/* Bell icon */}
@@ -1145,6 +1164,33 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     marginBottom: 14,
+    marginTop: 4,
+  },
+  subscriptionBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+    marginTop: 6,
+    borderWidth: 1,
+  },
+  subscriptionBadgePremium: {
+    backgroundColor: 'rgba(245,158,11,0.15)',
+    borderColor: Colors.primary,
+  },
+  subscriptionBadgeFree: {
+    backgroundColor: `${Colors.textMuted}18`,
+    borderColor: Colors.border,
+  },
+  subscriptionBadgeText: {
+    fontSize: 11,
+    fontWeight: '700' as const,
+    letterSpacing: 1,
+  },
+  subscriptionBadgeTextPremium: {
+    color: Colors.primary,
+  },
+  subscriptionBadgeTextFree: {
+    color: Colors.textMuted,
   },
   bellBtn: {
     flexDirection: 'row',

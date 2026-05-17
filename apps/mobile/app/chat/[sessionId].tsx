@@ -437,12 +437,25 @@ export default function ChatScreen() {
 
   async function handleConfirmBooking() {
     if (!pendingBooking || !pendingBookingId) return;
+    const bookingId = pendingBookingId;
+    const bookingType = pendingBooking.type;
+    const totalPrice = pendingBooking.totalPrice;
+    const currency = pendingBooking.currency;
     try {
-      await confirmBooking(pendingBookingId);
+      await confirmBooking(bookingId);
       setPendingBooking(null);
       setPendingBookingId(null);
       await loadWallet();
-      Alert.alert('Бронь подтверждена', 'Ваша бронь успешно оформлена!');
+      // Navigate to success screen instead of plain Alert
+      router.push({
+        pathname: '/booking-success',
+        params: {
+          bookingId,
+          type: bookingType,
+          totalPrice: String(totalPrice),
+          currency,
+        },
+      } as never);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Ошибка подтверждения';
       Alert.alert('Ошибка', msg);

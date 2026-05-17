@@ -372,7 +372,12 @@ export async function sendMessage(request: FastifyRequest, reply: FastifyReply) 
       onBookingDraft: (bookingResult) => {
         const result = bookingResult as Record<string, unknown>;
         const { bookingId, ...bookingData } = result;
-        sendEvent({ type: 'booking_draft', booking: bookingData, bookingId });
+        const safeBookingId = typeof bookingId === 'string' ? bookingId : null;
+        if (!safeBookingId) {
+          console.error('[chat] booking_draft missing bookingId', bookingResult);
+          return;
+        }
+        sendEvent({ type: 'booking_draft', booking: bookingData, bookingId: safeBookingId });
       },
     });
 
