@@ -25,28 +25,28 @@ export async function ensureDemoUser(prisma: PrismaClient): Promise<void> {
       console.log('[seed] Created demo user');
     }
 
-    // 2. Ensure PREMIUM subscription (upsert)
+    // 2. Ensure FREE subscription (upsert)
     await prisma.subscription.upsert({
       where: { userId: user.id },
-      update: { plan: 'PREMIUM', status: 'ACTIVE', expiresAt: null },
-      create: { userId: user.id, plan: 'PREMIUM', status: 'ACTIVE' },
+      update: { plan: 'FREE', status: 'ACTIVE', expiresAt: null },
+      create: { userId: user.id, plan: 'FREE', status: 'ACTIVE' },
     });
-    console.log('[seed] Demo user has PREMIUM subscription');
+    console.log('[seed] Demo user has FREE subscription');
 
-    // 3. Ensure wallet exists with $5000
+    // 3. Ensure wallet exists with $500.00
     const wallet = await prisma.wallet.findUnique({ where: { userId: user.id } });
     if (!wallet) {
       await prisma.wallet.create({
-        data: { userId: user.id, balance: 5000, currency: 'USD' },
+        data: { userId: user.id, balance: 500, currency: 'USD' },
       });
-      console.log('[seed] Created demo wallet');
-    } else if (Number(wallet.balance) < 100) {
+      console.log('[seed] Created demo wallet with 500.00 USD');
+    } else if (Number(wallet.balance) < 10) {
       // Replenish if nearly empty
       await prisma.wallet.update({
         where: { userId: user.id },
-        data: { balance: 5000 },
+        data: { balance: 500 },
       });
-      console.log('[seed] Replenished demo wallet');
+      console.log('[seed] Replenished demo wallet to 500.00 USD');
     }
   } catch (err) {
     // Never crash server startup because of seed failure

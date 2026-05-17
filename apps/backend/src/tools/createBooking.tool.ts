@@ -52,6 +52,25 @@ export interface CreateBookingInput {
 
 // Executor: creates a PENDING booking in DB and returns booking draft for confirmation
 export async function executeCreateBooking(input: CreateBookingInput, userId: string) {
+  // Parse price to number so Prisma stores it as a proper Decimal, not a raw string
+  const totalPriceNum = parseFloat(input.total_price);
+  if (isNaN(totalPriceNum)) {
+    throw new Error(`Invalid total_price: "${input.total_price}"`);
+  }
+
+  // For FLIGHT bookings normalise details so top-level origin/destination are always present
+  let details = input.details as Record<string, unknown>;
+  if (input.type === 'FLIGHT') {
+    const segments = (details.segments as Array<{ origin: string; destination: string }> | undefined) ?? [];
+    if (segments.length > 0 && !details.origin) {
+      details = {
+        ...details,
+        origin: segments[0].origin,
+        destination: segments[segments.length - 1].destination,
+      };
+    }
+  }
+
   const booking = await prisma.booking.create({
     data: {
       userId,
@@ -59,8 +78,8 @@ export async function executeCreateBooking(input: CreateBookingInput, userId: st
       status: 'PENDING',
       provider: input.provider,
       externalId: input.offer_id,
-      details: input.details as Prisma.InputJsonValue,
-      totalPrice: input.total_price,
+      details: details as Prisma.InputJsonValue,
+      totalPrice: totalPriceNum,
       currency: input.currency ?? 'RUB',
     },
   });
@@ -70,7 +89,7 @@ export async function executeCreateBooking(input: CreateBookingInput, userId: st
   let subtitle = '';
 
   if (input.type === 'FLIGHT') {
-    const segments = (input.details.segments as Array<{ origin: string; destination: string; departureAt: string }>) ?? [];
+    const segments = (details.segments as Array<{ origin: string; destination: string; departureAt: string }> | undefined) ?? [];
     if (segments.length > 0) {
       const first = segments[0];
       title = `${first.origin} → ${first.destination}`;
@@ -78,11 +97,14 @@ export async function executeCreateBooking(input: CreateBookingInput, userId: st
         day: 'numeric',
         month: 'long',
       });
+    } else if (details.origin) {
+      // Flat details with top-level origin/destination
+      title = `${details.origin} → ${details.destination}`;
     }
   } else if (input.type === 'HOTEL') {
-    title = (input.details.hotelName as string) ?? 'Отель';
-    const checkIn = input.details.checkIn as string;
-    const checkOut = input.details.checkOut as string;
+    title = (details.hotelName as string) ?? 'Отель';
+    const checkIn = details.checkIn as string;
+    const checkOut = details.checkOut as string;
     if (checkIn && checkOut) {
       subtitle = `${checkIn} – ${checkOut}`;
     }
@@ -92,11 +114,11 @@ export async function executeCreateBooking(input: CreateBookingInput, userId: st
     bookingId: booking.id,
     type: booking.type as 'FLIGHT' | 'HOTEL',
     provider: input.provider,
-    totalPrice: parseFloat(input.total_price),
+    totalPrice: totalPriceNum,
     currency: booking.currency,
-    details: input.details,
+    details,
     summary: { title, subtitle },
-    status: booking.status,
+    status: booking.status as 'PENDING',
     message: 'Черновик бронирования создан. Подтвердите оплату для завершения.',
   };
 }

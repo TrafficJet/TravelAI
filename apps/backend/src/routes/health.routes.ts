@@ -26,10 +26,15 @@ export async function healthRoutes(fastify: FastifyInstance) {
 
     const body = {
       status: 'ok' as const,
-      uptime: process.uptime(),
       version: process.env.npm_package_version ?? '1.0.0',
-      db: dbStatus,
       timestamp: new Date().toISOString(),
+      services: {
+        database: dbStatus === 'ok' ? 'connected' : 'error',
+        ai: process.env.ANTHROPIC_API_KEY ? 'available' : 'unconfigured',
+        cache: searchCache.size >= 0 ? 'active' : 'error',
+      },
+      // Extended metrics for internal monitoring
+      uptime: process.uptime(),
       websocketConnections: getActiveConnectionCount(),
       cacheSize: searchCache.size,
       activeAlerts,

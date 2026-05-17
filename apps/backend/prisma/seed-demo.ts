@@ -39,36 +39,36 @@ async function main() {
     console.log(`Created user: ${user.email} (id: ${user.id})`);
   }
 
-  // 2. Wallet — create if missing, otherwise set balance to 5 000 USD
+  // 2. Wallet — create if missing, otherwise set balance to 500 USD
   const existingWallet = await prisma.wallet.findUnique({ where: { userId: user.id } });
   if (existingWallet) {
     await prisma.wallet.update({
       where: { userId: user.id },
-      data: { balance: 5000, currency: 'USD' },
+      data: { balance: 500, currency: 'USD' },
     });
-    console.log('Updated existing wallet balance to 5 000 USD.');
+    console.log('Updated existing wallet balance to 500.00 USD.');
   } else {
     await prisma.wallet.create({
-      data: { userId: user.id, balance: 5000, currency: 'USD' },
+      data: { userId: user.id, balance: 500, currency: 'USD' },
     });
-    console.log('Created wallet with balance 5 000 USD.');
+    console.log('Created wallet with balance 500.00 USD.');
   }
 
-  // 3. Subscription PREMIUM — upsert so demo account always has full access
+  // 3. Subscription FREE — demo account starts on the free plan
   await prisma.subscription.upsert({
     where: { userId: user.id },
     update: {
-      plan: SubscriptionPlan.PREMIUM,
+      plan: SubscriptionPlan.FREE,
       status: SubscriptionStatus.ACTIVE,
       expiresAt: null,
     },
     create: {
       userId: user.id,
-      plan: SubscriptionPlan.PREMIUM,
+      plan: SubscriptionPlan.FREE,
       status: SubscriptionStatus.ACTIVE,
     },
   });
-  console.log('Upserted PREMIUM subscription for demo user.');
+  console.log('Upserted FREE subscription for demo user.');
 
   // 4. Bookings (only create if the user has fewer than 2 bookings)
   const bookingCount = await prisma.booking.count({ where: { userId: user.id } });
