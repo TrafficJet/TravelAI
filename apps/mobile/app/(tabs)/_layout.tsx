@@ -171,6 +171,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: t('tabs.chat'),
+          headerShown: false,
           tabBarIcon: (props) => (
             <TabIconWithIndicator {...props} icon="chatbubble-outline" iconFocused="chatbubble" />
           ),
