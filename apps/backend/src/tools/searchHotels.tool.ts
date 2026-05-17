@@ -93,14 +93,46 @@ export async function executeSearchHotels(
   return { ...result, searchId: `hotel_search_${Date.now()}`, cacheHit: false };
 }
 
+// Normalise a raw HotelOffer (booking.service shape) into the flat
+// Mobile Hotel shape that HotelCard in the mobile app expects.
+function normaliseMobileHotel(
+  hotel: Awaited<ReturnType<typeof searchHotels>>[number],
+  checkIn: string,
+  checkOut: string,
+): Record<string, unknown> {
+  return {
+    id:            hotel.offerId,
+    name:          hotel.hotelName,            // mobile expects 'name'
+    address:       hotel.address ?? '',
+    stars:         hotel.starRating,           // mobile expects 'stars'
+    pricePerNight: Number(hotel.pricePerNight), // mobile expects pricePerNight:number
+    currency:      hotel.currency,
+    rating:        hotel.rating,               // 0-10 scale
+    reviewsCount:  hotel.reviewCount,
+    amenities:     hotel.amenities ?? [],
+    checkIn,
+    checkOut,
+    // keep raw fields for booking creation
+    offerId:       hotel.offerId,
+    totalPrice:    hotel.totalPrice,
+    roomType:      hotel.roomType,
+    provider:      hotel.provider,
+    expiresAt:     hotel.expiresAt,
+  };
+}
+
 function buildHotelResult(
   input: SearchHotelsInput,
   hotels: Awaited<ReturnType<typeof searchHotels>>,
   nights: number,
 ) {
+  const normalised = hotels.map((h) =>
+    normaliseMobileHotel(h, input.check_in, input.check_out),
+  );
+
   return {
-    offers: hotels,
-    count: hotels.length,
+    offers: normalised,
+    count: normalised.length,
     city: input.city,
     checkIn: input.check_in,
     checkOut: input.check_out,

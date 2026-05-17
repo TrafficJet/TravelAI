@@ -248,15 +248,51 @@ export async function executeSearchFlights(
   return { ...result, searchId: `search_${Date.now()}`, cacheHit: false };
 }
 
+// Normalise a raw FlightOffer (duffel/aviasales shape) into the flat
+// MobileFlightOffer shape that FlightCard in the mobile app expects.
+function normaliseMobileOffer(
+  offer: FlightOffer,
+  origin: string,
+  destination: string,
+): Record<string, unknown> {
+  const firstSeg = offer.segments[0];
+  const lastSeg  = offer.segments[offer.segments.length - 1];
+  const totalDuration = offer.segments.reduce((acc, s) => acc + s.duration, 0);
+
+  return {
+    id:            offer.offerId,
+    origin:        origin.toUpperCase(),
+    destination:   destination.toUpperCase(),
+    departureDate: firstSeg?.departureAt?.split('T')[0] ?? '',
+    airline:       firstSeg?.airline ?? '',
+    flightNumber:  firstSeg?.flightNumber ?? '',
+    cabin:         offer.cabinClass,
+    stops:         offer.segments.length - 1,
+    durationMin:   totalDuration,
+    price:         Number(offer.totalPrice),       // mobile FlightCard expects price:number
+    currency:      offer.currency,
+    departureTime: firstSeg?.departureAt?.split('T')[1]?.slice(0, 5) ?? undefined,
+    arrivalTime:   lastSeg?.arrivalAt?.split('T')[1]?.slice(0, 5) ?? undefined,
+    baggage:       offer.baggage,
+    provider:      offer.provider,
+    offerId:       offer.offerId,                  // kept for booking creation
+    expiresAt:     offer.expiresAt,
+  };
+}
+
 function buildFlightResult(
   input: SearchFlightsInput,
   filtered: FlightOffer[],
   totalFound: number,
   filters: FlightFilters,
 ) {
+  const normalised = filtered.map((o) =>
+    normaliseMobileOffer(o, input.origin, input.destination),
+  );
+
   return {
-    offers: filtered,
-    count: filtered.length,
+    offers: normalised,
+    count: normalised.length,
     totalFound,
     route: `${input.origin.toUpperCase()} → ${input.destination.toUpperCase()}`,
     date: input.departure_date,
