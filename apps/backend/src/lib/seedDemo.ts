@@ -40,7 +40,7 @@ export async function ensureDemoUser(prisma: PrismaClient): Promise<void> {
         data: { userId: user.id, balance: 5000, currency: 'USD' },
       });
       console.log('[seed] Created demo wallet');
-    } else if (wallet.balance < 100) {
+    } else if (Number(wallet.balance) < 100) {
       // Replenish if nearly empty
       await prisma.wallet.update({
         where: { userId: user.id },
