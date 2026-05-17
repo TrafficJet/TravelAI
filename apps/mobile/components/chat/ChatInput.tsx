@@ -13,6 +13,7 @@ import {
   Platform,
   Alert,
   Animated,
+  Text,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Colors } from '../../constants/colors';
@@ -41,6 +42,12 @@ interface Props {
   /** Called when user taps a suggestion chip */
   onSuggestionSelect?: (suggestion: string) => void;
 }
+
+// Quick-hint chips shown below the input when it is empty
+const QUICK_HINTS = [
+  { label: '✈️ Рейс', key: 'flight' },
+  { label: '🏨 Отель', key: 'hotel' },
+] as const;
 
 export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
   { onSend, disabled = false, initialMessage, suggestions = [], onSuggestionSelect },
@@ -126,6 +133,10 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
     }
   }
 
+  function handleQuickHint(key: string) {
+    Alert.alert('В разработке', `Быстрый поиск "${key}" скоро будет доступен`);
+  }
+
   const hasText = text.trim().length > 0;
   const sendDisabled = disabled || !hasText;
 
@@ -141,7 +152,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
 
       {/* Input row */}
       <View style={styles.container}>
-        {/* Voice button — visible only when no text */}
+        {/* Mic button — visible only when no text */}
         {!hasText && (
           <TouchableOpacity
             onPress={handleVoice}
@@ -162,7 +173,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
         <TextInput
           value={text}
           onChangeText={setText}
-          placeholder="Куда летим? Например: Варшава → Барселона"
+          placeholder="Куда хотите полететь?..."
           placeholderTextColor={Colors.textMuted}
           style={[styles.input, !hasText && styles.inputWithVoice]}
           multiline
@@ -182,18 +193,41 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           <Ionicons name="add-outline" size={22} color={Colors.textMuted} />
         </TouchableOpacity>
 
-        {/* Send button */}
+        {/* Send button — amber arrow when has text, muted when empty */}
         <Animated.View style={{ transform: [{ scale: sendScale }] }}>
           <TouchableOpacity
-            onPress={handleSend}
-            disabled={sendDisabled}
-            style={[styles.sendButton, sendDisabled && styles.sendButtonDisabled]}
+            onPress={hasText ? handleSend : handleVoice}
+            disabled={disabled}
+            style={[
+              styles.sendButton,
+              !hasText && styles.sendButtonEmpty,
+            ]}
             activeOpacity={0.8}
           >
-            <Ionicons name="send" size={18} color={Colors.textInverse} />
+            <Ionicons
+              name={hasText ? 'arrow-up' : 'mic'}
+              size={18}
+              color={hasText ? Colors.textInverse : Colors.textMuted}
+            />
           </TouchableOpacity>
         </Animated.View>
       </View>
+
+      {/* Quick hint chips — shown only when input is empty */}
+      {!hasText && (
+        <View style={styles.hintsRow}>
+          {QUICK_HINTS.map((hint) => (
+            <TouchableOpacity
+              key={hint.key}
+              style={styles.hintChip}
+              onPress={() => handleQuickHint(hint.key)}
+              activeOpacity={0.75}
+            >
+              <Text style={styles.hintChipText}>{hint.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
     </View>
   );
 });
@@ -211,7 +245,7 @@ const styles = StyleSheet.create({
     gap: 8,
     ...Platform.select({
       ios: {
-        paddingBottom: 24,
+        paddingBottom: 10,
       },
     }),
   },
@@ -246,8 +280,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  sendButtonDisabled: {
-    backgroundColor: Colors.textDisabled,
+  sendButtonEmpty: {
+    backgroundColor: Colors.card,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  // Quick hint chips
+  hintsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingBottom: 10,
+    backgroundColor: Colors.surface,
+    ...Platform.select({
+      ios: {
+        paddingBottom: 20,
+      },
+    }),
+  },
+  hintChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  hintChipText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+    fontWeight: '500',
   },
 });

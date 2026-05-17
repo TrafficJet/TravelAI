@@ -303,6 +303,30 @@ const contentStyles = StyleSheet.create({
   },
 });
 
+// ── Fade + slide-up entrance animation ────────────────────────────────────────
+
+function useEntranceAnim() {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [opacity, translateY]);
+
+  return { opacity, translateY };
+}
+
 // ── MessageBubble ─────────────────────────────────────────────────────────────
 
 export function MessageBubble({ message, isStreaming, streamingText }: Props) {
@@ -310,30 +334,36 @@ export function MessageBubble({ message, isStreaming, streamingText }: Props) {
   const displayContent =
     isStreaming && streamingText !== undefined ? streamingText : message.content;
 
+  const { opacity, translateY } = useEntranceAnim();
+
   // ── Tool message ─────────────────────────────────────────────────────────
   if (message.role === 'tool') {
     // If the message carries a tool result with actual data — render rich cards
     if (message.toolResult !== undefined && message.toolName) {
       return (
-        <ChatToolResult
-          toolName={message.toolName}
-          result={message.toolResult}
-        />
+        <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+          <ChatToolResult
+            toolName={message.toolName}
+            result={message.toolResult}
+          />
+        </Animated.View>
       );
     }
     // Otherwise show the compact loading chip
     return (
-      <View style={styles.toolRow}>
+      <Animated.View style={[styles.toolRow, { opacity, transform: [{ translateY }] }]}>
         <Text style={styles.toolIcon}>🔍</Text>
         <Text style={styles.toolText}>{getToolLabel(message.toolName)}</Text>
-      </View>
+      </Animated.View>
     );
   }
 
   // ── Assistant row (with plane icon) ──────────────────────────────────────
   if (!isUser) {
     return (
-      <View style={[styles.row, styles.rowAssistant]}>
+      <Animated.View
+        style={[styles.row, styles.rowAssistant, { opacity, transform: [{ translateY }] }]}
+      >
         {/* Avatar */}
         <View style={styles.avatar}>
           <Text style={styles.avatarIcon}>✈️</Text>
@@ -347,18 +377,20 @@ export function MessageBubble({ message, isStreaming, streamingText }: Props) {
           )}
           <Text style={styles.timeAssistant}>{formatTime(message.createdAt)}</Text>
         </View>
-      </View>
+      </Animated.View>
     );
   }
 
   // ── User row ─────────────────────────────────────────────────────────────
   return (
-    <View style={[styles.row, styles.rowUser]}>
+    <Animated.View
+      style={[styles.row, styles.rowUser, { opacity, transform: [{ translateY }] }]}
+    >
       <View style={[styles.bubble, styles.bubbleUser]}>
         <RichText content={displayContent} isUser={true} />
         <Text style={styles.timeUser}>{formatTime(message.createdAt)}</Text>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -422,6 +454,7 @@ const styles = StyleSheet.create({
   timeAssistant: {
     fontSize: Typography.sizes.xs,
     color: Colors.textMuted,
+    textAlign: 'right',
     marginTop: 4,
   },
 

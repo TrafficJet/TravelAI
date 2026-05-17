@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -50,32 +50,101 @@ const SLIDES: Slide[] = [
   },
   {
     id: '3',
-    emoji: '🤖',
-    title: 'AI замечает то, о чём вы забываете',
+    emoji: '💰',
+    title: 'Всё в рамках вашего бюджета',
     description:
-      'Прилёт в 8:00, заселение в 14:00? AI предупредит и предложит хранение багажа или ранний заезд',
-    gradientEnd: '#0D001A',
+      'AI подбирает варианты по вашим предпочтениям и никогда не выходит за рамки бюджета',
+    gradientEnd: '#001200',
   },
   {
     id: '4',
-    emoji: '⚡',
-    title: 'Бронируй в 2 касания',
+    emoji: '🤝',
+    title: 'Всегда рядом в поездке',
     description:
-      'Рейсы, отели, рестораны, аренда авто — подтверди одним нажатием',
-    gradientEnd: '#1A1100',
+      'Прилёт в 8:00, заселение в 14:00? AI предупредит и предложит хранение багажа или ранний заезд',
+    gradientEnd: '#0D001A',
   },
 ];
 
 const TOTAL = SLIDES.length;
 
+// ─── Animated emoji illustration ─────────────────────────────────────────────
+
+function AnimatedEmoji({ emoji, active }: { emoji: string; active: boolean }) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const glowOpacity = useRef(new Animated.Value(0.5)).current;
+
+  // Fade-in on mount
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
+  }, [opacity]);
+
+  // Gentle float animation when slide is active
+  useEffect(() => {
+    if (!active) return;
+
+    const float = Animated.loop(
+      Animated.sequence([
+        Animated.timing(scale, {
+          toValue: 1.06,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scale, {
+          toValue: 1.0,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    const glow = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowOpacity, {
+          toValue: 0.9,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(glowOpacity, {
+          toValue: 0.4,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    float.start();
+    glow.start();
+
+    return () => {
+      float.stop();
+      glow.stop();
+    };
+  }, [active, scale, glowOpacity]);
+
+  return (
+    <Animated.View style={[slideStyles.iconOuter, { opacity }]}>
+      {/* Glow ring */}
+      <Animated.View style={[slideStyles.glowRing, { opacity: glowOpacity }]} />
+      {/* Inner circle */}
+      <Animated.View style={[slideStyles.iconWrap, { transform: [{ scale }] }]}>
+        <Text style={slideStyles.emoji}>{emoji}</Text>
+      </Animated.View>
+    </Animated.View>
+  );
+}
+
 // ─── Single slide component ───────────────────────────────────────────────────
 
-function SlideItem({ item }: { item: Slide }) {
+function SlideItem({ item, active }: { item: Slide; active: boolean }) {
   return (
     <View style={[slideStyles.container, { width: SCREEN_WIDTH }]}>
-      <View style={slideStyles.iconWrap}>
-        <Text style={slideStyles.emoji}>{item.emoji}</Text>
-      </View>
+      <AnimatedEmoji emoji={item.emoji} active={active} />
       <Text style={slideStyles.title}>{item.title}</Text>
       <Text style={slideStyles.description}>{item.description}</Text>
     </View>
@@ -89,25 +158,45 @@ const slideStyles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 40,
   },
-  iconWrap: {
-    width: 144,
-    height: 144,
-    borderRadius: 72,
-    backgroundColor: 'rgba(245,158,11,0.10)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(245,158,11,0.20)',
+  iconOuter: {
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 44,
+    width: 180,
+    height: 180,
+  },
+  glowRing: {
+    position: 'absolute',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(245,158,11,0.08)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(245,158,11,0.18)',
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 32,
+    elevation: 12,
+  },
+  iconWrap: {
+    width: 136,
+    height: 136,
+    borderRadius: 68,
+    backgroundColor: 'rgba(245,158,11,0.12)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(245,158,11,0.28)',
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.22,
+    shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 8,
   },
   emoji: {
-    fontSize: 72,
-    lineHeight: 80,
+    fontSize: 68,
+    lineHeight: 76,
   },
   title: {
     fontFamily: 'Sora_Bold',
@@ -175,34 +264,19 @@ export default function OnboardingScreen() {
 
   const isLast = currentIndex === TOTAL - 1;
 
-  // ── Gradient interpolation ─────────────────────────────────────────────────
-  // Each slide occupies SCREEN_WIDTH of scroll. We interpolate gradientEnd
-  // color across the slide boundaries.
-  const gradientEndColor = scrollX.interpolate({
-    inputRange: SLIDES.map((_, i) => i * SCREEN_WIDTH),
-    outputRange: SLIDES.map((s) => s.gradientEnd),
-    extrapolate: 'clamp',
-  });
-
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.background} />
 
-      {/* Animated background gradient — reacts to scroll position */}
-      <Animated.View
-        style={[StyleSheet.absoluteFill, { zIndex: 0 }]}
-        // AnimatedView does not accept string-interpolated colors directly
-        // We render a static fallback gradient and overlay a tinted layer.
-      >
-        <LinearGradient
-          colors={[Colors.background, SLIDES[currentIndex].gradientEnd]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0.6, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-      </Animated.View>
+      {/* Animated background gradient — reacts to current slide */}
+      <LinearGradient
+        colors={[Colors.background, SLIDES[currentIndex].gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.6, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
 
-      {/* Skip button */}
+      {/* Skip button — top right */}
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         {!isLast ? (
           <TouchableOpacity
@@ -223,8 +297,8 @@ export default function OnboardingScreen() {
         ref={flatListRef}
         data={SLIDES}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }: ListRenderItemInfo<Slide>) => (
-          <SlideItem item={item} />
+        renderItem={({ item, index }: ListRenderItemInfo<Slide>) => (
+          <SlideItem item={item} active={index === currentIndex} />
         )}
         horizontal
         pagingEnabled
@@ -244,7 +318,7 @@ export default function OnboardingScreen() {
         })}
       />
 
-      {/* Dot indicators */}
+      {/* Dot indicators — amber, active = wide pill */}
       <View style={styles.dots}>
         {SLIDES.map((_, i) => {
           const isActive = i === currentIndex;
@@ -260,7 +334,7 @@ export default function OnboardingScreen() {
         })}
       </View>
 
-      {/* Footer: Next / Start button */}
+      {/* Footer: Next / Start + account link on last slide */}
       <View
         style={[
           styles.footer,
@@ -268,12 +342,22 @@ export default function OnboardingScreen() {
         ]}
       >
         <TouchableOpacity
-          style={[styles.nextBtn, isLast && styles.nextBtnFull]}
+          style={styles.nextBtn}
           onPress={goNext}
           activeOpacity={0.85}
         >
           <Text style={styles.nextBtnText}>{isLast ? 'Начать' : 'Далее'}</Text>
         </TouchableOpacity>
+
+        {isLast && (
+          <TouchableOpacity
+            style={styles.loginBtn}
+            onPress={() => router.replace('/(auth)/login')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.loginBtnText}>У меня уже есть аккаунт</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -320,12 +404,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.border,
   },
   dotActive: {
-    width: 24,
+    width: 28,
     backgroundColor: Colors.primary,
   },
   footer: {
     paddingHorizontal: Spacing.screenPaddingH,
     zIndex: 1,
+    gap: 12,
   },
   nextBtn: {
     backgroundColor: Colors.primary,
@@ -339,14 +424,25 @@ const styles = StyleSheet.create({
     shadowRadius: 14,
     elevation: 6,
   },
-  nextBtnFull: {
-    // already full-width by default since footer fills horizontal padding
-  },
   nextBtnText: {
     fontFamily: 'Sora_Bold',
     fontSize: 17,
     fontWeight: '700',
     color: Colors.textInverse,
     letterSpacing: 0.2,
+  },
+  loginBtn: {
+    paddingVertical: 14,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+  },
+  loginBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.textMuted,
+    letterSpacing: 0.1,
   },
 });
