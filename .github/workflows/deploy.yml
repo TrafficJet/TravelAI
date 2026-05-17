@@ -168,23 +168,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
+      # Trigger redeploy via Railway GraphQL API (Account Token → Authorization: Bearer).
+      # railway CLI requires a Project Token (RAILWAY_TOKEN), but we have an Account Token,
+      # which must be used as RAILWAY_API_TOKEN for CLI or as a Bearer header for the API.
+      # Using the API directly avoids the CLI auth mismatch entirely.
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          railway up \
-            --project aeefc2f0-1a5a-4278-825c-94b10f4cda80 \
-            --environment production \
-            --service travel-ai-backend \
-            --detach
+          RESPONSE=$(curl -sf -X POST https://backboard.railway.app/graphql/v2 \
+            -H "Authorization: Bearer ${RAILWAY_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "query": "mutation { serviceInstanceRedeploy(serviceId: \"9b7ed984-302f-4713-aed0-442452c53f9a\", environmentId: \"4e70a63d-d982-4f87-8be4-210c7a8aa0fa\") }"
+            }')
+          echo "Railway API response: ${RESPONSE}"
+          echo "${RESPONSE}" | grep -q '"serviceInstanceRedeploy":true' \
+            && echo "Redeploy triggered successfully." \
+            || { echo "Redeploy failed or unexpected response."; exit 1; }
 
 # ─────────────────────────────────────────────
 # Required repository secrets:
 #
-#   RAILWAY_TOKEN       — Railway project token (Settings > Tokens)
+#   RAILWAY_TOKEN       — Railway Account Token (Account Settings > Tokens).
+#                         Used as Bearer token in GraphQL API calls.
+#                         Service ID: 9b7ed984-302f-4713-aed0-442452c53f9a
+#                         Environment ID: 4e70a63d-d982-4f87-8be4-210c7a8aa0fa
 #   ANTHROPIC_API_KEY   — Anthropic API key (used in CI tests)
 #   DUFFEL_API_KEY      — Duffel flights API key (production only, NOT used in CI)
 #
