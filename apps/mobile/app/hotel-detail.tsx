@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Share,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -37,7 +38,7 @@ function calcNights(checkIn: string, checkOut: string): number {
   return Math.max(0, Math.round(diff / (1000 * 60 * 60 * 24)));
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+// ── StarRow ────────────────────────────────────────────────────────────────────
 
 function StarRow({ count }: { count: number }) {
   const n = Math.min(5, Math.max(0, Math.round(count)));
@@ -53,15 +54,20 @@ function StarRow({ count }: { count: number }) {
 }
 
 const starStyles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 2 },
-  star: { fontSize: Typography.sizes.md, color: Colors.warning },
-  starActive: { color: Colors.warning },
+  row: { flexDirection: 'row', gap: 3 },
+  star: { fontSize: 18, color: Colors.border },
+  starActive: { color: Colors.primary },
 });
 
-function RatingBadge({ rating, reviewsCount }: { rating: number; reviewsCount?: number }) {
+// ── RatingBlock ────────────────────────────────────────────────────────────────
+
+function RatingBlock({ rating, reviewsCount }: { rating: number; reviewsCount?: number }) {
   return (
     <View style={ratingStyles.wrap}>
-      <Text style={ratingStyles.score}>{rating.toFixed(1)}</Text>
+      <View style={ratingStyles.scoreWrap}>
+        <Text style={ratingStyles.score}>{rating.toFixed(1)}</Text>
+        <Text style={ratingStyles.outOf}>/10</Text>
+      </View>
       {reviewsCount !== undefined && (
         <Text style={ratingStyles.reviews}>{reviewsCount} отзывов</Text>
       )}
@@ -71,25 +77,93 @@ function RatingBadge({ rating, reviewsCount }: { rating: number; reviewsCount?: 
 
 const ratingStyles = StyleSheet.create({
   wrap: {
-    flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: `${Colors.success}22`,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    gap: 6,
+    gap: 2,
+  },
+  scoreWrap: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 2,
   },
   score: {
     color: Colors.success,
-    fontWeight: Typography.weights.bold,
+    fontSize: Typography.sizes['2xl'],
+    fontWeight: Typography.weights.extrabold,
+    fontFamily: 'Sora',
+    lineHeight: 36,
+  },
+  outOf: {
+    color: Colors.textMuted,
     fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
+    marginBottom: 2,
   },
   reviews: {
-    color: Colors.success,
-    fontSize: Typography.sizes.sm,
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
   },
 });
+
+// ── Amenity icons & labels ─────────────────────────────────────────────────────
+
+const AMENITY_ICONS: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
+  wifi: 'wifi',
+  pool: 'water',
+  gym: 'barbell',
+  spa: 'sparkles',
+  parking: 'car',
+  restaurant: 'restaurant',
+  bar: 'wine',
+};
+
+const AMENITY_LABELS: Record<string, string> = {
+  wifi: 'Wi-Fi',
+  pool: 'Бассейн',
+  gym: 'Фитнес',
+  spa: 'SPA',
+  parking: 'Парковка',
+  restaurant: 'Ресторан',
+  bar: 'Бар',
+};
+
+function AmenityTile({ id }: { id: string }) {
+  const icon = AMENITY_ICONS[id] ?? 'checkmark-circle';
+  const label = AMENITY_LABELS[id] ?? id;
+  return (
+    <View style={amenityStyles.tile}>
+      <View style={amenityStyles.iconWrap}>
+        <Ionicons name={icon} size={20} color={Colors.primary} />
+      </View>
+      <Text style={amenityStyles.label} numberOfLines={1}>{label}</Text>
+    </View>
+  );
+}
+
+const amenityStyles = StyleSheet.create({
+  tile: {
+    alignItems: 'center',
+    gap: 6,
+    width: '20%',
+    minWidth: 56,
+  },
+  iconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: Colors.primaryMuted,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: `${Colors.primary}30`,
+  },
+  label: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    textAlign: 'center',
+  },
+});
+
+// ── InfoRow ────────────────────────────────────────────────────────────────────
 
 function InfoRow({
   icon,
@@ -135,51 +209,6 @@ const row = StyleSheet.create({
   value: { color: Colors.text, fontSize: Typography.sizes.base, fontWeight: Typography.weights.medium },
 });
 
-// Amenity icon map
-const AMENITY_ICONS: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
-  wifi: 'wifi',
-  pool: 'water',
-  gym: 'barbell',
-  spa: 'sparkles',
-  parking: 'car',
-  restaurant: 'restaurant',
-  bar: 'wine',
-};
-
-const AMENITY_LABELS: Record<string, string> = {
-  wifi: 'Wi-Fi',
-  pool: 'Бассейн',
-  gym: 'Фитнес',
-  spa: 'SPA',
-  parking: 'Парковка',
-  restaurant: 'Ресторан',
-  bar: 'Бар',
-};
-
-function AmenityChip({ id }: { id: string }) {
-  const icon = AMENITY_ICONS[id] ?? 'checkmark-circle';
-  const label = AMENITY_LABELS[id] ?? id;
-  return (
-    <View style={chipStyles.chip}>
-      <Ionicons name={icon} size={14} color={Colors.primary} />
-      <Text style={chipStyles.label}>{label}</Text>
-    </View>
-  );
-}
-
-const chipStyles = StyleSheet.create({
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    backgroundColor: `${Colors.primary}18`,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-  },
-  label: { color: Colors.primary, fontSize: Typography.sizes.sm, fontWeight: Typography.weights.medium },
-});
-
 // ── Screen ─────────────────────────────────────────────────────────────────────
 
 export default function HotelDetailScreen() {
@@ -206,22 +235,23 @@ export default function HotelDetailScreen() {
   const amenitiesStr = raw.amenities ? str(raw.amenities) : undefined;
   const description = raw.description ? str(raw.description) : undefined;
   const bookingId = raw.bookingId ? str(raw.bookingId) : undefined;
-  const hotelId = raw.hotelId ? str(raw.hotelId) : `hotel-${name}-${city}`.replace(/\s+/g, '-');
+  const hotelId = raw.hotelId
+    ? str(raw.hotelId)
+    : `hotel-${name}-${city}`.replace(/\s+/g, '-');
 
   const rating = ratingStr ? parseFloat(ratingStr) : undefined;
-
   const reviewsCount = reviewsCountStr ? parseInt(reviewsCountStr, 10) : undefined;
-  const amenities = amenitiesStr ? amenitiesStr.split(',').map((a) => a.trim()).filter(Boolean) : [];
+  const amenities = amenitiesStr
+    ? amenitiesStr.split(',').map((a) => a.trim()).filter(Boolean)
+    : [];
   const nights = calcNights(checkIn, checkOut);
 
-  const currencySymbol = currency === 'USD' ? '$' : currency;
-  const formattedPricePerNight = pricePerNight > 0
-    ? `${pricePerNight.toLocaleString('ru-RU')} ${currencySymbol}`
-    : '—';
+  const currencySymbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency;
+  const formattedPricePerNight =
+    pricePerNight > 0 ? `${currencySymbol}${pricePerNight.toLocaleString('ru-RU')}` : '—';
   const totalPrice = pricePerNight * nights;
-  const formattedTotal = totalPrice > 0
-    ? `${totalPrice.toLocaleString('ru-RU')} ${currencySymbol}`
-    : '—';
+  const formattedTotal =
+    totalPrice > 0 ? `${currencySymbol}${totalPrice.toLocaleString('ru-RU')}` : '—';
 
   const hotelForFavorite: Hotel = {
     id: hotelId,
@@ -263,55 +293,82 @@ export default function HotelDetailScreen() {
   }, [name, city, formattedPricePerNight]);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Header */}
-      <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => router.back()}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    <View style={styles.container}>
+      {/* ── Hero Section ───────────────────────────────────────────────────── */}
+      <View style={styles.heroWrapper}>
+        <LinearGradient
+          colors={['#0A0A14', '#0E0E1C', `${Colors.secondary}20`]}
+          locations={[0, 0.5, 1]}
+          style={[styles.heroGradient, { paddingTop: insets.top }]}
         >
-          <Ionicons name="chevron-back" size={24} color={Colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Детали отеля</Text>
-        <View style={styles.headerRight}>
-          <FavoriteButton type="hotel" item={hotelForFavorite} size={22} />
-          <TouchableOpacity
-            style={styles.shareBtn}
-            onPress={handleShare}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons name="share-outline" size={22} color={Colors.text} />
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+          {/* Top bar */}
+          <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
+            <TouchableOpacity
+              style={styles.backBtn}
+              onPress={() => router.back()}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="chevron-back" size={24} color={Colors.text} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Детали отеля</Text>
+            <View style={styles.headerRight}>
+              <FavoriteButton type="hotel" item={hotelForFavorite} size={22} />
+              <TouchableOpacity
+                style={styles.shareBtn}
+                onPress={handleShare}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="share-outline" size={22} color={Colors.text} />
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+
+          {/* Hotel hero info */}
+          <Animated.View entering={FadeIn.duration(500)} style={styles.heroContent}>
+            {/* Name + rating side by side */}
+            <View style={styles.heroNameRow}>
+              <View style={styles.heroNameBlock}>
+                <Text style={styles.heroName} numberOfLines={2}>{name}</Text>
+                {stars > 0 ? <StarRow count={stars} /> : null}
+                {(address || city) ? (
+                  <View style={styles.locationRow}>
+                    <Ionicons name="location-outline" size={13} color={Colors.textMuted} />
+                    <Text style={styles.locationText} numberOfLines={1}>
+                      {[address, city].filter(Boolean).join(', ')}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+
+              {rating !== undefined && !isNaN(rating) ? (
+                <View style={styles.ratingCard}>
+                  <RatingBlock rating={rating} reviewsCount={reviewsCount} />
+                </View>
+              ) : null}
+            </View>
+          </Animated.View>
+        </LinearGradient>
+      </View>
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 110 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero — FadeIn */}
-        <Animated.View entering={FadeIn.duration(400)} style={styles.heroCard}>
-          <Text style={styles.hotelName}>{name}</Text>
-          <StarRow count={stars} />
-          {(address || city) ? (
-            <View style={styles.locationRow}>
-              <Ionicons name="location-outline" size={14} color={Colors.textMuted} />
-              <Text style={styles.locationText}>
-                {[address, city].filter(Boolean).join(', ')}
-              </Text>
+        {/* ── Amenities grid ────────────────────────────────────────────────── */}
+        {amenities.length > 0 ? (
+          <Animated.View entering={FadeInUp.delay(80).springify()} style={styles.card}>
+            <Text style={styles.sectionTitle}>Удобства</Text>
+            <View style={styles.amenitiesGrid}>
+              {amenities.map((id) => (
+                <AmenityTile key={id} id={id} />
+              ))}
             </View>
-          ) : null}
-          {rating !== undefined && !isNaN(rating) ? (
-            <View style={styles.ratingWrap}>
-              <RatingBadge rating={rating} reviewsCount={reviewsCount} />
-            </View>
-          ) : null}
-        </Animated.View>
+          </Animated.View>
+        ) : null}
 
-        {/* Dates & guests — FadeInUp delay 80 */}
-        <Animated.View entering={FadeInUp.delay(80).springify()} style={styles.section}>
+        {/* ── Dates & guests ────────────────────────────────────────────────── */}
+        <Animated.View entering={FadeInUp.delay(140).springify()} style={styles.section}>
           <Text style={styles.sectionTitle}>Проживание</Text>
           {checkIn ? (
             <InfoRow icon="calendar-outline" label="Заезд" value={formatDate(checkIn)} />
@@ -326,46 +383,63 @@ export default function HotelDetailScreen() {
           <InfoRow icon="bed-outline" label="Номеров" value={rooms} />
         </Animated.View>
 
-        {/* Amenities — FadeInUp delay 160 */}
-        {amenities.length > 0 ? (
-          <Animated.View entering={FadeInUp.delay(160).springify()} style={styles.sectionNoRows}>
-            <Text style={styles.sectionTitle}>Удобства</Text>
-            <View style={styles.chipsWrap}>
-              {amenities.map((id) => (
-                <AmenityChip key={id} id={id} />
-              ))}
-            </View>
-          </Animated.View>
-        ) : null}
+        {/* ── Price card ────────────────────────────────────────────────────── */}
+        <Animated.View entering={FadeInUp.delay(200).springify()} style={styles.priceCard}>
+          <Text style={styles.sectionTitle}>Стоимость</Text>
 
-        {/* Description — FadeInUp delay 240 */}
+          {/* Per night price */}
+          <View style={styles.priceMainRow}>
+            <Text style={styles.priceMainValue}>{formattedPricePerNight}</Text>
+            <Text style={styles.pricePerNightLabel}>/ночь</Text>
+          </View>
+
+          <View style={styles.priceDivider} />
+
+          {/* Check-in / check-out */}
+          {checkIn ? (
+            <View style={styles.priceDateRow}>
+              <Text style={styles.priceDateLabel}>Заезд</Text>
+              <Text style={styles.priceDateValue}>{formatDate(checkIn)}</Text>
+            </View>
+          ) : null}
+          {checkOut ? (
+            <View style={styles.priceDateRow}>
+              <Text style={styles.priceDateLabel}>Выезд</Text>
+              <Text style={styles.priceDateValue}>{formatDate(checkOut)}</Text>
+            </View>
+          ) : null}
+
+          {/* Total */}
+          {nights > 0 ? (
+            <View style={styles.priceTotalRow}>
+              <Text style={styles.priceTotalLabel}>Итого за {nights} {nights === 1 ? 'ночь' : nights < 5 ? 'ночи' : 'ночей'}:</Text>
+              <Text style={styles.priceTotalValue}>{formattedTotal}</Text>
+            </View>
+          ) : null}
+        </Animated.View>
+
+        {/* ── Description ───────────────────────────────────────────────────── */}
         {description ? (
-          <Animated.View entering={FadeInUp.delay(240).springify()} style={styles.sectionNoRows}>
+          <Animated.View entering={FadeInUp.delay(260).springify()} style={styles.card}>
             <Text style={styles.sectionTitle}>Описание</Text>
             <Text style={styles.description}>{description}</Text>
           </Animated.View>
         ) : null}
       </ScrollView>
 
-      {/* Footer */}
+      {/* ── Fixed bottom book button ──────────────────────────────────────── */}
       <Animated.View
-        entering={FadeInUp.delay(160).springify()}
+        entering={FadeInUp.delay(200).springify()}
         style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}
       >
-        <View style={styles.priceBlock}>
-          <View style={styles.priceRow}>
-            <Text style={styles.priceLabel}>За ночь</Text>
-            <Text style={styles.priceNight}>{formattedPricePerNight}</Text>
-          </View>
-          {nights > 0 ? (
-            <View style={styles.priceRow}>
-              <Text style={styles.totalLabel}>Итого ({nights} ночей)</Text>
-              <Text style={styles.totalValue}>{formattedTotal}</Text>
-            </View>
-          ) : null}
-        </View>
-        <TouchableOpacity style={styles.bookBtn} onPress={handleBook} activeOpacity={0.85}>
-          <Text style={styles.bookBtnText}>Забронировать</Text>
+        <TouchableOpacity
+          style={styles.bookBtn}
+          onPress={handleBook}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.bookBtnText}>
+            Забронировать{pricePerNight > 0 ? ` · ${formattedPricePerNight}/ночь` : ''}
+          </Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -379,14 +453,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+
+  // Hero
+  heroWrapper: {
+    overflow: 'hidden',
+  },
+  heroGradient: {
+    paddingBottom: 24,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
   backBtn: { padding: 4 },
   headerTitle: {
@@ -400,25 +480,26 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   shareBtn: { padding: 4 },
-  scroll: { flex: 1 },
-  content: {
-    padding: 16,
+  heroContent: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+  heroNameRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     gap: 16,
   },
-  // Hero
-  heroCard: {
-    backgroundColor: Colors.card,
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    gap: 10,
+  heroNameBlock: {
+    flex: 1,
+    gap: 8,
   },
-  hotelName: {
+  heroName: {
     color: Colors.text,
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.extrabold,
-    lineHeight: 32,
+    fontFamily: 'Sora',
+    letterSpacing: -0.5,
+    lineHeight: 40,
   },
   locationRow: {
     flexDirection: 'row',
@@ -430,10 +511,34 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.sm,
     flex: 1,
   },
-  ratingWrap: {
-    marginTop: 2,
+  ratingCard: {
+    backgroundColor: `${Colors.success}15`,
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: `${Colors.success}30`,
+    alignItems: 'center',
+    minWidth: 72,
   },
-  // Section with rows
+
+  // Scroll
+  scroll: { flex: 1 },
+  content: {
+    padding: 16,
+    gap: 12,
+  },
+
+  // Generic card
+  card: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: 12,
+  },
+
+  // Section with InfoRows
   section: {
     backgroundColor: Colors.card,
     borderRadius: 16,
@@ -443,14 +548,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  sectionNoRows: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    gap: 12,
-  },
+
   sectionTitle: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
@@ -459,16 +557,85 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     paddingVertical: 12,
   },
-  chipsWrap: {
+
+  // Amenities grid
+  amenitiesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 16,
+    paddingBottom: 4,
   },
+
+  // Description
   description: {
     color: Colors.text,
     fontSize: Typography.sizes.base,
     lineHeight: 22,
   },
+
+  // Price card
+  priceCard: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: 10,
+  },
+  priceMainRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  priceMainValue: {
+    color: Colors.primary,
+    fontSize: Typography.sizes['2xl'],
+    fontWeight: Typography.weights.extrabold,
+    fontFamily: 'Sora',
+    lineHeight: 36,
+  },
+  pricePerNightLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
+    marginBottom: 2,
+  },
+  priceDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.border,
+  },
+  priceDateRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  priceDateLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+  },
+  priceDateValue: {
+    color: Colors.text,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.medium,
+  },
+  priceTotalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 6,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.border,
+  },
+  priceTotalLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.base,
+  },
+  priceTotalValue: {
+    color: Colors.text,
+    fontSize: Typography.sizes.xl,
+    fontWeight: Typography.weights.extrabold,
+  },
+
   // Footer
   footer: {
     backgroundColor: Colors.surface,
@@ -476,48 +643,22 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.border,
     paddingHorizontal: 20,
     paddingTop: 16,
-    gap: 12,
-  },
-  priceBlock: {
-    gap: 4,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  priceLabel: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
-  },
-  priceNight: {
-    color: Colors.text,
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.semibold,
-  },
-  totalLabel: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
-  },
-  totalValue: {
-    color: Colors.text,
-    fontSize: Typography.sizes.xl,
-    fontWeight: Typography.weights.extrabold,
   },
   bookBtn: {
     backgroundColor: Colors.primary,
-    borderRadius: 14,
-    paddingVertical: 16,
+    borderRadius: 100,
+    paddingVertical: 17,
     alignItems: 'center',
     shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.45,
+    shadowRadius: 12,
+    elevation: 8,
   },
   bookBtnText: {
     color: Colors.textInverse,
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
+    letterSpacing: 0.3,
   },
 });

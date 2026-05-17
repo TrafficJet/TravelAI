@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Share,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,6 +36,8 @@ function formatDuration(minutes: number): string {
   return h > 0 ? `${h}ч ${m}мин` : `${m}мин`;
 }
 
+// ── StopsBadge ────────────────────────────────────────────────────────────────
+
 function StopsBadge({ stops }: { stops: number }) {
   const label =
     stops === 0 ? 'Прямой' : stops === 1 ? '1 пересадка' : `${stops} пересадки`;
@@ -52,7 +55,7 @@ const badge = StyleSheet.create({
   wrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
@@ -69,59 +72,92 @@ const badge = StyleSheet.create({
   },
 });
 
-// ── InfoRow ───────────────────────────────────────────────────────────────────
+// ── InfoCard ──────────────────────────────────────────────────────────────────
 
-function InfoRow({
+function InfoCard({
   icon,
-  label,
-  value,
+  title,
+  rows,
 }: {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
-  label: string;
-  value: string;
+  icon: string;
+  title: string;
+  rows: { label: string; value: string; valueColor?: string; valueLarge?: boolean }[];
 }) {
   return (
-    <View style={row.container}>
-      <View style={row.iconWrap}>
-        <Ionicons name={icon} size={18} color={Colors.primary} />
+    <View style={card.wrap}>
+      <View style={card.header}>
+        <Text style={card.icon}>{icon}</Text>
+        <Text style={card.title}>{title}</Text>
       </View>
-      <View style={row.content}>
-        <Text style={row.label}>{label}</Text>
-        <Text style={row.value}>{value}</Text>
-      </View>
+      {rows.map((r, i) => (
+        <View
+          key={i}
+          style={[card.row, i < rows.length - 1 && card.rowDivider]}
+        >
+          <Text style={card.label}>{r.label}</Text>
+          <Text
+            style={[
+              card.value,
+              r.valueColor ? { color: r.valueColor } : undefined,
+              r.valueLarge ? card.valueLarge : undefined,
+            ]}
+          >
+            {r.value}
+          </Text>
+        </View>
+      ))}
     </View>
   );
 }
 
-const row = StyleSheet.create({
-  container: {
+const card = StyleSheet.create({
+  wrap: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: 0,
+  },
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    gap: 8,
+    marginBottom: 12,
+  },
+  icon: {
+    fontSize: 18,
+  },
+  title: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  rowDivider: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: Colors.border,
   },
-  iconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: `${Colors.primary}18`,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  content: {
-    flex: 1,
-  },
   label: {
     color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
-    marginBottom: 2,
+    fontSize: Typography.sizes.sm,
   },
   value: {
     color: Colors.text,
     fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.medium,
+    fontWeight: Typography.weights.semibold,
+  },
+  valueLarge: {
+    fontSize: Typography.sizes.xl,
+    fontWeight: Typography.weights.extrabold,
+    color: Colors.primary,
   },
 });
 
@@ -157,9 +193,16 @@ export default function FlightDetailScreen() {
     ? (Array.isArray(raw.flightId) ? raw.flightId[0] : raw.flightId)
     : `flight-${flightNumber}-${departureDate}`.replace(/\s+/g, '-');
 
+  const currencySymbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency;
   const formattedPrice = priceNum > 0
-    ? `${priceNum.toLocaleString('ru-RU')} ${currency === 'USD' ? '$' : currency}`
+    ? `${currencySymbol}${priceNum.toLocaleString('ru-RU')}`
     : price || '—';
+
+  const cabinLabel =
+    cabin === 'economy' ? 'Эконом'
+    : cabin === 'business' ? 'Бизнес'
+    : cabin === 'first' ? 'Первый'
+    : cabin || '—';
 
   const flightForFavorite: FlightOffer = {
     id: flightId ?? `flight-${flightNumber}`,
@@ -196,120 +239,175 @@ export default function FlightDetailScreen() {
   }, [origin, destination, departureDate, formattedPrice]);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Header — FadeIn */}
-      <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => router.back()}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    <View style={styles.container}>
+      {/* ── Hero Section ─────────────────────────────────────────────────────── */}
+      <View style={styles.heroWrapper}>
+        <LinearGradient
+          colors={['#0A0A14', '#1A1008', `${Colors.primary}28`]}
+          locations={[0, 0.45, 1]}
+          style={[styles.heroGradient, { paddingTop: insets.top }]}
         >
-          <Ionicons name="chevron-back" size={24} color={Colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Детали рейса</Text>
-        <View style={styles.headerRight}>
-          <FavoriteButton type="flight" item={flightForFavorite} size={22} />
-          <TouchableOpacity
-            style={styles.shareBtn}
-            onPress={handleShare}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons name="share-outline" size={22} color={Colors.text} />
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+          {/* Top bar */}
+          <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
+            <TouchableOpacity
+              style={styles.backBtn}
+              onPress={() => router.back()}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="chevron-back" size={24} color={Colors.text} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Детали рейса</Text>
+            <View style={styles.headerRight}>
+              <FavoriteButton type="flight" item={flightForFavorite} size={22} />
+              <TouchableOpacity
+                style={styles.shareBtn}
+                onPress={handleShare}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="share-outline" size={22} color={Colors.text} />
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+
+          {/* Route hero title */}
+          <Animated.View entering={FadeIn.duration(500)} style={styles.heroContent}>
+            <Text style={styles.heroRoute}>
+              {origin || '???'} → {destination || '???'}
+            </Text>
+            {(airline || flightNumber) ? (
+              <Text style={styles.heroSub}>
+                {[airline, flightNumber].filter(Boolean).join(' · ')}
+              </Text>
+            ) : null}
+          </Animated.View>
+        </LinearGradient>
+      </View>
 
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: insets.bottom + 100 },
+          { paddingBottom: insets.bottom + 110 },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Route card — FadeIn (hero) */}
-        <Animated.View entering={FadeIn.duration(400)} style={styles.routeCard}>
-          <View style={styles.routePoint}>
-            <Text style={styles.airportCode}>{origin}</Text>
-            {departureTime ? (
-              <Text style={styles.time}>{departureTime}</Text>
-            ) : null}
-            <Text style={styles.dateText}>{formatDate(departureDate)}</Text>
-          </View>
-
-          <View style={styles.routeMiddle}>
-            {durationNum !== undefined && (
-              <Text style={styles.durationText}>{formatDuration(durationNum)}</Text>
-            )}
-            <View style={styles.routeLine}>
-              <View style={styles.routeDot} />
-              <View style={styles.routeDash} />
-              <Ionicons name="airplane" size={20} color={Colors.primary} />
-              <View style={styles.routeDash} />
-              <View style={styles.routeDot} />
+        {/* ── Flight timeline card ──────────────────────────────────────────── */}
+        <Animated.View entering={FadeInUp.delay(60).springify()} style={styles.timelineCard}>
+          {/* Times row */}
+          <View style={styles.timeRow}>
+            <View style={styles.timeBlock}>
+              <Text style={styles.timeValue}>{departureTime ?? '--:--'}</Text>
+              <Text style={styles.timeAirport}>{origin || '???'}</Text>
             </View>
-            <StopsBadge stops={stopsNum} />
+
+            <View style={styles.timeCenter}>
+              {durationNum !== undefined && (
+                <Text style={styles.durationLabel}>{formatDuration(durationNum)}</Text>
+              )}
+              {/* Line with plane */}
+              <View style={styles.flightLine}>
+                <View style={styles.flightLineDash} />
+                <Text style={styles.planeIcon}>✈</Text>
+                <View style={styles.flightLineDash} />
+              </View>
+              <StopsBadge stops={stopsNum} />
+            </View>
+
+            <View style={[styles.timeBlock, styles.timeBlockRight]}>
+              <Text style={styles.timeValue}>{arrivalTime ?? '--:--'}</Text>
+              <Text style={styles.timeAirport}>{destination || '???'}</Text>
+            </View>
           </View>
 
-          <View style={[styles.routePoint, styles.routePointRight]}>
-            <Text style={styles.airportCode}>{destination}</Text>
-            {arrivalTime ? (
-              <Text style={styles.time}>{arrivalTime}</Text>
-            ) : null}
+          {/* City names row */}
+          <View style={styles.cityRow}>
+            <Text style={styles.cityName} numberOfLines={1}>
+              {origin}
+            </Text>
+            <Text style={[styles.cityName, styles.cityNameRight]} numberOfLines={1}>
+              {destination}
+            </Text>
           </View>
+
+          {departureDate ? (
+            <View style={styles.dateRow}>
+              <Ionicons name="calendar-outline" size={13} color={Colors.textMuted} />
+              <Text style={styles.dateText}>{formatDate(departureDate)}</Text>
+            </View>
+          ) : null}
         </Animated.View>
 
-        {/* Flight details section — FadeInUp delay 80 */}
-        <Animated.View entering={FadeInUp.delay(80).springify()} style={styles.section}>
-          <Text style={styles.sectionTitle}>Детали рейса</Text>
-          {airline ? (
-            <InfoRow icon="business" label="Авиакомпания" value={airline} />
-          ) : null}
-          {flightNumber ? (
-            <InfoRow icon="barcode-outline" label="Номер рейса" value={flightNumber} />
-          ) : null}
-          {cabin ? (
-            <InfoRow
-              icon="star-outline"
-              label="Класс"
-              value={
-                cabin === 'economy'
-                  ? 'Эконом'
-                  : cabin === 'business'
-                  ? 'Бизнес'
-                  : cabin === 'first'
-                  ? 'Первый'
-                  : cabin
-              }
-            />
-          ) : null}
-          {departureDate ? (
-            <InfoRow icon="calendar-outline" label="Дата вылета" value={formatDate(departureDate)} />
-          ) : null}
-          {departureTime ? (
-            <InfoRow icon="time-outline" label="Время вылета" value={departureTime} />
-          ) : null}
-          {arrivalTime ? (
-            <InfoRow icon="time-outline" label="Время прилёта" value={arrivalTime} />
-          ) : null}
+        {/* ── Flight info card ──────────────────────────────────────────────── */}
+        <Animated.View entering={FadeInUp.delay(120).springify()}>
+          <InfoCard
+            icon="✈️"
+            title="Рейс"
+            rows={[
+              { label: 'Авиакомпания', value: airline || '—' },
+              { label: 'Номер рейса', value: flightNumber || '—' },
+              { label: 'Класс', value: cabinLabel },
+            ]}
+          />
+        </Animated.View>
+
+        {/* ── Date & time card ──────────────────────────────────────────────── */}
+        <Animated.View entering={FadeInUp.delay(180).springify()}>
+          <InfoCard
+            icon="📅"
+            title="Дата и время"
+            rows={[
+              { label: 'Дата вылета', value: departureDate ? formatDate(departureDate) : '—' },
+              { label: 'Вылет', value: departureTime ?? '—' },
+              { label: 'Прилёт', value: arrivalTime ?? '—' },
+              ...(durationNum !== undefined
+                ? [{ label: 'Время в пути', value: formatDuration(durationNum) }]
+                : []),
+            ]}
+          />
+        </Animated.View>
+
+        {/* ── Baggage card ─────────────────────────────────────────────────── */}
+        <Animated.View entering={FadeInUp.delay(240).springify()}>
+          <InfoCard
+            icon="🧳"
+            title="Багаж"
+            rows={[
+              { label: 'Ручная кладь', value: '1 × 10 кг' },
+              { label: 'Багаж', value: cabinLabel === 'Эконом' ? '1 × 23 кг' : '2 × 32 кг' },
+            ]}
+          />
+        </Animated.View>
+
+        {/* ── Price card ───────────────────────────────────────────────────── */}
+        <Animated.View entering={FadeInUp.delay(300).springify()}>
+          <InfoCard
+            icon="💰"
+            title="Стоимость"
+            rows={[
+              {
+                label: 'Цена за перелёт',
+                value: formattedPrice,
+                valueColor: Colors.primary,
+                valueLarge: true,
+              },
+            ]}
+          />
         </Animated.View>
       </ScrollView>
 
-      {/* Book button — FadeInUp delay 160 */}
+      {/* ── Fixed bottom book button ──────────────────────────────────────── */}
       <Animated.View
-        entering={FadeInUp.delay(160).springify()}
+        entering={FadeInUp.delay(200).springify()}
         style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}
       >
-        <View style={styles.priceRow}>
-          <Text style={styles.priceLabel}>Цена</Text>
-          <Text style={styles.priceValue}>{formattedPrice}</Text>
-        </View>
         <TouchableOpacity
           style={styles.bookBtn}
           onPress={handleBook}
           activeOpacity={0.85}
         >
-          <Text style={styles.bookBtnText}>Забронировать</Text>
+          <Text style={styles.bookBtnText}>
+            Забронировать{priceNum > 0 ? ` · ${formattedPrice}` : ''}
+          </Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -323,14 +421,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+
+  // Hero
+  heroWrapper: {
+    overflow: 'hidden',
+  },
+  heroGradient: {
+    paddingBottom: 24,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
   backBtn: {
     padding: 4,
@@ -348,90 +452,119 @@ const styles = StyleSheet.create({
   shareBtn: {
     padding: 4,
   },
+  heroContent: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    gap: 6,
+  },
+  heroRoute: {
+    color: Colors.text,
+    fontSize: Typography.sizes['2xl'],
+    fontWeight: Typography.weights.extrabold,
+    fontFamily: 'Sora',
+    letterSpacing: -0.5,
+    lineHeight: 40,
+  },
+  heroSub: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
+  },
+
+  // Scroll
   scroll: {
     flex: 1,
   },
   content: {
     padding: 16,
-    gap: 20,
+    gap: 12,
   },
-  // Route card
-  routeCard: {
+
+  // Timeline card
+  timelineCard: {
     backgroundColor: Colors.card,
     borderRadius: 20,
     padding: 20,
     borderWidth: 1,
     borderColor: Colors.border,
+    gap: 12,
+  },
+  timeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  routePoint: {
+  timeBlock: {
     flex: 1,
     gap: 4,
   },
-  routePointRight: {
+  timeBlockRight: {
     alignItems: 'flex-end',
   },
-  airportCode: {
+  timeValue: {
     color: Colors.text,
-    fontSize: Typography.sizes['2xl'],
+    fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
+    fontFamily: 'Sora',
+    letterSpacing: -0.5,
+  },
+  timeAirport: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.semibold,
     letterSpacing: 1,
   },
-  time: {
-    color: Colors.text,
-    fontSize: Typography.sizes.lg,
-    fontWeight: Typography.weights.semibold,
+  timeCenter: {
+    alignItems: 'center',
+    gap: 6,
+    flex: 1.2,
+  },
+  durationLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.medium,
+  },
+  flightLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    width: '100%',
+    justifyContent: 'center',
+  },
+  flightLineDash: {
+    flex: 1,
+    height: 1.5,
+    backgroundColor: Colors.border,
+    borderRadius: 1,
+  },
+  planeIcon: {
+    fontSize: 18,
+  },
+  cityRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 4,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.border,
+  },
+  cityName: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    flex: 1,
+  },
+  cityNameRight: {
+    textAlign: 'right',
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
   },
   dateText: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
   },
-  routeMiddle: {
-    alignItems: 'center',
-    gap: 6,
-    flex: 1,
-  },
-  durationText: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.medium,
-  },
-  routeLine: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  routeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.border,
-  },
-  routeDash: {
-    height: 1,
-    width: 14,
-    backgroundColor: Colors.border,
-  },
-  // Section
-  section: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingTop: 4,
-    paddingBottom: 4,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  sectionTitle: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    paddingVertical: 12,
-  },
+
   // Footer
   footer: {
     backgroundColor: Colors.surface,
@@ -439,36 +572,22 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.border,
     paddingHorizontal: 20,
     paddingTop: 16,
-    gap: 12,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  priceLabel: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
-  },
-  priceValue: {
-    color: Colors.text,
-    fontSize: Typography.sizes.xl,
-    fontWeight: Typography.weights.extrabold,
   },
   bookBtn: {
     backgroundColor: Colors.primary,
-    borderRadius: 14,
-    paddingVertical: 16,
+    borderRadius: 100,
+    paddingVertical: 17,
     alignItems: 'center',
     shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.45,
+    shadowRadius: 12,
+    elevation: 8,
   },
   bookBtnText: {
     color: Colors.textInverse,
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
+    letterSpacing: 0.3,
   },
 });
