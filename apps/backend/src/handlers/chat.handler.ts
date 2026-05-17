@@ -259,6 +259,52 @@ function sanitizeMessage(raw: string): string {
   return raw.replace(/\0/g, '').trim().slice(0, 2000);
 }
 
+/**
+ * Extract a short human-readable title from a chat message.
+ * Recognises route patterns: "из X в Y", "X → Y", "X - Y", "X to Y".
+ * Returns "✈️ X → Y" (max 50 chars) when a route is found, or the first
+ * 40 characters of the message otherwise.
+ */
+function extractTitleFromMessage(message: string): string | null {
+  if (!message || message.trim().length === 0) return null;
+
+  // Pattern: "из <origin> в <destination>" (Russian)
+  const ruMatch = message.match(/из\s+(.+?)\s+в\s+(.+?)(?:[,!?.]|$)/i);
+  if (ruMatch) {
+    const origin = ruMatch[1].trim();
+    const dest = ruMatch[2].trim();
+    return `✈️ ${origin} → ${dest}`.slice(0, 50);
+  }
+
+  // Pattern: "X → Y" (arrow with unicode or ASCII)
+  const arrowMatch = message.match(/(.+?)\s*(?:→|->|=>)\s*(.+?)(?:[,!?.]|$)/);
+  if (arrowMatch) {
+    const origin = arrowMatch[1].trim();
+    const dest = arrowMatch[2].trim();
+    return `✈️ ${origin} → ${dest}`.slice(0, 50);
+  }
+
+  // Pattern: "X to Y" (English)
+  const toMatch = message.match(/(.+?)\s+to\s+(.+?)(?:[,!?.]|$)/i);
+  if (toMatch) {
+    const origin = toMatch[1].trim();
+    const dest = toMatch[2].trim();
+    return `✈️ ${origin} → ${dest}`.slice(0, 50);
+  }
+
+  // Pattern: "X - Y" (dash separator, at least 3 chars each side)
+  const dashMatch = message.match(/([A-Za-zА-Яа-яЁё]{3,})\s+-\s+([A-Za-zА-Яа-яЁё]{3,})/);
+  if (dashMatch) {
+    const origin = dashMatch[1].trim();
+    const dest = dashMatch[2].trim();
+    return `✈️ ${origin} → ${dest}`.slice(0, 50);
+  }
+
+  // Fallback: first 40 characters of the message
+  const fallback = message.trim().slice(0, 40);
+  return fallback.length > 0 ? fallback : null;
+}
+
 // POST /api/chat/sessions/:id/messages — SSE streaming with Claude
 export async function sendMessage(request: FastifyRequest, reply: FastifyReply) {
   const userId = request.userId;
@@ -303,13 +349,19 @@ export async function sendMessage(request: FastifyRequest, reply: FastifyReply) 
       },
     });
 
-    // If first message, update session title from content
-    if (isFirstMessage) {
-      const title = content.slice(0, 50).trim() + (content.length > 50 ? '...' : '');
-      await prisma.chatSession.update({
-        where: { id: sessionId },
-        data: { title },
-      });
+    // If first message and content is meaningful — generate a short title
+    if (isFirstMessage && content.length > 3) {
+      const shortTitle = extractTitleFromMessage(content);
+      if (shortTitle) {
+        // fire-and-forget: do not block SSE stream on this update
+        prisma.chatSession.update({
+          where: { id: sessionId },
+          data: { title: shortTitle },
+        }).then(() => {
+          // Notify mobile client in real-time so the UI can update immediately
+          sendEvent({ type: 'session_title_update', title: shortTitle });
+        }).catch(() => {});
+      }
     }
 
     // Load session history for Claude context (exclude the just-added user message)
