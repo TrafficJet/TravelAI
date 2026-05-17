@@ -37,11 +37,16 @@ function nightsCount(checkIn: string, checkOut: string): number {
 
 function StarRow({ count }: { count: number }) {
   const n = Math.min(5, Math.max(0, Math.round(count)));
+  const empty = 5 - n;
   return (
     <View style={starStyles.row}>
       {Array.from({ length: n }).map((_, i) => (
-        <Text key={i} style={starStyles.star}>⭐</Text>
+        <Ionicons key={`f${i}`} name="star" size={12} color="#F59E0B" />
       ))}
+      {Array.from({ length: empty }).map((_, i) => (
+        <Ionicons key={`e${i}`} name="star-outline" size={12} color={Colors.border} />
+      ))}
+      <Text style={starStyles.label}>{count}-звёздочный</Text>
     </View>
   );
 }
@@ -49,12 +54,14 @@ function StarRow({ count }: { count: number }) {
 const starStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    gap: 1,
+    alignItems: 'center',
+    gap: 2,
     flexShrink: 1,
   },
-  star: {
-    fontSize: 11,
-    lineHeight: 14,
+  label: {
+    color: Colors.textMuted,
+    fontSize: 10,
+    marginLeft: 4,
   },
 });
 
@@ -179,23 +186,17 @@ export function HotelCard({ hotel, onBook }: Props) {
 
       {/* ── Price row ── */}
       <View style={styles.priceRow}>
-        <Text style={styles.priceIcon}>💰</Text>
-        <Text style={styles.pricePerNight}>
-          {currencySymbol}{hotel.pricePerNight.toLocaleString('ru-RU')}/ночь
-        </Text>
-        {total !== undefined && (
-          <Text style={styles.totalPrice}>
-            {' '}Итого: {currencySymbol}{total.toLocaleString('ru-RU')}
+        <View style={styles.priceLeft}>
+          <Text style={styles.pricePerNight}>
+            {currencySymbol}{hotel.pricePerNight.toLocaleString('ru-RU')}
+            <Text style={styles.pricePerNightLabel}>/ночь</Text>
           </Text>
-        )}
-        <TouchableOpacity
-          style={styles.buyBtn}
-          onPress={onBook ?? handlePress}
-          activeOpacity={0.8}
-          hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-        >
-          <Text style={styles.buyBtnText}>Купить →</Text>
-        </TouchableOpacity>
+          {total !== undefined && (
+            <Text style={styles.totalPrice}>
+              Итого: {currencySymbol}{total.toLocaleString('ru-RU')}
+            </Text>
+          )}
+        </View>
       </View>
 
       {/* ── Amenities ── */}
@@ -209,6 +210,17 @@ export function HotelCard({ hotel, onBook }: Props) {
           </View>
         </>
       )}
+
+      {/* ── Bottom action ── */}
+      <View style={styles.bottomDivider} />
+      <TouchableOpacity
+        style={styles.bookBtn}
+        onPress={onBook ?? handlePress}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.bookBtnText}>Посмотреть и забронировать</Text>
+        <Text style={styles.bookBtnArrow}>→</Text>
+      </TouchableOpacity>
 
     </TouchableOpacity>
   );
@@ -305,35 +317,58 @@ const styles = StyleSheet.create({
   // Price row
   priceRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+    alignItems: 'flex-start',
     marginBottom: 0,
-    flexWrap: 'wrap',
   },
-  priceIcon: {
-    fontSize: 13,
+  priceLeft: {
+    flex: 1,
+    gap: 2,
   },
   pricePerNight: {
     color: Colors.primary,
-    fontSize: Typography.sizes.base,
+    fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
+    fontFamily: 'Sora',
+    lineHeight: 28,
+  },
+  pricePerNightLabel: {
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.medium,
+    color: Colors.textMuted,
   },
   totalPrice: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
-    flex: 1,
   },
-  buyBtn: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    marginLeft: 4,
+
+  // Bottom action
+  bottomDivider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginTop: 14,
+    marginBottom: 10,
   },
-  buyBtnText: {
-    color: Colors.textInverse,
-    fontSize: Typography.sizes.xs,
+  bookBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.primaryMuted,
+    borderWidth: 1,
+    borderColor: `${Colors.primary}50`,
+    borderRadius: 12,
+    paddingVertical: 10,
+    gap: 6,
+  },
+  bookBtnText: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
+    letterSpacing: 0.2,
+  },
+  bookBtnArrow: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.bold,
   },
 
   // Amenities

@@ -1071,6 +1071,14 @@ export default function ProfileScreen() {
             {isLoggingOut ? 'Выход...' : 'Выйти из аккаунта'}
           </Text>
         </TouchableOpacity>
+
+        {/* ── About app ───────────────────────────────────────────────── */}
+        <View style={styles.aboutSection}>
+          <Text style={styles.aboutEmoji}>✈️</Text>
+          <Text style={styles.aboutName}>TravelAI</Text>
+          <Text style={styles.aboutVersion}>Версия 1.0.0</Text>
+          <Text style={styles.aboutCopy}>Ваш AI-ассистент для путешествий</Text>
+        </View>
       </ScrollView>
 
       {/* Edit name modal */}
@@ -1408,6 +1416,34 @@ const styles = StyleSheet.create({
   langDivider: {
     color: Colors.border,
     fontSize: Typography.sizes.sm,
+  },
+
+  // ── About section ────────────────────────────────────────────────────────
+  aboutSection: {
+    alignItems: 'center',
+    marginTop: Spacing.xl,
+    paddingBottom: Spacing.md,
+    gap: 4,
+  },
+  aboutEmoji: {
+    fontSize: 28,
+    marginBottom: 4,
+  },
+  aboutName: {
+    fontFamily: 'Sora',
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.semibold,
+  },
+  aboutVersion: {
+    color: Colors.textDisabled,
+    fontSize: Typography.sizes.xs,
+  },
+  aboutCopy: {
+    color: Colors.textDisabled,
+    fontSize: Typography.sizes.xs,
+    textAlign: 'center',
+    marginTop: 2,
   },
 
   // ── Price Alerts button ───────────────────────────────────────────────────

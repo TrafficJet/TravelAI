@@ -73,8 +73,10 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.logo}>✈️</Text>
-          <Text style={styles.title}>Travel AI</Text>
+          <View style={styles.logoWrap}>
+            <Text style={styles.logo}>✈️</Text>
+          </View>
+          <Text style={styles.title}>TravelAI</Text>
           <Text style={styles.subtitle}>AI-ассистент для путешествий</Text>
         </View>
 
@@ -105,6 +107,12 @@ export default function LoginScreen() {
             fullWidth
             style={styles.loginBtn}
           />
+
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>или</Text>
+            <View style={styles.dividerLine} />
+          </View>
 
           <TouchableOpacity
             style={[styles.demoBtn, isLoading && styles.demoBtnDisabled]}
@@ -155,19 +163,55 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: Spacing.xl,
+    paddingTop: Spacing.lg,
+  },
+  logoWrap: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: Colors.primaryMuted,
+    borderWidth: 1.5,
+    borderColor: `${Colors.primary}50`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
   },
   logo: {
     fontSize: Typography.sizes['4xl'],
-    marginBottom: Spacing.sm,
   },
   title: {
-    ...TextPresets.h1,
+    fontFamily: 'Sora',
+    fontSize: Typography.sizes['2xl'],
+    fontWeight: Typography.weights.bold,
     color: Colors.text,
     marginBottom: Spacing.xs,
+    letterSpacing: -0.5,
   },
   subtitle: {
     ...TextPresets.body,
     color: Colors.textMuted,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: Spacing.sm,
+    gap: Spacing.sm,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.border,
+  },
+  dividerText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.medium,
+    letterSpacing: Typography.letterSpacing.wide,
   },
   form: {
     width: '100%',

@@ -193,7 +193,7 @@ function EmptyState({ onStartPress }: EmptyStateProps) {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
-          <Text style={emptyStyles.startBtnText}>Начать поиск</Text>
+          <Text style={emptyStyles.startBtnText}>Начать планирование</Text>
         </LinearGradient>
       </TouchableOpacity>
     </View>
@@ -734,18 +734,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: Spacing.md,
     bottom: Spacing.md,
-    width: 60,
-    height: 60,
+    width: 62,
+    height: 62,
     borderRadius: Radius.fab,
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
+    // Glow effect
     shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.85,
+    shadowRadius: 20,
+    elevation: 14,
     zIndex: 999,
+    borderWidth: 1.5,
+    borderColor: Colors.primaryLight,
   },
   fabDisabled: {
     opacity: 0.6,

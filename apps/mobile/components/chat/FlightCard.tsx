@@ -36,12 +36,19 @@ function cabinLabel(cabin: string): string {
   return cabin;
 }
 
-// ── RouteArrow ────────────────────────────────────────────────────────────────
+// ── DashedRoute ───────────────────────────────────────────────────────────────
 
-function RouteArrow() {
+function DashedRoute() {
+  // Render a dashed line using small segments
+  const DASH_COUNT = 8;
   return (
     <View style={arrowStyles.wrap}>
-      <View style={arrowStyles.line} />
+      <View style={arrowStyles.dot} />
+      <View style={arrowStyles.dashRow}>
+        {Array.from({ length: DASH_COUNT }).map((_, i) => (
+          <View key={i} style={arrowStyles.dash} />
+        ))}
+      </View>
       <View style={arrowStyles.arrowHead} />
     </View>
   );
@@ -52,12 +59,31 @@ const arrowStyles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 4,
+    marginHorizontal: 6,
   },
-  line: {
+  dot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.background,
+    flexShrink: 0,
+  },
+  dashRow: {
     flex: 1,
-    height: 1,
-    backgroundColor: Colors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    overflow: 'hidden',
+    marginHorizontal: 2,
+  },
+  dash: {
+    flex: 1,
+    height: 1.5,
+    backgroundColor: `${Colors.primary}60`,
+    marginHorizontal: 1,
+    borderRadius: 1,
   },
   arrowHead: {
     width: 0,
@@ -67,8 +93,9 @@ const arrowStyles = StyleSheet.create({
     borderLeftWidth: 6,
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
-    borderLeftColor: Colors.border,
+    borderLeftColor: Colors.primary,
     marginLeft: -1,
+    flexShrink: 0,
   },
 });
 
@@ -145,12 +172,12 @@ export function FlightCard({ flight, onBook }: Props) {
           ) : null}
         </View>
 
-        {/* Center: duration + arrow */}
+        {/* Center: duration + dashed route */}
         <View style={styles.routeCenter}>
           {flight.durationMin !== undefined && (
             <Text style={styles.duration}>{formatDuration(flight.durationMin)}</Text>
           )}
-          <RouteArrow />
+          <DashedRoute />
         </View>
 
         {/* Destination */}
@@ -161,6 +188,17 @@ export function FlightCard({ flight, onBook }: Props) {
           ) : null}
         </View>
       </View>
+
+      {/* ── Bottom action row ── */}
+      <View style={styles.bottomDivider} />
+      <TouchableOpacity
+        style={styles.bookBtn}
+        onPress={onBook ?? handlePress}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.bookBtnText}>Подробнее и забронировать</Text>
+        <Text style={styles.bookBtnArrow}>→</Text>
+      </TouchableOpacity>
 
     </TouchableOpacity>
   );
@@ -206,9 +244,10 @@ const styles = StyleSheet.create({
   },
   price: {
     color: Colors.primary,
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
-    lineHeight: 22,
+    lineHeight: 28,
+    fontFamily: 'Sora',
   },
   buyBtn: {
     backgroundColor: Colors.primary,
@@ -280,5 +319,35 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
+  },
+
+  // Bottom action
+  bottomDivider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginTop: 14,
+    marginBottom: 10,
+  },
+  bookBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.primaryMuted,
+    borderWidth: 1,
+    borderColor: `${Colors.primary}50`,
+    borderRadius: 12,
+    paddingVertical: 10,
+    gap: 6,
+  },
+  bookBtnText: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.semibold,
+    letterSpacing: 0.2,
+  },
+  bookBtnArrow: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.bold,
   },
 });

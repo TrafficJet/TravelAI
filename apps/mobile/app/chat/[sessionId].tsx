@@ -168,14 +168,15 @@ const emptyStyles = StyleSheet.create({
   chip: {
     backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: `${Colors.primary}40`,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 9,
   },
   chipText: {
-    color: Colors.textMuted,
+    color: Colors.primary,
     fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.medium,
   },
 });
 
@@ -293,7 +294,25 @@ export default function ChatScreen() {
     const session = (sessions ?? []).find((s) => s.id === sessionId);
     if (session) {
       setCurrentSession(session);
-      navigation.setOptions({ title: session.title });
+      navigation.setOptions({
+        title: session.title,
+        headerTitleStyle: {
+          fontFamily: 'Sora',
+          fontSize: 16,
+          fontWeight: '600' as const,
+          color: Colors.text,
+        },
+        headerRight: () => (
+          <TouchableOpacity
+            style={chatHeaderStyles.menuBtn}
+            onPress={() => {}}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={chatHeaderStyles.menuBtnText}>•••</Text>
+          </TouchableOpacity>
+        ),
+      });
     }
   }, [sessionId, sessions, setCurrentSession, navigation]);
 
@@ -553,6 +572,19 @@ export default function ChatScreen() {
     </KeyboardAvoidingView>
   );
 }
+
+const chatHeaderStyles = StyleSheet.create({
+  menuBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  menuBtnText: {
+    color: Colors.textMuted,
+    fontSize: 18,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 1,
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
