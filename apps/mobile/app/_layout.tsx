@@ -269,6 +269,22 @@ export default function RootLayout() {
                 name="booking-success"
                 options={{ title: 'Бронирование', headerShown: false, gestureEnabled: false }}
               />
+              <Stack.Screen
+                name="settings"
+                options={{ title: 'Настройки', headerBackTitle: 'Назад' }}
+              />
+              <Stack.Screen
+                name="notifications"
+                options={{ title: 'Уведомления', headerBackTitle: 'Назад' }}
+              />
+              <Stack.Screen
+                name="price-alerts"
+                options={{ title: 'Ценовые оповещения', headerBackTitle: 'Назад' }}
+              />
+              <Stack.Screen
+                name="hotels-map"
+                options={{ title: 'Отели на карте', headerShown: false }}
+              />
               <Stack.Screen name="+not-found" options={{ title: 'Не найдено' }} />
             </Stack>
             <ToastContainer />
