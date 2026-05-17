@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,9 @@ import {
   ScrollView,
   StyleSheet,
   SafeAreaView,
+  TextInput,
+  PanResponder,
+  LayoutChangeEvent,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 
@@ -23,6 +26,10 @@ export interface FlightFilters {
 }
 
 const DEFAULT_FILTERS: FlightFilters = {};
+
+const PRICE_MIN = 0;
+const PRICE_MAX = 5000;
+const PRICE_STEP = 50;
 
 // ── Option helpers ────────────────────────────────────────────────────────────
 
@@ -52,19 +59,227 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.optRow}>{children}</View>
+      {children}
     </View>
   );
 }
 
-// ── Price options ─────────────────────────────────────────────────────────────
+// ── Price slider ──────────────────────────────────────────────────────────────
 
-const PRICE_OPTIONS: Array<{ label: string; value: number | undefined }> = [
-  { label: 'до 10 000', value: 10_000 },
-  { label: 'до 20 000', value: 20_000 },
-  { label: 'до 30 000', value: 30_000 },
-  { label: 'Любая', value: undefined },
-];
+interface PriceSliderProps {
+  value: number;
+  onChange: (v: number) => void;
+}
+
+function PriceSlider({ value, onChange }: PriceSliderProps) {
+  const [sliderWidth, setSliderWidth] = useState(0);
+  const [inputText, setInputText] = useState(String(value));
+  const startX = useRef(0);
+  const startValue = useRef(value);
+
+  // Keep inputText in sync when value changes externally (e.g. reset)
+  React.useEffect(() => {
+    setInputText(String(value));
+  }, [value]);
+
+  const clampStep = useCallback((raw: number): number => {
+    const stepped = Math.round(raw / PRICE_STEP) * PRICE_STEP;
+    return Math.max(PRICE_MIN, Math.min(PRICE_MAX, stepped));
+  }, []);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (_e, gs) => {
+        startX.current = gs.x0;
+        startValue.current = value;
+      },
+      onPanResponderMove: (_e, gs) => {
+        if (sliderWidth <= 0) return;
+        const dx = gs.moveX - startX.current;
+        const ratio = dx / sliderWidth;
+        const newValue = clampStep(startValue.current + ratio * (PRICE_MAX - PRICE_MIN));
+        onChange(newValue);
+      },
+    }),
+  ).current;
+
+  // Re-create panResponder handlers when sliderWidth or value changes isn't
+  // possible with the static ref approach, so we store them in a ref instead.
+  const sliderWidthRef = useRef(sliderWidth);
+  const valueRef = useRef(value);
+  sliderWidthRef.current = sliderWidth;
+  valueRef.current = value;
+
+  const dynamicPanResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (_e, gs) => {
+        startX.current = gs.x0;
+        startValue.current = valueRef.current;
+      },
+      onPanResponderMove: (_e, gs) => {
+        const w = sliderWidthRef.current;
+        if (w <= 0) return;
+        const dx = gs.moveX - startX.current;
+        const ratio = dx / w;
+        const newValue = clampStep(startValue.current + ratio * (PRICE_MAX - PRICE_MIN));
+        onChange(newValue);
+      },
+    }),
+  ).current;
+
+  const thumbPercent = sliderWidth > 0
+    ? ((value - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100
+    : 0;
+
+  function handleTrackPress(e: { nativeEvent: { locationX: number } }) {
+    if (sliderWidth <= 0) return;
+    const ratio = e.nativeEvent.locationX / sliderWidth;
+    onChange(clampStep(PRICE_MIN + ratio * (PRICE_MAX - PRICE_MIN)));
+  }
+
+  function handleInputChange(text: string) {
+    setInputText(text);
+    const num = parseInt(text, 10);
+    if (!isNaN(num)) {
+      onChange(clampStep(num));
+    }
+  }
+
+  function handleInputBlur() {
+    const num = parseInt(inputText, 10);
+    if (isNaN(num)) {
+      setInputText(String(value));
+    } else {
+      const clamped = clampStep(num);
+      onChange(clamped);
+      setInputText(String(clamped));
+    }
+  }
+
+  return (
+    <View style={sliderStyles.wrapper}>
+      {/* Track */}
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={handleTrackPress}
+        style={sliderStyles.trackWrap}
+        onLayout={(e: LayoutChangeEvent) => setSliderWidth(e.nativeEvent.layout.width)}
+      >
+        {/* Filled portion */}
+        <View style={sliderStyles.track}>
+          <View style={[sliderStyles.fill, { width: `${thumbPercent}%` }]} />
+        </View>
+        {/* Thumb */}
+        <View
+          style={[sliderStyles.thumb, { left: `${thumbPercent}%` }]}
+          {...dynamicPanResponder.panHandlers}
+        />
+      </TouchableOpacity>
+
+      {/* Range labels */}
+      <View style={sliderStyles.rangeRow}>
+        <Text style={sliderStyles.rangeLabel}>{PRICE_MIN}$</Text>
+        <Text style={sliderStyles.rangeLabel}>{PRICE_MAX}$</Text>
+      </View>
+
+      {/* Manual input */}
+      <View style={sliderStyles.inputRow}>
+        <Text style={sliderStyles.inputLabel}>Максимум:</Text>
+        <TextInput
+          style={sliderStyles.input}
+          value={inputText}
+          onChangeText={handleInputChange}
+          onBlur={handleInputBlur}
+          keyboardType="number-pad"
+          returnKeyType="done"
+          placeholderTextColor={Colors.textMuted}
+          maxLength={5}
+        />
+        <Text style={sliderStyles.currency}>$</Text>
+      </View>
+    </View>
+  );
+}
+
+const sliderStyles = StyleSheet.create({
+  wrapper: {
+    paddingHorizontal: 4,
+  },
+  trackWrap: {
+    height: 40,
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  track: {
+    height: 4,
+    backgroundColor: Colors.border,
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  fill: {
+    height: '100%',
+    backgroundColor: Colors.primary,
+    borderRadius: 2,
+  },
+  thumb: {
+    position: 'absolute',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: Colors.primary,
+    borderWidth: 3,
+    borderColor: Colors.surface,
+    marginLeft: -12,
+    top: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  rangeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  rangeLabel: {
+    color: Colors.textMuted,
+    fontSize: 11,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    gap: 8,
+  },
+  inputLabel: {
+    color: Colors.textMuted,
+    fontSize: 13,
+    flex: 1,
+  },
+  input: {
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    color: Colors.text,
+    fontSize: 15,
+    fontWeight: '600',
+    minWidth: 72,
+    textAlign: 'center',
+  },
+  currency: {
+    color: Colors.textMuted,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+});
 
 // ── Stops options ─────────────────────────────────────────────────────────────
 
@@ -92,23 +307,83 @@ const SORT_OPTIONS: Array<{ label: string; value: FlightFilters['sortBy'] }> = [
 
 // ── Departure time slots ──────────────────────────────────────────────────────
 
-const TIME_SLOTS: Array<{ label: string; from: string; to: string }> = [
-  { label: 'Утро\n06:00–12:00', from: '06:00', to: '12:00' },
-  { label: 'День\n12:00–18:00', from: '12:00', to: '18:00' },
-  { label: 'Вечер\n18:00–00:00', from: '18:00', to: '00:00' },
+const TIME_PRESETS: Array<{ label: string; from: string; to: string }> = [
+  { label: 'Утро 06-12', from: '06:00', to: '12:00' },
+  { label: 'День 12-18', from: '12:00', to: '18:00' },
+  { label: 'Вечер 18-23', from: '18:00', to: '23:00' },
   { label: 'Любое', from: '', to: '' },
 ];
+
+// ── HH:MM masked input ────────────────────────────────────────────────────────
+
+interface TimeInputProps {
+  value: string;
+  placeholder: string;
+  onChange: (val: string) => void;
+}
+
+function TimeInput({ value, placeholder, onChange }: TimeInputProps) {
+  function applyMask(text: string): string {
+    // Strip everything except digits
+    const digits = text.replace(/\D/g, '').slice(0, 4);
+    if (digits.length <= 2) return digits;
+    return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+  }
+
+  function validate(masked: string): boolean {
+    if (masked.length < 5) return false;
+    const [hStr, mStr] = masked.split(':');
+    const h = parseInt(hStr, 10);
+    const m = parseInt(mStr, 10);
+    return h >= 0 && h <= 23 && m >= 0 && m <= 59;
+  }
+
+  function handleChange(text: string) {
+    const masked = applyMask(text);
+    onChange(masked);
+  }
+
+  const isValid = value === '' || validate(value);
+
+  return (
+    <TextInput
+      style={[timeStyles.input, !isValid && timeStyles.inputError]}
+      value={value}
+      onChangeText={handleChange}
+      placeholder={placeholder}
+      placeholderTextColor={Colors.textMuted}
+      keyboardType="number-pad"
+      maxLength={5}
+      returnKeyType="done"
+    />
+  );
+}
+
+const timeStyles = StyleSheet.create({
+  input: {
+    flex: 1,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    color: Colors.text,
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  inputError: {
+    borderColor: Colors.error ?? '#EF4444',
+  },
+});
 
 // ── Main component ────────────────────────────────────────────────────────────
 
 interface FlightFiltersSheetProps {
-  /** Current active filters */
   filters: FlightFilters;
-  /** Called when user taps "Применить" */
   onApply: (filters: FlightFilters) => void;
-  /** Whether the sheet is visible */
   visible: boolean;
-  /** Called to close the sheet without changes */
   onClose: () => void;
 }
 
@@ -118,10 +393,8 @@ export function FlightFiltersSheet({
   visible,
   onClose,
 }: FlightFiltersSheetProps) {
-  // Local draft — only committed when user taps "Применить"
   const [draft, setDraft] = useState<FlightFilters>(filters);
 
-  // Reset draft to latest committed filters when modal opens
   React.useEffect(() => {
     if (visible) setDraft(filters);
   }, [visible, filters]);
@@ -139,9 +412,23 @@ export function FlightFiltersSheet({
     setDraft(DEFAULT_FILTERS);
   }
 
-  const activeTimeSlot = TIME_SLOTS.find(
-    (s) => s.from === (draft.departureTimeFrom ?? '') && s.to === (draft.departureTimeTo ?? ''),
+  const activePreset = TIME_PRESETS.find(
+    (s) =>
+      s.from === (draft.departureTimeFrom ?? '') &&
+      s.to === (draft.departureTimeTo ?? ''),
   );
+
+  function handlePresetPress(preset: typeof TIME_PRESETS[number]) {
+    if (preset.from === '') {
+      update('departureTimeFrom', undefined);
+      update('departureTimeTo', undefined);
+    } else {
+      update('departureTimeFrom', preset.from);
+      update('departureTimeTo', preset.to);
+    }
+  }
+
+  const currentPrice = draft.maxPrice ?? PRICE_MAX;
 
   return (
     <Modal
@@ -170,97 +457,108 @@ export function FlightFiltersSheet({
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {/* Max price */}
+            {/* Max price — slider */}
             <Section title="Максимальная цена">
-              {PRICE_OPTIONS.map((opt) => (
-                <OptionButton
-                  key={opt.label}
-                  label={opt.label}
-                  selected={draft.maxPrice === opt.value}
-                  onPress={() => update('maxPrice', opt.value)}
-                />
-              ))}
+              <PriceSlider
+                value={currentPrice}
+                onChange={(v) => update('maxPrice', v === PRICE_MAX ? undefined : v)}
+              />
             </Section>
 
             {/* Stops */}
             <Section title="Пересадки">
-              {STOPS_OPTIONS.map((opt) => (
-                <OptionButton
-                  key={opt.label}
-                  label={opt.label}
-                  selected={draft.maxStops === opt.value}
-                  onPress={() => update('maxStops', opt.value)}
-                />
-              ))}
+              <View style={styles.optRow}>
+                {STOPS_OPTIONS.map((opt) => (
+                  <OptionButton
+                    key={opt.label}
+                    label={opt.label}
+                    selected={draft.maxStops === opt.value}
+                    onPress={() => update('maxStops', opt.value)}
+                  />
+                ))}
+              </View>
             </Section>
 
             {/* Cabin class */}
             <Section title="Класс обслуживания">
-              {CABIN_OPTIONS.map((opt) => (
-                <OptionButton
-                  key={opt.label}
-                  label={opt.label}
-                  selected={draft.cabinClass === opt.value}
-                  onPress={() =>
-                    update(
-                      'cabinClass',
-                      draft.cabinClass === opt.value ? undefined : opt.value,
-                    )
-                  }
-                />
-              ))}
+              <View style={styles.optRow}>
+                {CABIN_OPTIONS.map((opt) => (
+                  <OptionButton
+                    key={opt.label}
+                    label={opt.label}
+                    selected={draft.cabinClass === opt.value}
+                    onPress={() =>
+                      update(
+                        'cabinClass',
+                        draft.cabinClass === opt.value ? undefined : opt.value,
+                      )
+                    }
+                  />
+                ))}
+              </View>
             </Section>
 
             {/* Departure time */}
             <Section title="Время вылета">
-              {TIME_SLOTS.map((slot) => (
-                <OptionButton
-                  key={slot.label}
-                  label={slot.label}
-                  selected={
-                    slot === activeTimeSlot ||
-                    (slot.from === '' && activeTimeSlot == null)
-                  }
-                  onPress={() => {
-                    if (slot.from === '') {
-                      update('departureTimeFrom', undefined);
-                      update('departureTimeTo', undefined);
-                    } else {
-                      update('departureTimeFrom', slot.from);
-                      update('departureTimeTo', slot.to);
+              {/* Quick presets */}
+              <View style={styles.optRow}>
+                {TIME_PRESETS.map((preset) => (
+                  <OptionButton
+                    key={preset.label}
+                    label={preset.label}
+                    selected={
+                      preset === activePreset ||
+                      (preset.from === '' && activePreset == null)
                     }
-                  }}
+                    onPress={() => handlePresetPress(preset)}
+                  />
+                ))}
+              </View>
+
+              {/* Manual HH:MM inputs */}
+              <View style={styles.timeRow}>
+                <TimeInput
+                  value={draft.departureTimeFrom ?? ''}
+                  placeholder="06:00"
+                  onChange={(v) => update('departureTimeFrom', v || undefined)}
                 />
-              ))}
+                <Text style={styles.timeSeparator}>—</Text>
+                <TimeInput
+                  value={draft.departureTimeTo ?? ''}
+                  placeholder="23:00"
+                  onChange={(v) => update('departureTimeTo', v || undefined)}
+                />
+              </View>
             </Section>
 
             {/* Sort */}
             <Section title="Сортировка">
-              {SORT_OPTIONS.map((opt) => (
-                <OptionButton
-                  key={opt.label}
-                  label={opt.label}
-                  selected={draft.sortBy === opt.value}
-                  onPress={() => {
-                    if (draft.sortBy === opt.value) {
-                      // Toggle order on second tap
-                      update('sortOrder', draft.sortOrder === 'asc' ? 'desc' : 'asc');
-                    } else {
-                      update('sortBy', opt.value);
-                      update('sortOrder', 'asc');
+              <View style={styles.optRow}>
+                {SORT_OPTIONS.map((opt) => (
+                  <OptionButton
+                    key={opt.label}
+                    label={opt.label}
+                    selected={draft.sortBy === opt.value}
+                    onPress={() => {
+                      if (draft.sortBy === opt.value) {
+                        update('sortOrder', draft.sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        update('sortBy', opt.value);
+                        update('sortOrder', 'asc');
+                      }
+                    }}
+                  />
+                ))}
+                {draft.sortBy && (
+                  <OptionButton
+                    label={draft.sortOrder === 'desc' ? 'По убыванию' : 'По возрастанию'}
+                    selected
+                    onPress={() =>
+                      update('sortOrder', draft.sortOrder === 'asc' ? 'desc' : 'asc')
                     }
-                  }}
-                />
-              ))}
-              {draft.sortBy && (
-                <OptionButton
-                  label={draft.sortOrder === 'desc' ? 'По убыванию' : 'По возрастанию'}
-                  selected
-                  onPress={() =>
-                    update('sortOrder', draft.sortOrder === 'asc' ? 'desc' : 'asc')
-                  }
-                />
-              )}
+                  />
+                )}
+              </View>
             </Section>
           </ScrollView>
 
@@ -284,11 +582,9 @@ export function FlightFiltersSheet({
 interface FlightFilterBarProps {
   filters: FlightFilters;
   onOpenFilters: () => void;
-  /** Pre-computed active filter count; falls back to counting from filters if not provided. */
   activeCount?: number;
 }
 
-/** Compact bar shown above flight cards. Displays active filter count. */
 export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCountProp }: FlightFilterBarProps) {
   const activeCount = activeCountProp ?? Object.values(filters).filter((v) => v !== undefined).length;
 
@@ -310,7 +606,6 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  // Modal overlay
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -339,7 +634,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 
-  // Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -359,7 +653,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 
-  // Scroll area
   scroll: {
     flex: 1,
   },
@@ -367,7 +660,6 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
 
-  // Section
   section: {
     paddingHorizontal: 20,
     paddingTop: 18,
@@ -387,7 +679,19 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 
-  // Option button
+  // Time picker row
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    gap: 8,
+  },
+  timeSeparator: {
+    color: Colors.textMuted,
+    fontSize: 18,
+    fontWeight: '300',
+  },
+
   optBtn: {
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -411,7 +715,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // Footer
   footer: {
     flexDirection: 'row',
     gap: 12,
@@ -447,7 +750,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // Filter bar
   barContainer: {
     paddingHorizontal: 16,
     paddingVertical: 8,

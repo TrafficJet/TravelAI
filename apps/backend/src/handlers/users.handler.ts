@@ -6,6 +6,14 @@ import { Errors } from '../lib/errors';
 
 interface UpdateProfileBody {
   name?: string;
+  phone?: string;
+  dateOfBirth?: string;       // ISO date string, e.g. "1990-05-17"
+  nationality?: string;
+  passportNumber?: string;
+  passportExpiry?: string;    // ISO date string
+  emergencyName?: string;
+  emergencyPhone?: string;
+  preferredLang?: string;
 }
 
 interface DeleteMeBody {
@@ -64,6 +72,13 @@ export async function getMe(request: FastifyRequest, reply: FastifyReply) {
       email: user.email,
       name: user.name,
       phone: user.phone,
+      dateOfBirth: user.dateOfBirth?.toISOString() ?? null,
+      nationality: user.nationality,
+      passportNumber: user.passportNumber,
+      passportExpiry: user.passportExpiry?.toISOString() ?? null,
+      emergencyName: user.emergencyName,
+      emergencyPhone: user.emergencyPhone,
+      preferredLang: user.preferredLang,
       createdAt: user.createdAt.toISOString(),
     },
     wallet: {
@@ -115,15 +130,35 @@ export async function getMeStats(request: FastifyRequest, reply: FastifyReply) {
   });
 }
 
-// PATCH /api/users/me — update name only; email changes require a separate flow
+// PATCH /api/users/me — update profile fields; email changes require a separate flow
 export async function updateMe(request: FastifyRequest, reply: FastifyReply) {
   const userId = request.userId;
-  const { name } = request.body as UpdateProfileBody;
+  const body = request.body as UpdateProfileBody;
 
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: {
-      ...(name !== undefined ? { name } : {}),
+      ...(body.name !== undefined ? { name: body.name } : {}),
+      ...(body.phone !== undefined ? { phone: body.phone } : {}),
+      ...(body.dateOfBirth !== undefined
+        ? { dateOfBirth: new Date(body.dateOfBirth) }
+        : {}),
+      ...(body.nationality !== undefined ? { nationality: body.nationality } : {}),
+      ...(body.passportNumber !== undefined
+        ? { passportNumber: body.passportNumber }
+        : {}),
+      ...(body.passportExpiry !== undefined
+        ? { passportExpiry: new Date(body.passportExpiry) }
+        : {}),
+      ...(body.emergencyName !== undefined
+        ? { emergencyName: body.emergencyName }
+        : {}),
+      ...(body.emergencyPhone !== undefined
+        ? { emergencyPhone: body.emergencyPhone }
+        : {}),
+      ...(body.preferredLang !== undefined
+        ? { preferredLang: body.preferredLang }
+        : {}),
     },
   });
 
@@ -133,6 +168,13 @@ export async function updateMe(request: FastifyRequest, reply: FastifyReply) {
       email: updatedUser.email,
       name: updatedUser.name,
       phone: updatedUser.phone,
+      dateOfBirth: updatedUser.dateOfBirth?.toISOString() ?? null,
+      nationality: updatedUser.nationality,
+      passportNumber: updatedUser.passportNumber,
+      passportExpiry: updatedUser.passportExpiry?.toISOString() ?? null,
+      emergencyName: updatedUser.emergencyName,
+      emergencyPhone: updatedUser.emergencyPhone,
+      preferredLang: updatedUser.preferredLang,
       createdAt: updatedUser.createdAt.toISOString(),
     },
   });

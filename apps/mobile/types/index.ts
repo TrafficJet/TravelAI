@@ -3,6 +3,12 @@ export interface UserProfile {
   email: string;
   name: string;
   phone?: string;
+  dateOfBirth?: string;
+  nationality?: string;
+  passportNumber?: string;
+  passportExpiry?: string;
+  emergencyName?: string;
+  emergencyPhone?: string;
   createdAt: string;
   subscription: UserSubscription;
   wallet: UserWallet;

@@ -34,9 +34,9 @@ function formatRelativeTime(dateStr: string): string {
 // ── Suggestion chips (empty state) ───────────────────────────────────────────
 
 const CHIPS = [
-  'Москва → Дубай',
-  'Отель в Стамбуле',
-  'Тур в Бали',
+  'Варшава → Барселона',
+  'Отель в Праге',
+  'Трансфер из аэропорта',
 ] as const;
 
 // ── Empty state ───────────────────────────────────────────────────────────────
@@ -51,7 +51,7 @@ function EmptyState({ onChipPress }: EmptyStateProps) {
       <Text style={emptyStyles.icon}>✈️</Text>
       <Text style={emptyStyles.title}>Начни поиск</Text>
       <Text style={emptyStyles.subtitle}>
-        Найди рейс, отель или тур — просто напиши запрос
+        Опишите маршрут — я организую всё: транспорт, отель и трансфер
       </Text>
       <View style={emptyStyles.chips}>
         {CHIPS.map((chip) => (

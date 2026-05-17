@@ -14,11 +14,23 @@ export { getWalletBalanceTool, executeGetWalletBalance } from './getWalletBalanc
 export { getBookingStatusTool, executeGetBookingStatus } from './getBookingStatus.tool';
 export type { GetBookingStatusInput } from './getBookingStatus.tool';
 
+export { searchTransfersTool, executeSearchTransfers } from './searchTransfers.tool';
+export type { TransferOption, SearchTransfersInput } from './searchTransfers.tool';
+
+export { checkJourneyTimingTool, executeCheckJourneyTiming } from './checkJourneyTiming.tool';
+export type { JourneyTimingResult, CheckJourneyTimingInput } from './checkJourneyTiming.tool';
+
+export { searchActivitiesTool, executeSearchActivities } from './searchActivities.tool';
+export type { Activity, SearchActivitiesInput } from './searchActivities.tool';
+
 import { searchFlightsTool } from './searchFlights.tool';
 import { searchHotelsTool } from './searchHotels.tool';
 import { createBookingTool } from './createBooking.tool';
 import { getWalletBalanceTool } from './getWalletBalance.tool';
 import { getBookingStatusTool } from './getBookingStatus.tool';
+import { searchTransfersTool } from './searchTransfers.tool';
+import { checkJourneyTimingTool } from './checkJourneyTiming.tool';
+import { searchActivitiesTool } from './searchActivities.tool';
 
 // All tools array — pass directly to Anthropic API
 export const ALL_TOOLS = [
@@ -27,4 +39,7 @@ export const ALL_TOOLS = [
   createBookingTool,
   getWalletBalanceTool,
   getBookingStatusTool,
+  searchTransfersTool,
+  checkJourneyTimingTool,
+  searchActivitiesTool,
 ];

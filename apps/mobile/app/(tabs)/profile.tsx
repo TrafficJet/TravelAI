@@ -29,6 +29,18 @@ import api from '../../services/api';
 
 const LANGUAGE_KEY = 'app_language';
 
+// ── Booking data field type ───────────────────────────────────────────────────
+
+interface BookingData {
+  phone: string;
+  dateOfBirth: string;
+  nationality: string;
+  passportNumber: string;
+  passportExpiry: string;
+  emergencyName: string;
+  emergencyPhone: string;
+}
+
 // ── AsyncStorage keys for notification prefs ──────────────────────────────────
 const NOTIF_BOOKINGS_KEY = 'notif_bookings';
 const NOTIF_PRICES_KEY = 'notif_prices';
@@ -302,6 +314,18 @@ export default function ProfileScreen() {
   // Theme / language
   const [language, setLanguageState] = useState<'ru' | 'en'>('ru');
 
+  // Booking data
+  const [bookingData, setBookingData] = useState<BookingData>({
+    phone: user?.phone ?? '',
+    dateOfBirth: user?.dateOfBirth ?? '',
+    nationality: user?.nationality ?? '',
+    passportNumber: user?.passportNumber ?? '',
+    passportExpiry: user?.passportExpiry ?? '',
+    emergencyName: user?.emergencyName ?? '',
+    emergencyPhone: user?.emergencyPhone ?? '',
+  });
+  const [isSavingBooking, setIsSavingBooking] = useState(false);
+
   // Load prefs once on mount
   useEffect(() => {
     async function loadPrefs() {
@@ -367,6 +391,39 @@ export default function ProfileScreen() {
     },
     [user, setUser],
   );
+
+  async function handleSaveBookingData() {
+    setIsSavingBooking(true);
+    try {
+      const payload = {
+        phone: bookingData.phone.trim() || undefined,
+        dateOfBirth: bookingData.dateOfBirth.trim() || undefined,
+        nationality: bookingData.nationality.trim() || undefined,
+        passportNumber: bookingData.passportNumber.trim() || undefined,
+        passportExpiry: bookingData.passportExpiry.trim() || undefined,
+        emergencyName: bookingData.emergencyName.trim() || undefined,
+        emergencyPhone: bookingData.emergencyPhone.trim() || undefined,
+      };
+      await api.put('/users/profile', payload);
+      if (user) {
+        setUser({
+          ...user,
+          phone: payload.phone,
+          dateOfBirth: payload.dateOfBirth,
+          nationality: payload.nationality,
+          passportNumber: payload.passportNumber,
+          passportExpiry: payload.passportExpiry,
+          emergencyName: payload.emergencyName,
+          emergencyPhone: payload.emergencyPhone,
+        });
+      }
+      toast.success('Данные сохранены');
+    } catch {
+      Alert.alert('Ошибка', 'Не удалось сохранить данные. Попробуйте снова.');
+    } finally {
+      setIsSavingBooking(false);
+    }
+  }
 
   async function handleLogout() {
     Alert.alert('Выйти из аккаунта?', 'Вы уверены, что хотите выйти?', [
@@ -506,6 +563,123 @@ export default function ProfileScreen() {
               </View>
             )}
           </View>
+        </View>
+
+        {/* Booking data section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Данные для бронирования</Text>
+          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <View style={bookingStyles.fieldGroup}>
+              <Text style={bookingStyles.fieldLabel}>Телефон</Text>
+              <TextInput
+                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
+                value={bookingData.phone}
+                onChangeText={(v) => setBookingData((p) => ({ ...p, phone: v }))}
+                placeholder="+7 999 123-45-67"
+                placeholderTextColor={Colors.textMuted}
+                keyboardType="phone-pad"
+                returnKeyType="next"
+              />
+            </View>
+
+            <View style={bookingStyles.fieldGroup}>
+              <Text style={bookingStyles.fieldLabel}>Дата рождения</Text>
+              <TextInput
+                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
+                value={bookingData.dateOfBirth}
+                onChangeText={(v) => setBookingData((p) => ({ ...p, dateOfBirth: v }))}
+                placeholder="ГГГГ-ММ-ДД"
+                placeholderTextColor={Colors.textMuted}
+                keyboardType="number-pad"
+                maxLength={10}
+                returnKeyType="next"
+              />
+            </View>
+
+            <View style={bookingStyles.fieldGroup}>
+              <Text style={bookingStyles.fieldLabel}>Гражданство</Text>
+              <TextInput
+                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
+                value={bookingData.nationality}
+                onChangeText={(v) => setBookingData((p) => ({ ...p, nationality: v }))}
+                placeholder="Россия"
+                placeholderTextColor={Colors.textMuted}
+                returnKeyType="next"
+              />
+            </View>
+
+            <View style={bookingStyles.fieldGroup}>
+              <Text style={bookingStyles.fieldLabel}>Номер паспорта</Text>
+              <TextInput
+                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
+                value={bookingData.passportNumber}
+                onChangeText={(v) => setBookingData((p) => ({ ...p, passportNumber: v }))}
+                placeholder="AB1234567"
+                placeholderTextColor={Colors.textMuted}
+                autoCapitalize="characters"
+                returnKeyType="next"
+              />
+            </View>
+
+            <View style={[bookingStyles.fieldGroup, bookingStyles.fieldGroupLast]}>
+              <Text style={bookingStyles.fieldLabel}>Срок действия паспорта</Text>
+              <TextInput
+                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
+                value={bookingData.passportExpiry}
+                onChangeText={(v) => setBookingData((p) => ({ ...p, passportExpiry: v }))}
+                placeholder="ГГГГ-ММ-ДД"
+                placeholderTextColor={Colors.textMuted}
+                keyboardType="number-pad"
+                maxLength={10}
+                returnKeyType="next"
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* Emergency contact section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Экстренный контакт</Text>
+          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <View style={bookingStyles.fieldGroup}>
+              <Text style={bookingStyles.fieldLabel}>Имя</Text>
+              <TextInput
+                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
+                value={bookingData.emergencyName}
+                onChangeText={(v) => setBookingData((p) => ({ ...p, emergencyName: v }))}
+                placeholder="Иван Иванов"
+                placeholderTextColor={Colors.textMuted}
+                returnKeyType="next"
+              />
+            </View>
+
+            <View style={[bookingStyles.fieldGroup, bookingStyles.fieldGroupLast]}>
+              <Text style={bookingStyles.fieldLabel}>Телефон</Text>
+              <TextInput
+                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
+                value={bookingData.emergencyPhone}
+                onChangeText={(v) => setBookingData((p) => ({ ...p, emergencyPhone: v }))}
+                placeholder="+7 999 000-00-00"
+                placeholderTextColor={Colors.textMuted}
+                keyboardType="phone-pad"
+                returnKeyType="done"
+              />
+            </View>
+          </View>
+
+          {/* Save button */}
+          <TouchableOpacity
+            style={[bookingStyles.saveBtn, isSavingBooking && bookingStyles.saveBtnDisabled]}
+            onPress={handleSaveBookingData}
+            disabled={isSavingBooking}
+            activeOpacity={0.8}
+          >
+            {isSavingBooking ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={bookingStyles.saveBtnText}>Сохранить данные</Text>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Settings section */}
@@ -844,5 +1018,48 @@ const styles = StyleSheet.create({
   langDivider: {
     color: Colors.border,
     fontSize: Typography.sizes.sm,
+  },
+});
+
+// ── Booking section styles ────────────────────────────────────────────────────
+
+const bookingStyles = StyleSheet.create({
+  fieldGroup: {
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  fieldGroupLast: {
+    borderBottomWidth: 0,
+  },
+  fieldLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: Typography.letterSpacing.wide,
+    marginBottom: 6,
+  },
+  fieldInput: {
+    borderWidth: 1,
+    borderRadius: Radius.input,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 10,
+    fontSize: Typography.sizes.sm,
+  },
+  saveBtn: {
+    marginTop: Spacing.md,
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.card,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  saveBtnDisabled: {
+    opacity: 0.6,
+  },
+  saveBtnText: {
+    color: Colors.textInverse,
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
   },
 });

@@ -8,17 +8,24 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  email       String    @unique
-  phone       String?
-  name        String
-  password    String?
-  provider    String    @default("email")
-  providerId  String?   @map("provider_id")
-  deletedAt   DateTime? @map("deleted_at")
-  preferences Json      @default("{}") @map("preferences")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id             String    @id @default(uuid())
+  email          String    @unique
+  phone          String?
+  name           String
+  password       String?
+  provider       String    @default("email")
+  providerId     String?   @map("provider_id")
+  deletedAt      DateTime? @map("deleted_at")
+  preferences    Json      @default("{}") @map("preferences")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  dateOfBirth    DateTime? @map("date_of_birth")
+  nationality    String?
+  passportNumber String?   @map("passport_number")
+  passportExpiry DateTime? @map("passport_expiry")
+  emergencyName  String?   @map("emergency_name")
+  emergencyPhone String?   @map("emergency_phone")
+  preferredLang  String?   @default("ru") @map("preferred_lang")
 
   wallet               Wallet?
   subscription         Subscription?

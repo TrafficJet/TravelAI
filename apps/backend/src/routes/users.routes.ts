@@ -15,13 +15,21 @@ export async function usersRoutes(fastify: FastifyInstance) {
   // GET /api/users/me/preferences — retrieve user theme/language/notification settings
   fastify.get('/me/preferences', { handler: getPreferences });
 
-  // PATCH /api/users/me — update name only (email changes are not allowed)
+  // PATCH /api/users/me — update profile (name, phone, passport, emergency contact, etc.)
   fastify.patch('/me', {
     schema: {
       body: {
         type: 'object',
         properties: {
           name: { type: 'string', minLength: 2, maxLength: 100 },
+          phone: { type: 'string', maxLength: 30 },
+          dateOfBirth: { type: 'string', format: 'date' },
+          nationality: { type: 'string', maxLength: 100 },
+          passportNumber: { type: 'string', maxLength: 50 },
+          passportExpiry: { type: 'string', format: 'date' },
+          emergencyName: { type: 'string', maxLength: 100 },
+          emergencyPhone: { type: 'string', maxLength: 30 },
+          preferredLang: { type: 'string', enum: ['ru', 'en'] },
         },
         additionalProperties: false,
       },
