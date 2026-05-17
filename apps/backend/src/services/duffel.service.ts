@@ -57,31 +57,43 @@ const AIRLINES: Record<string, { name: string; code: string }> = {
   LO: { name: 'LOT Polish Airlines', code: 'LO' },
   VY: { name: 'Vueling', code: 'VY' },
   FR: { name: 'Ryanair', code: 'FR' },
+  W6: { name: 'Wizz Air', code: 'W6' },
   IB: { name: 'Iberia', code: 'IB' },
   BA: { name: 'British Airways', code: 'BA' },
   AF: { name: 'Air France', code: 'AF' },
   KL: { name: 'KLM', code: 'KL' },
   OS: { name: 'Austrian Airlines', code: 'OS' },
   EW: { name: 'Eurowings', code: 'EW' },
+  LH: { name: 'Lufthansa', code: 'LH' },
+  PS: { name: 'МАУ (Ukraine International)', code: 'PS' },
 };
 
-// Approximate flight routes with typical duration in minutes
-const ROUTE_DATA: Record<string, { duration: number; airlines: string[] }> = {
+// Approximate flight routes with typical duration in minutes and realistic price ranges (EUR)
+// priceRange: [min, max] per person in EUR (used for European routes)
+const ROUTE_DATA: Record<string, { duration: number; airlines: string[]; priceRange?: [number, number] }> = {
+  // Moscow routes
   'SVO-IST': { duration: 200, airlines: ['SU', 'TK'] },
   'SVO-DXB': { duration: 265, airlines: ['SU', 'EK', 'FZ'] },
-  'SVO-LED': { duration: 75, airlines: ['SU', 'S7'] },
+  'SVO-LED': { duration: 75,  airlines: ['SU', 'S7'] },
   'DME-IST': { duration: 195, airlines: ['TK', 'U6'] },
   'LED-IST': { duration: 225, airlines: ['TK', 'S7'] },
-  'WAW-BCN': { duration: 175, airlines: ['LO', 'VY', 'FR'] }, // Варшава-Барселона
-  'WAW-MAD': { duration: 195, airlines: ['LO', 'IB', 'FR'] },
-  'WAW-LHR': { duration: 150, airlines: ['LO', 'BA'] },
-  'WAW-CDG': { duration: 160, airlines: ['LO', 'AF'] },
-  'WAW-AMS': { duration: 130, airlines: ['LO', 'KL'] },
-  'WAW-FCO': { duration: 165, airlines: ['LO', 'FR'] },
-  'WAW-VIE': { duration: 100, airlines: ['LO', 'OS'] },
-  'WAW-BER': { duration: 95,  airlines: ['LO', 'EW'] },
-  'WAW-DXB': { duration: 310, airlines: ['EK', 'FZ'] },
-  'WAW-IST': { duration: 185, airlines: ['TK', 'LO'] },
+  // Warsaw (WAW) routes — prices in EUR
+  'WAW-BCN': { duration: 180, airlines: ['W6', 'FR', 'LO', 'VY'], priceRange: [49, 180] },  // 3h00m
+  'WAW-MAD': { duration: 195, airlines: ['LO', 'FR', 'IB'],        priceRange: [55, 200] },
+  'WAW-LHR': { duration: 160, airlines: ['LO', 'BA', 'W6'],        priceRange: [49, 160] },  // 2h40m
+  'WAW-CDG': { duration: 160, airlines: ['LO', 'AF', 'FR'],         priceRange: [55, 170] },
+  'WAW-AMS': { duration: 130, airlines: ['LO', 'KL', 'W6'],         priceRange: [49, 150] },
+  'WAW-FCO': { duration: 165, airlines: ['LO', 'FR', 'W6'],         priceRange: [49, 165] },
+  'WAW-VIE': { duration: 100, airlines: ['LO', 'OS'],               priceRange: [55, 130] },
+  'WAW-BER': { duration: 95,  airlines: ['LO', 'EW', 'FR'],         priceRange: [45, 120] },
+  'WAW-DXB': { duration: 380, airlines: ['EK', 'LH', 'TK'],         priceRange: [350, 600] }, // 6h20m
+  'WAW-IST': { duration: 185, airlines: ['TK', 'LO', 'W6'],         priceRange: [120, 320] },
+  // Kyiv Boryspil (KBP) routes — prices in EUR
+  'KBP-BCN': { duration: 210, airlines: ['W6', 'PS', 'FR'],         priceRange: [59, 200] },  // 3h30m
+  'KBP-DXB': { duration: 390, airlines: ['EK', 'PS', 'TK'],         priceRange: [350, 580] }, // 6h30m
+  'KBP-IST': { duration: 140, airlines: ['TK', 'PS', 'W6'],         priceRange: [80, 250] },
+  'KBP-LHR': { duration: 195, airlines: ['PS', 'BA', 'W6'],         priceRange: [90, 280] },
+  'KBP-WAW': { duration: 90,  airlines: ['LO', 'PS', 'W6'],         priceRange: [49, 130] },
   DEFAULT: { duration: 180, airlines: ['SU', 'S7'] },
 };
 
@@ -98,10 +110,14 @@ function formatISO(date: Date): string {
   return date.toISOString();
 }
 
-// European hub airport codes used for regional pricing
-const EUROPE_AIRPORTS = new Set([
+// EUR_ORIGIN_AIRPORTS is defined in searchFlightsMock below
+
+// KBP and other European CIS airports use EUR pricing
+const EUR_ORIGIN_AIRPORTS = new Set([
   'WAW', 'BER', 'PRG', 'VIE', 'AMS', 'FCO', 'MAD', 'BCN', 'CDG', 'LHR',
-  'LGW', 'ORY', 'MXP', 'FCO', 'ATH', 'BRU', 'ZRH', 'CPH', 'ARN', 'HEL',
+  'LGW', 'ORY', 'MXP', 'ATH', 'BRU', 'ZRH', 'CPH', 'ARN', 'HEL',
+  'KBP', // Kyiv Boryspil — prices in EUR
+  'ODS', 'LWO', // other Ukrainian airports
 ]);
 
 export async function searchFlightsMock(params: SearchFlightsParams): Promise<FlightOffer[]> {
@@ -109,26 +125,45 @@ export async function searchFlightsMock(params: SearchFlightsParams): Promise<Fl
   const route = getRouteData(origin, destination);
   const passengerCount = passengers.adults + (passengers.children ?? 0);
 
-  // Use EUR pricing for European origins, RUB for CIS/other
-  const isEurope = EUROPE_AIRPORTS.has(origin.toUpperCase());
-  const basePrice = isEurope
-    ? 49 + Math.floor(Math.random() * 300)
-    : 8000 + Math.floor(Math.random() * 20000);
-  const currency = isEurope ? 'EUR' : 'RUB';
+  // Use EUR pricing for European / Ukrainian origins, RUB for CIS/other
+  const isEurOrUkr = EUR_ORIGIN_AIRPORTS.has(origin.toUpperCase());
+  const currency = isEurOrUkr ? 'EUR' : 'RUB';
 
-  const offers: FlightOffer[] = route.airlines.slice(0, 3).map((airlineCode, idx) => {
-    // Stagger departure times: 07:00, 12:30, 18:45
-    const departureTimes = ['07:00', '12:30', '18:45'];
-    const [hour, min] = departureTimes[idx].split(':').map(Number);
+  // Use route-specific price range when available, else fall back to generic ranges
+  let basePrice: number;
+  if (isEurOrUkr) {
+    if (route.priceRange) {
+      const [minP, maxP] = route.priceRange;
+      basePrice = minP + Math.floor(Math.random() * (maxP - minP));
+    } else {
+      basePrice = 49 + Math.floor(Math.random() * 300);
+    }
+  } else {
+    basePrice = 8000 + Math.floor(Math.random() * 20000);
+  }
+
+  // Stagger departure times: 07:00, 12:30, 18:45, 06:15, 15:00
+  const departureTimes = ['07:00', '12:30', '18:45', '06:15', '15:00'];
+
+  const offers: FlightOffer[] = route.airlines.slice(0, 5).map((airlineCode, idx) => {
+    const [hour, min] = departureTimes[idx % departureTimes.length].split(':').map(Number);
     const departure = new Date(
-      `${departureDate}T${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}:00`,
+      `${departureDate}T${String(hour).padStart(2, '0')}:${String(min ?? 0).padStart(2, '0')}:00`,
     );
-    const arrival = addMinutes(departure, route.duration + idx * 15);
+    const arrival = addMinutes(departure, route.duration + idx * 10);
 
     const airline = AIRLINES[airlineCode] ?? { name: 'Авиакомпания', code: airlineCode };
-    const flightNum = `${airline.code} ${100 + idx * 37}`;
-    const priceMultiplier = idx === 0 ? 1 : idx === 1 ? 1.15 : 1.3;
+    const flightNum = `${airline.code}${100 + idx * 37}`;
+
+    // Low-cost carriers (Wizz Air, Ryanair) get lower price multiplier
+    const isLowCost = airlineCode === 'W6' || airlineCode === 'FR';
+    const priceMultiplier = isLowCost
+      ? 0.85 + idx * 0.05
+      : idx === 0 ? 1 : idx === 1 ? 1.18 : idx === 2 ? 1.35 : 1.5;
     const totalPrice = Math.round(basePrice * priceMultiplier * passengerCount);
+
+    // Baggage: low-cost — carry-on only (base fare), full-service — 23 kg included
+    const baggage = isLowCost ? 'Только ручная кладь (багаж +€15-30)' : '1 место 23 кг';
 
     return {
       offerId: uuidv4(),
@@ -144,10 +179,10 @@ export async function searchFlightsMock(params: SearchFlightsParams): Promise<Fl
           arrivalAt: formatISO(arrival),
           airline: airline.name,
           flightNumber: flightNum,
-          duration: route.duration + idx * 15,
+          duration: route.duration + idx * 10,
         },
       ],
-      baggage: '1 место 23 кг',
+      baggage,
       expiresAt: formatISO(new Date(Date.now() + 30 * 60 * 1000)), // 30 minutes
     };
   });

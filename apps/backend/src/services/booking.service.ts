@@ -30,8 +30,13 @@ export interface SearchHotelsParams {
   maxPrice?: number;
 }
 
+// Extended partial type used in mock data to support fixed prices
+interface HotelMockEntry extends Partial<HotelOffer> {
+  fixedPricePerNight?: number;
+}
+
 // Static mock hotel database per city keyword
-const HOTELS_BY_CITY: Record<string, Partial<HotelOffer>[]> = {
+const HOTELS_BY_CITY: Record<string, HotelMockEntry[]> = {
   istanbul: [
     {
       hotelName: 'Hilton Istanbul Bosphorus',
@@ -72,22 +77,48 @@ const HOTELS_BY_CITY: Record<string, Partial<HotelOffer>[]> = {
   ],
   dubai: [
     {
+      hotelName: 'Burj Al Arab Jumeirah',
+      address: 'Jumeirah Beach Road, Дубай',
+      starRating: 7,
+      rating: 9.6,
+      reviewCount: 4312,
+      roomType: 'Дипломатический люкс',
+      amenities: ['WiFi', 'Частный пляж', 'Бассейн', 'Вертолётная площадка', 'Дворецкий', 'Спа', 'Ресторан', 'Трансфер на Rolls-Royce'],
+      fixedPricePerNight: 800,
+      currency: 'EUR',
+    },
+    {
       hotelName: 'Atlantis The Palm',
       address: 'Crescent Road, The Palm, Дубай',
       starRating: 5,
       rating: 9.1,
       reviewCount: 8734,
       roomType: 'Номер с видом на лагуну',
-      amenities: ['WiFi', 'Аквапарк', 'Бассейн', 'Пляж', 'Спа', 'Ресторан'],
+      amenities: ['WiFi', 'Аквапарк', 'Бассейн', 'Пляж', 'Спа', 'Ресторан', 'Фитнес', 'Дайвинг'],
+      fixedPricePerNight: 420,
+      currency: 'EUR',
     },
     {
       hotelName: 'JW Marriott Marquis Dubai',
-      address: 'Sheikh Zayed Road, Дубай',
+      address: 'Sheikh Zayed Road, Business Bay, Дубай',
       starRating: 5,
       rating: 8.9,
       reviewCount: 5621,
       roomType: 'Делюкс Кинг',
-      amenities: ['WiFi', 'Бассейн', 'Спа', 'Фитнес', 'Ресторан', 'Бизнес-центр'],
+      amenities: ['WiFi', 'Бассейн', 'Спа', 'Фитнес', 'Ресторан', 'Бар', 'Бизнес-центр', 'Кондиционер'],
+      fixedPricePerNight: 320,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Rove Downtown Dubai',
+      address: 'Sheikh Mohammed Bin Rashid Blvd, Downtown Dubai',
+      starRating: 3,
+      rating: 8.5,
+      reviewCount: 9823,
+      roomType: 'Стандартный номер',
+      amenities: ['WiFi', 'Бассейн', 'Фитнес', 'Ресторан', 'Велопрокат', 'Кондиционер'],
+      fixedPricePerNight: 110,
+      currency: 'EUR',
     },
     {
       hotelName: 'Premier Inn Dubai Al Jaddaf',
@@ -96,7 +127,9 @@ const HOTELS_BY_CITY: Record<string, Partial<HotelOffer>[]> = {
       rating: 8.3,
       reviewCount: 3109,
       roomType: 'Стандартный номер',
-      amenities: ['WiFi', 'Бассейн', 'Ресторан'],
+      amenities: ['WiFi', 'Бассейн', 'Ресторан', 'Кондиционер'],
+      fixedPricePerNight: 85,
+      currency: 'EUR',
     },
   ],
   москва: [
@@ -136,7 +169,9 @@ const HOTELS_BY_CITY: Record<string, Partial<HotelOffer>[]> = {
       rating: 9.1,
       reviewCount: 4521,
       roomType: 'Делюкс с видом на море',
-      amenities: ['WiFi', 'Бассейн', 'Спа', 'Фитнес', 'Ресторан', 'Вид на море'],
+      amenities: ['WiFi', 'Бассейн', 'Спа', 'Фитнес', 'Ресторан', 'Бар', 'Вид на море', 'Консьерж'],
+      fixedPricePerNight: 180,
+      currency: 'EUR',
     },
     {
       hotelName: 'Majestic Hotel & Spa Barcelona',
@@ -145,7 +180,20 @@ const HOTELS_BY_CITY: Record<string, Partial<HotelOffer>[]> = {
       rating: 8.9,
       reviewCount: 3201,
       roomType: 'Классический номер',
-      amenities: ['WiFi', 'Спа', 'Фитнес', 'Ресторан', 'Бар'],
+      amenities: ['WiFi', 'Спа', 'Фитнес', 'Ресторан', 'Бар', 'Консьерж'],
+      fixedPricePerNight: 200,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Catalonia Barcelona Plaza',
+      address: 'Plaça d\'Espanya 6-8, Barcelona',
+      starRating: 4,
+      rating: 8.4,
+      reviewCount: 3102,
+      roomType: 'Стандартный с видом на площадь',
+      amenities: ['WiFi', 'Бассейн на крыше', 'Фитнес', 'Ресторан', 'Бар', 'Кондиционер'],
+      fixedPricePerNight: 95,
+      currency: 'EUR',
     },
     {
       hotelName: 'Hotel 1898',
@@ -154,54 +202,77 @@ const HOTELS_BY_CITY: Record<string, Partial<HotelOffer>[]> = {
       rating: 8.6,
       reviewCount: 2876,
       roomType: 'Стандартный с балконом',
-      amenities: ['WiFi', 'Бассейн', 'Ресторан', 'Бар', 'Терраса'],
+      amenities: ['WiFi', 'Бассейн', 'Ресторан', 'Бар', 'Терраса', 'Кондиционер'],
+      fixedPricePerNight: 110,
+      currency: 'EUR',
     },
     {
-      hotelName: 'Catalonia Born',
-      address: 'Carrer de la Bòria 26',
-      starRating: 3,
-      rating: 8.2,
-      reviewCount: 1654,
-      roomType: 'Стандарт',
-      amenities: ['WiFi', 'Кондиционер'],
+      hotelName: 'Generator Barcelona',
+      address: 'Carrer de Còrsega 373, Eixample',
+      starRating: 2,
+      rating: 8.0,
+      reviewCount: 6234,
+      roomType: 'Общий номер в хостеле',
+      amenities: ['WiFi', 'Бар', 'Ресторан', 'Общая кухня', 'Камера хранения'],
+      fixedPricePerNight: 28,
+      currency: 'EUR',
     },
   ],
   warsaw: [
     {
+      hotelName: 'Raffles Europejski Warsaw',
+      address: 'Krakowskie Przedmieście 13, Warszawa',
+      starRating: 5,
+      rating: 9.2,
+      reviewCount: 1876,
+      roomType: 'Делюкс',
+      amenities: ['WiFi', 'Спа', 'Фитнес', 'Ресторан', 'Бар', 'Консьерж', 'Дворецкий'],
+      fixedPricePerNight: 250,
+      currency: 'EUR',
+    },
+    {
       hotelName: 'Hotel Bristol Warsaw',
-      address: 'Krakowskie Przedmieście 42/44',
+      address: 'Krakowskie Przedmieście 42/44, Warszawa',
       starRating: 5,
       rating: 9.0,
       reviewCount: 2341,
-      roomType: 'Делюкс',
-      amenities: ['WiFi', 'Спа', 'Ресторан', 'Бар', 'Фитнес'],
+      roomType: 'Классический',
+      amenities: ['WiFi', 'Спа', 'Ресторан', 'Бар', 'Фитнес', 'Консьерж'],
+      fixedPricePerNight: 220,
+      currency: 'EUR',
     },
     {
-      hotelName: 'Raffles Europejski Warsaw',
-      address: 'Krakowskie Przedmieście 13',
-      starRating: 5,
-      rating: 8.8,
-      reviewCount: 1876,
-      roomType: 'Классический номер',
-      amenities: ['WiFi', 'Спа', 'Фитнес', 'Ресторан'],
+      hotelName: 'Puro Hotel Warsaw',
+      address: 'ul. Ogrodowa 9, Warszawa',
+      starRating: 4,
+      rating: 8.7,
+      reviewCount: 2890,
+      roomType: 'Стандартный номер',
+      amenities: ['WiFi', 'Фитнес', 'Ресторан', 'Бар', 'Кондиционер', 'Велопрокат'],
+      fixedPricePerNight: 120,
+      currency: 'EUR',
     },
     {
       hotelName: 'DoubleTree by Hilton Warsaw Centre',
-      address: 'ul. Złota 2',
+      address: 'ul. Złota 2, Warszawa',
       starRating: 4,
       rating: 8.5,
       reviewCount: 3421,
       roomType: 'Стандарт',
-      amenities: ['WiFi', 'Бассейн', 'Фитнес', 'Ресторан'],
+      amenities: ['WiFi', 'Бассейн', 'Фитнес', 'Ресторан', 'Кондиционер'],
+      fixedPricePerNight: 100,
+      currency: 'EUR',
     },
     {
       hotelName: 'ibis Warszawa Centrum',
-      address: 'al. Solidarności 165',
+      address: 'al. Solidarności 165, Warszawa',
       starRating: 3,
       rating: 7.8,
       reviewCount: 4521,
       roomType: 'Стандарт',
-      amenities: ['WiFi', 'Ресторан'],
+      amenities: ['WiFi', 'Ресторан', 'Кондиционер'],
+      fixedPricePerNight: 65,
+      currency: 'EUR',
     },
   ],
   rome: [
@@ -265,35 +336,52 @@ const HOTELS_BY_CITY: Record<string, Partial<HotelOffer>[]> = {
   london: [
     {
       hotelName: 'The Savoy',
-      address: 'Strand',
+      address: 'Strand, London WC2R 0EZ',
       starRating: 5,
       rating: 9.3,
       reviewCount: 3201,
       roomType: 'Делюкс',
-      amenities: ['WiFi', 'Бассейн', 'Спа', 'Ресторан', 'Бар'],
+      amenities: ['WiFi', 'Бассейн', 'Спа', 'Ресторан', 'Бар', 'Фитнес', 'Консьерж', 'Дворецкий'],
+      fixedPricePerNight: 450,
+      currency: 'EUR',
     },
     {
       hotelName: 'The Goring',
-      address: 'Beeston Place',
+      address: 'Beeston Place, London SW1W 0JW',
       starRating: 5,
       rating: 9.0,
       reviewCount: 1234,
       roomType: 'Классический',
-      amenities: ['WiFi', 'Ресторан', 'Бар', 'Сад'],
+      amenities: ['WiFi', 'Ресторан', 'Бар', 'Сад', 'Консьерж', 'Дворецкий'],
+      fixedPricePerNight: 380,
+      currency: 'EUR',
     },
     {
-      hotelName: 'Premier Inn London City',
-      address: '1 Pepys St',
+      hotelName: 'Premier Inn London City (Tower Hill)',
+      address: '1 Pepys St, London EC3N',
       starRating: 3,
       rating: 8.0,
       reviewCount: 7654,
       roomType: 'Стандарт',
-      amenities: ['WiFi', 'Ресторан'],
+      amenities: ['WiFi', 'Ресторан', 'Кондиционер'],
+      fixedPricePerNight: 95,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Travelodge London Central',
+      address: 'Drury Lane, London WC2B',
+      starRating: 2,
+      rating: 7.6,
+      reviewCount: 12431,
+      roomType: 'Стандартный номер',
+      amenities: ['WiFi', 'Кондиционер'],
+      fixedPricePerNight: 75,
+      currency: 'EUR',
     },
   ],
 };
 
-const DEFAULT_HOTELS: Partial<HotelOffer>[] = [
+const DEFAULT_HOTELS: HotelMockEntry[] = [
   {
     hotelName: 'Grand Hotel City Center',
     address: 'Центральная ул., 1',
@@ -328,7 +416,7 @@ function getNights(checkIn: string, checkOut: string): number {
   return Math.max(1, Math.round(diff / (1000 * 60 * 60 * 24)));
 }
 
-function lookupHotels(city: string): Partial<HotelOffer>[] {
+function lookupHotels(city: string): HotelMockEntry[] {
   const normalized = city.toLowerCase().trim();
   for (const [key, hotels] of Object.entries(HOTELS_BY_CITY)) {
     if (normalized.includes(key)) return hotels;
@@ -337,13 +425,15 @@ function lookupHotels(city: string): Partial<HotelOffer>[] {
 }
 
 // Cities where prices are quoted in EUR
-const EUR_CITIES = new Set(['barcelona', 'warsaw', 'rome', 'amsterdam', 'london', 'paris']);
+const EUR_CITIES = new Set(['barcelona', 'warsaw', 'rome', 'amsterdam', 'london', 'paris', 'dubai']);
 
-// Base price ranges per star rating in EUR (min..spread)
+// Base price ranges per star rating in EUR (min..spread) — used as fallback when no fixedPricePerNight
 const EUR_BASE: Record<number, { min: number; spread: number }> = {
+  2: { min: 25,  spread: 40  }, // 25–65 EUR (hostels / budget)
   3: { min: 60,  spread: 60  }, // 60–120 EUR
-  4: { min: 120, spread: 130 }, // 120–250 EUR
-  5: { min: 250, spread: 350 }, // 250–600 EUR
+  4: { min: 100, spread: 130 }, // 100–230 EUR
+  5: { min: 200, spread: 350 }, // 200–550 EUR
+  7: { min: 700, spread: 300 }, // 700–1000 EUR (Burj Al Arab style)
 };
 
 function getCurrencyAndBasePrice(city: string, stars: number): { currency: string; base: number } {
@@ -372,24 +462,37 @@ export async function searchHotels(params: SearchHotelsParams): Promise<HotelOff
     hotels = hotels.filter((h) => h.starRating && starRating.includes(h.starRating));
   }
 
-  return hotels.slice(0, 4).map((hotel, idx): HotelOffer => {
-    const stars = hotel.starRating ?? 3;
-    const { currency, base } = getCurrencyAndBasePrice(city, stars);
+  // Apply max price filter (per night) if specified — filter before slicing
+  const filtered = maxPrice
+    ? hotels.filter((h) => {
+        const perNight = h.fixedPricePerNight ?? null;
+        if (perNight !== null) return perNight <= maxPrice;
+        return true; // keep hotels without a fixed price (will be filtered later)
+      })
+    : hotels;
 
+  return filtered.slice(0, 5).map((hotel): HotelOffer => {
+    const stars = hotel.starRating ?? 3;
+
+    // Use fixedPricePerNight when available for accurate mock data
     let perNight: number;
-    if (currency === 'EUR') {
-      // For EUR cities base already accounts for star rating; add small per-index spread
-      perNight = Math.round(base * (1 + idx * 0.05));
+    let currency: string;
+
+    if (hotel.fixedPricePerNight !== undefined) {
+      perNight = hotel.fixedPricePerNight;
+      currency = hotel.currency ?? 'EUR';
     } else {
-      const starMultiplier = stars * 0.5;
-      perNight = Math.round(base * starMultiplier * (1 + idx * 0.1));
+      const priceData = getCurrencyAndBasePrice(city, stars);
+      currency = priceData.currency;
+      if (currency === 'EUR') {
+        perNight = Math.round(priceData.base);
+      } else {
+        const starMultiplier = stars * 0.5;
+        perNight = Math.round(priceData.base * starMultiplier);
+      }
     }
 
     const total = perNight * nights;
-
-    if (maxPrice && perNight > maxPrice) {
-      // Scale down if exceeds maxPrice — kept as intentional no-op placeholder
-    }
 
     return {
       offerId: uuidv4(),

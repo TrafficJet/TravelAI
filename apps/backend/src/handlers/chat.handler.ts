@@ -359,8 +359,8 @@ export async function sendMessage(request: FastifyRequest, reply: FastifyReply) 
         sendEvent({ type: 'tool_result', toolUseId, result });
 
         // Persist search results to SearchHistory (fire-and-forget)
-        if (toolName === 'searchFlights' || toolName === 'searchHotels') {
-          const type = toolName === 'searchFlights' ? 'flight' : 'hotel';
+        if (toolName === 'search_flights' || toolName === 'search_hotels') {
+          const type = toolName === 'search_flights' ? 'flight' : 'hotel';
           // Find the matching tool use input for the query string
           const tu = toolUseRecords.find((r) => r.toolUseId === toolUseId);
           const queryText = tu
