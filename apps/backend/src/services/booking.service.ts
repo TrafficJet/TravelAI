@@ -128,6 +128,169 @@ const HOTELS_BY_CITY: Record<string, Partial<HotelOffer>[]> = {
       amenities: ['WiFi', 'Фитнес', 'Ресторан', 'Парковка'],
     },
   ],
+  barcelona: [
+    {
+      hotelName: 'Hotel Arts Barcelona',
+      address: 'Carrer de la Marina 19-21, Barceloneta',
+      starRating: 5,
+      rating: 9.1,
+      reviewCount: 4521,
+      roomType: 'Делюкс с видом на море',
+      amenities: ['WiFi', 'Бассейн', 'Спа', 'Фитнес', 'Ресторан', 'Вид на море'],
+    },
+    {
+      hotelName: 'Majestic Hotel & Spa Barcelona',
+      address: 'Passeig de Gràcia 68',
+      starRating: 5,
+      rating: 8.9,
+      reviewCount: 3201,
+      roomType: 'Классический номер',
+      amenities: ['WiFi', 'Спа', 'Фитнес', 'Ресторан', 'Бар'],
+    },
+    {
+      hotelName: 'Hotel 1898',
+      address: 'La Rambla 109',
+      starRating: 4,
+      rating: 8.6,
+      reviewCount: 2876,
+      roomType: 'Стандартный с балконом',
+      amenities: ['WiFi', 'Бассейн', 'Ресторан', 'Бар', 'Терраса'],
+    },
+    {
+      hotelName: 'Catalonia Born',
+      address: 'Carrer de la Bòria 26',
+      starRating: 3,
+      rating: 8.2,
+      reviewCount: 1654,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Кондиционер'],
+    },
+  ],
+  warsaw: [
+    {
+      hotelName: 'Hotel Bristol Warsaw',
+      address: 'Krakowskie Przedmieście 42/44',
+      starRating: 5,
+      rating: 9.0,
+      reviewCount: 2341,
+      roomType: 'Делюкс',
+      amenities: ['WiFi', 'Спа', 'Ресторан', 'Бар', 'Фитнес'],
+    },
+    {
+      hotelName: 'Raffles Europejski Warsaw',
+      address: 'Krakowskie Przedmieście 13',
+      starRating: 5,
+      rating: 8.8,
+      reviewCount: 1876,
+      roomType: 'Классический номер',
+      amenities: ['WiFi', 'Спа', 'Фитнес', 'Ресторан'],
+    },
+    {
+      hotelName: 'DoubleTree by Hilton Warsaw Centre',
+      address: 'ul. Złota 2',
+      starRating: 4,
+      rating: 8.5,
+      reviewCount: 3421,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Бассейн', 'Фитнес', 'Ресторан'],
+    },
+    {
+      hotelName: 'ibis Warszawa Centrum',
+      address: 'al. Solidarności 165',
+      starRating: 3,
+      rating: 7.8,
+      reviewCount: 4521,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Ресторан'],
+    },
+  ],
+  rome: [
+    {
+      hotelName: 'Hotel Hassler Roma',
+      address: 'Piazza Trinità dei Monti 6',
+      starRating: 5,
+      rating: 9.2,
+      reviewCount: 1876,
+      roomType: 'Делюкс с видом',
+      amenities: ['WiFi', 'Ресторан', 'Спа', 'Бар', 'Терраса'],
+    },
+    {
+      hotelName: 'Borghese Grand Hotel',
+      address: 'Via Pinciana 6',
+      starRating: 4,
+      rating: 8.4,
+      reviewCount: 2103,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Ресторан', 'Фитнес'],
+    },
+    {
+      hotelName: 'Hotel Navona',
+      address: 'Via dei Sediari 8',
+      starRating: 3,
+      rating: 8.1,
+      reviewCount: 987,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Кондиционер'],
+    },
+  ],
+  amsterdam: [
+    {
+      hotelName: 'Conservatorium Hotel',
+      address: 'Van Baerlestraat 27',
+      starRating: 5,
+      rating: 9.1,
+      reviewCount: 2109,
+      roomType: 'Делюкс',
+      amenities: ['WiFi', 'Спа', 'Бассейн', 'Ресторан', 'Бар'],
+    },
+    {
+      hotelName: 'Pulitzer Amsterdam',
+      address: 'Prinsengracht 315-331',
+      starRating: 4,
+      rating: 8.7,
+      reviewCount: 3412,
+      roomType: 'Классический',
+      amenities: ['WiFi', 'Ресторан', 'Бар', 'Терраса'],
+    },
+    {
+      hotelName: 'citizenM Amsterdam Centre',
+      address: 'Rokin 147',
+      starRating: 3,
+      rating: 8.5,
+      reviewCount: 5621,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Бар'],
+    },
+  ],
+  london: [
+    {
+      hotelName: 'The Savoy',
+      address: 'Strand',
+      starRating: 5,
+      rating: 9.3,
+      reviewCount: 3201,
+      roomType: 'Делюкс',
+      amenities: ['WiFi', 'Бассейн', 'Спа', 'Ресторан', 'Бар'],
+    },
+    {
+      hotelName: 'The Goring',
+      address: 'Beeston Place',
+      starRating: 5,
+      rating: 9.0,
+      reviewCount: 1234,
+      roomType: 'Классический',
+      amenities: ['WiFi', 'Ресторан', 'Бар', 'Сад'],
+    },
+    {
+      hotelName: 'Premier Inn London City',
+      address: '1 Pepys St',
+      starRating: 3,
+      rating: 8.0,
+      reviewCount: 7654,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Ресторан'],
+    },
+  ],
 };
 
 const DEFAULT_HOTELS: Partial<HotelOffer>[] = [
@@ -173,10 +336,34 @@ function lookupHotels(city: string): Partial<HotelOffer>[] {
   return DEFAULT_HOTELS;
 }
 
+// Cities where prices are quoted in EUR
+const EUR_CITIES = new Set(['barcelona', 'warsaw', 'rome', 'amsterdam', 'london', 'paris']);
+
+// Base price ranges per star rating in EUR (min..spread)
+const EUR_BASE: Record<number, { min: number; spread: number }> = {
+  3: { min: 60,  spread: 60  }, // 60–120 EUR
+  4: { min: 120, spread: 130 }, // 120–250 EUR
+  5: { min: 250, spread: 350 }, // 250–600 EUR
+};
+
+function getCurrencyAndBasePrice(city: string, stars: number): { currency: string; base: number } {
+  const normalized = city.toLowerCase().trim();
+  const isEur = [...EUR_CITIES].some((key) => normalized.includes(key));
+
+  if (isEur) {
+    const range = EUR_BASE[stars] ?? EUR_BASE[3];
+    const base = range.min + Math.floor(Math.random() * range.spread);
+    return { currency: 'EUR', base };
+  }
+
+  // RUB pricing: existing logic — 2500..7500 base scaled by star multiplier
+  const base = 2500 + Math.floor(Math.random() * 5000);
+  return { currency: 'RUB', base };
+}
+
 export async function searchHotels(params: SearchHotelsParams): Promise<HotelOffer[]> {
   const { city, checkIn, checkOut, starRating, maxPrice } = params;
   const nights = getNights(checkIn, checkOut);
-  const baseNightPrice = 2500 + Math.floor(Math.random() * 5000);
 
   let hotels = lookupHotels(city);
 
@@ -186,12 +373,22 @@ export async function searchHotels(params: SearchHotelsParams): Promise<HotelOff
   }
 
   return hotels.slice(0, 4).map((hotel, idx): HotelOffer => {
-    const starMultiplier = (hotel.starRating ?? 3) * 0.5;
-    const perNight = Math.round(baseNightPrice * starMultiplier * (1 + idx * 0.1));
+    const stars = hotel.starRating ?? 3;
+    const { currency, base } = getCurrencyAndBasePrice(city, stars);
+
+    let perNight: number;
+    if (currency === 'EUR') {
+      // For EUR cities base already accounts for star rating; add small per-index spread
+      perNight = Math.round(base * (1 + idx * 0.05));
+    } else {
+      const starMultiplier = stars * 0.5;
+      perNight = Math.round(base * starMultiplier * (1 + idx * 0.1));
+    }
+
     const total = perNight * nights;
 
     if (maxPrice && perNight > maxPrice) {
-      // Scale down if exceeds maxPrice
+      // Scale down if exceeds maxPrice — kept as intentional no-op placeholder
     }
 
     return {
@@ -199,13 +396,13 @@ export async function searchHotels(params: SearchHotelsParams): Promise<HotelOff
       provider: 'BOOKING',
       hotelName: hotel.hotelName ?? 'Отель',
       address: hotel.address ?? city,
-      starRating: hotel.starRating ?? 3,
+      starRating: stars,
       rating: hotel.rating ?? 7.5,
       reviewCount: hotel.reviewCount ?? 500,
       roomType: hotel.roomType ?? 'Стандартный номер',
       totalPrice: total.toFixed(2),
       pricePerNight: perNight.toFixed(2),
-      currency: 'RUB',
+      currency,
       amenities: hotel.amenities ?? ['WiFi'],
       imageUrl: null,
       expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hour
