@@ -72,7 +72,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   commitStreamingMessage: () => {
     const { streamingText, messages } = get();
-    if (!streamingText) return;
+    if (!streamingText) {
+      set({ isStreaming: false });
+      return;
+    }
 
     const assistantMessage: Message = {
       id: `local-${Date.now()}`,

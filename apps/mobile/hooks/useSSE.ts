@@ -189,6 +189,7 @@ export function useSSE() {
           if (xhr.status >= 400) {
             if (xhr.status === 401) {
               useAuthStore.getState().logout();
+              handlers.onError('Сессия истекла. Войдите снова.');
               settle();
               return;
             }
