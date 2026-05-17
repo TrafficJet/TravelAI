@@ -19,6 +19,8 @@ import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Ionicons } from '@expo/vector-icons';
 import { ChatSuggestions } from './ChatSuggestions';
+import { VoiceCallButton } from './VoiceCallButton';
+import { useAuthStore } from '../../stores/authStore';
 
 export interface ChatInputHandle {
   /** Programmatically set input text without sending */
@@ -45,6 +47,9 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
   ref,
 ) {
   const [text, setText] = useState(initialMessage ?? '');
+
+  const user = useAuthStore((s) => s.user);
+  const isPremium = user?.subscription?.plan === 'PREMIUM';
 
   // Scale animation for send button
   const sendScale = useRef(new Animated.Value(1)).current;
@@ -146,6 +151,11 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           >
             <Ionicons name="mic-outline" size={22} color={Colors.textMuted} />
           </TouchableOpacity>
+        )}
+
+        {/* AI Voice Call — premium only, visible when no text */}
+        {!hasText && isPremium && (
+          <VoiceCallButton size={40} />
         )}
 
         {/* Text input — pill shape */}
