@@ -212,6 +212,7 @@ export default function ChatScreen() {
     setStreaming,
     commitStreamingMessage,
     addMessage,
+    updateMessage,
     setPendingBooking,
     sessions,
   } = useChatStore();
@@ -365,9 +366,10 @@ export default function ChatScreen() {
         content,
         {
           onTextDelta: (delta) => appendStreamingText(delta),
-          onToolUse: (toolName) => {
+          onToolUse: (toolName, _toolInput, toolUseId) => {
+            const toolMsgId = `local-tool-${toolUseId ?? Date.now()}`;
             const toolMsg: Message = {
-              id: `local-tool-${Date.now()}`,
+              id: toolMsgId,
               role: 'tool',
               content: `Использую инструмент: ${toolName}`,
               toolName,
@@ -375,8 +377,10 @@ export default function ChatScreen() {
             };
             addMessage(toolMsg);
           },
-          onToolResult: (_toolUseId, _result) => {
-            // Tool results are typically shown embedded in next assistant message
+          onToolResult: (toolUseId, result) => {
+            // Attach result to the matching tool message so ChatToolResult can render cards
+            const toolMsgId = `local-tool-${toolUseId}`;
+            updateMessage(toolMsgId, { toolResult: result });
           },
           onBookingDraft: (booking, bookingId) => {
             commitStreamingMessage();

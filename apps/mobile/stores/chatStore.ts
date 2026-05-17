@@ -18,6 +18,7 @@ interface ChatStore {
   setStreaming: (streaming: boolean) => void;
   commitStreamingMessage: () => void;
   addMessage: (message: Message) => void;
+  updateMessage: (id: string, updates: Partial<Message>) => void;
   setPendingBooking: (booking: BookingDraft | null) => void;
 }
 
@@ -93,6 +94,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   addMessage: (message: Message) =>
     set((state) => ({ messages: [...state.messages, message] })),
+
+  updateMessage: (id: string, updates: Partial<Message>) =>
+    set((state) => ({
+      messages: state.messages.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+    })),
 
   setPendingBooking: (booking) => set({ pendingBooking: booking }),
 }));
