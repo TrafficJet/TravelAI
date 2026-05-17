@@ -1,6 +1,9 @@
 import type { AppNotification } from '../types';
 
-const WS_BASE_URL = (process.env.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:3000').replace(/\/$/, '');
+const WS_BASE_URL = (
+  process.env.EXPO_PUBLIC_WS_URL ??
+  'wss://travel-ai-backend-production-90a0.up.railway.app'
+).replace(/\/$/, '');
 const RECONNECT_DELAY_MS = 5_000;
 
 export type WSNotificationHandler = (notification: AppNotification) => void;

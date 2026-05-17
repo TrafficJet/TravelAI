@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ListRenderItemInfo,
+  StatusBar,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
@@ -28,19 +29,22 @@ const SLIDES: Slide[] = [
     id: '1',
     emoji: '✈️',
     title: 'Путешествуй умнее',
-    description: 'AI-ассистент найдёт лучшие рейсы и отели за секунды',
+    description:
+      'AI-ассистент найдёт лучшие рейсы и отели за секунды — просто опиши, куда хочешь',
   },
   {
     id: '2',
     emoji: '🤖',
     title: 'Просто напиши запрос',
-    description: '«Хочу в Дубай на неделю в июне» — и всё готово',
+    description:
+      '«Хочу в Дубай на неделю в июне» — получи подборку вариантов с ценами прямо в чате',
   },
   {
     id: '3',
     emoji: '💳',
     title: 'Бронируй в пару касаний',
-    description: 'Кошелёк, история бронирований, уведомления — всё в одном месте',
+    description:
+      'Кошелёк, история бронирований, уведомления о рейсах — всё в одном месте',
   },
 ];
 
@@ -61,16 +65,23 @@ const slideStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 36,
+    paddingHorizontal: 40,
   },
   iconWrap: {
-    width: 128,
-    height: 128,
-    borderRadius: 64,
-    backgroundColor: `${Colors.primary}1A`,
+    width: 136,
+    height: 136,
+    borderRadius: 68,
+    backgroundColor: '#F59E0B1A',
+    borderWidth: 1.5,
+    borderColor: '#F59E0B33',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 36,
+    marginBottom: 40,
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    elevation: 6,
   },
   emoji: {
     fontSize: 64,
@@ -86,6 +97,7 @@ const slideStyles = StyleSheet.create({
     ...TextPresets.body,
     color: Colors.textMuted,
     textAlign: 'center',
+    lineHeight: 24,
   },
 });
 
@@ -116,6 +128,7 @@ export default function OnboardingScreen() {
 
   return (
     <View style={styles.root}>
+      <StatusBar barStyle="light-content" backgroundColor={Colors.background} />
       <FlatList<Slide>
         ref={flatListRef}
         data={SLIDES}
@@ -175,7 +188,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 24,
+    marginBottom: 28,
   },
   dot: {
     width: 8,
@@ -184,28 +197,35 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.border,
   },
   dotActive: {
-    width: 22,
-    backgroundColor: Colors.primary,
+    width: 24,
+    borderRadius: 4,
+    backgroundColor: '#F59E0B',
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.screenPaddingH,
-    paddingBottom: 48,
+    paddingBottom: 52,
+    gap: 12,
   },
   skipText: {
     ...TextPresets.bodyMedium,
     color: Colors.textMuted,
   },
   nextBtn: {
-    backgroundColor: Colors.primary,
+    backgroundColor: '#F59E0B',
     paddingVertical: 14,
     paddingHorizontal: 36,
     borderRadius: Radius.button,
     alignItems: 'center',
     minHeight: Spacing.buttonHeight,
     justifyContent: 'center',
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 5,
   },
   nextBtnFull: {
     flex: 1,
@@ -213,6 +233,6 @@ const styles = StyleSheet.create({
   },
   nextBtnText: {
     ...TextPresets.button,
-    color: Colors.textInverse,
+    color: '#0A0A14',
   },
 });

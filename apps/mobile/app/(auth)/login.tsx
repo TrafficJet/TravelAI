@@ -57,10 +57,10 @@ export default function LoginScreen() {
   }
 
   async function handleDemoLogin() {
-    setEmail('demo@travelai.com');
+    setEmail('demo@travelai.app');
     setPassword('Demo1234!');
     setErrors({});
-    await handleLogin('demo@travelai.com', 'Demo1234!');
+    await handleLogin('demo@travelai.app', 'Demo1234!');
   }
 
   return (
@@ -98,15 +98,6 @@ export default function LoginScreen() {
             error={errors.password}
           />
 
-          <TouchableOpacity
-            style={styles.demoBtn}
-            onPress={handleDemoLogin}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.demoBtnTitle}>⚡ Войти как демо-пользователь</Text>
-            <Text style={styles.demoBtnEmail}>demo@travelai.com</Text>
-          </TouchableOpacity>
-
           <Button
             title="Войти"
             onPress={() => handleLogin()}
@@ -114,6 +105,16 @@ export default function LoginScreen() {
             fullWidth
             style={styles.loginBtn}
           />
+
+          <TouchableOpacity
+            style={[styles.demoBtn, isLoading && styles.demoBtnDisabled]}
+            onPress={handleDemoLogin}
+            activeOpacity={0.75}
+            disabled={isLoading}
+          >
+            <Text style={styles.demoBtnTitle}>Try Demo</Text>
+            <Text style={styles.demoBtnHint}>No sign-up required</Text>
+          </TouchableOpacity>
 
           <SocialAuthButtons mode="login" />
 
@@ -172,27 +173,33 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   demoBtn: {
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: `${Colors.primary}4D`,
-    borderRadius: Radius.card,
-    paddingVertical: Spacing.sm,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: '#F59E0B',
+    borderRadius: Radius.button,
+    paddingVertical: 14,
     paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.sm,
-    alignItems: 'flex-start',
+    marginBottom: Spacing.md,
+    alignItems: 'center',
+    minHeight: Spacing.buttonHeight,
+    justifyContent: 'center',
+  },
+  demoBtnDisabled: {
+    opacity: 0.5,
   },
   demoBtnTitle: {
-    ...TextPresets.bodyMedium,
-    color: Colors.primary,
-    marginBottom: 2,
+    ...TextPresets.button,
+    color: '#F59E0B',
   },
-  demoBtnEmail: {
+  demoBtnHint: {
     ...TextPresets.caption,
-    color: Colors.textMuted,
+    color: '#F59E0B',
+    opacity: 0.75,
+    marginTop: 2,
   },
   loginBtn: {
     marginTop: Spacing.sm,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
   },
   forgotLink: {
     alignItems: 'center',
