@@ -191,6 +191,7 @@ export default function TabsLayout() {
         name="wallet"
         options={{
           title: t('tabs.wallet'),
+          headerShown: false,
           tabBarIcon: (props) => (
             <TabIconWithIndicator {...props} icon="wallet-outline" iconFocused="wallet" />
           ),
