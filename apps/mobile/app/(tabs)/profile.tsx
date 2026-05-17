@@ -41,23 +41,33 @@ interface BookingData {
   emergencyPhone: string;
 }
 
+const EMPTY_BOOKING_DATA: BookingData = {
+  phone: '',
+  dateOfBirth: '',
+  nationality: '',
+  passportNumber: '',
+  passportExpiry: '',
+  emergencyName: '',
+  emergencyPhone: '',
+};
+
 // ── AsyncStorage keys for notification prefs ──────────────────────────────────
 const NOTIF_BOOKINGS_KEY = 'notif_bookings';
 const NOTIF_PRICES_KEY = 'notif_prices';
 
-// ── Avatar ────────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 /** Deterministic colour from a string — same input always yields same colour. */
 function hashColor(str: string): string {
   const palette = [
-    '#F59E0B', // amber (primary)
-    '#14B8A6', // teal (secondary)
-    '#10B981', // emerald (success)
-    '#F97316', // orange
-    '#B45309', // amber dark
-    '#0F766E', // teal dark
-    '#FCD34D', // amber light
-    '#5EEAD4', // teal light
+    '#F59E0B',
+    '#14B8A6',
+    '#10B981',
+    '#F97316',
+    '#B45309',
+    '#0F766E',
+    '#FCD34D',
+    '#5EEAD4',
   ];
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -66,7 +76,27 @@ function hashColor(str: string): string {
   return palette[hash % palette.length];
 }
 
-function Avatar({ name }: { name?: string }) {
+function maskPassport(value: string): string {
+  if (!value) return '';
+  const trimmed = value.trim();
+  if (trimmed.length <= 4) return trimmed;
+  const visible = trimmed.slice(-4);
+  const masked = '•'.repeat(trimmed.length - 4);
+  return masked + visible;
+}
+
+function formatDate(dateStr?: string): string {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('ru-RU', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+// ── Avatar ────────────────────────────────────────────────────────────────────
+
+function Avatar({ name, size = 96 }: { name?: string; size?: number }) {
   const safeName = name ?? '';
   const initials =
     safeName
@@ -80,24 +110,30 @@ function Avatar({ name }: { name?: string }) {
   const bgColor = safeName ? hashColor(safeName) : Colors.primary;
 
   return (
-    <View style={[avatarStyles.container, { backgroundColor: bgColor }]}>
-      <Text style={avatarStyles.initials}>{initials}</Text>
+    <View
+      style={[
+        avatarStyles.container,
+        {
+          backgroundColor: bgColor,
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+        },
+      ]}
+    >
+      <Text style={[avatarStyles.initials, { fontSize: size * 0.35 }]}>{initials}</Text>
     </View>
   );
 }
 
 const avatarStyles = StyleSheet.create({
   container: {
-    width: 88,
-    height: 88,
-    borderRadius: Radius.avatar,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,
   },
   initials: {
     color: Colors.textInverse,
-    fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.bold,
   },
 });
@@ -122,7 +158,6 @@ function EditProfileModal({
   const [name, setName] = useState(initialName);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Reset field when modal opens with a new initialName
   useEffect(() => {
     if (visible) setName(initialName);
   }, [visible, initialName]);
@@ -157,7 +192,6 @@ function EditProfileModal({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={modalStyles.container}>
-          {/* Header */}
           <View style={modalStyles.header}>
             <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
               <Text style={modalStyles.cancelBtn}>Отмена</Text>
@@ -166,7 +200,6 @@ function EditProfileModal({
             <View style={modalStyles.headerPlaceholder} />
           </View>
 
-          {/* Fields */}
           <View style={modalStyles.body}>
             <Text style={modalStyles.label}>Имя</Text>
             <TextInput
@@ -190,7 +223,6 @@ function EditProfileModal({
             <Text style={modalStyles.hint}>Email изменить нельзя.</Text>
           </View>
 
-          {/* Save button */}
           <TouchableOpacity
             style={[modalStyles.saveBtn, isSaving && modalStyles.saveBtnDisabled]}
             onPress={handleSave}
@@ -282,21 +314,302 @@ const modalStyles = StyleSheet.create({
   },
 });
 
+// ── BookingData modal ─────────────────────────────────────────────────────────
+
+interface BookingDataModalProps {
+  visible: boolean;
+  initial: BookingData;
+  onClose: () => void;
+  onSaved: (data: BookingData) => void;
+}
+
+function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataModalProps) {
+  const [form, setForm] = useState<BookingData>(initial);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (visible) setForm(initial);
+  }, [visible, initial]);
+
+  function field(key: keyof BookingData) {
+    return (v: string) => setForm((prev) => ({ ...prev, [key]: v }));
+  }
+
+  async function handleSave() {
+    setIsSaving(true);
+    try {
+      const payload: Partial<BookingData> = {
+        phone: form.phone.trim() || undefined,
+        dateOfBirth: form.dateOfBirth.trim() || undefined,
+        nationality: form.nationality.trim() || undefined,
+        passportNumber: form.passportNumber.trim() || undefined,
+        passportExpiry: form.passportExpiry.trim() || undefined,
+        emergencyName: form.emergencyName.trim() || undefined,
+        emergencyPhone: form.emergencyPhone.trim() || undefined,
+      };
+      await api.patch('/users/me', payload);
+      onSaved(form);
+      onClose();
+      toast.success('Данные сохранены');
+    } catch {
+      Alert.alert('Ошибка', 'Не удалось сохранить данные. Попробуйте снова.');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
+      <KeyboardAvoidingView
+        style={bmStyles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <View style={bmStyles.container}>
+          {/* Header */}
+          <View style={bmStyles.header}>
+            <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
+              <Text style={bmStyles.cancelBtn}>Отмена</Text>
+            </TouchableOpacity>
+            <Text style={bmStyles.title}>Данные для бронирования</Text>
+            <View style={bmStyles.headerPlaceholder} />
+          </View>
+
+          <ScrollView
+            style={bmStyles.scroll}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Passport / personal */}
+            <Text style={bmStyles.sectionLabel}>Личные данные</Text>
+
+            <Text style={bmStyles.label}>Телефон</Text>
+            <TextInput
+              style={bmStyles.input}
+              value={form.phone}
+              onChangeText={field('phone')}
+              placeholder="+48 123 456 789"
+              placeholderTextColor={Colors.textMuted}
+              keyboardType="phone-pad"
+              returnKeyType="next"
+            />
+
+            <Text style={[bmStyles.label, bmStyles.mt14]}>Дата рождения</Text>
+            <TextInput
+              style={bmStyles.input}
+              value={form.dateOfBirth}
+              onChangeText={field('dateOfBirth')}
+              placeholder="ДД.ММ.ГГГГ"
+              placeholderTextColor={Colors.textMuted}
+              returnKeyType="next"
+            />
+
+            <Text style={[bmStyles.label, bmStyles.mt14]}>Гражданство</Text>
+            <TextInput
+              style={bmStyles.input}
+              value={form.nationality}
+              onChangeText={field('nationality')}
+              placeholder="Польша / Украина / Россия"
+              placeholderTextColor={Colors.textMuted}
+              returnKeyType="next"
+            />
+
+            <Text style={[bmStyles.label, bmStyles.mt14]}>Номер паспорта</Text>
+            <TextInput
+              style={bmStyles.input}
+              value={form.passportNumber}
+              onChangeText={field('passportNumber')}
+              placeholder="AB 1234567"
+              placeholderTextColor={Colors.textMuted}
+              autoCapitalize="characters"
+              returnKeyType="next"
+            />
+
+            <Text style={[bmStyles.label, bmStyles.mt14]}>Срок действия паспорта</Text>
+            <TextInput
+              style={bmStyles.input}
+              value={form.passportExpiry}
+              onChangeText={field('passportExpiry')}
+              placeholder="ДД.ММ.ГГГГ"
+              placeholderTextColor={Colors.textMuted}
+              returnKeyType="next"
+            />
+
+            {/* Divider */}
+            <View style={bmStyles.dividerRow}>
+              <View style={bmStyles.dividerLine} />
+              <Text style={bmStyles.dividerText}>Экстренный контакт</Text>
+              <View style={bmStyles.dividerLine} />
+            </View>
+
+            <Text style={bmStyles.label}>Имя контакта</Text>
+            <TextInput
+              style={bmStyles.input}
+              value={form.emergencyName}
+              onChangeText={field('emergencyName')}
+              placeholder="Иван Петров"
+              placeholderTextColor={Colors.textMuted}
+              returnKeyType="next"
+            />
+
+            <Text style={[bmStyles.label, bmStyles.mt14]}>Телефон контакта</Text>
+            <TextInput
+              style={bmStyles.input}
+              value={form.emergencyPhone}
+              onChangeText={field('emergencyPhone')}
+              placeholder="+48 987 654 321"
+              placeholderTextColor={Colors.textMuted}
+              keyboardType="phone-pad"
+              returnKeyType="done"
+            />
+
+            <View style={bmStyles.bottomPad} />
+          </ScrollView>
+
+          {/* Buttons */}
+          <View style={bmStyles.btnRow}>
+            <TouchableOpacity
+              style={bmStyles.cancelPill}
+              onPress={onClose}
+              activeOpacity={0.7}
+            >
+              <Text style={bmStyles.cancelPillText}>Отмена</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[bmStyles.savePill, isSaving && bmStyles.savePillDisabled]}
+              onPress={handleSave}
+              disabled={isSaving}
+              activeOpacity={0.8}
+            >
+              {isSaving ? (
+                <ActivityIndicator color={Colors.textInverse} size="small" />
+              ) : (
+                <Text style={bmStyles.savePillText}>Сохранить</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
+const bmStyles = StyleSheet.create({
+  flex: { flex: 1 },
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 32,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  cancelBtn: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.md,
+  },
+  title: {
+    color: Colors.text,
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
+  },
+  headerPlaceholder: { width: 60 },
+  scroll: { flex: 1 },
+  sectionLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: Typography.letterSpacing.wider,
+    textTransform: 'uppercase',
+    marginBottom: Spacing.md,
+  },
+  label: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.semibold,
+    letterSpacing: Typography.letterSpacing.wide,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  mt14: { marginTop: 14 },
+  input: {
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: Radius.input,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 14,
+    color: Colors.text,
+    fontSize: Typography.sizes.md,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 24,
+    gap: 10,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.border,
+  },
+  dividerText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.semibold,
+    letterSpacing: Typography.letterSpacing.wide,
+    textTransform: 'uppercase',
+  },
+  bottomPad: { height: 16 },
+  btnRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  cancelPill: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: Radius.button,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+  },
+  cancelPillText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.semibold,
+  },
+  savePill: {
+    flex: 2,
+    paddingVertical: 14,
+    borderRadius: Radius.button,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+  },
+  savePillDisabled: { opacity: 0.6 },
+  savePillText: {
+    color: Colors.textInverse,
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
+  },
+});
+
 // ── Plan labels ───────────────────────────────────────────────────────────────
 
 const PLAN_LABELS: Record<string, string> = {
   FREE: 'Бесплатный',
   PREMIUM: 'Премиум',
 };
-
-function formatDate(dateStr?: string): string {
-  if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('ru-RU', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-}
 
 // ── Main screen ───────────────────────────────────────────────────────────────
 
@@ -306,6 +619,7 @@ export default function ProfileScreen() {
   const { unreadCount } = useNotificationsContext();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isBookingModalVisible, setIsBookingModalVisible] = useState(false);
 
   // Notification prefs
   const [notifBookings, setNotifBookings] = useState(true);
@@ -314,7 +628,7 @@ export default function ProfileScreen() {
   // Theme / language
   const [language, setLanguageState] = useState<'ru' | 'en'>('ru');
 
-  // Booking data
+  // Booking data (read-only display; editing is done via modal)
   const [bookingData, setBookingData] = useState<BookingData>({
     phone: user?.phone ?? '',
     dateOfBirth: user?.dateOfBirth ?? '',
@@ -324,26 +638,49 @@ export default function ProfileScreen() {
     emergencyName: user?.emergencyName ?? '',
     emergencyPhone: user?.emergencyPhone ?? '',
   });
-  const [isSavingBooking, setIsSavingBooking] = useState(false);
 
-  // Load prefs once on mount
+  // Load prefs + fresh booking data from server on mount
   useEffect(() => {
-    async function loadPrefs() {
+    async function loadAll() {
       try {
         const [b, p, lang] = await Promise.all([
           AsyncStorage.getItem(NOTIF_BOOKINGS_KEY),
           AsyncStorage.getItem(NOTIF_PRICES_KEY),
           AsyncStorage.getItem(LANGUAGE_KEY),
         ]);
-        // null means key never saved → keep default true
         if (b !== null) setNotifBookings(b === 'true');
         if (p !== null) setNotifPrices(p === 'true');
         if (lang === 'ru' || lang === 'en') setLanguageState(lang);
       } catch {
-        // Read failure is non-fatal
+        // non-fatal
+      }
+
+      try {
+        const res = await api.get<{
+          phone?: string;
+          dateOfBirth?: string;
+          nationality?: string;
+          passportNumber?: string;
+          passportExpiry?: string;
+          emergencyName?: string;
+          emergencyPhone?: string;
+        }>('/users/me');
+        const d = res.data;
+        setBookingData({
+          phone: d.phone ?? '',
+          dateOfBirth: d.dateOfBirth ?? '',
+          nationality: d.nationality ?? '',
+          passportNumber: d.passportNumber ?? '',
+          passportExpiry: d.passportExpiry ?? '',
+          emergencyName: d.emergencyName ?? '',
+          emergencyPhone: d.emergencyPhone ?? '',
+        });
+      } catch {
+        // non-fatal — use data from auth store
       }
     }
-    loadPrefs();
+    loadAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleNotifBookingsChange(value: boolean) {
@@ -351,7 +688,7 @@ export default function ProfileScreen() {
     try {
       await AsyncStorage.setItem(NOTIF_BOOKINGS_KEY, String(value));
     } catch {
-      // Ignore
+      // ignore
     }
   }
 
@@ -360,7 +697,7 @@ export default function ProfileScreen() {
     try {
       await AsyncStorage.setItem(NOTIF_PRICES_KEY, String(value));
     } catch {
-      // Ignore
+      // ignore
     }
   }
 
@@ -392,36 +729,19 @@ export default function ProfileScreen() {
     [user, setUser],
   );
 
-  async function handleSaveBookingData() {
-    setIsSavingBooking(true);
-    try {
-      const payload = {
-        phone: bookingData.phone.trim() || undefined,
-        dateOfBirth: bookingData.dateOfBirth.trim() || undefined,
-        nationality: bookingData.nationality.trim() || undefined,
-        passportNumber: bookingData.passportNumber.trim() || undefined,
-        passportExpiry: bookingData.passportExpiry.trim() || undefined,
-        emergencyName: bookingData.emergencyName.trim() || undefined,
-        emergencyPhone: bookingData.emergencyPhone.trim() || undefined,
-      };
-      await api.put('/users/profile', payload);
-      if (user) {
-        setUser({
-          ...user,
-          phone: payload.phone,
-          dateOfBirth: payload.dateOfBirth,
-          nationality: payload.nationality,
-          passportNumber: payload.passportNumber,
-          passportExpiry: payload.passportExpiry,
-          emergencyName: payload.emergencyName,
-          emergencyPhone: payload.emergencyPhone,
-        });
-      }
-      toast.success('Данные сохранены');
-    } catch {
-      Alert.alert('Ошибка', 'Не удалось сохранить данные. Попробуйте снова.');
-    } finally {
-      setIsSavingBooking(false);
+  function handleBookingDataSaved(data: BookingData) {
+    setBookingData(data);
+    if (user) {
+      setUser({
+        ...user,
+        phone: data.phone || undefined,
+        dateOfBirth: data.dateOfBirth || undefined,
+        nationality: data.nationality || undefined,
+        passportNumber: data.passportNumber || undefined,
+        passportExpiry: data.passportExpiry || undefined,
+        emergencyName: data.emergencyName || undefined,
+        emergencyPhone: data.emergencyPhone || undefined,
+      });
     }
   }
 
@@ -444,13 +764,31 @@ export default function ProfileScreen() {
     ]);
   }
 
-  if (!user) return (
-    <View style={{ flex: 1, backgroundColor: '#0A0A14', justifyContent: 'center', alignItems: 'center' }}>
-      <ActivityIndicator color="#F59E0B" />
-    </View>
-  );
+  if (!user) {
+    return (
+      <View style={styles.loadingScreen}>
+        <ActivityIndicator color={Colors.primary} />
+      </View>
+    );
+  }
 
   const isPremium = user.subscription?.plan === 'PREMIUM';
+
+  // ── render helpers ──────────────────────────────────────────────────────────
+
+  function renderInfoRow(icon: string, label: string, value: string, isLast = false) {
+    return (
+      <View style={[styles.infoRow, isLast && styles.infoRowNoBorder]} key={label}>
+        <View style={styles.infoRowLeft}>
+          <Text style={styles.infoRowIcon}>{icon}</Text>
+          <Text style={styles.infoLabel}>{label}</Text>
+        </View>
+        <Text style={value ? styles.infoValue : styles.infoValueMuted}>
+          {value || 'Не указан'}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -458,22 +796,26 @@ export default function ProfileScreen() {
         style={[styles.container, { backgroundColor: Colors.background }]}
         contentContainerStyle={styles.content}
       >
-        {/* Avatar + name */}
+        {/* ── Profile header ──────────────────────────────────────────── */}
         <View style={styles.avatarSection}>
-          <Avatar name={user.name} />
-          <Text style={[styles.name, { color: colors.text }]}>{user.name}</Text>
+          <Avatar name={user.name} size={96} />
+
+          {/* Name + pencil */}
+          <View style={styles.nameRow}>
+            <Text style={[styles.name, { color: colors.text }]}>{user.name}</Text>
+            <TouchableOpacity
+              style={styles.pencilBtn}
+              onPress={() => setIsEditModalVisible(true)}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Text style={styles.pencilIcon}>✏️</Text>
+            </TouchableOpacity>
+          </View>
+
           <Text style={[styles.email, { color: colors.textSecondary }]}>{user.email}</Text>
 
-          {/* Edit profile button */}
-          <TouchableOpacity
-            style={styles.editBtn}
-            onPress={() => setIsEditModalVisible(true)}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.editBtnText}>Редактировать профиль</Text>
-          </TouchableOpacity>
-
-          {/* Bell icon → notifications */}
+          {/* Bell icon */}
           <TouchableOpacity
             style={styles.bellBtn}
             onPress={() => router.push('/(tabs)/notifications')}
@@ -492,7 +834,7 @@ export default function ProfileScreen() {
             <Text style={styles.bellBtnText}>Уведомления</Text>
           </TouchableOpacity>
 
-          {/* Settings button */}
+          {/* Settings shortcut */}
           <TouchableOpacity
             style={styles.settingsBtn}
             onPress={() => router.push('/settings')}
@@ -503,52 +845,56 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Subscription block */}
+        {/* ── Subscription block ──────────────────────────────────────── */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Подписка</Text>
-          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <View style={styles.subscriptionRow}>
-              <View>
-                <Text style={styles.planName}>
-                  {PLAN_LABELS[user.subscription?.plan ?? 'FREE']}
-                </Text>
-                {user.subscription?.expiresAt && (
-                  <Text style={styles.planExpiry}>
-                    до {formatDate(user.subscription.expiresAt)}
+          {isPremium ? (
+            <View style={[styles.card, styles.cardPremium]}>
+              <View style={styles.subscriptionRow}>
+                <View>
+                  <Text style={styles.planNamePremium}>
+                    {PLAN_LABELS['PREMIUM']}
                   </Text>
-                )}
-              </View>
-              <View
-                style={[
-                  styles.planBadge,
-                  isPremium ? styles.planBadgePremium : styles.planBadgeFree,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.planBadgeText,
-                    isPremium
-                      ? styles.planBadgeTextPremium
-                      : styles.planBadgeTextFree,
-                  ]}
-                >
-                  {isPremium ? 'PREMIUM' : 'FREE'}
-                </Text>
+                  {user.subscription?.expiresAt && (
+                    <Text style={styles.planExpiry}>
+                      до {formatDate(user.subscription.expiresAt)}
+                    </Text>
+                  )}
+                </View>
+                <View style={styles.planBadgePremium}>
+                  <Text style={styles.planBadgeTextPremium}>PREMIUM</Text>
+                </View>
               </View>
             </View>
-            {!isPremium && (
+          ) : (
+            <View style={[styles.card, { backgroundColor: Colors.card, borderColor: Colors.border }]}>
+              <View style={styles.subscriptionRow}>
+                <View>
+                  <Text style={styles.planNameFree}>{PLAN_LABELS['FREE']}</Text>
+                  <Text style={styles.planFreeSub}>Базовый доступ</Text>
+                </View>
+                <View style={styles.planBadgeFree}>
+                  <Text style={styles.planBadgeTextFree}>FREE</Text>
+                </View>
+              </View>
               <TouchableOpacity
                 style={styles.upgradeBtn}
-                onPress={() => router.push('/subscription/plans')}
+                onPress={() => {
+                  try {
+                    router.push('/subscription');
+                  } catch {
+                    Alert.alert('Скоро', 'Раздел подписки появится в следующем обновлении.');
+                  }
+                }}
                 activeOpacity={0.8}
               >
-                <Text style={styles.upgradeBtnText}>Улучшить до Premium</Text>
+                <Text style={styles.upgradeBtnText}>Upgrade to Premium</Text>
               </TouchableOpacity>
-            )}
-          </View>
+            </View>
+          )}
         </View>
 
-        {/* Account info block */}
+        {/* ── Account info block ──────────────────────────────────────── */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Данные аккаунта</Text>
           <View style={styles.card}>
@@ -569,128 +915,64 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Booking data section */}
+        {/* ── Booking data section (read-only) ────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Данные для бронирования</Text>
-          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <View style={bookingStyles.fieldGroup}>
-              <Text style={bookingStyles.fieldLabel}>Телефон</Text>
-              <TextInput
-                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
-                value={bookingData.phone}
-                onChangeText={(v) => setBookingData((p) => ({ ...p, phone: v }))}
-                placeholder="+7 999 123-45-67"
-                placeholderTextColor={Colors.textMuted}
-                keyboardType="phone-pad"
-                returnKeyType="next"
-              />
+          {/* Section header row */}
+          <View style={styles.sectionHeaderRow}>
+            <View style={styles.sectionHeaderLeft}>
+              <Text style={styles.sectionTitleWithIcon}>Данные для бронирования</Text>
+              <Text style={styles.sectionSubtitle}>
+                Заполните один раз — используем при каждом бронировании
+              </Text>
             </View>
-
-            <View style={bookingStyles.fieldGroup}>
-              <Text style={bookingStyles.fieldLabel}>Дата рождения</Text>
-              <TextInput
-                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
-                value={bookingData.dateOfBirth}
-                onChangeText={(v) => setBookingData((p) => ({ ...p, dateOfBirth: v }))}
-                placeholder="ГГГГ-ММ-ДД"
-                placeholderTextColor={Colors.textMuted}
-                keyboardType="number-pad"
-                maxLength={10}
-                returnKeyType="next"
-              />
-            </View>
-
-            <View style={bookingStyles.fieldGroup}>
-              <Text style={bookingStyles.fieldLabel}>Гражданство</Text>
-              <TextInput
-                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
-                value={bookingData.nationality}
-                onChangeText={(v) => setBookingData((p) => ({ ...p, nationality: v }))}
-                placeholder="Россия"
-                placeholderTextColor={Colors.textMuted}
-                returnKeyType="next"
-              />
-            </View>
-
-            <View style={bookingStyles.fieldGroup}>
-              <Text style={bookingStyles.fieldLabel}>Номер паспорта</Text>
-              <TextInput
-                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
-                value={bookingData.passportNumber}
-                onChangeText={(v) => setBookingData((p) => ({ ...p, passportNumber: v }))}
-                placeholder="AB1234567"
-                placeholderTextColor={Colors.textMuted}
-                autoCapitalize="characters"
-                returnKeyType="next"
-              />
-            </View>
-
-            <View style={[bookingStyles.fieldGroup, bookingStyles.fieldGroupLast]}>
-              <Text style={bookingStyles.fieldLabel}>Срок действия паспорта</Text>
-              <TextInput
-                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
-                value={bookingData.passportExpiry}
-                onChangeText={(v) => setBookingData((p) => ({ ...p, passportExpiry: v }))}
-                placeholder="ГГГГ-ММ-ДД"
-                placeholderTextColor={Colors.textMuted}
-                keyboardType="number-pad"
-                maxLength={10}
-                returnKeyType="next"
-              />
-            </View>
-          </View>
-        </View>
-
-        {/* Emergency contact section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Экстренный контакт</Text>
-          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <View style={bookingStyles.fieldGroup}>
-              <Text style={bookingStyles.fieldLabel}>Имя</Text>
-              <TextInput
-                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
-                value={bookingData.emergencyName}
-                onChangeText={(v) => setBookingData((p) => ({ ...p, emergencyName: v }))}
-                placeholder="Иван Иванов"
-                placeholderTextColor={Colors.textMuted}
-                returnKeyType="next"
-              />
-            </View>
-
-            <View style={[bookingStyles.fieldGroup, bookingStyles.fieldGroupLast]}>
-              <Text style={bookingStyles.fieldLabel}>Телефон</Text>
-              <TextInput
-                style={[bookingStyles.fieldInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.card }]}
-                value={bookingData.emergencyPhone}
-                onChangeText={(v) => setBookingData((p) => ({ ...p, emergencyPhone: v }))}
-                placeholder="+7 999 000-00-00"
-                placeholderTextColor={Colors.textMuted}
-                keyboardType="phone-pad"
-                returnKeyType="done"
-              />
-            </View>
+            <TouchableOpacity
+              onPress={() => setIsBookingModalVisible(true)}
+              activeOpacity={0.7}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            >
+              <Text style={styles.editSectionBtn}>Редактировать</Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Save button */}
-          <TouchableOpacity
-            style={[bookingStyles.saveBtn, isSavingBooking && bookingStyles.saveBtnDisabled]}
-            onPress={handleSaveBookingData}
-            disabled={isSavingBooking}
-            activeOpacity={0.8}
-          >
-            {isSavingBooking ? (
-              <ActivityIndicator color="#fff" size="small" />
-            ) : (
-              <Text style={bookingStyles.saveBtnText}>Сохранить данные</Text>
+          <View style={styles.card}>
+            {renderInfoRow('📞', 'Телефон', bookingData.phone)}
+            {renderInfoRow('🎂', 'Дата рождения', bookingData.dateOfBirth)}
+            {renderInfoRow('🌍', 'Гражданство', bookingData.nationality)}
+            {renderInfoRow(
+              '🛂',
+              'Номер паспорта',
+              bookingData.passportNumber ? maskPassport(bookingData.passportNumber) : '',
             )}
-          </TouchableOpacity>
+            {renderInfoRow('📅', 'Срок действия паспорта', bookingData.passportExpiry, true)}
+          </View>
         </View>
 
-        {/* Settings section */}
+        {/* ── Emergency contact section ────────────────────────────────── */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeaderRow}>
+            <View style={styles.sectionHeaderLeft}>
+              <Text style={styles.sectionTitleWithIcon}>Экстренный контакт</Text>
+              <Text style={styles.sectionSubtitle}>На случай непредвиденных ситуаций</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setIsBookingModalVisible(true)}
+              activeOpacity={0.7}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            >
+              <Text style={styles.editSectionBtn}>Редактировать</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.card}>
+            {renderInfoRow('👤', 'Имя контакта', bookingData.emergencyName)}
+            {renderInfoRow('📞', 'Телефон контакта', bookingData.emergencyPhone, true)}
+          </View>
+        </View>
+
+        {/* ── Settings section ────────────────────────────────────────── */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Настройки</Text>
           <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            {/* Dark mode */}
             <View style={styles.switchRow}>
               <View style={styles.switchLabel}>
                 <Text style={[styles.switchTitle, { color: colors.text }]}>Тёмная тема</Text>
@@ -706,7 +988,6 @@ export default function ProfileScreen() {
               />
             </View>
 
-            {/* Language */}
             <View style={[styles.switchRow, styles.switchRowNoBorder]}>
               <View style={styles.switchLabel}>
                 <Text style={[styles.switchTitle, { color: colors.text }]}>Язык</Text>
@@ -731,16 +1012,14 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Notifications section */}
+        {/* ── Notifications section ────────────────────────────────────── */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Уведомления</Text>
           <View style={styles.card}>
             <View style={styles.switchRow}>
               <View style={styles.switchLabel}>
                 <Text style={styles.switchTitle}>Уведомления о бронированиях</Text>
-                <Text style={styles.switchSubtitle}>
-                  Статус и изменения по броням
-                </Text>
+                <Text style={styles.switchSubtitle}>Статус и изменения по броням</Text>
               </View>
               <Switch
                 value={notifBookings}
@@ -753,9 +1032,7 @@ export default function ProfileScreen() {
             <View style={[styles.switchRow, styles.switchRowNoBorder]}>
               <View style={styles.switchLabel}>
                 <Text style={styles.switchTitle}>Уведомления об изменении цен</Text>
-                <Text style={styles.switchSubtitle}>
-                  Снижение цен на рейсы и отели
-                </Text>
+                <Text style={styles.switchSubtitle}>Снижение цен на рейсы и отели</Text>
               </View>
               <Switch
                 value={notifPrices}
@@ -767,7 +1044,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Logout */}
+        {/* ── Logout ──────────────────────────────────────────────────── */}
         <TouchableOpacity
           style={[styles.logoutBtn, isLoggingOut && styles.logoutBtnDisabled]}
           onPress={handleLogout}
@@ -780,7 +1057,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Edit modal */}
+      {/* Edit name modal */}
       <EditProfileModal
         visible={isEditModalVisible}
         initialName={user.name}
@@ -788,11 +1065,27 @@ export default function ProfileScreen() {
         onClose={() => setIsEditModalVisible(false)}
         onSaved={handleProfileSaved}
       />
+
+      {/* Booking data modal */}
+      <BookingDataModal
+        visible={isBookingModalVisible}
+        initial={bookingData}
+        onClose={() => setIsBookingModalVisible(false)}
+        onSaved={handleBookingDataSaved}
+      />
     </>
   );
 }
 
+// ── Styles ────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
+  loadingScreen: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -801,32 +1094,33 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 48,
   },
+
+  // ── Avatar section ────────────────────────────────────────────────────────
   avatarSection: {
     alignItems: 'center',
     marginBottom: 32,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: Spacing.xs,
   },
   name: {
     color: Colors.text,
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
-    marginBottom: Spacing.xs,
+  },
+  pencilBtn: {
+    padding: 2,
+  },
+  pencilIcon: {
+    fontSize: 16,
   },
   email: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     marginBottom: 14,
-  },
-  editBtn: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.chip,
-    borderWidth: 1,
-    borderColor: Colors.primary,
-  },
-  editBtnText: {
-    color: Colors.primary,
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.semibold,
   },
   bellBtn: {
     flexDirection: 'row',
@@ -871,6 +1165,8 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
+
+  // ── Section ───────────────────────────────────────────────────────────────
   section: {
     marginBottom: Spacing.lg,
   },
@@ -882,6 +1178,35 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: Spacing.sm,
   },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
+    gap: 8,
+  },
+  sectionHeaderLeft: {
+    flex: 1,
+  },
+  sectionTitleWithIcon: {
+    color: Colors.text,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.semibold,
+    marginBottom: 2,
+  },
+  sectionSubtitle: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    lineHeight: 16,
+  },
+  editSectionBtn: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.semibold,
+    paddingTop: 2,
+  },
+
+  // ── Card ──────────────────────────────────────────────────────────────────
   card: {
     backgroundColor: Colors.card,
     borderRadius: Radius.card,
@@ -889,43 +1214,63 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
+  cardPremium: {
+    backgroundColor: Colors.successLight,
+    borderColor: Colors.success,
+  },
+
+  // ── Subscription ──────────────────────────────────────────────────────────
   subscriptionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 14,
   },
-  planName: {
+  planNamePremium: {
+    color: Colors.success,
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.semibold,
+  },
+  planNameFree: {
     color: Colors.text,
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
-  planExpiry: {
+  planFreeSub: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     marginTop: 2,
   },
-  planBadge: {
+  planExpiry: {
+    color: Colors.success,
+    fontSize: Typography.sizes.sm,
+    marginTop: 2,
+  },
+  planBadgePremium: {
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: Radius.chip,
+    backgroundColor: Colors.successLight,
+    borderWidth: 1,
+    borderColor: Colors.success,
   },
-  planBadgePremium: {
-    backgroundColor: Colors.primaryMuted,
-  },
-  planBadgeFree: {
-    backgroundColor: `${Colors.textMuted}20`,
-  },
-  planBadgeText: {
+  planBadgeTextPremium: {
+    color: Colors.success,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: Typography.letterSpacing.wide,
   },
-  planBadgeTextPremium: {
-    color: Colors.primary,
+  planBadgeFree: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.chip,
+    backgroundColor: `${Colors.textMuted}20`,
   },
   planBadgeTextFree: {
     color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: Typography.letterSpacing.wide,
   },
   upgradeBtn: {
     backgroundColor: Colors.primary,
@@ -938,12 +1283,24 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
+
+  // ── Info rows ─────────────────────────────────────────────────────────────
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+  },
+  infoRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flex: 1,
+  },
+  infoRowIcon: {
+    fontSize: 14,
   },
   infoRowNoBorder: {
     borderBottomWidth: 0,
@@ -956,8 +1313,18 @@ const styles = StyleSheet.create({
     color: Colors.text,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
+    maxWidth: '55%',
+    textAlign: 'right',
   },
-  // Notification switches
+  infoValueMuted: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+    fontStyle: 'italic',
+    maxWidth: '55%',
+    textAlign: 'right',
+  },
+
+  // ── Switch rows ───────────────────────────────────────────────────────────
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -983,6 +1350,8 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },
+
+  // ── Logout ────────────────────────────────────────────────────────────────
   logoutBtn: {
     marginTop: Spacing.sm,
     paddingVertical: 14,
@@ -999,7 +1368,8 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
-  // Language toggle
+
+  // ── Language toggle ───────────────────────────────────────────────────────
   langToggle: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1022,48 +1392,5 @@ const styles = StyleSheet.create({
   langDivider: {
     color: Colors.border,
     fontSize: Typography.sizes.sm,
-  },
-});
-
-// ── Booking section styles ────────────────────────────────────────────────────
-
-const bookingStyles = StyleSheet.create({
-  fieldGroup: {
-    paddingVertical: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  fieldGroupLast: {
-    borderBottomWidth: 0,
-  },
-  fieldLabel: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
-    textTransform: 'uppercase',
-    letterSpacing: Typography.letterSpacing.wide,
-    marginBottom: 6,
-  },
-  fieldInput: {
-    borderWidth: 1,
-    borderRadius: Radius.input,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 10,
-    fontSize: Typography.sizes.sm,
-  },
-  saveBtn: {
-    marginTop: Spacing.md,
-    backgroundColor: Colors.primary,
-    borderRadius: Radius.button,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  saveBtnDisabled: {
-    opacity: 0.6,
-  },
-  saveBtnText: {
-    color: Colors.textInverse,
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
   },
 });
