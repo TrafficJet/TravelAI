@@ -28,21 +28,23 @@ export default function LoginScreen() {
 
   const login = useAuthStore((state) => state.login);
 
-  function validate(): boolean {
-    const newErrors: { email?: string; password?: string } = {};
-    if (!email.trim()) newErrors.email = 'Введите email';
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Некорректный email';
-    if (!password) newErrors.password = 'Введите пароль';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }
+  async function handleLogin(overrideEmail?: string, overridePassword?: string) {
+    const loginEmail = overrideEmail ?? email;
+    const loginPassword = overridePassword ?? password;
 
-  async function handleLogin() {
-    if (!validate()) return;
+    if (!overrideEmail) {
+      // Only validate form when not using demo credentials
+      const newErrors: { email?: string; password?: string } = {};
+      if (!loginEmail.trim()) newErrors.email = 'Введите email';
+      else if (!/\S+@\S+\.\S+/.test(loginEmail)) newErrors.email = 'Некорректный email';
+      if (!loginPassword) newErrors.password = 'Введите пароль';
+      setErrors(newErrors);
+      if (Object.keys(newErrors).length > 0) return;
+    }
 
     setIsLoading(true);
     try {
-      await login(email.trim().toLowerCase(), password);
+      await login(loginEmail.trim().toLowerCase(), loginPassword);
       analytics.track(Events.LOGGED_IN);
       router.replace('/(tabs)');
     } catch (err: unknown) {
@@ -52,6 +54,13 @@ export default function LoginScreen() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  async function handleDemoLogin() {
+    setEmail('demo@travelai.com');
+    setPassword('Demo1234!');
+    setErrors({});
+    await handleLogin('demo@travelai.com', 'Demo1234!');
   }
 
   return (
@@ -91,11 +100,7 @@ export default function LoginScreen() {
 
           <TouchableOpacity
             style={styles.demoBtn}
-            onPress={() => {
-              setEmail('demo@travelai.com');
-              setPassword('Demo1234!');
-              setErrors({});
-            }}
+            onPress={handleDemoLogin}
             activeOpacity={0.8}
           >
             <Text style={styles.demoBtnTitle}>⚡ Войти как демо-пользователь</Text>
@@ -104,7 +109,7 @@ export default function LoginScreen() {
 
           <Button
             title="Войти"
-            onPress={handleLogin}
+            onPress={() => handleLogin()}
             loading={isLoading}
             fullWidth
             style={styles.loginBtn}
