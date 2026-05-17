@@ -1,0 +1,56 @@
+{
+  "common": {
+    "back": "Назад",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "retry": "Повторить"
+  },
+  "tabs": {
+    "chat": "Чат",
+    "bookings": "Брони",
+    "wallet": "Кошелёк",
+    "history": "История",
+    "profile": "Профиль",
+    "explore": "Поиск"
+  },
+  "chat": {
+    "placeholder": "Найдите рейс или отель...",
+    "newChat": "Новый чат",
+    "noChats": "Начните разговор",
+    "send": "Отправить"
+  },
+  "bookings": {
+    "title": "Мои брони",
+    "empty": "Броней пока нет",
+    "emptyDesc": "Забронируйте первый рейс или отель"
+  },
+  "wallet": {
+    "title": "Кошелёк",
+    "balance": "Баланс",
+    "topUp": "Пополнить",
+    "history": "История операций",
+    "empty": "Операций пока нет"
+  },
+  "profile": {
+    "title": "Профиль",
+    "edit": "Редактировать",
+    "logout": "Выйти",
+    "subscription": "Подписка",
+    "notifications": "Уведомления",
+    "language": "Язык",
+    "theme": "Тема"
+  },
+  "auth": {
+    "login": "Войти",
+    "register": "Регистрация",
+    "email": "Email",
+    "password": "Пароль",
+    "name": "Имя",
+    "loginButton": "Войти",
+    "registerButton": "Создать аккаунт",
+    "haveAccount": "Уже есть аккаунт?",
+    "noAccount": "Нет аккаунта?"
+  }
+}

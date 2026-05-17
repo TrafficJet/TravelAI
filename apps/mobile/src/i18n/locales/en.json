@@ -1,0 +1,56 @@
+{
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry"
+  },
+  "tabs": {
+    "chat": "Chat",
+    "bookings": "Bookings",
+    "wallet": "Wallet",
+    "history": "History",
+    "profile": "Profile",
+    "explore": "Explore"
+  },
+  "chat": {
+    "placeholder": "Find a flight or hotel...",
+    "newChat": "New chat",
+    "noChats": "Start a conversation",
+    "send": "Send"
+  },
+  "bookings": {
+    "title": "My Bookings",
+    "empty": "No bookings yet",
+    "emptyDesc": "Book your first flight or hotel"
+  },
+  "wallet": {
+    "title": "Wallet",
+    "balance": "Balance",
+    "topUp": "Top up",
+    "history": "Transaction history",
+    "empty": "No transactions yet"
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit",
+    "logout": "Sign out",
+    "subscription": "Subscription",
+    "notifications": "Notifications",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "auth": {
+    "login": "Sign in",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "loginButton": "Sign in",
+    "registerButton": "Create account",
+    "haveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?"
+  }
+}

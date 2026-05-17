@@ -1,0 +1,293 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  phone       String?
+  name        String
+  password    String?
+  provider    String    @default("email")
+  providerId  String?   @map("provider_id")
+  deletedAt   DateTime? @map("deleted_at")
+  preferences Json      @default("{}") @map("preferences")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  wallet               Wallet?
+  subscription         Subscription?
+  chatSessions         ChatSession[]
+  bookings             Booking[]
+  refreshTokens        RefreshToken[]
+  searchHistory        SearchHistory[]
+  priceAlerts          PriceAlert[]
+  notifications        Notification[]
+  passwordResetTokens  PasswordResetToken[]
+  favorites            Favorite[]
+
+  @@unique([provider, providerId])
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  revoked   Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  balance   Decimal  @default(0) @db.Decimal(12, 2)
+  currency  String   @default("RUB")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id          String                      @id @default(uuid())
+  walletId    String                      @map("wallet_id")
+  amount      Decimal                     @db.Decimal(12, 2)
+  type        WalletTransactionType
+  status      WalletTransactionStatus     @default(COMPLETED)
+  description String
+  bookingId   String?                     @map("booking_id")
+  externalId  String?                     @map("external_id")
+  createdAt   DateTime                    @default(now()) @map("created_at")
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([externalId])
+  @@index([createdAt])
+  @@map("wallet_transactions")
+}
+
+enum WalletTransactionType {
+  TOPUP
+  DEBIT
+}
+
+enum WalletTransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Subscription {
+  id        String             @id @default(uuid())
+  userId    String             @unique @map("user_id")
+  plan      SubscriptionPlan   @default(FREE)
+  status    SubscriptionStatus @default(ACTIVE)
+  expiresAt DateTime?          @map("expires_at")
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+enum SubscriptionPlan {
+  FREE
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+model ChatSession {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  title        String    @default("Новый чат")
+  systemPrompt String?   @map("system_prompt") @db.Text
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@index([userId])
+  @@index([updatedAt])
+  @@map("chat_sessions")
+}
+
+model Message {
+  id         String      @id @default(uuid())
+  sessionId  String      @map("session_id")
+  role       MessageRole
+  content    String      @db.Text
+  toolName   String?     @map("tool_name")
+  toolInput  Json?       @map("tool_input")
+  toolResult Json?       @map("tool_result")
+  toolUseId  String?     @map("tool_use_id")
+  createdAt  DateTime    @default(now()) @map("created_at")
+
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  TOOL_USE
+  TOOL_RESULT
+}
+
+model Booking {
+  id         String          @id @default(uuid())
+  userId     String          @map("user_id")
+  type       BookingType
+  status     BookingStatus   @default(PENDING)
+  provider   BookingProvider
+  externalId String?         @map("external_id")
+  details    Json
+  totalPrice Decimal         @map("total_price") @db.Decimal(12, 2)
+  currency   String          @default("RUB")
+  createdAt  DateTime        @default(now()) @map("created_at")
+  updatedAt  DateTime        @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("bookings")
+}
+
+enum BookingType {
+  FLIGHT
+  HOTEL
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  FAILED
+}
+
+enum BookingProvider {
+  DUFFEL
+  AVIASALES
+  BOOKING
+}
+
+model SearchHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  query     String
+  type      String
+  results   Json
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("search_history")
+}
+
+model PriceAlert {
+  id          String    @id @default(uuid())
+  userId      String
+  origin      String
+  destination String
+  maxPrice    Float
+  active      Boolean   @default(true)
+  triggeredAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("price_alerts")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  body      String
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  PRICE_ALERT
+  BOOKING_UPDATE
+  SYSTEM
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // 'hotel' | 'flight'
+  itemId    String   // ID отеля или рейса
+  itemData  Json     // полные данные для отображения офлайн
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, itemId])
+  @@index([userId])
+  @@map("favorites")
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  userId     String?
+  sessionId  String?
+  event      String
+  properties Json     @default("{}")
+  platform   String   @default("mobile")
+  appVersion String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([event])
+  @@index([createdAt])
+  @@map("analytics_events")
+}

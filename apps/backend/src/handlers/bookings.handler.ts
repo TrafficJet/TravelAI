@@ -1,0 +1,267 @@
+import { FastifyRequest, FastifyReply } from 'fastify';
+import { prisma } from '../lib/prisma';
+import { AppError, Errors } from '../lib/errors';
+import { emailService } from '../lib/email';
+
+interface BookingsQuery {
+  page?: number;
+  limit?: number;
+  type?: 'FLIGHT' | 'HOTEL';
+  status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'FAILED';
+  from?: string; // ISO date string — filter bookings created on or after this date
+  to?: string;   // ISO date string — filter bookings created on or before this date
+}
+
+interface BookingParams {
+  id: string;
+}
+
+interface ConfirmBookingBody {
+  bookingId: string;
+  payFromWallet: boolean;
+}
+
+// Derive a human-readable summary from booking details
+function buildSummary(
+  type: string,
+  details: unknown,
+): { title: string; subtitle: string } {
+  const d = details as Record<string, unknown>;
+
+  if (type === 'FLIGHT') {
+    const segments = d.segments as Array<{ origin: string; destination: string; departureAt: string }> | undefined;
+    if (segments && segments.length > 0) {
+      const first = segments[0];
+      return {
+        title: `${first.origin} → ${first.destination}`,
+        subtitle: new Date(first.departureAt).toLocaleDateString('ru-RU', {
+          day: 'numeric',
+          month: 'long',
+        }),
+      };
+    }
+  }
+
+  if (type === 'HOTEL') {
+    return {
+      title: (d.hotelName as string) ?? 'Отель',
+      subtitle: d.checkIn && d.checkOut ? `${d.checkIn} – ${d.checkOut}` : '',
+    };
+  }
+
+  return { title: 'Бронирование', subtitle: '' };
+}
+
+// GET /api/bookings — paginated list of user bookings with optional filters
+export async function getBookings(request: FastifyRequest, reply: FastifyReply) {
+  const userId = request.userId;
+  const query = request.query as BookingsQuery;
+
+  const page = Math.max(1, Number(query.page) || 1);
+  const limit = Math.min(100, Math.max(1, Number(query.limit) || 20));
+  const skip = (page - 1) * limit;
+
+  // Build date range filter for createdAt
+  const createdAtFilter: { gte?: Date; lte?: Date } = {};
+  if (query.from) {
+    const d = new Date(query.from);
+    if (!isNaN(d.getTime())) createdAtFilter.gte = d;
+  }
+  if (query.to) {
+    // Inclusive end-of-day: advance to start of next day
+    const d = new Date(query.to);
+    if (!isNaN(d.getTime())) {
+      d.setDate(d.getDate() + 1);
+      createdAtFilter.lte = d;
+    }
+  }
+
+  const where = {
+    userId,
+    ...(query.type ? { type: query.type } : {}),
+    ...(query.status ? { status: query.status } : {}),
+    ...(Object.keys(createdAtFilter).length > 0 ? { createdAt: createdAtFilter } : {}),
+  };
+
+  const [bookings, total] = await Promise.all([
+    prisma.booking.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    prisma.booking.count({ where }),
+  ]);
+
+  const totalPages = Math.ceil(total / limit);
+
+  return reply.send({
+    bookings: bookings.map((b) => ({
+      id: b.id,
+      type: b.type,
+      status: b.status,
+      provider: b.provider,
+      totalPrice: Number(b.totalPrice),
+      currency: b.currency,
+      createdAt: b.createdAt.toISOString(),
+      summary: buildSummary(b.type, b.details),
+    })),
+    total,
+    page,
+    totalPages,
+  });
+}
+
+// GET /api/bookings/:id — full booking details
+export async function getBookingById(request: FastifyRequest, reply: FastifyReply) {
+  const userId = request.userId;
+  const { id } = request.params as BookingParams;
+
+  const booking = await prisma.booking.findUnique({ where: { id } });
+
+  if (!booking) throw Errors.notFound('Бронирование');
+  if (booking.userId !== userId) throw Errors.forbidden('Бронирование не принадлежит пользователю');
+
+  return reply.send({
+    booking: {
+      id: booking.id,
+      type: booking.type,
+      status: booking.status,
+      provider: booking.provider,
+      externalId: booking.externalId,
+      totalPrice: Number(booking.totalPrice),
+      currency: booking.currency,
+      createdAt: booking.createdAt.toISOString(),
+      updatedAt: booking.updatedAt.toISOString(),
+      details: booking.details,
+    },
+  });
+}
+
+// POST /api/bookings/:id/cancel — cancel a PENDING booking owned by the current user
+export async function cancelBooking(request: FastifyRequest, reply: FastifyReply) {
+  const userId = request.userId;
+  const { id } = request.params as BookingParams;
+
+  const booking = await prisma.booking.findUnique({ where: { id } });
+
+  if (!booking || booking.userId !== userId) {
+    // Return 404 regardless of ownership to avoid ID enumeration
+    throw Errors.notFound('Бронирование');
+  }
+
+  if (booking.status === 'CANCELLED') {
+    throw Errors.badRequest('Бронирование уже отменено');
+  }
+
+  if (booking.status === 'CONFIRMED') {
+    throw Errors.badRequest('Нельзя отменить подтверждённое бронирование. Обратитесь в поддержку.');
+  }
+
+  // Only PENDING bookings can be cancelled
+  const updated = await prisma.booking.update({
+    where: { id },
+    data: { status: 'CANCELLED' },
+  });
+
+  return reply.send({
+    booking: {
+      id: updated.id,
+      type: updated.type,
+      status: updated.status,
+      provider: updated.provider,
+      externalId: updated.externalId,
+      totalPrice: Number(updated.totalPrice),
+      currency: updated.currency,
+      createdAt: updated.createdAt.toISOString(),
+      updatedAt: updated.updatedAt.toISOString(),
+      details: updated.details,
+    },
+  });
+}
+
+// POST /api/bookings/confirm — confirm PENDING booking, deduct from wallet
+export async function confirmBooking(request: FastifyRequest, reply: FastifyReply) {
+  const userId = request.userId;
+  const { bookingId } = request.body as ConfirmBookingBody;
+
+  const booking = await prisma.booking.findFirst({
+    where: { id: bookingId, userId, status: 'PENDING' },
+  });
+
+  if (!booking) {
+    throw Errors.notFound('Бронирование (должно быть в статусе PENDING)');
+  }
+
+  const wallet = await prisma.wallet.findUnique({ where: { userId } });
+  if (!wallet) throw Errors.notFound('Кошелёк');
+
+  const price = Number(booking.totalPrice);
+  const balance = Number(wallet.balance);
+  if (balance < price) {
+    // 402 with machine-readable fields so the mobile client can display a top-up prompt
+    throw new AppError(402, 'INSUFFICIENT_FUNDS', 'Недостаточно средств на кошельке', {
+      balance,
+      required: price,
+      currency: booking.currency,
+    });
+  }
+
+  // Debit wallet and confirm booking atomically
+  const [updatedWallet, updatedBooking, transaction] = await prisma.$transaction([
+    prisma.wallet.update({
+      where: { id: wallet.id },
+      data: { balance: { decrement: price } },
+    }),
+    prisma.booking.update({
+      where: { id: booking.id },
+      data: { status: 'CONFIRMED' },
+    }),
+    prisma.walletTransaction.create({
+      data: {
+        walletId: wallet.id,
+        amount: price,
+        type: 'DEBIT',
+        description: `Оплата бронирования #${booking.id.slice(0, 8)}`,
+        bookingId: booking.id,
+      },
+    }),
+  ]);
+
+  // Fire-and-forget — send booking confirmation email without blocking the response
+  prisma.user.findUnique({ where: { id: userId }, select: { email: true } }).then((u) => {
+    if (u) {
+      emailService.sendBookingConfirmation(u.email, {
+        bookingId: updatedBooking.id,
+        type: updatedBooking.type as 'FLIGHT' | 'HOTEL',
+        totalPrice: Number(updatedBooking.totalPrice),
+        currency: updatedBooking.currency,
+        details: updatedBooking.details as object,
+      }).catch(() => {});
+    }
+  }).catch(() => {});
+
+  return reply.send({
+    booking: {
+      id: updatedBooking.id,
+      type: updatedBooking.type,
+      status: updatedBooking.status,
+      provider: updatedBooking.provider,
+      externalId: updatedBooking.externalId,
+      totalPrice: Number(updatedBooking.totalPrice),
+      currency: updatedBooking.currency,
+      createdAt: updatedBooking.createdAt.toISOString(),
+      updatedAt: updatedBooking.updatedAt.toISOString(),
+      details: updatedBooking.details,
+    },
+    transaction: {
+      id: transaction.id,
+      amount: transaction.amount.toString(),
+      type: transaction.type,
+      description: transaction.description,
+      bookingId: transaction.bookingId,
+      createdAt: transaction.createdAt.toISOString(),
+    },
+    newBalance: updatedWallet.balance.toString(),
+  });
+}

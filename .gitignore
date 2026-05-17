@@ -1,0 +1,60 @@
+# Зависимости
+node_modules/
+.pnp
+.pnp.js
+
+# Сборки
+build/
+dist/
+*.tsbuildinfo
+
+# Окружение / секреты
+.env
+.env.local
+.env.*.local
+*.env
+
+# Логи
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Expo / React Native
+.expo/
+.expo-shared/
+web-build/
+ios/Pods/
+ios/build/
+android/build/
+android/app/build/
+android/.gradle/
+android/.idea/
+*.iml
+*.keystore
+!debug.keystore
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Тестовое покрытие
+coverage/
+.nyc_output/
+
+# Prisma
+prisma/migrations/dev.db*
+*.db
+*.db-journal
+
+# Docker volumes
+postgres-data/

@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: travel_ai_db_prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-travel_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-travel_ai}
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-travel_user} -d ${POSTGRES_DB:-travel_ai}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Postgres should NOT be exposed to the host in production.
+    # Remove the ports block below if this compose file is used on a public server.
+    # ports:
+    #   - "5432:5432"
+
+  migrations:
+    image: node:20-alpine
+    container_name: travel_ai_migrations
+    # Run prisma migrate deploy, then exit — restart: no so it does not loop
+    restart: "no"
+    command: sh -c "cd /app && npx prisma migrate deploy"
+    volumes:
+      - ./apps/backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-travel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-travel_ai}}
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: travel_ai_backend_prod
+    restart: unless-stopped
+    env_file:
+      - ./apps/backend/.env.production
+    environment:
+      # Override DATABASE_URL so the backend reaches the compose-internal postgres
+      DATABASE_URL: postgresql://${POSTGRES_USER:-travel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-travel_ai}
+      NODE_ENV: production
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    # Migrations are handled by the dedicated migrations service above
+    command: node dist/server.js
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data_prod:
+    driver: local
