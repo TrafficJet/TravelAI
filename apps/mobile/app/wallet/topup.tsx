@@ -11,6 +11,7 @@ import {
   Platform,
   Linking,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useWalletStore } from '../../stores/walletStore';
 import { Button } from '../../components/ui/Button';
@@ -19,7 +20,7 @@ import { Typography } from '../../constants/typography';
 import { sendPaymentConfirmation } from '../../services/notifications.service';
 import { toast } from '../../lib/toast';
 
-const PRESETS = [10, 30, 50, 100];
+const PRESETS = [10, 25, 50, 100];
 
 export default function TopupScreen() {
   const [amount, setAmount] = useState('');
@@ -57,8 +58,17 @@ export default function TopupScreen() {
         router.back();
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Ошибка пополнения';
-      toast.error(msg);
+      // If real payment integration needed show Stripe placeholder
+      const msg = err instanceof Error ? err.message : '';
+      if (msg.includes('stripe') || msg.includes('payment')) {
+        Alert.alert(
+          'Функция в разработке',
+          'Для пополнения требуется интеграция со Stripe. Обратитесь к администратору.',
+          [{ text: 'Понятно' }],
+        );
+      } else {
+        toast.error(msg || 'Ошибка пополнения');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -74,11 +84,19 @@ export default function TopupScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Card mock */}
-        <View style={styles.cardPreview}>
-          <Text style={styles.cardLabel}>Карта</Text>
+        {/* Hero balance card */}
+        <LinearGradient
+          colors={['#1C1C2E', '#2D1A0A']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.cardPreview}
+        >
+          <Text style={styles.cardLabel}>ПОПОЛНЕНИЕ КОШЕЛЬКА</Text>
           <Text style={styles.cardNumber}>**** **** **** 4242</Text>
-        </View>
+          <View style={styles.cardDot}>
+            <Text style={styles.cardDotText}>VISA</Text>
+          </View>
+        </LinearGradient>
 
         {/* Amount input */}
         <Text style={styles.label}>Сумма пополнения</Text>
@@ -95,29 +113,24 @@ export default function TopupScreen() {
           <Text style={styles.currencySymbol}>$</Text>
         </View>
 
-        {/* Presets */}
+        {/* Presets — pill chips */}
         <Text style={styles.presetsLabel}>Быстрый выбор</Text>
         <View style={styles.presetsRow}>
-          {PRESETS.map((preset) => (
-            <TouchableOpacity
-              key={preset}
-              style={[
-                styles.presetBtn,
-                Number(amount) === preset && styles.presetBtnActive,
-              ]}
-              onPress={() => handlePreset(preset)}
-              activeOpacity={0.7}
-            >
-              <Text
-                style={[
-                  styles.presetText,
-                  Number(amount) === preset && styles.presetTextActive,
-                ]}
+          {PRESETS.map((preset) => {
+            const isActive = Number(amount) === preset;
+            return (
+              <TouchableOpacity
+                key={preset}
+                style={[styles.presetBtn, isActive && styles.presetBtnActive]}
+                onPress={() => handlePreset(preset)}
+                activeOpacity={0.7}
               >
-                {preset.toLocaleString('ru-RU')}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text style={[styles.presetText, isActive && styles.presetTextActive]}>
+                  ${preset}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <Button
@@ -129,8 +142,8 @@ export default function TopupScreen() {
         />
 
         <Text style={styles.disclaimer}>
-          Демо-режим: деньги списываются с тестовой карты. В продакшне — интеграция
-          с платёжным шлюзом.
+          Демо-режим: деньги зачисляются мгновенно. В продакшне — интеграция
+          со Stripe или другим платёжным шлюзом.
         </Text>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -151,28 +164,42 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   cardPreview: {
-    backgroundColor: Colors.primary,
-    borderRadius: 18,
+    borderRadius: 20,
     padding: 24,
     marginBottom: 32,
+    borderWidth: 1,
+    borderColor: `${Colors.primary}30`,
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.25,
     shadowRadius: 16,
     elevation: 8,
+    minHeight: 130,
+    justifyContent: 'space-between',
   },
   cardLabel: {
     color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
-    marginBottom: 24,
-    letterSpacing: 1,
+    fontSize: Typography.sizes.xs,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
+    fontWeight: Typography.weights.semibold,
   },
   cardNumber: {
     color: Colors.text,
-    fontSize: Typography.sizes.lg,
-    fontWeight: Typography.weights.semibold,
-    letterSpacing: 2,
+    fontSize: Typography.sizes.xl,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 3,
+    marginTop: 16,
+  },
+  cardDot: {
+    alignSelf: 'flex-end',
+    marginTop: 8,
+  },
+  cardDotText: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 1,
   },
   label: {
     color: Colors.text,
@@ -211,21 +238,27 @@ const styles = StyleSheet.create({
   },
   presetsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 10,
     marginBottom: 32,
   },
   presetBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     backgroundColor: Colors.card,
-    borderRadius: 10,
-    borderWidth: 1,
+    borderRadius: 32,
+    borderWidth: 1.5,
     borderColor: Colors.border,
+    flex: 1,
+    alignItems: 'center',
   },
   presetBtnActive: {
-    backgroundColor: `${Colors.primary}30`,
+    backgroundColor: `${Colors.primary}20`,
     borderColor: Colors.primary,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   presetText: {
     color: Colors.text,
@@ -234,6 +267,7 @@ const styles = StyleSheet.create({
   },
   presetTextActive: {
     color: Colors.primary,
+    fontWeight: Typography.weights.bold,
   },
   topupBtn: {
     marginBottom: 20,

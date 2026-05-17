@@ -296,11 +296,19 @@ export default function HotelDetailScreen() {
     <View style={styles.container}>
       {/* ── Hero Section ───────────────────────────────────────────────────── */}
       <View style={styles.heroWrapper}>
+        {/* Photo placeholder with gradient overlay */}
         <LinearGradient
-          colors={['#0A0A14', '#0E0E1C', `${Colors.secondary}20`]}
-          locations={[0, 0.5, 1]}
-          style={[styles.heroGradient, { paddingTop: insets.top }]}
+          colors={['#1C1C2E', '#0E1628', '#0A1020']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.photoPlaceholder, { paddingTop: insets.top }]}
         >
+          {/* Decorative background pattern */}
+          <View style={styles.photoBgPattern} pointerEvents="none">
+            <View style={styles.photoBgCircle1} />
+            <View style={styles.photoBgCircle2} />
+          </View>
+
           {/* Top bar */}
           <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
             <TouchableOpacity
@@ -323,29 +331,38 @@ export default function HotelDetailScreen() {
             </View>
           </Animated.View>
 
-          {/* Hotel hero info */}
-          <Animated.View entering={FadeIn.duration(500)} style={styles.heroContent}>
-            {/* Name + rating side by side */}
-            <View style={styles.heroNameRow}>
-              <View style={styles.heroNameBlock}>
-                <Text style={styles.heroName} numberOfLines={2}>{name}</Text>
-                {stars > 0 ? <StarRow count={stars} /> : null}
-                {(address || city) ? (
-                  <View style={styles.locationRow}>
-                    <Ionicons name="location-outline" size={13} color={Colors.textMuted} />
-                    <Text style={styles.locationText} numberOfLines={1}>
-                      {[address, city].filter(Boolean).join(', ')}
-                    </Text>
+          {/* Photo placeholder icon */}
+          <Animated.View entering={FadeIn.duration(400)} style={styles.photoIconArea}>
+            <Text style={styles.photoIcon}>🏨</Text>
+          </Animated.View>
+
+          {/* Name overlaid on photo */}
+          <Animated.View entering={FadeIn.duration(500)} style={styles.heroOverlay}>
+            <LinearGradient
+              colors={['transparent', 'rgba(10,10,20,0.85)', '#0A0A14']}
+              style={styles.heroGradientOverlay}
+            >
+              <View style={styles.heroNameRow}>
+                <View style={styles.heroNameBlock}>
+                  <Text style={styles.heroName} numberOfLines={2}>{name}</Text>
+                  {stars > 0 ? <StarRow count={stars} /> : null}
+                  {(address || city) ? (
+                    <View style={styles.locationRow}>
+                      <Ionicons name="location-outline" size={13} color={Colors.textMuted} />
+                      <Text style={styles.locationText} numberOfLines={1}>
+                        {[address, city].filter(Boolean).join(', ')}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
+
+                {rating !== undefined && !isNaN(rating) ? (
+                  <View style={styles.ratingCard}>
+                    <RatingBlock rating={rating} reviewsCount={reviewsCount} />
                   </View>
                 ) : null}
               </View>
-
-              {rating !== undefined && !isNaN(rating) ? (
-                <View style={styles.ratingCard}>
-                  <RatingBlock rating={rating} reviewsCount={reviewsCount} />
-                </View>
-              ) : null}
-            </View>
+            </LinearGradient>
           </Animated.View>
         </LinearGradient>
       </View>
@@ -418,6 +435,43 @@ export default function HotelDetailScreen() {
           ) : null}
         </Animated.View>
 
+        {/* ── Location map placeholder ──────────────────────────────────────── */}
+        {(address || city) ? (
+          <Animated.View entering={FadeInUp.delay(230).springify()} style={styles.card}>
+            <Text style={styles.sectionTitle}>Расположение</Text>
+            {/* Map placeholder */}
+            <LinearGradient
+              colors={['#12202E', '#0E1A28', '#101820']}
+              style={styles.mapPlaceholder}
+            >
+              {/* Grid lines */}
+              <View style={styles.mapGrid}>
+                {[...Array(4)].map((_, i) => (
+                  <View key={`h${i}`} style={[styles.mapGridLine, styles.mapGridLineH, { top: `${25 * (i + 1)}%` }]} />
+                ))}
+                {[...Array(4)].map((_, i) => (
+                  <View key={`v${i}`} style={[styles.mapGridLine, styles.mapGridLineV, { left: `${25 * (i + 1)}%` }]} />
+                ))}
+              </View>
+              {/* Pin */}
+              <View style={styles.mapPin}>
+                <View style={styles.mapPinCircle}>
+                  <Ionicons name="location" size={20} color={Colors.primary} />
+                </View>
+                <View style={styles.mapPinTail} />
+              </View>
+              <Text style={styles.mapLabel}>Карта</Text>
+            </LinearGradient>
+            {/* Address row */}
+            <View style={styles.addressRow}>
+              <Ionicons name="location-outline" size={16} color={Colors.primary} />
+              <Text style={styles.addressText}>
+                {[address, city].filter(Boolean).join(', ')}
+              </Text>
+            </View>
+          </Animated.View>
+        ) : null}
+
         {/* ── Description ───────────────────────────────────────────────────── */}
         {description ? (
           <Animated.View entering={FadeInUp.delay(260).springify()} style={styles.card}>
@@ -458,7 +512,49 @@ const styles = StyleSheet.create({
   heroWrapper: {
     overflow: 'hidden',
   },
-  heroGradient: {
+  photoPlaceholder: {
+    minHeight: 240,
+    position: 'relative',
+  },
+  photoBgPattern: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: 'hidden',
+  },
+  photoBgCircle1: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: `${Colors.secondary}08`,
+    top: -60,
+    right: -40,
+  },
+  photoBgCircle2: {
+    position: 'absolute',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: `${Colors.primary}06`,
+    bottom: 20,
+    left: -30,
+  },
+  photoIconArea: {
+    alignItems: 'center',
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  photoIcon: {
+    fontSize: 56,
+  },
+  heroOverlay: {
+    flex: 1,
+  },
+  heroGradientOverlay: {
+    paddingTop: 12,
     paddingBottom: 24,
   },
   header: {
@@ -571,6 +667,81 @@ const styles = StyleSheet.create({
     color: Colors.text,
     fontSize: Typography.sizes.base,
     lineHeight: 22,
+  },
+
+  // Map placeholder
+  mapPlaceholder: {
+    height: 140,
+    borderRadius: 12,
+    marginBottom: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  mapGrid: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  mapGridLine: {
+    position: 'absolute',
+    backgroundColor: `${Colors.border}60`,
+  },
+  mapGridLineH: {
+    left: 0,
+    right: 0,
+    height: StyleSheet.hairlineWidth,
+  },
+  mapGridLineV: {
+    top: 0,
+    bottom: 0,
+    width: StyleSheet.hairlineWidth,
+  },
+  mapPin: {
+    alignItems: 'center',
+  },
+  mapPinCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: `${Colors.primary}20`,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  mapPinTail: {
+    width: 2,
+    height: 8,
+    backgroundColor: Colors.primary,
+    borderRadius: 1,
+  },
+  mapLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    position: 'absolute',
+    bottom: 8,
+    right: 12,
+  },
+  addressRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  addressText: {
+    color: Colors.text,
+    fontSize: Typography.sizes.sm,
+    flex: 1,
+    lineHeight: 20,
   },
 
   // Price card

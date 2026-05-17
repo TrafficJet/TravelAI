@@ -366,17 +366,67 @@ export default function FlightDetailScreen() {
           />
         </Animated.View>
 
-        {/* ── Baggage card ─────────────────────────────────────────────────── */}
-        <Animated.View entering={FadeInUp.delay(240).springify()}>
-          <InfoCard
-            icon="🧳"
-            title="Багаж"
-            rows={[
-              { label: 'Ручная кладь', value: '1 × 10 кг' },
-              { label: 'Багаж', value: cabinLabel === 'Эконом' ? '1 × 23 кг' : '2 × 32 кг' },
-            ]}
-          />
+        {/* ── Included services card ───────────────────────────────────────── */}
+        <Animated.View entering={FadeInUp.delay(240).springify()} style={includedCard.wrap}>
+          <Text style={includedCard.title}>ВКЛЮЧЕНО В РЕЙС</Text>
+          <View style={includedCard.grid}>
+            <View style={includedCard.item}>
+              <View style={includedCard.iconCircle}>
+                <Text style={includedCard.iconEmoji}>🎒</Text>
+              </View>
+              <Text style={includedCard.itemLabel}>Ручная{'\n'}кладь</Text>
+              <Text style={includedCard.itemValue}>1 × 10 кг</Text>
+            </View>
+            <View style={includedCard.item}>
+              <View style={includedCard.iconCircle}>
+                <Text style={includedCard.iconEmoji}>🧳</Text>
+              </View>
+              <Text style={includedCard.itemLabel}>Багаж{'\n'}в салон</Text>
+              <Text style={includedCard.itemValue}>{cabinLabel === 'Эконом' ? '1 × 23 кг' : '2 × 32 кг'}</Text>
+            </View>
+            <View style={includedCard.item}>
+              <View style={includedCard.iconCircle}>
+                <Text style={includedCard.iconEmoji}>🍽️</Text>
+              </View>
+              <Text style={includedCard.itemLabel}>Питание{'\n'}на борту</Text>
+              <Text style={includedCard.itemValue}>{cabinLabel === 'Эконом' ? 'Снеки' : 'Меню'}</Text>
+            </View>
+            <View style={includedCard.item}>
+              <View style={includedCard.iconCircle}>
+                <Text style={includedCard.iconEmoji}>💺</Text>
+              </View>
+              <Text style={includedCard.itemLabel}>Выбор{'\n'}места</Text>
+              <Text style={includedCard.itemValue}>{cabinLabel === 'Эконом' ? 'Платно' : 'Бесплатно'}</Text>
+            </View>
+          </View>
         </Animated.View>
+
+        {/* ── Airline card ─────────────────────────────────────────────────── */}
+        {airline ? (
+          <Animated.View entering={FadeInUp.delay(270).springify()} style={airlineCard.wrap}>
+            <Text style={airlineCard.sectionTitle}>АВИАКОМПАНИЯ</Text>
+            <View style={airlineCard.row}>
+              <View style={airlineCard.logoWrap}>
+                <Text style={airlineCard.logoEmoji}>✈️</Text>
+              </View>
+              <View style={airlineCard.info}>
+                <Text style={airlineCard.name}>{airline}</Text>
+                {flightNumber ? (
+                  <Text style={airlineCard.flightNum}>Рейс {flightNumber}</Text>
+                ) : null}
+              </View>
+              <View style={airlineCard.ratingWrap}>
+                <Text style={airlineCard.ratingVal}>8.4</Text>
+                <Text style={airlineCard.ratingLabel}>/ 10</Text>
+                <View style={airlineCard.starsRow}>
+                  {['★','★','★','★','☆'].map((s, i) => (
+                    <Text key={i} style={[airlineCard.star, i < 4 && airlineCard.starActive]}>{s}</Text>
+                  ))}
+                </View>
+              </View>
+            </View>
+          </Animated.View>
+        ) : null}
 
         {/* ── Price card ───────────────────────────────────────────────────── */}
         <Animated.View entering={FadeInUp.delay(300).springify()}>
@@ -413,6 +463,139 @@ export default function FlightDetailScreen() {
     </View>
   );
 }
+
+// ── Included services styles ───────────────────────────────────────────────────
+
+const includedCard = StyleSheet.create({
+  wrap: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  title: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 16,
+  },
+  grid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  item: {
+    alignItems: 'center',
+    flex: 1,
+    gap: 6,
+  },
+  iconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.primaryMuted,
+    borderWidth: 1,
+    borderColor: `${Colors.primary}30`,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconEmoji: {
+    fontSize: 22,
+  },
+  itemLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  itemValue: {
+    color: Colors.text,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.semibold,
+    textAlign: 'center',
+  },
+});
+
+// ── Airline card styles ────────────────────────────────────────────────────────
+
+const airlineCard = StyleSheet.create({
+  wrap: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  sectionTitle: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 14,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  logoWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    backgroundColor: Colors.primaryMuted,
+    borderWidth: 1,
+    borderColor: `${Colors.primary}30`,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoEmoji: {
+    fontSize: 24,
+  },
+  info: {
+    flex: 1,
+    gap: 4,
+  },
+  name: {
+    color: Colors.text,
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
+  },
+  flightNum: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+  },
+  ratingWrap: {
+    alignItems: 'flex-end',
+    gap: 2,
+  },
+  ratingVal: {
+    color: Colors.success,
+    fontSize: Typography.sizes.xl,
+    fontWeight: Typography.weights.extrabold,
+    lineHeight: 28,
+  },
+  ratingLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    position: 'absolute',
+    right: 0,
+    bottom: 18,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    gap: 1,
+  },
+  star: {
+    fontSize: 12,
+    color: Colors.border,
+  },
+  starActive: {
+    color: Colors.primary,
+  },
+});
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
@@ -565,6 +748,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.xs,
   },
 
+  // Included & Airline (inline styles below)
   // Footer
   footer: {
     backgroundColor: Colors.surface,

@@ -36,6 +36,7 @@ interface UserSettings {
   notifSystem: boolean;
   theme: ThemeOption;
   language: LanguageOption;
+  biometrics: boolean;
 }
 
 interface UserPreferences {
@@ -58,6 +59,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   notifSystem: true,
   theme: 'system',
   language: 'ru',
+  biometrics: false,
 };
 
 function prefsToSettings(prefs: UserPreferences): UserSettings {
@@ -67,6 +69,7 @@ function prefsToSettings(prefs: UserPreferences): UserSettings {
     notifSystem: prefs.notifications.system,
     theme: prefs.theme,
     language: prefs.language,
+    biometrics: false,
   };
 }
 
@@ -551,6 +554,25 @@ export default function SettingsScreen() {
     return (value: boolean) => handleChange({ ...settings, [key]: value });
   }
 
+  function handleBiometricsToggle(value: boolean) {
+    if (value) {
+      Alert.alert(
+        'Биометрическая аутентификация',
+        'Войти в приложение по отпечатку пальца или Face ID?',
+        [
+          { text: 'Отмена', style: 'cancel' },
+          {
+            text: 'Включить',
+            onPress: () => handleChange({ ...settings, biometrics: true }),
+          },
+        ],
+      );
+    } else {
+      handleChange({ ...settings, biometrics: false });
+      toast.info('Биометрия отключена');
+    }
+  }
+
   function handleThemeSelect(theme: ThemeOption) {
     handleChange({ ...settings, theme });
     applyTheme(theme);
@@ -735,7 +757,31 @@ export default function SettingsScreen() {
             icon="lock-closed-outline"
             iconColor={Colors.warning}
             label="Изменить пароль"
-            onPress={() => router.push('/(auth)/forgot-password')}
+            sublabel="Обновите пароль аккаунта"
+            onPress={() => {
+              Alert.alert(
+                'Смена пароля',
+                'Письмо с ссылкой для сброса пароля будет отправлено на ваш email.',
+                [
+                  { text: 'Отмена', style: 'cancel' },
+                  { text: 'Отправить', onPress: () => toast.success('Письмо отправлено') },
+                ],
+              );
+            }}
+          />
+          <SettingsRow
+            icon="finger-print-outline"
+            iconColor={Colors.secondary}
+            label="Биометрия"
+            sublabel={Platform.OS === 'ios' ? 'Face ID / Touch ID' : 'Отпечаток пальца'}
+            rightElement={
+              <Switch
+                value={settings.biometrics}
+                onValueChange={handleBiometricsToggle}
+                trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
+                thumbColor={settings.biometrics ? Colors.primary : Colors.textMuted}
+              />
+            }
           />
           <SettingsRow
             icon="shield-checkmark-outline"
@@ -752,7 +798,8 @@ export default function SettingsScreen() {
           <SettingsRow
             icon="information-circle-outline"
             iconColor={Colors.info}
-            label="Версия"
+            label="Версия приложения"
+            sublabel="TravelAI"
             rightElement={
               <Text style={styles.versionText}>{APP_VERSION}</Text>
             }
@@ -761,14 +808,21 @@ export default function SettingsScreen() {
             icon="mail-outline"
             iconColor={Colors.secondary}
             label="Написать нам"
+            sublabel="support@travelai.app"
             onPress={() => Linking.openURL('mailto:support@travelai.app')}
           />
           <SettingsRow
             icon="document-text-outline"
             iconColor={Colors.textMuted}
             label="Политика конфиденциальности"
-            isLast
             onPress={() => Linking.openURL('https://travelai.app/privacy')}
+          />
+          <SettingsRow
+            icon="reader-outline"
+            iconColor={Colors.textMuted}
+            label="Условия использования"
+            isLast
+            onPress={() => Linking.openURL('https://travelai.app/terms')}
           />
         </Section>
 

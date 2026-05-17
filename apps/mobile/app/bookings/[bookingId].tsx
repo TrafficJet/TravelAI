@@ -234,6 +234,176 @@ const detailStyles = StyleSheet.create({
   },
 });
 
+// ── Status Timeline ───────────────────────────────────────────────────────────
+
+interface TimelineStep {
+  key: BookingStatus;
+  label: string;
+  icon: string;
+}
+
+const TIMELINE_STEPS: TimelineStep[] = [
+  { key: 'PENDING',   label: 'Ожидает',       icon: '🕐' },
+  { key: 'CONFIRMED', label: 'Подтверждено',   icon: '✅' },
+];
+
+function StatusTimeline({ status }: { status: BookingStatus }) {
+  if (status === 'FAILED' || status === 'CANCELLED') {
+    return (
+      <View style={tlStyles.cancelledWrap}>
+        <Text style={tlStyles.cancelledIcon}>{status === 'CANCELLED' ? '🚫' : '❌'}</Text>
+        <View>
+          <Text style={tlStyles.cancelledTitle}>
+            {status === 'CANCELLED' ? 'Бронирование отменено' : 'Ошибка бронирования'}
+          </Text>
+          <Text style={tlStyles.cancelledSub}>
+            {status === 'CANCELLED'
+              ? 'Средства возвращены на кошелёк'
+              : 'Обратитесь в поддержку'}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  const currentIdx = TIMELINE_STEPS.findIndex((s) => s.key === status);
+
+  return (
+    <View style={tlStyles.wrap}>
+      <Text style={tlStyles.heading}>СТАТУС БРОНИРОВАНИЯ</Text>
+      <View style={tlStyles.steps}>
+        {TIMELINE_STEPS.map((step, idx) => {
+          const isDone = idx <= currentIdx;
+          const isActive = idx === currentIdx;
+          return (
+            <React.Fragment key={step.key}>
+              <View style={tlStyles.step}>
+                <View style={[
+                  tlStyles.stepDot,
+                  isDone && tlStyles.stepDotDone,
+                  isActive && tlStyles.stepDotActive,
+                ]}>
+                  {isDone
+                    ? <Text style={tlStyles.stepDotIcon}>{step.icon}</Text>
+                    : <View style={tlStyles.stepDotEmpty} />
+                  }
+                </View>
+                <Text style={[tlStyles.stepLabel, isDone && tlStyles.stepLabelDone]}>
+                  {step.label}
+                </Text>
+              </View>
+              {idx < TIMELINE_STEPS.length - 1 ? (
+                <View style={[tlStyles.connector, idx < currentIdx && tlStyles.connectorDone]} />
+              ) : null}
+            </React.Fragment>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+const tlStyles = StyleSheet.create({
+  wrap: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  heading: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 16,
+  },
+  steps: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  step: {
+    alignItems: 'center',
+    gap: 6,
+    minWidth: 72,
+  },
+  stepDot: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.surface,
+    borderWidth: 2,
+    borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepDotDone: {
+    backgroundColor: `${Colors.success}15`,
+    borderColor: Colors.success,
+  },
+  stepDotActive: {
+    shadowColor: Colors.success,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  stepDotIcon: {
+    fontSize: 18,
+  },
+  stepDotEmpty: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: Colors.border,
+  },
+  stepLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    textAlign: 'center',
+  },
+  stepLabelDone: {
+    color: Colors.text,
+    fontWeight: Typography.weights.semibold,
+  },
+  connector: {
+    flex: 1,
+    height: 2,
+    backgroundColor: Colors.border,
+    borderRadius: 1,
+    marginBottom: 20,
+  },
+  connectorDone: {
+    backgroundColor: Colors.success,
+  },
+  cancelledWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: `${Colors.error}12`,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: `${Colors.error}30`,
+    gap: 12,
+  },
+  cancelledIcon: {
+    fontSize: 28,
+  },
+  cancelledTitle: {
+    color: Colors.error,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.bold,
+    marginBottom: 2,
+  },
+  cancelledSub: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+  },
+});
+
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function BookingDetailScreen() {
@@ -335,10 +505,13 @@ export default function BookingDetailScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Status banner */}
-      <View style={[styles.statusBanner, { backgroundColor: `${statusColor}20` }]}>
+      <View style={[styles.statusBanner, { backgroundColor: `${statusColor}20`, borderWidth: 1, borderColor: `${statusColor}35` }]}>
         <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
         <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
       </View>
+
+      {/* Status timeline */}
+      <StatusTimeline status={currentBooking.status} />
 
       {/* Booking number */}
       <BookingNumber id={currentBooking.id} />

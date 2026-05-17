@@ -334,15 +334,21 @@ export default function BookingSuccessScreen() {
               if (bookingId) {
                 router.push(`/bookings/${bookingId}` as Parameters<typeof router.push>[0]);
               } else {
-                router.push('/(tabs)/bookings' as Parameters<typeof router.push>[0]);
+                router.replace('/(tabs)/bookings' as Parameters<typeof router.replace>[0]);
               }
             }}
           />
           <Button
-            title="Вернуться в чат"
+            title="В мои брони"
             variant="secondary"
             fullWidth
-            onPress={() => router.replace('/(tabs)')}
+            onPress={() => router.replace('/(tabs)/bookings' as Parameters<typeof router.replace>[0])}
+          />
+          <Button
+            title="Вернуться в чат"
+            variant="ghost"
+            fullWidth
+            onPress={() => router.replace('/(tabs)' as Parameters<typeof router.replace>[0])}
           />
         </Animated.View>
       </ScrollView>
