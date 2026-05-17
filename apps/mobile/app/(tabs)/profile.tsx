@@ -1042,6 +1042,22 @@ export default function ProfileScreen() {
               />
             </View>
           </View>
+
+          {/* Price Alerts shortcut */}
+          <TouchableOpacity
+            style={styles.priceAlertsBtn}
+            onPress={() => router.push('/price-alerts' as any)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.priceAlertsBtnLeft}>
+              <Text style={styles.priceAlertsBtnEmoji}>🔔</Text>
+              <View>
+                <Text style={styles.priceAlertsBtnTitle}>Ценовые алерты</Text>
+                <Text style={styles.priceAlertsBtnSub}>Слежка за ценами на рейсы и отели</Text>
+              </View>
+            </View>
+            <Text style={styles.priceAlertsBtnChevron}>›</Text>
+          </TouchableOpacity>
         </View>
 
         {/* ── Logout ──────────────────────────────────────────────────── */}
@@ -1392,5 +1408,43 @@ const styles = StyleSheet.create({
   langDivider: {
     color: Colors.border,
     fontSize: Typography.sizes.sm,
+  },
+
+  // ── Price Alerts button ───────────────────────────────────────────────────
+  priceAlertsBtn: {
+    marginTop: Spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.card,
+    borderRadius: Radius.card,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  priceAlertsBtnLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  priceAlertsBtnEmoji: {
+    fontSize: 22,
+  },
+  priceAlertsBtnTitle: {
+    color: Colors.text,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.semibold,
+    marginBottom: 2,
+  },
+  priceAlertsBtnSub: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+  },
+  priceAlertsBtnChevron: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.xl,
+    fontWeight: Typography.weights.bold,
+    lineHeight: 24,
   },
 });

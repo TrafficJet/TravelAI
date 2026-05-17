@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -7,185 +7,47 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import Animated, { FadeInDown, type BaseAnimationBuilder } from 'react-native-reanimated';
-import { useAuthStore } from '../../stores/authStore';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
-import type { SubscriptionPlan } from '../../types';
+import { Radius } from '../../constants/radius';
+import { Spacing } from '../../constants/spacing';
+import { useAuthStore } from '../../stores/authStore';
 
-// ── Plan definitions ──────────────────────────────────────────────────────────
+// ── Feature definitions ───────────────────────────────────────────────────────
 
-const PLANS: SubscriptionPlan[] = [
-  {
-    id: 'FREE',
-    name: 'Free',
-    price: 0,
-    currency: 'USD',
-    dailyLimit: 10,
-    features: [
-      '10 запросов в день',
-      'Поиск рейсов и отелей',
-      'Базовые фильтры',
-      'История чатов (7 дней)',
-    ],
-  },
-  {
-    id: 'PRO',
-    name: 'Pro',
-    price: 3,
-    currency: 'USD',
-    dailyLimit: 100,
-    features: [
-      '100 запросов в день',
-      'Расширенные фильтры',
-      'История чатов (бессрочно)',
-      'Уведомления об изменении цен',
-    ],
-  },
-  {
-    id: 'PREMIUM',
-    name: 'Premium',
-    price: 7,
-    currency: 'USD',
-    unlimited: true,
-    priority: true,
-    features: [
-      'Безлимитные запросы',
-      'Приоритетный AI',
-      'История чатов (бессрочно)',
-      'Эксклюзивные предложения',
-      'Поддержка 24/7',
-    ],
-  },
+interface Feature {
+  text: string;
+  included: boolean;
+}
+
+const FREE_FEATURES: Feature[] = [
+  { text: '3 чата в день', included: true },
+  { text: 'Поиск рейсов', included: true },
+  { text: 'Поиск отелей', included: false },
+  { text: 'AI голосовые звонки', included: false },
+  { text: 'Приоритетная поддержка', included: false },
 ];
 
-// ── Plan gradient colours ─────────────────────────────────────────────────────
-
-const PLAN_GRADIENTS: Record<string, { top: string; bottom: string }> = {
-  FREE: { top: Colors.card, bottom: Colors.surface },
-  PRO: { top: '#1e1a3a', bottom: '#16182e' },
-  PREMIUM: { top: '#2a1a3e', bottom: '#1a1230' },
-};
-
-const PLAN_ACCENT: Record<string, string> = {
-  FREE: Colors.textMuted,
-  PRO: Colors.primary,
-  PREMIUM: '#a78bfa',
-};
-
-// Pseudo-gradient via nested views (no expo-linear-gradient dependency)
-function GradientCard({
-  planId,
-  children,
-  style,
-}: {
-  planId: string;
-  children: React.ReactNode;
-  style?: object;
-}) {
-  const grad = PLAN_GRADIENTS[planId] ?? PLAN_GRADIENTS.FREE;
-  return (
-    <View style={[gradStyles.outer, { backgroundColor: grad.top }, style]}>
-      <View style={[gradStyles.inner, { backgroundColor: grad.bottom }]} />
-      <View style={gradStyles.content}>{children}</View>
-    </View>
-  );
-}
-
-const gradStyles = StyleSheet.create({
-  outer: {
-    borderRadius: 20,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  inner: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '60%',
-    borderRadius: 20,
-  },
-  content: {
-    padding: 20,
-  },
-});
-
-// ── Progress bar ──────────────────────────────────────────────────────────────
-
-function UsageProgressBar({
-  used,
-  limit,
-  unlimited,
-}: {
-  used: number;
-  limit?: number;
-  unlimited?: boolean;
-}) {
-  const fraction = unlimited || !limit ? 0 : Math.min(used / limit, 1);
-  const pct = Math.round(fraction * 100);
-
-  return (
-    <View style={progressStyles.container}>
-      <View style={progressStyles.header}>
-        <Text style={progressStyles.label}>Использовано сегодня</Text>
-        <Text style={progressStyles.value}>
-          {unlimited ? 'Безлимит' : `${used} / ${limit ?? '?'}`}
-        </Text>
-      </View>
-      {!unlimited && (
-        <View style={progressStyles.track}>
-          <View style={[progressStyles.fill, { width: `${pct}%` }]} />
-        </View>
-      )}
-    </View>
-  );
-}
-
-const progressStyles = StyleSheet.create({
-  container: {
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  label: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  value: {
-    color: Colors.text,
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-  },
-  track: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.border,
-    overflow: 'hidden',
-  },
-  fill: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.primary,
-  },
-});
+const PREMIUM_FEATURES: Feature[] = [
+  { text: 'Безлимитные чаты', included: true },
+  { text: 'Поиск рейсов + отелей', included: true },
+  { text: 'AI голосовые звонки (скоро)', included: true },
+  { text: 'Приоритетная поддержка', included: true },
+  { text: 'Ранний доступ к функциям', included: true },
+];
 
 // ── Feature row ───────────────────────────────────────────────────────────────
 
-function FeatureRow({ text, included }: { text: string; included: boolean }) {
+function FeatureRow({ text, included }: Feature) {
   return (
     <View style={featureStyles.row}>
-      <Text style={[featureStyles.icon, included ? featureStyles.yes : featureStyles.no]}>
-        {included ? '✓' : '✗'}
+      <Text style={included ? featureStyles.iconYes : featureStyles.iconNo}>
+        {included ? '✅' : '❌'}
       </Text>
-      <Text style={[featureStyles.text, !included && featureStyles.textMuted]}>{text}</Text>
+      <Text style={[featureStyles.text, !included && featureStyles.textMuted]}>
+        {text}
+      </Text>
     </View>
   );
 }
@@ -195,130 +57,95 @@ const featureStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 8,
+    marginBottom: 10,
   },
-  icon: {
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.extrabold,
-    width: 16,
+  iconYes: {
+    fontSize: 14,
+    width: 20,
     textAlign: 'center',
   },
-  yes: { color: Colors.success },
-  no: { color: Colors.error },
+  iconNo: {
+    fontSize: 14,
+    width: 20,
+    textAlign: 'center',
+    opacity: 0.45,
+  },
   text: {
     color: Colors.text,
-    fontSize: Typography.sizes.sm,
+    fontSize: Typography.sizes.base,
     flex: 1,
   },
   textMuted: {
     color: Colors.textMuted,
-    textDecorationLine: 'line-through',
   },
 });
 
-// ── Plan card ─────────────────────────────────────────────────────────────────
+// ── FREE card ─────────────────────────────────────────────────────────────────
 
-interface PlanCardProps {
-  plan: SubscriptionPlan;
-  isActive: boolean;
-  entering: BaseAnimationBuilder;
-}
-
-function PlanCard({ plan, isActive, entering }: PlanCardProps) {
-  const accent = PLAN_ACCENT[plan.id] ?? Colors.primary;
-  const isPremium = plan.id === 'PREMIUM';
-  const isPro = plan.id === 'PRO';
-  const isHighlighted = isPremium || isPro;
-
-  function handleSelect() {
-    if (isActive) return;
-    Alert.alert(
-      'Оплата временно недоступна',
-      'Скоро будет доступно через ЮKassa',
-      [{ text: 'Понятно' }],
-    );
-  }
-
+function FreeCard({ isActive }: { isActive: boolean }) {
   return (
-    <Animated.View entering={entering} style={cardStyles.wrapper}>
-      <GradientCard
-        planId={plan.id}
-        style={[
-          cardStyles.card,
-          isActive && { borderColor: accent, borderWidth: 2 },
-          !isActive && { borderColor: Colors.border, borderWidth: 1.5 },
-        ]}
-      >
-        {/* Popular badge */}
-        {isPremium && (
-          <View style={[cardStyles.badge, { backgroundColor: accent }]}>
-            <Text style={cardStyles.badgeText}>Популярный</Text>
+    <Animated.View entering={FadeInDown.delay(120).duration(400)} style={cardStyles.wrapper}>
+      <View style={[cardStyles.card, cardStyles.cardFree]}>
+        {/* Plan header row */}
+        <View style={cardStyles.headerRow}>
+          <View>
+            <Text style={cardStyles.planNameFree}>FREE</Text>
+            <View style={cardStyles.divider} />
           </View>
-        )}
-        {isPro && (
-          <View style={[cardStyles.badge, { backgroundColor: Colors.primary }]}>
-            <Text style={cardStyles.badgeText}>Выгодно</Text>
-          </View>
-        )}
-
-        {/* Icon + Name */}
-        <Text style={cardStyles.icon}>
-          {plan.id === 'FREE' ? '○' : plan.id === 'PRO' ? '★' : '◆'}
-        </Text>
-        <Text style={[cardStyles.planName, { color: isHighlighted ? accent : Colors.text }]}>
-          {plan.name}
-        </Text>
-
-        {/* Price */}
-        <View style={cardStyles.priceRow}>
-          {plan.price === 0 ? (
-            <Text style={cardStyles.priceText}>Бесплатно</Text>
-          ) : (
-            <>
-              <Text style={[cardStyles.priceText, { color: accent }]}>
-                ${plan.price.toLocaleString('ru-RU')}
-              </Text>
-              <Text style={cardStyles.pricePeriod}>/мес</Text>
-            </>
+          {isActive && (
+            <View style={cardStyles.currentBadge}>
+              <Text style={cardStyles.currentBadgeText}>Текущий план</Text>
+            </View>
           )}
         </View>
 
         {/* Features */}
         <View style={cardStyles.features}>
-          {plan.features.map((f) => (
-            <FeatureRow key={f} text={f} included />
+          {FREE_FEATURES.map((f) => (
+            <FeatureRow key={f.text} text={f.text} included={f.included} />
+          ))}
+        </View>
+      </View>
+    </Animated.View>
+  );
+}
+
+// ── PREMIUM card ──────────────────────────────────────────────────────────────
+
+function PremiumCard({ isActive }: { isActive: boolean }) {
+  return (
+    <Animated.View entering={FadeInDown.delay(220).duration(400)} style={cardStyles.wrapper}>
+      <View style={[cardStyles.card, cardStyles.cardPremium]}>
+        {/* Recommended badge */}
+        <View style={cardStyles.recommendedBadge}>
+          <Text style={cardStyles.recommendedBadgeText}>РЕКОМЕНДУЕМ</Text>
+        </View>
+
+        {/* Plan header row */}
+        <View style={cardStyles.headerRow}>
+          <View>
+            <Text style={cardStyles.planNamePremium}>PREMIUM </Text>
+            <View style={[cardStyles.divider, cardStyles.dividerAmber]} />
+          </View>
+          <View style={cardStyles.priceBlock}>
+            <Text style={cardStyles.priceAmount}>$19.99</Text>
+            <Text style={cardStyles.pricePeriod}>/месяц</Text>
+          </View>
+        </View>
+
+        {/* Features */}
+        <View style={cardStyles.features}>
+          {PREMIUM_FEATURES.map((f) => (
+            <FeatureRow key={f.text} text={f.text} included={f.included} />
           ))}
         </View>
 
-        {/* Action */}
-        {isActive ? (
-          <View style={[cardStyles.activeChip, { backgroundColor: `${accent}25` }]}>
-            <Text style={[cardStyles.activeChipText, { color: accent }]}>Текущий план</Text>
+        {isActive && (
+          <View style={cardStyles.activePill}>
+            <Text style={cardStyles.activePillText}>Текущий план</Text>
           </View>
-        ) : (
-          <TouchableOpacity
-            style={[
-              cardStyles.selectBtn,
-              {
-                backgroundColor: isHighlighted ? accent : 'transparent',
-                borderColor: accent,
-                borderWidth: isHighlighted ? 0 : 1.5,
-              },
-            ]}
-            onPress={handleSelect}
-            activeOpacity={0.8}
-          >
-            <Text
-              style={[
-                cardStyles.selectBtnText,
-                { color: isHighlighted ? Colors.textInverse : accent },
-              ]}
-            >
-              Выбрать план
-            </Text>
-          </TouchableOpacity>
         )}
-      </GradientCard>
+      </View>
     </Animated.View>
   );
 }
@@ -328,66 +155,104 @@ const cardStyles = StyleSheet.create({
     marginBottom: 16,
   },
   card: {
-    borderRadius: 20,
-    overflow: 'hidden',
+    borderRadius: Radius.cardLg,
+    padding: 20,
+    borderWidth: 1,
   },
-  badge: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderBottomLeftRadius: 14,
+  cardFree: {
+    backgroundColor: Colors.card,
+    borderColor: Colors.border,
   },
-  badgeText: {
-    color: Colors.textInverse,
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: 0.5,
+  cardPremium: {
+    backgroundColor: '#1A1628',
+    borderColor: Colors.primary,
+    borderWidth: 2,
   },
-  icon: {
-    fontSize: Typography.sizes['3xl'],
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 14,
+  },
+  planNameFree: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.lg,
+    fontWeight: Typography.weights.extrabold,
+    letterSpacing: 1,
     marginBottom: 8,
   },
-  planName: {
-    fontSize: Typography.sizes.xl,
+  planNamePremium: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.extrabold,
-    marginBottom: 6,
+    letterSpacing: 1,
+    marginBottom: 8,
   },
-  priceRow: {
+  divider: {
+    height: 1,
+    width: 40,
+    backgroundColor: Colors.border,
+    marginBottom: 4,
+  },
+  dividerAmber: {
+    backgroundColor: Colors.primary,
+  },
+  priceBlock: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    gap: 4,
-    marginBottom: 18,
+    gap: 2,
   },
-  priceText: {
-    color: Colors.text,
-    fontSize: Typography.sizes['3xl'],
+  priceAmount: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
   },
   pricePeriod: {
     color: Colors.textMuted,
-    fontSize: Typography.sizes.md,
-    paddingBottom: 5,
+    fontSize: Typography.sizes.sm,
+    paddingBottom: 3,
   },
   features: {
-    marginBottom: 16,
+    marginTop: 4,
   },
-  activeChip: {
-    borderRadius: 10,
-    paddingVertical: 11,
-    alignItems: 'center',
+  recommendedBadge: {
+    alignSelf: 'flex-end',
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.tag,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 12,
   },
-  activeChipText: {
-    fontSize: Typography.sizes.sm,
+  recommendedBadgeText: {
+    color: Colors.textInverse,
+    fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
+    letterSpacing: 0.8,
   },
-  selectBtn: {
-    borderRadius: 12,
-    paddingVertical: 13,
+  currentBadge: {
+    backgroundColor: `${Colors.textMuted}20`,
+    borderRadius: Radius.chip,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  currentBadgeText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.semibold,
+  },
+  activePill: {
+    marginTop: 14,
+    backgroundColor: `${Colors.primary}20`,
+    borderRadius: Radius.button,
+    paddingVertical: 12,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: `${Colors.primary}50`,
   },
-  selectBtnText: {
+  activePillText: {
+    color: Colors.primary,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
@@ -397,10 +262,16 @@ const cardStyles = StyleSheet.create({
 
 export default function SubscriptionPlansScreen() {
   const { user } = useAuthStore();
-
   const currentPlan = user?.subscription?.plan ?? 'FREE';
-  const dailyUsed = user?.subscription?.dailyUsed ?? 0;
-  const activePlanDef = PLANS.find((p) => p.id === currentPlan) ?? PLANS[0];
+  const isPremium = currentPlan === 'PREMIUM';
+
+  function handleSubscribe() {
+    Alert.alert(
+      'Скоро',
+      'Оформление подписки будет доступно в следующем обновлении.',
+      [{ text: 'Понятно' }],
+    );
+  }
 
   return (
     <ScrollView
@@ -410,41 +281,39 @@ export default function SubscriptionPlansScreen() {
     >
       {/* Header */}
       <Animated.View entering={FadeInDown.delay(0).duration(400)}>
-        <Text style={screenStyles.title}>Выберите план</Text>
-        <Text style={screenStyles.subtitle}>
-          Разблокируйте все возможности Travel AI
-        </Text>
+        <Text style={screenStyles.title}>Выбери план</Text>
+        <Text style={screenStyles.subtitle}>Путешествуй умнее с Premium</Text>
       </Animated.View>
 
-      {/* Usage progress for current plan */}
+      {/* Separator */}
       <Animated.View
-        entering={FadeInDown.delay(80).duration(400)}
-        style={screenStyles.usageCard}
-      >
-        <Text style={screenStyles.usageTitle}>
-          Ваш план: <Text style={{ color: PLAN_ACCENT[currentPlan] }}>{activePlanDef?.name}</Text>
-        </Text>
-        <UsageProgressBar
-          used={dailyUsed}
-          limit={activePlanDef?.dailyLimit}
-          unlimited={activePlanDef?.unlimited}
-        />
-      </Animated.View>
+        entering={FadeInDown.delay(60).duration(400)}
+        style={screenStyles.separator}
+      />
 
       {/* Plan cards */}
-      {PLANS.map((plan, index) => (
-        <PlanCard
-          key={plan.id}
-          plan={plan}
-          isActive={plan.id === currentPlan}
-          entering={FadeInDown.delay(160 + index * 80).duration(400)}
-        />
-      ))}
+      <FreeCard isActive={!isPremium} />
+      <PremiumCard isActive={isPremium} />
 
-      <Animated.View entering={FadeInDown.delay(480).duration(400)}>
+      {/* CTA button */}
+      {!isPremium && (
+        <Animated.View entering={FadeInDown.delay(320).duration(400)}>
+          <TouchableOpacity
+            style={screenStyles.ctaBtn}
+            onPress={handleSubscribe}
+            activeOpacity={0.85}
+          >
+            <Text style={screenStyles.ctaBtnText}>
+              Оформить Premium — $19.99/мес
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
+      )}
+
+      <Animated.View entering={FadeInDown.delay(400).duration(400)}>
         <Text style={screenStyles.disclaimer}>
-          Оплата через ЮKassa. Отмена подписки в любое время.
-          Списание выполняется в начале каждого расчётного периода.
+          Отмена подписки в любое время. Списание выполняется в начале
+          каждого расчётного периода.
         </Text>
       </Animated.View>
     </ScrollView>
@@ -471,27 +340,29 @@ const screenStyles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.sizes.base,
     textAlign: 'center',
-    marginBottom: 28,
+    marginBottom: 20,
   },
-  usageCard: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
+  separator: {
+    height: 1,
+    backgroundColor: Colors.border,
     marginBottom: 24,
   },
-  usageTitle: {
-    color: Colors.text,
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.semibold,
-    marginBottom: 8,
+  ctaBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.button,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  ctaBtnText: {
+    color: Colors.textInverse,
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
   },
   disclaimer: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
     lineHeight: 18,
-    marginTop: 8,
   },
 });
