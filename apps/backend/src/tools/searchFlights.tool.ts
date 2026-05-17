@@ -192,31 +192,36 @@ const CIS_AIRPORTS = new Set([
 export async function executeSearchFlights(
   input: SearchFlightsInput,
 ): Promise<ReturnType<typeof buildFlightResult> & { searchId: string; cacheHit: boolean }> {
-  // Fill in default departure date: 14 days from today
-  if (!input.departure_date) {
+  // Fill in default departure date: 14 days from today — without mutating input
+  const defaultDate = (() => {
     const d = new Date();
     d.setDate(d.getDate() + 14);
-    input.departure_date = d.toISOString().slice(0, 10);
-  }
+    return d.toISOString().slice(0, 10);
+  })();
 
-  const cacheKey = getCacheKey('flight', input);
+  const resolvedInput = {
+    ...input,
+    departure_date: input.departure_date || defaultDate,
+  };
+
+  const cacheKey = getCacheKey('flight', resolvedInput);
   const cached = searchCache.get(cacheKey);
   if (cached) {
     return { ...(cached as ReturnType<typeof buildFlightResult>), searchId: `search_${Date.now()}`, cacheHit: true };
   }
 
   const params = {
-    origin: input.origin,
-    destination: input.destination,
-    departureDate: input.departure_date,
-    returnDate: input.return_date,
-    passengers: { adults: input.passengers ?? 1 },
-    cabinClass: input.cabin_class as FlightFilters['cabinClass'],
+    origin: resolvedInput.origin,
+    destination: resolvedInput.destination,
+    departureDate: resolvedInput.departure_date,
+    returnDate: resolvedInput.return_date,
+    passengers: { adults: resolvedInput.passengers ?? 1 },
+    cabinClass: resolvedInput.cabin_class as FlightFilters['cabinClass'],
   };
 
   const isCIS =
-    CIS_AIRPORTS.has(input.origin.toUpperCase()) &&
-    CIS_AIRPORTS.has(input.destination.toUpperCase());
+    CIS_AIRPORTS.has(resolvedInput.origin.toUpperCase()) &&
+    CIS_AIRPORTS.has(resolvedInput.destination.toUpperCase());
 
   const [intlOffers, cisOffers] = await Promise.all([
     isCIS ? Promise.resolve([]) : searchFlights(params),
@@ -225,19 +230,19 @@ export async function executeSearchFlights(
 
   const allOffers = [...intlOffers, ...cisOffers];
 
-  // Build filters from input
+  // Build filters from resolvedInput
   const filters: FlightFilters = {
-    maxPrice: input.max_price,
-    maxStops: input.max_stops,
-    cabinClass: input.cabin_class as FlightFilters['cabinClass'],
-    departureTimeFrom: input.departure_time_from,
-    departureTimeTo: input.departure_time_to,
-    sortBy: input.sort_by,
-    sortOrder: input.sort_order,
+    maxPrice: resolvedInput.max_price,
+    maxStops: resolvedInput.max_stops,
+    cabinClass: resolvedInput.cabin_class as FlightFilters['cabinClass'],
+    departureTimeFrom: resolvedInput.departure_time_from,
+    departureTimeTo: resolvedInput.departure_time_to,
+    sortBy: resolvedInput.sort_by,
+    sortOrder: resolvedInput.sort_order,
   };
 
   const filtered = applyFilters(allOffers, filters);
-  const result = buildFlightResult(input, filtered, allOffers.length, filters);
+  const result = buildFlightResult(resolvedInput, filtered, allOffers.length, filters);
 
   searchCache.set(cacheKey, result);
   return { ...result, searchId: `search_${Date.now()}`, cacheHit: false };

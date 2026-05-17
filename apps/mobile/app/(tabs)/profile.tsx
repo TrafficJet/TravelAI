@@ -881,9 +881,9 @@ export default function ProfileScreen() {
                 style={styles.upgradeBtn}
                 onPress={() => {
                   try {
-                    router.push('/subscription');
+                    router.push('/subscription/plans' as any);
                   } catch {
-                    Alert.alert('Скоро', 'Раздел подписки появится в следующем обновлении.');
+                    Alert.alert('Скоро', 'Управление подпиской будет доступно в следующем обновлении.');
                   }
                 }}
                 activeOpacity={0.8}
