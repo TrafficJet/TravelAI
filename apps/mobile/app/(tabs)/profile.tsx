@@ -50,14 +50,14 @@ const NOTIF_PRICES_KEY = 'notif_prices';
 /** Deterministic colour from a string — same input always yields same colour. */
 function hashColor(str: string): string {
   const palette = [
-    '#6366F1', // indigo
-    '#8B5CF6', // violet
-    '#EC4899', // pink
-    '#F59E0B', // amber
-    '#10B981', // emerald
-    '#06B6D4', // cyan
+    '#F59E0B', // amber (primary)
+    '#14B8A6', // teal (secondary)
+    '#10B981', // emerald (success)
     '#F97316', // orange
-    '#14B8A6', // teal
+    '#B45309', // amber dark
+    '#0F766E', // teal dark
+    '#FCD34D', // amber light
+    '#5EEAD4', // teal light
   ];
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
