@@ -363,8 +363,12 @@ export default function ChatScreen() {
                   text: 'Очистить',
                   style: 'destructive',
                   onPress: () => {
-                    // Reload empty messages list without deleting the session
-                    loadMessages(sessionId).catch(() => {});
+                    // Delete all messages on server, then reload (empty)
+                    import('../../services/chatService').then(({ chatService }) => {
+                      chatService.clearMessages(sessionId)
+                        .catch(() => {})
+                        .finally(() => loadMessages(sessionId).catch(() => {}));
+                    }).catch(() => {});
                   },
                 },
               ],

@@ -32,4 +32,8 @@ export const chatService = {
   async deleteSession(sessionId: string): Promise<void> {
     await api.delete(`/chat/sessions/${sessionId}`);
   },
+
+  async clearMessages(sessionId: string): Promise<void> {
+    await api.delete(`/chat/sessions/${sessionId}/messages`);
+  },
 };
