@@ -14,6 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 export interface ChatInputHandle {
   /** Programmatically set input text without sending */
   setValue: (text: string) => void;
+  /** Alias for setValue — fills the input field with the given text */
+  setText: (text: string) => void;
   /** Programmatically send the current text (or a given string) */
   send: (text?: string) => void;
 }
@@ -40,6 +42,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
 
   useImperativeHandle(ref, () => ({
     setValue: (value: string) => setText(value),
+    setText: (value: string) => setText(value),
     send: (value?: string) => {
       const trimmed = (value ?? text).trim();
       if (!trimmed) return;

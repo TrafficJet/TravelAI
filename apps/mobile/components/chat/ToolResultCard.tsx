@@ -5,6 +5,183 @@ import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import type { FlightDetails, HotelDetails } from '../../types';
 
+// ── Search result summary cards (shown when AI returns search results) ─────────
+
+interface FlightSearchSummaryProps {
+  count: number;
+  minPrice: number;
+  maxPrice: number;
+  currency: string;
+}
+
+export function FlightSearchSummary({ count, minPrice, maxPrice, currency }: FlightSearchSummaryProps) {
+  return (
+    <View style={summaryStyles.card}>
+      <View style={summaryStyles.iconRow}>
+        <Text style={summaryStyles.icon}>✈️</Text>
+        <Text style={summaryStyles.label}>Найдено рейсов</Text>
+      </View>
+      <Text style={summaryStyles.count}>{count}</Text>
+      <View style={summaryStyles.divider} />
+      <View style={summaryStyles.priceRow}>
+        <Text style={summaryStyles.priceLabel}>Цены от</Text>
+        <Text style={summaryStyles.priceValue}>
+          {minPrice.toLocaleString('ru-RU')} {currency}
+        </Text>
+        {maxPrice > minPrice && (
+          <>
+            <Text style={summaryStyles.priceLabel}> до </Text>
+            <Text style={summaryStyles.priceValue}>
+              {maxPrice.toLocaleString('ru-RU')} {currency}
+            </Text>
+          </>
+        )}
+      </View>
+    </View>
+  );
+}
+
+interface HotelSearchSummaryProps {
+  count: number;
+  minPrice: number;
+  maxPrice: number;
+  currency: string;
+}
+
+export function HotelSearchSummary({ count, minPrice, maxPrice, currency }: HotelSearchSummaryProps) {
+  return (
+    <View style={summaryStyles.card}>
+      <View style={summaryStyles.iconRow}>
+        <Text style={summaryStyles.icon}>🏨</Text>
+        <Text style={summaryStyles.label}>Найдено отелей</Text>
+      </View>
+      <Text style={summaryStyles.count}>{count}</Text>
+      <View style={summaryStyles.divider} />
+      <View style={summaryStyles.priceRow}>
+        <Text style={summaryStyles.priceLabel}>от </Text>
+        <Text style={summaryStyles.priceValue}>
+          {minPrice.toLocaleString('ru-RU')} {currency}/ночь
+        </Text>
+        {maxPrice > minPrice && (
+          <>
+            <Text style={summaryStyles.priceLabel}> до </Text>
+            <Text style={summaryStyles.priceValue}>
+              {maxPrice.toLocaleString('ru-RU')} {currency}/ночь
+            </Text>
+          </>
+        )}
+      </View>
+    </View>
+  );
+}
+
+interface TransferSearchSummaryProps {
+  options: Array<{ type: string; price: number; currency: string; duration?: string }>;
+}
+
+export function TransferSearchSummary({ options }: TransferSearchSummaryProps) {
+  return (
+    <View style={summaryStyles.card}>
+      <View style={summaryStyles.iconRow}>
+        <Text style={summaryStyles.icon}>🚗</Text>
+        <Text style={summaryStyles.label}>Варианты трансфера</Text>
+      </View>
+      <Text style={summaryStyles.count}>{options.length}</Text>
+      {options.length > 0 && (
+        <>
+          <View style={summaryStyles.divider} />
+          {options.map((opt, i) => (
+            <View key={i} style={summaryStyles.transferRow}>
+              <Text style={summaryStyles.transferType}>{opt.type}</Text>
+              <View style={summaryStyles.transferRight}>
+                {opt.duration ? (
+                  <Text style={summaryStyles.transferDuration}>{opt.duration}</Text>
+                ) : null}
+                <Text style={summaryStyles.priceValue}>
+                  {opt.price.toLocaleString('ru-RU')} {opt.currency}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </>
+      )}
+    </View>
+  );
+}
+
+const summaryStyles = StyleSheet.create({
+  card: {
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    padding: 14,
+    marginHorizontal: 16,
+    marginVertical: 6,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  iconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  icon: {
+    fontSize: 16,
+  },
+  label: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  count: {
+    color: Colors.text,
+    fontSize: 28,
+    fontWeight: '700',
+    lineHeight: 34,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: 10,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    flexWrap: 'wrap',
+  },
+  priceLabel: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+  },
+  priceValue: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.base,
+    fontWeight: '700',
+  },
+  transferRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  transferType: {
+    color: Colors.text,
+    fontSize: Typography.sizes.sm,
+    flex: 1,
+  },
+  transferRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  transferDuration: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+  },
+});
+
 interface FlightResultProps {
   type: 'flight';
   data: FlightDetails;

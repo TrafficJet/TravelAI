@@ -8,6 +8,7 @@ import {
   Platform,
   Text,
   Animated,
+  TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
@@ -77,6 +78,96 @@ const bannerStyles = StyleSheet.create({
     color: Colors.textInverse,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
+  },
+});
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+
+const SUGGESTIONS = [
+  'Варшава → Барселона',
+  'Москва → Дубай',
+  'Лондон → Рим',
+  'Амстердам → Прага',
+];
+
+interface EmptyStateProps {
+  onSelectSuggestion: (text: string) => void;
+}
+
+function EmptyState({ onSelectSuggestion }: EmptyStateProps) {
+  return (
+    <View style={emptyStyles.container}>
+      <View style={emptyStyles.center}>
+        <Text style={emptyStyles.planeIcon}>✈️</Text>
+        <Text style={emptyStyles.title}>Куда летим?</Text>
+        <Text style={emptyStyles.subtitle}>
+          Напишите маршрут и я подберу рейсы, отели и трансфер
+        </Text>
+      </View>
+      <View style={emptyStyles.chips}>
+        {SUGGESTIONS.map((s) => (
+          <TouchableOpacity
+            key={s}
+            style={emptyStyles.chip}
+            onPress={() => onSelectSuggestion(s)}
+            activeOpacity={0.7}
+          >
+            <Text style={emptyStyles.chipText}>{s}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+const emptyStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 48,
+    paddingBottom: 16,
+  },
+  center: {
+    alignItems: 'center',
+  },
+  planeIcon: {
+    fontSize: 56,
+    marginBottom: 20,
+  },
+  title: {
+    color: Colors.text,
+    fontSize: Typography.sizes['2xl'] ?? 24,
+    fontWeight: Typography.weights.bold,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  subtitle: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.base,
+    textAlign: 'center',
+    lineHeight: 22,
+    maxWidth: 280,
+  },
+  chips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 10,
+    paddingBottom: 8,
+  },
+  chip: {
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+  },
+  chipText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
   },
 });
 
@@ -380,21 +471,29 @@ export default function ChatScreen() {
         {hotelActiveCount > 0 && <View style={styles.spacer} />}
       </View>
 
-      <FlatList
-        ref={flatListRef}
-        data={displayMessages}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <MessageBubble
-            message={item}
-            isStreaming={item._streaming}
-            streamingText={item._streaming ? streamingText : undefined}
-          />
-        )}
-        contentContainerStyle={styles.messageList}
-        onContentSizeChange={scrollToBottom}
-        ListHeaderComponent={<View style={styles.listHeader} />}
-      />
+      {displayMessages.length === 0 && !isLoading ? (
+        <EmptyState
+          onSelectSuggestion={(suggestion) => {
+            chatInputRef.current?.setText(suggestion);
+          }}
+        />
+      ) : (
+        <FlatList
+          ref={flatListRef}
+          data={displayMessages}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <MessageBubble
+              message={item}
+              isStreaming={item._streaming}
+              streamingText={item._streaming ? streamingText : undefined}
+            />
+          )}
+          contentContainerStyle={styles.messageList}
+          onContentSizeChange={scrollToBottom}
+          ListHeaderComponent={<View style={styles.listHeader} />}
+        />
+      )}
 
       <ChatInput
         ref={chatInputRef}

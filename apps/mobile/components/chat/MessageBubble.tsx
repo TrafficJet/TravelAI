@@ -1,5 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+} from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import type { Message } from '../../types';
@@ -10,47 +15,337 @@ interface Props {
   streamingText?: string;
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function formatTime(dateStr: string): string {
   const date = new Date(dateStr);
-  return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  const h = date.getHours().toString().padStart(2, '0');
+  const m = date.getMinutes().toString().padStart(2, '0');
+  return `${h}:${m}`;
 }
+
+function getToolLabel(toolName?: string): string {
+  if (!toolName) return 'Обрабатываю...';
+  const lower = toolName.toLowerCase();
+  if (lower.includes('flight')) return 'Ищу рейсы...';
+  if (lower.includes('hotel')) return 'Ищу отели...';
+  if (lower.includes('transfer') || lower.includes('route')) return 'Рассчитываю маршрут...';
+  return 'Обрабатываю...';
+}
+
+// ── Typing indicator ──────────────────────────────────────────────────────────
+
+function TypingIndicator() {
+  const dot1 = useRef(new Animated.Value(0.3)).current;
+  const dot2 = useRef(new Animated.Value(0.3)).current;
+  const dot3 = useRef(new Animated.Value(0.3)).current;
+
+  useEffect(() => {
+    function pulse(dot: Animated.Value, delay: number) {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(dot, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dot, {
+            toValue: 0.3,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.delay(600 - delay),
+        ]),
+      );
+    }
+
+    const a1 = pulse(dot1, 0);
+    const a2 = pulse(dot2, 200);
+    const a3 = pulse(dot3, 400);
+
+    a1.start();
+    a2.start();
+    a3.start();
+
+    return () => {
+      a1.stop();
+      a2.stop();
+      a3.stop();
+    };
+  }, [dot1, dot2, dot3]);
+
+  return (
+    <View style={typingStyles.row}>
+      {[dot1, dot2, dot3].map((dot, i) => (
+        <Animated.View key={i} style={[typingStyles.dot, { opacity: dot }]} />
+      ))}
+    </View>
+  );
+}
+
+const typingStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.textMuted,
+  },
+});
+
+// ── Rich text renderer (bold, lists, headings, price highlighting) ────────────
+
+const PRICE_PATTERN = /([€$]?\d[\d\s]*[€$]?(?:\.\d+)?(?:\s*[€$€])?)/g;
+
+interface Segment {
+  text: string;
+  isPrice: boolean;
+}
+
+function splitPrices(raw: string): Segment[] {
+  const segments: Segment[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  PRICE_PATTERN.lastIndex = 0;
+
+  // Only highlight if the match looks like a real price (has a currency symbol)
+  const REAL_PRICE = /[€$€]/;
+
+  while ((match = PRICE_PATTERN.exec(raw)) !== null) {
+    if (!REAL_PRICE.test(match[0])) continue;
+    if (match.index > lastIndex) {
+      segments.push({ text: raw.slice(lastIndex, match.index), isPrice: false });
+    }
+    segments.push({ text: match[0], isPrice: true });
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < raw.length) {
+    segments.push({ text: raw.slice(lastIndex), isPrice: false });
+  }
+  return segments;
+}
+
+interface RichLineProps {
+  text: string;
+  baseStyle: object;
+}
+
+function RichLine({ text, baseStyle }: RichLineProps) {
+  // Split on **bold** markers
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <Text style={baseStyle}>
+      {parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          const inner = part.slice(2, -2);
+          const priceSegs = splitPrices(inner);
+          return (
+            <Text key={i} style={richStyles.bold}>
+              {priceSegs.map((seg, j) =>
+                seg.isPrice ? (
+                  <Text key={j} style={richStyles.price}>{seg.text}</Text>
+                ) : (
+                  <Text key={j}>{seg.text}</Text>
+                ),
+              )}
+            </Text>
+          );
+        }
+        const priceSegs = splitPrices(part);
+        return priceSegs.map((seg, j) =>
+          seg.isPrice ? (
+            <Text key={`${i}-${j}`} style={richStyles.price}>{seg.text}</Text>
+          ) : (
+            <Text key={`${i}-${j}`}>{seg.text}</Text>
+          ),
+        );
+      })}
+    </Text>
+  );
+}
+
+const richStyles = StyleSheet.create({
+  bold: {
+    fontWeight: '700',
+    color: Colors.text,
+  },
+  price: {
+    color: Colors.primary,
+    fontWeight: '600',
+  },
+});
+
+interface RichTextProps {
+  content: string;
+  isUser: boolean;
+}
+
+function RichText({ content, isUser }: RichTextProps) {
+  if (isUser) {
+    // For user messages just render plain text — no markdown
+    return (
+      <Text style={[contentStyles.base, contentStyles.user]}>{content}</Text>
+    );
+  }
+
+  const lines = content.split('\n');
+
+  return (
+    <View>
+      {lines.map((line, index) => {
+        const key = index;
+
+        // Heading ## or ###
+        if (line.startsWith('## ') || line.startsWith('### ')) {
+          const text = line.replace(/^#{2,3}\s+/, '');
+          return (
+            <RichLine
+              key={key}
+              text={text}
+              baseStyle={contentStyles.heading}
+            />
+          );
+        }
+
+        // Bullet list
+        if (/^[-*•]\s/.test(line)) {
+          const text = line.replace(/^[-*•]\s+/, '');
+          return (
+            <View key={key} style={contentStyles.listRow}>
+              <Text style={contentStyles.bullet}>•</Text>
+              <RichLine text={text} baseStyle={contentStyles.listItem} />
+            </View>
+          );
+        }
+
+        // Numbered list
+        if (/^\d+\.\s/.test(line)) {
+          const numMatch = line.match(/^(\d+)\.\s+(.*)$/);
+          if (numMatch) {
+            return (
+              <View key={key} style={contentStyles.listRow}>
+                <Text style={contentStyles.bullet}>{numMatch[1]}.</Text>
+                <RichLine text={numMatch[2]} baseStyle={contentStyles.listItem} />
+              </View>
+            );
+          }
+        }
+
+        // Empty line — add spacing
+        if (line.trim() === '') {
+          return <View key={key} style={contentStyles.spacer} />;
+        }
+
+        // Regular paragraph
+        return (
+          <RichLine
+            key={key}
+            text={line}
+            baseStyle={contentStyles.paragraph}
+          />
+        );
+      })}
+    </View>
+  );
+}
+
+const contentStyles = StyleSheet.create({
+  base: {
+    fontSize: Typography.sizes.base,
+    lineHeight: 22,
+  },
+  user: {
+    color: '#0A0A14',
+    fontSize: Typography.sizes.base,
+    lineHeight: 22,
+  },
+  heading: {
+    color: Colors.text,
+    fontSize: Typography.sizes.lg,
+    fontWeight: '700',
+    lineHeight: 26,
+    marginBottom: 4,
+    marginTop: 6,
+  },
+  paragraph: {
+    color: Colors.text,
+    fontSize: Typography.sizes.base,
+    lineHeight: 22,
+  },
+  listRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginVertical: 1,
+  },
+  bullet: {
+    color: Colors.primary,
+    fontSize: Typography.sizes.base,
+    lineHeight: 22,
+    width: 18,
+    flexShrink: 0,
+  },
+  listItem: {
+    color: Colors.text,
+    fontSize: Typography.sizes.base,
+    lineHeight: 22,
+    flex: 1,
+  },
+  spacer: {
+    height: 6,
+  },
+});
+
+// ── MessageBubble ─────────────────────────────────────────────────────────────
 
 export function MessageBubble({ message, isStreaming, streamingText }: Props) {
   const isUser = message.role === 'user';
   const displayContent =
     isStreaming && streamingText !== undefined ? streamingText : message.content;
 
+  // ── Tool chip ────────────────────────────────────────────────────────────
   if (message.role === 'tool') {
     return (
       <View style={styles.toolRow}>
-        <Text style={styles.toolText}>
-          Инструмент: {message.toolName ?? 'неизвестно'}
-        </Text>
+        <Text style={styles.toolIcon}>🔍</Text>
+        <Text style={styles.toolText}>{getToolLabel(message.toolName)}</Text>
       </View>
     );
   }
 
+  // ── Assistant row (with plane icon) ──────────────────────────────────────
+  if (!isUser) {
+    return (
+      <View style={[styles.row, styles.rowAssistant]}>
+        {/* Avatar */}
+        <View style={styles.avatar}>
+          <Text style={styles.avatarIcon}>✈️</Text>
+        </View>
+
+        <View style={[styles.bubble, styles.bubbleAssistant]}>
+          {isStreaming && !streamingText ? (
+            <TypingIndicator />
+          ) : (
+            <RichText content={displayContent} isUser={false} />
+          )}
+          <Text style={styles.timeAssistant}>{formatTime(message.createdAt)}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  // ── User row ─────────────────────────────────────────────────────────────
   return (
-    <View style={[styles.row, isUser ? styles.rowUser : styles.rowAssistant]}>
-      <View
-        style={[
-          styles.bubble,
-          isUser ? styles.bubbleUser : styles.bubbleAssistant,
-        ]}
-      >
-        {isStreaming && !streamingText ? (
-          <View style={styles.typingRow}>
-            <ActivityIndicator size="small" color={Colors.textMuted} />
-            <Text style={styles.typingText}>Печатает...</Text>
-          </View>
-        ) : (
-          <Text style={[styles.content, isUser ? styles.contentUser : styles.contentAssistant]}>
-            {displayContent}
-          </Text>
-        )}
-        <Text style={[styles.time, isUser ? styles.timeUser : styles.timeAssistant]}>
-          {formatTime(message.createdAt)}
-        </Text>
+    <View style={[styles.row, styles.rowUser]}>
+      <View style={[styles.bubble, styles.bubbleUser]}>
+        <RichText content={displayContent} isUser={true} />
+        <Text style={styles.timeUser}>{formatTime(message.createdAt)}</Text>
       </View>
     </View>
   );
@@ -59,8 +354,9 @@ export function MessageBubble({ message, isStreaming, streamingText }: Props) {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    marginVertical: 4,
+    marginVertical: 5,
     paddingHorizontal: 16,
+    alignItems: 'flex-end',
   },
   rowUser: {
     justifyContent: 'flex-end',
@@ -68,8 +364,28 @@ const styles = StyleSheet.create({
   rowAssistant: {
     justifyContent: 'flex-start',
   },
+
+  // Avatar
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+    marginBottom: 2,
+    flexShrink: 0,
+  },
+  avatarIcon: {
+    fontSize: 15,
+  },
+
+  // Bubbles
   bubble: {
-    maxWidth: '80%',
+    maxWidth: '78%',
     borderRadius: 18,
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -82,47 +398,38 @@ const styles = StyleSheet.create({
     backgroundColor: '#1C1C2E',
     borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#2A2A42',
   },
-  content: {
-    fontSize: Typography.sizes.base,
-    lineHeight: 22,
-  },
-  contentUser: {
-    color: '#0A0A14',
-  },
-  contentAssistant: {
-    color: '#F4F4F8',
-  },
-  time: {
-    fontSize: Typography.sizes.xs,
-    marginTop: 4,
-  },
+
+  // Timestamps
   timeUser: {
+    fontSize: Typography.sizes.xs,
     color: 'rgba(10,10,20,0.55)',
     textAlign: 'right',
+    marginTop: 4,
   },
   timeAssistant: {
+    fontSize: Typography.sizes.xs,
     color: Colors.textMuted,
+    marginTop: 4,
   },
-  typingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  typingText: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
-  },
+
+  // Tool chip
   toolRow: {
+    flexDirection: 'row',
     alignSelf: 'center',
-    marginVertical: 4,
-    paddingHorizontal: 12,
+    alignItems: 'center',
+    gap: 6,
+    marginVertical: 6,
+    paddingHorizontal: 14,
     paddingVertical: 6,
     backgroundColor: Colors.card,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: Colors.border,
+  },
+  toolIcon: {
+    fontSize: 13,
   },
   toolText: {
     color: Colors.textMuted,
