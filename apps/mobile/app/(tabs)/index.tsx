@@ -296,8 +296,21 @@ export default function ChatListScreen() {
           params: { sessionId },
         });
       }
-    } catch {
-      toast.error('Не удалось создать новый чат. Попробуйте снова.');
+    } catch (error: unknown) {
+      const axiosData =
+        error != null &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response != null &&
+        typeof error.response === 'object' &&
+        'data' in error.response
+          ? (error.response.data as Record<string, unknown>)
+          : null;
+      const serverMessage =
+        (typeof axiosData?.error === 'string' && axiosData.error) ||
+        (typeof axiosData?.message === 'string' && axiosData.message) ||
+        null;
+      toast.error(serverMessage ?? 'Не удалось создать новый чат. Попробуйте снова.');
     } finally {
       setIsCreating(false);
     }

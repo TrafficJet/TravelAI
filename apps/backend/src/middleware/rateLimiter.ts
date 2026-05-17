@@ -4,7 +4,7 @@ import { Errors } from '../lib/errors';
 
 // FREE tier limits
 const FREE_MESSAGES_PER_DAY = 10;
-const FREE_ACTIVE_SESSIONS = 3;
+const FREE_ACTIVE_SESSIONS = 20;
 const FREE_BOOKINGS_PER_MONTH = 2;
 
 // ---------------------------------------------------------------------------

@@ -47,20 +47,21 @@ async function main() {
     console.log('Created wallet with balance 50 000 RUB.');
   }
 
-  // 3. Subscription FREE — create if missing
-  const existingSub = await prisma.subscription.findUnique({ where: { userId: user.id } });
-  if (!existingSub) {
-    await prisma.subscription.create({
-      data: {
-        userId: user.id,
-        plan: SubscriptionPlan.FREE,
-        status: SubscriptionStatus.ACTIVE,
-      },
-    });
-    console.log('Created FREE subscription.');
-  } else {
-    console.log('Subscription already exists — skipping.');
-  }
+  // 3. Subscription PREMIUM — upsert so demo account always has full access
+  await prisma.subscription.upsert({
+    where: { userId: user.id },
+    update: {
+      plan: SubscriptionPlan.PREMIUM,
+      status: SubscriptionStatus.ACTIVE,
+      expiresAt: null,
+    },
+    create: {
+      userId: user.id,
+      plan: SubscriptionPlan.PREMIUM,
+      status: SubscriptionStatus.ACTIVE,
+    },
+  });
+  console.log('Upserted PREMIUM subscription for demo user.');
 
   // 4. Bookings (only create if the user has fewer than 2 bookings)
   const bookingCount = await prisma.booking.count({ where: { userId: user.id } });

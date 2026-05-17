@@ -13,6 +13,12 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
       type: 'sourceFile',
     };
   }
+  if (platform === 'web' && moduleName === 'react-native-maps') {
+    return {
+      filePath: path.resolve(__dirname, 'lib/react-native-maps-web-stub.ts'),
+      type: 'sourceFile',
+    };
+  }
   if (originalResolver) {
     return originalResolver(context, moduleName, platform);
   }
