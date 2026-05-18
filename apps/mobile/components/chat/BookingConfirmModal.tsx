@@ -144,6 +144,7 @@ export function BookingConfirmModal({
     setIsLoading(true);
     try {
       await onConfirm();
+      onCancel(); // закрыть модалку
       toast.success('Бронирование успешно оплачено!');
 
       // Send local notification on successful booking

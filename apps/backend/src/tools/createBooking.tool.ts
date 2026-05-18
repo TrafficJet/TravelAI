@@ -80,7 +80,7 @@ export async function executeCreateBooking(input: CreateBookingInput, userId: st
       externalId: input.offer_id,
       details: details as Prisma.InputJsonValue,
       totalPrice: totalPriceNum,
-      currency: input.currency ?? 'RUB',
+      currency: input.currency ?? 'USD',
     },
   });
 

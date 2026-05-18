@@ -591,12 +591,25 @@ export default function ChatScreen() {
     const bookingType = pendingBooking.type;
     const totalPrice = pendingBooking.totalPrice;
     const currency = pendingBooking.currency;
+
+    // Extract flight/hotel details for success screen
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const details = pendingBooking.details as any;
+    const origin = details?.origin || details?.segments?.[0]?.origin || '';
+    const destination = details?.destination || details?.segments?.[details?.segments?.length - 1]?.destination || '';
+    const airline = details?.airline || details?.segments?.[0]?.marketingCarrier || '';
+    const flightNumber = details?.flightNumber || details?.segments?.[0]?.flightNumber || '';
+    const departureDate = details?.departureDate || details?.segments?.[0]?.departureAt || '';
+    const cabin = details?.cabin || 'economy';
+    const hotelName = details?.name || details?.hotelName || '';
+    const checkIn = details?.checkIn || details?.check_in || '';
+    const checkOut = details?.checkOut || details?.check_out || '';
+
     try {
       await confirmBooking(bookingId);
       setPendingBooking(null);
       setPendingBookingId(null);
       await loadWallet();
-      // Navigate to success screen instead of plain Alert
       router.push({
         pathname: '/booking-success',
         params: {
@@ -604,6 +617,17 @@ export default function ChatScreen() {
           type: bookingType,
           totalPrice: String(totalPrice),
           currency,
+          // Flight details
+          origin,
+          destination,
+          airline,
+          flightNumber,
+          departureDate,
+          cabin,
+          // Hotel details
+          hotelName,
+          checkIn,
+          checkOut,
         },
       } as never);
     } catch (err: unknown) {
