@@ -63,7 +63,13 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     const { email, password, name } = request.body as RegisterBody;
 
     // Check if email is already taken
-    const existing = await prisma.user.findUnique({ where: { email } });
+    let existing: Awaited<ReturnType<typeof prisma.user.findUnique>>;
+    try {
+      existing = await prisma.user.findUnique({ where: { email } });
+    } catch (dbErr) {
+      console.error('[register] prisma.user.findUnique failed — possible schema mismatch or DB error:', dbErr);
+      throw dbErr;
+    }
     if (existing) {
       throw Errors.conflict('Пользователь с таким email уже зарегистрирован');
     }
@@ -147,7 +153,16 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { email, password } = request.body as LoginBody;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    let user: Awaited<ReturnType<typeof prisma.user.findUnique>>;
+    try {
+      user = await prisma.user.findUnique({ where: { email } });
+    } catch (dbErr) {
+      // Surface DB errors explicitly so Railway logs show the real cause
+      // (e.g. missing columns due to unapplied migrations)
+      console.error('[login] prisma.user.findUnique failed — possible schema mismatch or DB error:', dbErr);
+      throw dbErr;
+    }
+
     if (!user || user.deletedAt !== null) {
       throw Errors.unauthorized('Неверный email или пароль');
     }
@@ -157,7 +172,12 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
       throw Errors.badRequest('Используйте вход через Google/Apple');
     }
 
-    const passwordValid = await bcrypt.compare(password, user.password as string);
+    // Guard against null password (OAuth users have no password set)
+    if (!user.password) {
+      throw Errors.badRequest('Используйте вход через Google/Apple');
+    }
+
+    const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
       throw Errors.unauthorized('Неверный email или пароль');
     }

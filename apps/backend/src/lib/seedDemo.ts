@@ -10,7 +10,7 @@ const DEMO_PASSWORD = 'Demo1234!';
  */
 export async function ensureDemoUser(prisma: PrismaClient): Promise<void> {
   try {
-    // 1. Upsert user
+    // 1. Upsert user (ensure password and provider are always correct)
     let user = await prisma.user.findUnique({ where: { email: DEMO_EMAIL } });
     if (!user) {
       const hashedPassword = await bcrypt.hash(DEMO_PASSWORD, 10);
@@ -23,6 +23,14 @@ export async function ensureDemoUser(prisma: PrismaClient): Promise<void> {
         },
       });
       console.log('[seed] Created demo user');
+    } else if (!user.password || user.provider !== 'email') {
+      // Fix stale demo user that was created without a password or wrong provider
+      const hashedPassword = await bcrypt.hash(DEMO_PASSWORD, 10);
+      user = await prisma.user.update({
+        where: { email: DEMO_EMAIL },
+        data: { password: hashedPassword, provider: 'email' },
+      });
+      console.log('[seed] Repaired demo user password/provider');
     }
 
     // 2. Ensure FREE subscription (upsert)
