@@ -335,12 +335,30 @@ export async function sendMessage(request: FastifyRequest, reply: FastifyReply) 
   if (session.userId !== userId) throw Errors.forbidden('Доступ к чужой сессии запрещён');
 
   // Set SSE headers; X-Cache will be reported via SSE event cache_status
+  // NOTE: reply.raw.writeHead bypasses Fastify's CORS plugin, so we must
+  // manually include Access-Control-Allow-Origin to allow XHR from browsers.
+  const requestOrigin = request.headers.origin;
+  const allowedOrigins = [
+    'http://localhost:8081',
+    'http://localhost:3000',
+    'http://localhost:19006',
+    'https://travel-ai-frontend.up.railway.app',
+  ];
+  const corsOrigin =
+    requestOrigin && allowedOrigins.includes(requestOrigin)
+      ? requestOrigin
+      : (requestOrigin ?? '*');
+
   reply.raw.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     Connection: 'keep-alive',
     'X-Accel-Buffering': 'no', // Disable Nginx buffering
     'X-Cache': 'MISS',          // Default; overridden by cache_status SSE event
+    // CORS headers — required because raw.writeHead bypasses Fastify's CORS plugin
+    'Access-Control-Allow-Origin': corsOrigin,
+    'Access-Control-Allow-Credentials': 'true',
+    Vary: 'Origin',
   });
 
   // Helper to write SSE event
