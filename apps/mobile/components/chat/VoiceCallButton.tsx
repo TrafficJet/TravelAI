@@ -1,5 +1,6 @@
 import React from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
 
 // ── VoiceCallButton ───────────────────────────────────────────────────────────
@@ -47,7 +48,7 @@ export function VoiceCallButton({ size = 56 }: VoiceCallButtonProps) {
       accessibilityLabel="AI Голосовой ассистент"
       accessibilityRole="button"
     >
-      <Text style={styles.icon}>📞</Text>
+      <Ionicons name="call-outline" size={22} color={Colors.primary} />
     </TouchableOpacity>
   );
 }
@@ -60,9 +61,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-  },
-  icon: {
-    fontSize: 22,
-    lineHeight: 26,
   },
 });

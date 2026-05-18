@@ -46,8 +46,8 @@ interface Props {
 
 // Quick-hint chips shown below the input when it is empty
 const QUICK_HINTS = [
-  { label: '✈️ Рейс', key: 'flight' },
-  { label: '🏨 Отель', key: 'hotel' },
+  { label: 'Рейс', icon: 'airplane-outline' as const, key: 'flight' },
+  { label: 'Отель', icon: 'bed-outline' as const, key: 'hotel' },
 ] as const;
 
 export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
@@ -233,6 +233,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
               onPress={() => handleQuickHint(hint.key)}
               activeOpacity={0.75}
             >
+              <Ionicons name={hint.icon} size={14} color={Colors.textMuted} style={{ marginRight: 4 }} />
               <Text style={styles.hintChipText}>{hint.label}</Text>
             </TouchableOpacity>
           ))}
@@ -323,6 +324,8 @@ const styles = StyleSheet.create({
     }),
   },
   hintChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 7,
     borderRadius: 20,
