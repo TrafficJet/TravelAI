@@ -30,7 +30,7 @@ export const createBookingTool: Anthropic.Tool = {
       },
       currency: {
         type: 'string',
-        description: 'Валюта (по умолчанию RUB)',
+        description: 'Валюта (по умолчанию USD). Используй EUR для европейских маршрутов, USD для межконтинентальных, RUB только если ОБА города в России/СНГ.',
       },
       details: {
         type: 'object',
