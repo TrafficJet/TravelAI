@@ -27,10 +27,9 @@ else
 fi
 
 echo "[start.sh] Migrations complete."
-
-# Always run demo seed to ensure demo user exists with PREMIUM subscription
-echo "[start.sh] Running demo seed (idempotent — safe to run on every deploy)..."
-npx ts-node prisma/seed-demo.ts || echo "[start.sh] Seed failed (non-fatal)"
+# Note: Demo user seeding (PREMIUM subscription, wallet) is handled in server.ts
+#       via ensureDemoUser() which runs at startup from compiled dist/lib/seedDemo.js
+#       The migration above also force-sets the demo user to PREMIUM via SQL.
 
 echo "[start.sh] Starting node server..."
 exec node dist/server.js

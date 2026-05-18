@@ -27,7 +27,7 @@ export async function healthRoutes(fastify: FastifyInstance) {
     const body = {
       status: 'ok' as const,
       db: dbStatus,
-      version: '2.0.0',
+      version: '2.1.0',
       timestamp: new Date().toISOString(),
       services: {
         database: dbStatus === 'ok' ? 'connected' : 'error',
