@@ -130,7 +130,7 @@ function buildMultiCityMockOffers(
       offerId: `multi-mock-${idx}-${Date.now()}`,
       provider: 'DUFFEL' as const,
       totalPrice: totalPrice.toFixed(2),
-      currency: 'RUB',
+      currency: 'USD',
       cabinClass: cab,
       segments: flightSegments,
       baggage: cab === 'economy' ? '1 место 23 кг' : '2 места 32 кг',
@@ -309,7 +309,7 @@ function buildMockOfferDetail(offerId: string): FlatOffer {
     stops: 0,
     durationMin: 240,
     price: 25000,
-    currency: 'RUB',
+    currency: 'USD',
     availableSeats: 12,
   };
 }
@@ -362,7 +362,7 @@ async function fetchDuffelOffer(offerId: string): Promise<FlatOffer> {
       stops,
       durationMin: totalDurationMin,
       price: Math.round(parseFloat(offer.total_amount ?? '0')),
-      currency: offer.total_currency ?? 'RUB',
+      currency: offer.total_currency ?? 'USD',
       availableSeats: typeof (offer as unknown as { available_seats?: number }).available_seats === 'number'
         ? (offer as unknown as { available_seats: number }).available_seats
         : 9,
@@ -476,7 +476,7 @@ export async function flightsRoutes(fastify: FastifyInstance) {
         return reply.send({
           origin: origin.toUpperCase(),
           destination: destination.toUpperCase(),
-          currency: 'RUB',
+          currency: 'USD',
           history,
         });
       },

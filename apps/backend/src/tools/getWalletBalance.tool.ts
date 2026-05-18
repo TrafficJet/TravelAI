@@ -17,7 +17,7 @@ export async function executeGetWalletBalance(userId: string) {
   const wallet = await prisma.wallet.findUnique({ where: { userId } });
 
   if (!wallet) {
-    return { balance: '0.00', currency: 'RUB', available: false };
+    return { balance: '0.00', currency: 'USD', available: false };
   }
 
   return {

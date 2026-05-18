@@ -23,8 +23,6 @@ import { useSSE } from '../../hooks/useSSE';
 import { MessageBubble } from '../../components/chat/MessageBubble';
 import { ChatInput, type ChatInputHandle } from '../../components/chat/ChatInput';
 import { BookingConfirmModal } from '../../components/chat/BookingConfirmModal';
-import { FlightFilterBar, FlightFiltersSheet, type FlightFilters } from '../../components/chat/FlightFilters';
-import { HotelFilterBar, HotelFiltersSheet, type HotelFilters } from '../../components/chat/HotelFiltersSheet';
 import { ChatHistorySheet } from '../../components/chat/ChatHistorySheet';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { SkeletonChatMessage } from '../../components/ui/Skeleton';
@@ -34,9 +32,6 @@ import { analytics, Events } from '../../src/analytics';
 import { captureError } from '../../lib/sentry';
 import * as Haptics from 'expo-haptics';
 import type { Message } from '../../types';
-
-const ASYNC_KEY_FLIGHT = 'flight_filters';
-const ASYNC_KEY_HOTEL = 'hotel_filters';
 
 function humanizeError(message: string): string {
   if (message.startsWith('HTTP ')) return 'Ошибка соединения. Попробуйте снова.';
@@ -304,16 +299,6 @@ export default function ChatScreen() {
   const [historyVisible, setHistoryVisible] = useState(false);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
 
-  // ── Filter state ──────────────────────────────────────────────────────────
-  const [flightFilters, setFlightFilters] = React.useState<FlightFilters>({});
-  const [hotelFilters, setHotelFilters] = React.useState<HotelFilters>({});
-  const [filtersVisible, setFiltersVisible] = React.useState(false);
-  const [hotelFiltersVisible, setHotelFiltersVisible] = React.useState(false);
-
-  // Refs that always hold the latest filter values — used by auto-send to avoid stale closures
-  const flightFiltersRef = useRef<FlightFilters>({});
-  const hotelFiltersRef = useRef<HotelFilters>({});
-
   // ── Offline state ─────────────────────────────────────────────────────────
   const [isOffline, setIsOffline] = React.useState(false);
 
@@ -331,35 +316,6 @@ export default function ChatScreen() {
       setIsOffline(offline);
     });
     return unsubscribe;
-  }, []);
-
-  // ── Restore filters from AsyncStorage on mount ────────────────────────────
-  useEffect(() => {
-    loadFilters<FlightFilters>(ASYNC_KEY_FLIGHT).then((saved) => {
-      if (saved) {
-        flightFiltersRef.current = saved;
-        setFlightFilters(saved);
-      }
-    });
-    loadFilters<HotelFilters>(ASYNC_KEY_HOTEL).then((saved) => {
-      if (saved) {
-        hotelFiltersRef.current = saved;
-        setHotelFilters(saved);
-      }
-    });
-  }, []);
-
-  // ── Persist filters when they change ─────────────────────────────────────
-  const handleFlightFiltersApply = useCallback((updated: FlightFilters) => {
-    flightFiltersRef.current = updated;
-    setFlightFilters(updated);
-    void saveFilters(ASYNC_KEY_FLIGHT, updated);
-  }, []);
-
-  const handleHotelFiltersApply = useCallback((updated: HotelFilters) => {
-    hotelFiltersRef.current = updated;
-    setHotelFilters(updated);
-    void saveFilters(ASYNC_KEY_HOTEL, updated);
   }, []);
 
   // ── Session title ─────────────────────────────────────────────────────────
@@ -464,6 +420,14 @@ export default function ChatScreen() {
       ),
       headerRight: () => (
         <View style={chatHeaderStyles.rightGroup}>
+          <TouchableOpacity
+            style={chatHeaderStyles.profileBtn}
+            onPress={() => router.push('/(tabs)/profile')}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons name="person-circle-outline" size={26} color={Colors.textMuted} />
+          </TouchableOpacity>
           <TouchableOpacity
             style={chatHeaderStyles.newChatBtn}
             onPress={() => { void handleNewChatFromHeader(); }}
@@ -862,15 +826,21 @@ const chatHeaderStyles = StyleSheet.create({
   },
   // New chat button
   newChatBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: Colors.primaryMuted,
     borderWidth: 1,
     borderColor: `${Colors.primary}50`,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 4,
+  },
+  // Profile button
+  profileBtn: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   // Menu (•••) button
   menuBtn: {

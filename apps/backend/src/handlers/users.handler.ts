@@ -84,7 +84,7 @@ export async function getMe(request: FastifyRequest, reply: FastifyReply) {
     },
     wallet: {
       balance: user.wallet?.balance.toString() ?? '0.00',
-      currency: user.wallet?.currency ?? 'RUB',
+      currency: user.wallet?.currency ?? 'USD',
     },
     subscription: {
       plan: user.subscription?.plan ?? 'FREE',

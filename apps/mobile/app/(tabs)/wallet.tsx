@@ -428,7 +428,8 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
 
       {/* Balance */}
       <Text style={heroStyles.amount}>
-        {symbol}{formatted}
+        <Text style={heroStyles.currencySymbol}>{symbol}</Text>
+        {formatted}
       </Text>
       <Text style={heroStyles.availableLabel}>Доступный баланс</Text>
 
@@ -487,6 +488,12 @@ const heroStyles = StyleSheet.create({
     letterSpacing: -1,
     marginBottom: 4,
     marginRight: 52,
+  },
+  currencySymbol: {
+    fontSize: 24,
+    fontWeight: Typography.weights.bold,
+    color: Colors.primary,
+    lineHeight: 52,
   },
   availableLabel: {
     color: Colors.textMuted,

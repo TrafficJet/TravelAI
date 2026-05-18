@@ -102,7 +102,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
       });
 
       await tx.wallet.create({
-        data: { userId: newUser.id, balance: 0, currency: 'RUB' },
+        data: { userId: newUser.id, balance: 0, currency: 'USD' },
       });
 
       await tx.subscription.create({

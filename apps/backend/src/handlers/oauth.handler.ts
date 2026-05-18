@@ -49,7 +49,7 @@ async function ensureWalletAndSubscription(userId: string) {
 
   const ops: Promise<unknown>[] = [];
   if (!wallet) {
-    ops.push(prisma.wallet.create({ data: { userId, balance: 0, currency: 'RUB' } }));
+    ops.push(prisma.wallet.create({ data: { userId, balance: 0, currency: 'USD' } }));
   }
   if (!subscription) {
     ops.push(prisma.subscription.create({ data: { userId, plan: 'FREE', status: 'ACTIVE' } }));
