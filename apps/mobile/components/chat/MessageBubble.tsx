@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Animated,
   Easing,
+  TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
@@ -16,6 +17,7 @@ interface Props {
   message: Message;
   isStreaming?: boolean;
   streamingText?: string;
+  onLongPress?: (message: Message) => void;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -464,7 +466,7 @@ function useEntranceAnim() {
 
 // ── MessageBubble ─────────────────────────────────────────────────────────────
 
-export function MessageBubble({ message, isStreaming, streamingText }: Props) {
+export function MessageBubble({ message, isStreaming, streamingText, onLongPress }: Props) {
   const isUser = message.role === 'user';
   const displayContent =
     isStreaming && streamingText !== undefined ? streamingText : message.content;
@@ -503,14 +505,20 @@ export function MessageBubble({ message, isStreaming, streamingText }: Props) {
           <Ionicons name="airplane" size={16} color={Colors.primary} />
         </View>
 
-        <View style={[styles.bubble, styles.bubbleAssistant]}>
-          {isStreaming && !streamingText ? (
-            <TypingIndicator />
-          ) : (
-            <RichText content={displayContent} isUser={false} />
-          )}
-          <Text style={styles.timeAssistant}>{formatTime(message.createdAt)}</Text>
-        </View>
+        <TouchableOpacity
+          onLongPress={() => onLongPress?.(message)}
+          activeOpacity={1}
+          delayLongPress={350}
+        >
+          <View style={[styles.bubble, styles.bubbleAssistant]}>
+            {isStreaming && !streamingText ? (
+              <TypingIndicator />
+            ) : (
+              <RichText content={displayContent} isUser={false} />
+            )}
+            <Text style={styles.timeAssistant}>{formatTime(message.createdAt)}</Text>
+          </View>
+        </TouchableOpacity>
       </Animated.View>
     );
   }
@@ -520,10 +528,16 @@ export function MessageBubble({ message, isStreaming, streamingText }: Props) {
     <Animated.View
       style={[styles.row, styles.rowUser, { opacity, transform: [{ translateY }] }]}
     >
-      <View style={[styles.bubble, styles.bubbleUser]}>
-        <RichText content={displayContent} isUser={true} />
-        <Text style={styles.timeUser}>{formatTime(message.createdAt)}</Text>
-      </View>
+      <TouchableOpacity
+        onLongPress={() => onLongPress?.(message)}
+        activeOpacity={1}
+        delayLongPress={350}
+      >
+        <View style={[styles.bubble, styles.bubbleUser]}>
+          <RichText content={displayContent} isUser={true} />
+          <Text style={styles.timeUser}>{formatTime(message.createdAt)}</Text>
+        </View>
+      </TouchableOpacity>
     </Animated.View>
   );
 }

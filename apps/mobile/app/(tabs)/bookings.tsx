@@ -12,7 +12,6 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBookingStore } from '../../stores/bookingStore';
 import { bookingService } from '../../services/bookingService';
 import { SkeletonBookingItem } from '../../components/ui/Skeleton';
@@ -113,44 +112,6 @@ function filterBookings(bookings: Booking[], tab: FilterTab): Booking[] {
 }
 
 const PAGE_SIZE = 20;
-
-// ── Custom Header ─────────────────────────────────────────────────────────────
-
-function BookingsHeader() {
-  const insets = useSafeAreaInsets();
-
-  return (
-    <View style={[headerStyles.container, { paddingTop: insets.top + 6 }]}>
-      <View>
-        <Text style={headerStyles.title}>Мои Брони</Text>
-        <Text style={headerStyles.subtitle}>История поездок</Text>
-      </View>
-    </View>
-  );
-}
-
-const headerStyles = StyleSheet.create({
-  container: {
-    paddingHorizontal: Spacing.md,
-    paddingBottom: 10,
-    backgroundColor: Colors.background,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.divider,
-  },
-  title: {
-    fontFamily: 'Sora',
-    fontSize: 20,
-    fontWeight: '700' as const,
-    color: Colors.text,
-    letterSpacing: -0.3,
-  },
-  subtitle: {
-    ...TextPresets.label,
-    color: Colors.textMuted,
-    letterSpacing: 0.5,
-    marginTop: 2,
-  },
-});
 
 // ── Filter Tabs ───────────────────────────────────────────────────────────────
 
@@ -467,7 +428,7 @@ function BookingsEmptyState() {
 
       <TouchableOpacity
         style={emptyStyles.btn}
-        onPress={() => router.push('/(tabs)')}
+        onPress={() => router.back()}
         activeOpacity={0.8}
       >
         <LinearGradient
@@ -476,7 +437,10 @@ function BookingsEmptyState() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
-          <Text style={emptyStyles.btnText}>Открыть чат</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Ionicons name="arrow-back" size={18} color="#1C1C0A" />
+            <Text style={emptyStyles.btnText}>В чат</Text>
+          </View>
         </LinearGradient>
       </TouchableOpacity>
     </View>
@@ -618,7 +582,6 @@ export default function BookingsScreen() {
   if (isLoading && (bookings ?? []).length === 0) {
     return (
       <View style={styles.container}>
-        <BookingsHeader />
         <FilterTabs active={filter} onChange={setFilter} />
         <SkeletonList />
       </View>
@@ -627,7 +590,6 @@ export default function BookingsScreen() {
 
   return (
     <View style={styles.container}>
-      <BookingsHeader />
       <FilterTabs active={filter} onChange={setFilter} />
 
       <FlatList

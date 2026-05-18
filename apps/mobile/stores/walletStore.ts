@@ -24,7 +24,7 @@ export const useWalletStore = create<WalletStore>((set) => ({
       const data = await walletService.getWallet();
       set({
         balance: parseFloat(data.balance),
-        currency: data.currency,
+        currency: data.currency === 'RUB' ? 'USD' : (data.currency || 'USD'),
         transactions: data.transactions ?? [],
       });
     } finally {

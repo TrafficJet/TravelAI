@@ -949,8 +949,13 @@ export default function ProfileScreen() {
                     </Text>
                   )}
                 </View>
-                <View style={styles.planBadgePremium}>
-                  <Text style={styles.planBadgeTextPremium}>PREMIUM</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Text style={{ color: Colors.success, fontFamily: 'Inter', fontSize: 13, fontWeight: '600' }}>
+                    $9.99/мес
+                  </Text>
+                  <View style={styles.planBadgePremium}>
+                    <Text style={styles.planBadgeTextPremium}>PREMIUM</Text>
+                  </View>
                 </View>
               </View>
             </View>

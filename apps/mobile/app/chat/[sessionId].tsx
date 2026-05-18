@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  PanResponder,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import NetInfo from '@react-native-community/netinfo';
@@ -230,6 +231,20 @@ export default function ChatScreen() {
   const [pendingBookingId, setPendingBookingId] = React.useState<string | null>(null);
   const [historyVisible, setHistoryVisible] = useState(false);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [replyTo, setReplyTo] = useState<Message | null>(null);
+
+  // ── Swipe left → bookings ─────────────────────────────────────────────────
+  const swipePanResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && gestureState.dx < -30,
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dx < -60 && Math.abs(gestureState.dy) < 60) {
+          router.push('/(tabs)/bookings');
+        }
+      },
+    })
+  ).current;
 
   // ── Offline state ─────────────────────────────────────────────────────────
   const [isOffline, setIsOffline] = React.useState(false);
@@ -446,6 +461,7 @@ export default function ChatScreen() {
     addMessage(userMessage);
     analytics.track(Events.MESSAGE_SENT, { sessionId });
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setReplyTo(null);
     setStreaming(true);
 
     try {
@@ -599,6 +615,7 @@ export default function ChatScreen() {
     safeMessages[safeMessages.length - 1]?.role === 'assistant';
 
   return (
+    <View {...swipePanResponder.panHandlers} style={{ flex: 1 }}>
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -620,6 +637,7 @@ export default function ChatScreen() {
               message={item}
               isStreaming={item._streaming}
               streamingText={item._streaming ? streamingText : undefined}
+              onLongPress={(msg) => setReplyTo(msg)}
             />
           )}
           contentContainerStyle={styles.messageList}
@@ -642,6 +660,8 @@ export default function ChatScreen() {
         onSend={handleSend}
         disabled={isStreaming}
         initialMessage={initialMessage}
+        replyTo={replyTo}
+        onCancelReply={() => setReplyTo(null)}
       />
 
       {pendingBooking && (
@@ -669,6 +689,7 @@ export default function ChatScreen() {
         }}
       />
     </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -691,13 +712,13 @@ const chatHeaderStyles = StyleSheet.create({
   rightGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   // New chat button
   newChatBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: Colors.primaryMuted,
     borderWidth: 1,
     borderColor: `${Colors.primary}50`,
@@ -706,8 +727,8 @@ const chatHeaderStyles = StyleSheet.create({
   },
   // Profile button
   profileBtn: {
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
     alignItems: 'center',
     justifyContent: 'center',
   },

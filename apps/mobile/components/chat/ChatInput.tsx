@@ -40,10 +40,14 @@ interface Props {
   suggestions?: string[];
   /** Called when user taps a suggestion chip */
   onSuggestionSelect?: (suggestion: string) => void;
+  /** Reply-to message preview */
+  replyTo?: { id: string; role: string; content: string } | null;
+  /** Called when user cancels the reply */
+  onCancelReply?: () => void;
 }
 
 export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
-  { onSend, disabled = false, initialMessage, suggestions = [], onSuggestionSelect },
+  { onSend, disabled = false, initialMessage, suggestions = [], onSuggestionSelect, replyTo, onCancelReply },
   ref,
 ) {
   const [text, setText] = useState(initialMessage ?? '');
@@ -98,24 +102,6 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
     Alert.alert('Голосовой ввод', 'Скоро будет доступен');
   }
 
-  function handleAttachment() {
-    Alert.alert('Вложение', 'Выберите тип', [
-      {
-        text: 'Фото маршрута',
-        onPress: () => Alert.alert('Фото маршрута', 'Скоро будет доступно'),
-      },
-      {
-        text: 'Документ',
-        onPress: () => Alert.alert('Документ', 'Скоро будет доступно'),
-      },
-      {
-        text: 'Локация',
-        onPress: () => Alert.alert('Локация', 'Скоро будет доступно'),
-      },
-      { text: 'Отмена', style: 'cancel' },
-    ]);
-  }
-
   function handleSuggestionSelect(suggestion: string) {
     setText(suggestion);
     if (onSuggestionSelect) {
@@ -124,10 +110,23 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
   }
 
   const hasText = text.trim().length > 0;
-  const sendDisabled = disabled || !hasText;
 
   return (
     <View>
+      {/* Reply-to preview */}
+      {replyTo && (
+        <View style={replyStyles.container}>
+          <View style={replyStyles.bar} />
+          <View style={{ flex: 1 }}>
+            <Text style={replyStyles.label}>{replyTo.role === 'user' ? 'Вы' : 'TravelAI'}</Text>
+            <Text style={replyStyles.text} numberOfLines={2}>{replyTo.content}</Text>
+          </View>
+          <TouchableOpacity onPress={onCancelReply} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Ionicons name="close" size={18} color={Colors.textMuted} />
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Contextual suggestions */}
       {suggestions.length > 0 && (
         <ChatSuggestions
@@ -138,25 +137,13 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
 
       {/* Input row */}
       <View style={styles.container}>
-        {/* Mic button — visible only when no text */}
-        {!hasText && (
-          <TouchableOpacity
-            onPress={handleVoice}
-            style={styles.iconButton}
-            activeOpacity={0.7}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Ionicons name="mic-outline" size={22} color={Colors.textMuted} />
-          </TouchableOpacity>
-        )}
-
         {/* Text input — pill shape */}
         <TextInput
           value={text}
           onChangeText={setText}
           placeholder="Куда хотите полететь?..."
           placeholderTextColor={Colors.textMuted}
-          style={[styles.input, !hasText && styles.inputWithVoice]}
+          style={styles.input}
           multiline
           maxLength={2000}
           editable={!disabled}
@@ -164,24 +151,13 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           blurOnSubmit={false}
         />
 
-        {/* Attachment button */}
-        <TouchableOpacity
-          onPress={handleAttachment}
-          style={styles.iconButton}
-          activeOpacity={0.7}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Ionicons name="add-outline" size={22} color={Colors.textMuted} />
-        </TouchableOpacity>
-
-        {/* Send button — amber arrow when has text, spinner when streaming, muted when empty */}
+        {/* Send button — always amber circle */}
         <Animated.View style={{ transform: [{ scale: sendScale }] }}>
           <TouchableOpacity
             onPress={hasText ? handleSend : handleVoice}
-            disabled={disabled}
+            disabled={disabled && hasText}
             style={[
               styles.sendButton,
-              !hasText && styles.sendButtonEmpty,
               disabled && hasText && styles.sendButtonDisabled,
             ]}
             activeOpacity={0.8}
@@ -192,7 +168,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
               <Ionicons
                 name={hasText ? 'arrow-up' : 'mic'}
                 size={18}
-                color={hasText ? Colors.textInverse : Colors.textMuted}
+                color={Colors.textInverse}
               />
             )}
           </TouchableOpacity>
@@ -203,29 +179,54 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
   );
 });
 
+const replyStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: Colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    gap: 10,
+  },
+  bar: {
+    width: 3,
+    height: 36,
+    borderRadius: 2,
+    backgroundColor: Colors.primary,
+  },
+  label: {
+    color: Colors.primary,
+    fontFamily: 'Inter',
+    fontSize: 12,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  text: {
+    color: Colors.textMuted,
+    fontFamily: 'Inter',
+    fontSize: 12,
+    lineHeight: 16,
+  },
+});
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     paddingTop: 10,
     backgroundColor: Colors.surface,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
-    gap: 8,
+    gap: 10,
     ...Platform.select({
       ios: {
         paddingBottom: 10,
       },
     }),
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
   },
   input: {
     flex: 1,
@@ -241,9 +242,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  inputWithVoice: {
-    // no additional style needed, just a semantic alias
-  },
   sendButton: {
     backgroundColor: Colors.primary,
     width: 40,
@@ -258,13 +256,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 4,
   },
-  sendButtonEmpty: {
-    backgroundColor: Colors.card,
-    shadowOpacity: 0,
-    elevation: 0,
-  },
   sendButtonDisabled: {
-    // Use primaryDark so the button stays visually amber but clearly dimmed
     backgroundColor: Colors.primaryDark,
     opacity: 0.65,
     shadowOpacity: 0,

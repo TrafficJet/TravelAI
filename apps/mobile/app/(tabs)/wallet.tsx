@@ -12,15 +12,13 @@ import {
   Platform,
   Alert,
   Linking,
-  SafeAreaView,
-  StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useWalletStore } from '../../stores/walletStore';
 import { SkeletonWalletCard, Skeleton } from '../../components/ui/Skeleton';
 import { Colors } from '../../constants/colors';
-import { Typography, TextPresets } from '../../constants/typography';
+import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
 import { toast } from '../../lib/toast';
@@ -569,12 +567,6 @@ export default function WalletScreen() {
   if (isLoading && (transactions ?? []).length === 0) {
     return (
       <View style={styles.container}>
-        <SafeAreaView>
-          <View style={styles.customHeader}>
-            <Text style={styles.headerTitle}>Кошелёк</Text>
-            <Text style={styles.headerSubtitle}>Управление балансом</Text>
-          </View>
-        </SafeAreaView>
         <SkeletonWalletCard />
         <Skeleton width="40%" height={44} borderRadius={12} style={styles.skeletonBtn} />
         <Skeleton width="60%" height={12} borderRadius={6} style={styles.skeletonLabel} />
@@ -594,8 +586,6 @@ export default function WalletScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-
       <FlatList
         data={filteredTransactions}
         keyExtractor={(item) => item.id}
@@ -609,14 +599,6 @@ export default function WalletScreen() {
         }
         ListHeaderComponent={
           <View>
-            {/* Custom header */}
-            <SafeAreaView style={styles.safeHeader}>
-              <View style={styles.customHeader}>
-                <Text style={styles.headerTitle}>Кошелёк</Text>
-                <Text style={styles.headerSubtitle}>Управление балансом</Text>
-              </View>
-            </SafeAreaView>
-
             {/* Hero balance card */}
             <HeroBalanceCard
               balance={balance}
@@ -676,27 +658,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  safeHeader: {
-    backgroundColor: Colors.background,
-  },
-  customHeader: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.sm,
-  },
-  headerTitle: {
-    color: Colors.text,
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes['2xl'],
-    fontWeight: Typography.weights.bold,
-    letterSpacing: Typography.letterSpacing.tight,
-  },
-  headerSubtitle: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    marginTop: 2,
   },
   tabsContainer: {
     flexDirection: 'row',
