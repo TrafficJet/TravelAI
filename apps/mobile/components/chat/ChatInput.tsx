@@ -135,7 +135,11 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
   }
 
   function handleQuickHint(key: string) {
-    Alert.alert('В разработке', `Быстрый поиск "${key}" скоро будет доступен`);
+    const prompts: Record<string, string> = {
+      flight: 'Найди рейс',
+      hotel: 'Найди отель',
+    };
+    setText(prompts[key] ?? key);
   }
 
   const hasText = text.trim().length > 0;

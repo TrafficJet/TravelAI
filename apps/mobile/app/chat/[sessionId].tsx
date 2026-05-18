@@ -856,9 +856,9 @@ const chatHeaderStyles = StyleSheet.create({
   },
   // New chat button
   newChatBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: Colors.primaryMuted,
     borderWidth: 1,
     borderColor: `${Colors.primary}50`,
@@ -868,14 +868,16 @@ const chatHeaderStyles = StyleSheet.create({
   },
   newChatBtnText: {
     color: Colors.primary,
-    fontSize: Platform.select({ ios: 18, android: 16, default: 18 }),
+    fontSize: Platform.select({ ios: 20, android: 18, default: 20 }),
     fontWeight: Typography.weights.bold,
-    lineHeight: Platform.select({ ios: 22, android: 20, default: 22 }),
+    lineHeight: Platform.select({ ios: 24, android: 22, default: 24 }),
   },
   // Menu (•••) button
   menuBtn: {
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   menuBtnText: {
     color: Colors.textMuted,

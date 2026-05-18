@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Tabs, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -101,9 +101,10 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: Colors.surface,
           borderTopColor: Colors.divider,
-          borderTopWidth: 1,
-          height: 64,
-          paddingBottom: 8,
+          borderTopWidth: StyleSheet.hairlineWidth,
+          height: 60,
+          paddingBottom: 6,
+          paddingTop: 4,
         },
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,
@@ -119,7 +120,7 @@ export default function TabsLayout() {
           title: t('tabs.chat'),
           headerShown: false,
           tabBarIcon: (props) => (
-            <TabIconWithIndicator {...props} icon="chatbubble-outline" iconFocused="chatbubble" />
+            <TabIcon {...props} icon="chatbubble-outline" iconFocused="chatbubble" />
           ),
         }}
       />
@@ -129,7 +130,7 @@ export default function TabsLayout() {
           title: t('tabs.bookings'),
           headerShown: false,
           tabBarIcon: (props) => (
-            <TabIconWithIndicator {...props} icon="calendar-outline" iconFocused="calendar" />
+            <TabIcon {...props} icon="calendar-outline" iconFocused="calendar" />
           ),
         }}
       />
@@ -139,7 +140,7 @@ export default function TabsLayout() {
           title: t('tabs.wallet'),
           headerShown: false,
           tabBarIcon: (props) => (
-            <TabIconWithIndicator {...props} icon="wallet-outline" iconFocused="wallet" />
+            <TabIcon {...props} icon="wallet-outline" iconFocused="wallet" />
           ),
         }}
       />
@@ -148,7 +149,7 @@ export default function TabsLayout() {
         options={{
           title: t('tabs.profile'),
           tabBarIcon: (props) => (
-            <TabIconWithIndicator {...props} icon="person-outline" iconFocused="person" />
+            <TabIcon {...props} icon="person-outline" iconFocused="person" />
           ),
           headerRight: () => (
             <TouchableOpacity
