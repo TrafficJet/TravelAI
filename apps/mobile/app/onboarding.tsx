@@ -16,6 +16,7 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../stores/authStore';
 import { Colors, TextPresets, Spacing, Radius } from '../constants';
+import { Ionicons } from '@expo/vector-icons';
 
 export const ONBOARDING_KEY = 'onboarding_done';
 
@@ -25,7 +26,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface Slide {
   id: string;
-  emoji: string;
+  iconName: string;
   title: string;
   description: string;
   gradientEnd: string;
@@ -34,7 +35,7 @@ interface Slide {
 const SLIDES: Slide[] = [
   {
     id: '1',
-    emoji: '🌍',
+    iconName: 'earth-outline',
     title: 'Твой личный AI-помощник в путешествиях',
     description:
       'Просто скажи куда хочешь — TravelAI подберёт рейсы, отели и трансфер за секунды',
@@ -42,7 +43,7 @@ const SLIDES: Slide[] = [
   },
   {
     id: '2',
-    emoji: '🗺️',
+    iconName: 'map-outline',
     title: 'Полный маршрут от двери до двери',
     description:
       'Такси в аэропорт, рейс, отель, трансфер по прилёту — всё в одном чате',
@@ -50,7 +51,7 @@ const SLIDES: Slide[] = [
   },
   {
     id: '3',
-    emoji: '💰',
+    iconName: 'cash-outline',
     title: 'Всё в рамках вашего бюджета',
     description:
       'AI подбирает варианты по вашим предпочтениям и никогда не выходит за рамки бюджета',
@@ -58,7 +59,7 @@ const SLIDES: Slide[] = [
   },
   {
     id: '4',
-    emoji: '🤝',
+    iconName: 'people-outline',
     title: 'Всегда рядом в поездке',
     description:
       'Прилёт в 8:00, заселение в 14:00? AI предупредит и предложит хранение багажа или ранний заезд',
@@ -70,7 +71,7 @@ const TOTAL = SLIDES.length;
 
 // ─── Animated emoji illustration ─────────────────────────────────────────────
 
-function AnimatedEmoji({ emoji, active }: { emoji: string; active: boolean }) {
+function AnimatedEmoji({ emoji, active }: { emoji: string; active: boolean; }) {
   const scale = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const glowOpacity = useRef(new Animated.Value(0.5)).current;
@@ -133,7 +134,7 @@ function AnimatedEmoji({ emoji, active }: { emoji: string; active: boolean }) {
       <Animated.View style={[slideStyles.glowRing, { opacity: glowOpacity }]} />
       {/* Inner circle */}
       <Animated.View style={[slideStyles.iconWrap, { transform: [{ scale }] }]}>
-        <Text style={slideStyles.emoji}>{emoji}</Text>
+        <Ionicons name={emoji as any} size={64} color={Colors.primary} />
       </Animated.View>
     </Animated.View>
   );
@@ -144,7 +145,7 @@ function AnimatedEmoji({ emoji, active }: { emoji: string; active: boolean }) {
 function SlideItem({ item, active }: { item: Slide; active: boolean }) {
   return (
     <View style={[slideStyles.container, { width: SCREEN_WIDTH }]}>
-      <AnimatedEmoji emoji={item.emoji} active={active} />
+      <AnimatedEmoji emoji={item.iconName} active={active} />
       <Text style={slideStyles.title}>{item.title}</Text>
       <Text style={slideStyles.description}>{item.description}</Text>
     </View>
@@ -193,10 +194,6 @@ const slideStyles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 8,
-  },
-  emoji: {
-    fontSize: 68,
-    lineHeight: 76,
   },
   title: {
     fontFamily: 'Sora',

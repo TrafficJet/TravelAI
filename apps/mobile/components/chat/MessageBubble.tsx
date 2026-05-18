@@ -102,7 +102,9 @@ function ToolLoadingChip({ toolName }: { toolName?: string }) {
 
   return (
     <View style={toolChipStyles.row}>
-      <Animated.Text style={[toolChipStyles.icon, { opacity: blinkAnim }]}>🔍</Animated.Text>
+      <Animated.View style={{ opacity: blinkAnim }}>
+        <Ionicons name="search-outline" size={13} color={Colors.textMuted} />
+      </Animated.View>
       <Text style={toolChipStyles.text}>{getToolLabel(toolName)}</Text>
       <View style={toolChipStyles.dots}>
         {[dot0Opacity, dot1Opacity, dot2Opacity].map((dotOpacity, i) => (
@@ -121,9 +123,6 @@ const toolChipStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-  },
-  icon: {
-    fontSize: 13,
   },
   text: {
     color: Colors.textMuted,

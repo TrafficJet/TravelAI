@@ -13,7 +13,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { useLocalSearchParams, useNavigation, router } from 'expo-router';
 import { useChatStore } from '../../stores/chatStore';
@@ -83,13 +82,6 @@ const bannerStyles = StyleSheet.create({
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 
-const SUGGESTIONS = [
-  'Варшава → Барселона',
-  'Москва → Дубай',
-  'Лондон → Рим',
-  'Амстердам → Прага',
-];
-
 const CONTEXT_SUGGESTIONS = [
   'Добавь трансфер из аэропорта',
   'Покажи отели дешевле',
@@ -99,38 +91,17 @@ const CONTEXT_SUGGESTIONS = [
   'Лучший район для отеля?',
 ];
 
-interface EmptyStateProps {
-  onSelectSuggestion: (text: string) => void;
-}
-
-function EmptyState({ onSelectSuggestion }: EmptyStateProps) {
+function EmptyState() {
   return (
     <View style={emptyStyles.container}>
-      <View style={emptyStyles.center}>
-        <Ionicons name="airplane" size={64} color={Colors.primary} style={{ opacity: 0.3, marginBottom: 20 }} />
-        <Text style={emptyStyles.title}>Куда летим?</Text>
-        <Text style={emptyStyles.subtitle}>
-          Напишите маршрут и я подберу рейсы, отели и трансфер
-        </Text>
-      </View>
-      <View style={emptyStyles.chips}>
-        <View style={emptyStyles.chipRow}>
-          <TouchableOpacity style={emptyStyles.chip} onPress={() => onSelectSuggestion('Варшава → Барселона')} activeOpacity={0.7}>
-            <Text style={emptyStyles.chipText}>Варшава → Барселона</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={emptyStyles.chip} onPress={() => onSelectSuggestion('Москва → Дубай')} activeOpacity={0.7}>
-            <Text style={emptyStyles.chipText}>Москва → Дубай</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={emptyStyles.chipRow}>
-          <TouchableOpacity style={emptyStyles.chip} onPress={() => onSelectSuggestion('Лондон → Рим')} activeOpacity={0.7}>
-            <Text style={emptyStyles.chipText}>Лондон → Рим</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={emptyStyles.chip} onPress={() => onSelectSuggestion('Амстердам → Прага')} activeOpacity={0.7}>
-            <Text style={emptyStyles.chipText}>Амстердам → Прага</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Ionicons name="airplane" size={64} color={Colors.primary} style={{ opacity: 0.25, marginBottom: 24 }} />
+      <Text style={emptyStyles.title}>Куда летим?</Text>
+      <Text style={emptyStyles.subtitle}>
+        Напишите маршрут, даты и бюджет — {'\n'}я подберу рейсы, отели и трансфер
+      </Text>
+      <Text style={emptyStyles.hint}>
+        Например: "Варшава → Барселона, 10-17 июня, 2 человека"
+      </Text>
     </View>
   );
 }
@@ -189,76 +160,37 @@ const suggStyles = StyleSheet.create({
 const emptyStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 48,
+    paddingHorizontal: 32,
+    paddingTop: 32,
     paddingBottom: 16,
-  },
-  center: {
-    alignItems: 'center',
   },
   title: {
     color: Colors.text,
-    fontSize: Typography.sizes['2xl'] ?? 24,
+    fontSize: 24,
     fontWeight: Typography.weights.bold,
-    marginBottom: 10,
+    marginBottom: 12,
     textAlign: 'center',
+    fontFamily: 'Sora',
   },
   subtitle: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.base,
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 24,
     maxWidth: 280,
+    marginBottom: 16,
   },
-  chips: {
-    gap: 10,
-    paddingBottom: 8,
-    width: '100%',
-  },
-  chipRow: {
-    flexDirection: 'row',
-    gap: 10,
-    width: '100%',
-  },
-  chip: {
-    flex: 1,
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: `${Colors.primary}40`,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    alignItems: 'center',
-  },
-  chipText: {
+  hint: {
     color: Colors.primary,
     fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.medium,
     textAlign: 'center',
+    opacity: 0.6,
+    fontFamily: 'Inter',
+    lineHeight: 20,
   },
 });
-
-// ── Helpers: persist & load filters ──────────────────────────────────────────
-
-async function saveFilters<T>(key: string, value: T): Promise<void> {
-  try {
-    await AsyncStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // non-fatal
-  }
-}
-
-async function loadFilters<T>(key: string): Promise<T | null> {
-  try {
-    const raw = await AsyncStorage.getItem(key);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
-}
 
 // ── Main screen ───────────────────────────────────────────────────────────────
 
@@ -470,11 +402,8 @@ export default function ChatScreen() {
   useEffect(() => {
     if (!initialMessage || isLoading || isStreaming || autoSentRef.current) return;
     autoSentRef.current = true;
-    // Capture the latest filter values from refs to avoid stale closure
-    const flightSnapshot = flightFiltersRef.current;
-    const hotelSnapshot = hotelFiltersRef.current;
     const timer = setTimeout(() => {
-      handleSend(initialMessage, { flight: flightSnapshot, hotel: hotelSnapshot });
+      handleSend(initialMessage);
     }, 100);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -492,7 +421,7 @@ export default function ChatScreen() {
     scrollToBottom();
   }, [safeMessages.length, streamingText, scrollToBottom]);
 
-  async function handleSend(content: string, overrideFilters?: { flight: FlightFilters; hotel: HotelFilters }) {
+  async function handleSend(content: string) {
     if (!sessionId) {
       console.warn('[ChatScreen] handleSend blocked: no sessionId');
       return;
@@ -518,23 +447,6 @@ export default function ChatScreen() {
     analytics.track(Events.MESSAGE_SENT, { sessionId });
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setStreaming(true);
-
-    // Use provided override (e.g. from ref on auto-send) or current state
-    const effectiveFlight = overrideFilters?.flight ?? flightFilters;
-    const effectiveHotel = overrideFilters?.hotel ?? hotelFilters;
-
-    // Build active filters payload
-    const hasFlightFilters = Object.values(effectiveFlight).some((v) => v !== undefined);
-    const hasHotelFilters =
-      effectiveHotel.maxPrice !== undefined ||
-      effectiveHotel.stars !== undefined ||
-      (effectiveHotel.amenities && effectiveHotel.amenities.length > 0) ||
-      effectiveHotel.sortBy !== undefined;
-
-    const filtersPayload = {
-      ...(hasFlightFilters ? { flight: effectiveFlight } : {}),
-      ...(hasHotelFilters ? { hotel: effectiveHotel } : {}),
-    };
 
     try {
       await streamMessage(
@@ -580,7 +492,6 @@ export default function ChatScreen() {
             Alert.alert('Ошибка чата', humanizeError(message));
           },
         },
-        Object.keys(filtersPayload).length > 0 ? filtersPayload : undefined,
       );
       // Safety net: ensure streaming is reset even if onDone/onError weren't called
       // (e.g. server closed connection without a "done" event)
@@ -663,14 +574,6 @@ export default function ChatScreen() {
 
   void currentSession;
 
-  // Badge counts
-  const flightActiveCount = Object.values(flightFilters).filter((v) => v !== undefined).length;
-  const hotelActiveCount =
-    (hotelFilters.maxPrice !== undefined ? 1 : 0) +
-    (hotelFilters.stars !== undefined ? 1 : 0) +
-    (hotelFilters.amenities?.length ?? 0) +
-    (hotelFilters.sortBy !== undefined ? 1 : 0);
-
   // ── Skeleton loading state ────────────────────────────────────────────────
   if (isLoading) {
     return (
@@ -704,26 +607,8 @@ export default function ChatScreen() {
       {/* Offline banner */}
       <OfflineBanner visible={isOffline} />
 
-      {/* Filter bar — flight + hotel buttons */}
-      <View style={styles.filterBarRow}>
-        <FlightFilterBar
-          filters={flightFilters}
-          onOpenFilters={() => setFiltersVisible(true)}
-          activeCount={flightActiveCount}
-        />
-        <HotelFilterBar
-          filters={hotelFilters}
-          onOpenFilters={() => setHotelFiltersVisible(true)}
-        />
-        {hotelActiveCount > 0 && <View style={styles.spacer} />}
-      </View>
-
       {displayMessages.length === 0 ? (
-        <EmptyState
-          onSelectSuggestion={(suggestion) => {
-            void handleSend(suggestion);
-          }}
-        />
+        <EmptyState />
       ) : (
         <FlatList
           ref={flatListRef}
@@ -770,22 +655,6 @@ export default function ChatScreen() {
           isWalletLoading={isWalletLoading}
         />
       )}
-
-      {/* Flight filters bottom sheet */}
-      <FlightFiltersSheet
-        visible={filtersVisible}
-        filters={flightFilters}
-        onApply={handleFlightFiltersApply}
-        onClose={() => setFiltersVisible(false)}
-      />
-
-      {/* Hotel filters bottom sheet */}
-      <HotelFiltersSheet
-        visible={hotelFiltersVisible}
-        filters={hotelFilters}
-        onApply={handleHotelFiltersApply}
-        onClose={() => setHotelFiltersVisible(false)}
-      />
 
       {/* Chat history bottom sheet */}
       <ChatHistorySheet
@@ -856,19 +725,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  filterBarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    backgroundColor: Colors.surface,
-  },
-  spacer: {
-    flex: 1,
   },
   messageList: {
     paddingVertical: 8,

@@ -42,12 +42,6 @@ interface Props {
   onSuggestionSelect?: (suggestion: string) => void;
 }
 
-// Quick-hint chips shown below the input when it is empty
-const QUICK_HINTS = [
-  { label: 'Рейс', icon: 'airplane-outline' as const, key: 'flight' },
-  { label: 'Отель', icon: 'bed-outline' as const, key: 'hotel' },
-] as const;
-
 export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
   { onSend, disabled = false, initialMessage, suggestions = [], onSuggestionSelect },
   ref,
@@ -129,14 +123,6 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
     }
   }
 
-  function handleQuickHint(key: string) {
-    const prompts: Record<string, string> = {
-      flight: 'Найди рейс',
-      hotel: 'Найди отель',
-    };
-    setText(prompts[key] ?? key);
-  }
-
   const hasText = text.trim().length > 0;
   const sendDisabled = disabled || !hasText;
 
@@ -213,22 +199,6 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
         </Animated.View>
       </View>
 
-      {/* Quick hint chips — shown only when input is empty */}
-      {!hasText && (
-        <View style={styles.hintsRow}>
-          {QUICK_HINTS.map((hint) => (
-            <TouchableOpacity
-              key={hint.key}
-              style={styles.hintChip}
-              onPress={() => handleQuickHint(hint.key)}
-              activeOpacity={0.75}
-            >
-              <Ionicons name={hint.icon} size={14} color={Colors.textMuted} style={{ marginRight: 4 }} />
-              <Text style={styles.hintChipText}>{hint.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
     </View>
   );
 });
@@ -299,34 +269,5 @@ const styles = StyleSheet.create({
     opacity: 0.65,
     shadowOpacity: 0,
     elevation: 0,
-  },
-  // Quick hint chips
-  hintsRow: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingBottom: 10,
-    backgroundColor: Colors.surface,
-    ...Platform.select({
-      ios: {
-        paddingBottom: 20,
-      },
-    }),
-  },
-  hintChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  hintChipText: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    fontWeight: '500',
   },
 });
