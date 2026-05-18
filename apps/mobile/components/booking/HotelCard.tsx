@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import type { Booking, BookingStatus, HotelDetails } from '../../types';
@@ -45,7 +46,7 @@ export function HotelCard({ booking, onPress }: Props) {
     <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.card}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.typeIcon}>🏨</Text>
+          <Ionicons name="bed-outline" size={16} color={Colors.primary} />
           <Text style={styles.stars}>{'★'.repeat(details.stars)}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: `${statusColor}20` }]}>
@@ -95,9 +96,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-  },
-  typeIcon: {
-    fontSize: 20,
   },
   stars: {
     color: Colors.warning,

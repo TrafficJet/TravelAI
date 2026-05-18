@@ -11,6 +11,7 @@ import {
   PanResponder,
   LayoutChangeEvent,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -448,7 +449,7 @@ export function FlightFiltersSheet({
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Фильтры рейсов</Text>
             <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Text style={styles.closeBtn}>✕</Text>
+              <Ionicons name="close" size={22} color={Colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -591,15 +592,24 @@ interface QuickChipProps {
   label: string;
   active: boolean;
   onPress: () => void;
+  icon?: React.ComponentProps<typeof Ionicons>['name'];
 }
 
-function QuickChip({ label, active, onPress }: QuickChipProps) {
+function QuickChip({ label, active, onPress, icon }: QuickChipProps) {
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.75}
       style={[styles.chip, active && styles.chipActive]}
     >
+      {icon && (
+        <Ionicons
+          name={icon}
+          size={13}
+          color={active ? Colors.textInverse : Colors.textMuted}
+          style={{ marginRight: 4 }}
+        />
+      )}
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
     </TouchableOpacity>
   );
@@ -623,7 +633,8 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
       >
         {/* Main filters button */}
         <QuickChip
-          label={`✈️ Фильтры${activeCount > 0 ? ` (${activeCount})` : ''}`}
+          icon="airplane-outline"
+          label={`Фильтры${activeCount > 0 ? ` (${activeCount})` : ''}`}
           active={activeCount > 0}
           onPress={onOpenFilters}
         />
@@ -656,7 +667,8 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
             activeOpacity={0.75}
             style={styles.resetChip}
           >
-            <Text style={styles.resetChipText}>Сбросить ✕</Text>
+            <Ionicons name="close-outline" size={14} color={Colors.error} style={{ marginRight: 2 }} />
+            <Text style={styles.resetChipText}>Сбросить</Text>
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -708,10 +720,6 @@ const styles = StyleSheet.create({
     color: Colors.text,
     fontSize: 17,
     fontWeight: '700',
-  },
-  closeBtn: {
-    color: Colors.textMuted,
-    fontSize: 18,
   },
 
   scroll: {
@@ -832,6 +840,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
     backgroundColor: Colors.card,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   chipActive: {
     borderColor: Colors.primary,
@@ -855,6 +865,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.error,
     backgroundColor: `${Colors.error}18`,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   resetChipText: {
     color: Colors.error,

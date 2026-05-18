@@ -6,6 +6,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useChatStore } from '../../stores/chatStore';
 import { Colors, Spacing } from '../../constants';
@@ -50,7 +51,7 @@ export default function ChatEntryScreen() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Text style={styles.logoEmoji}>✈️</Text>
+          <Ionicons name="airplane" size={48} color={Colors.primary} />
         </LinearGradient>
       </View>
       <Text style={styles.brand}>TravelAI</Text>
@@ -84,9 +85,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(245,158,11,0.3)',
-  },
-  logoEmoji: {
-    fontSize: 44,
   },
   brand: {
     fontFamily: 'Sora',

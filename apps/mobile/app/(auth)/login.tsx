@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../stores/authStore';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
@@ -74,7 +75,7 @@ export default function LoginScreen() {
       >
         <View style={styles.header}>
           <View style={styles.logoWrap}>
-            <Text style={styles.logo}>✈️</Text>
+            <Ionicons name="airplane" size={48} color={Colors.primary} />
           </View>
           <Text style={styles.title}>TravelAI</Text>
           <Text style={styles.subtitle}>AI-ассистент для путешествий</Text>
@@ -178,9 +179,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.6,
     shadowRadius: 24,
     elevation: 12,
-  },
-  logo: {
-    fontSize: 36,
   },
   title: {
     fontFamily: 'Sora',

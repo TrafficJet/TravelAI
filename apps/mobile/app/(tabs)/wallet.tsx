@@ -648,7 +648,7 @@ export default function WalletScreen() {
         }
         ListEmptyComponent={
           <View style={styles.emptyTransactions}>
-            <Text style={styles.emptyIcon}>💳</Text>
+            <Ionicons name="card-outline" size={64} color={Colors.textMuted} />
             <Text style={styles.emptyText}>Транзакций пока нет</Text>
             <Text style={styles.emptySubtext}>
               Пополните кошелёк, чтобы начать бронировать
@@ -739,10 +739,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing['2xl'],
     paddingHorizontal: Spacing.lg,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: Spacing.md,
   },
   emptyText: {
     color: Colors.text,

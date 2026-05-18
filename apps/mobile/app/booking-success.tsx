@@ -279,10 +279,10 @@ export default function BookingSuccessScreen() {
         contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + 32 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Airplane emoji */}
-        <Animated.Text entering={FadeIn.delay(0).duration(400)} style={styles.planeEmoji}>
-          {isHotel ? '🏨' : '✈️'}
-        </Animated.Text>
+        {/* Plane / hotel icon */}
+        <Animated.View entering={FadeIn.delay(0).duration(400)} style={styles.planeEmoji}>
+          <Ionicons name={isHotel ? 'bed-outline' : 'airplane'} size={64} color={Colors.primary} />
+        </Animated.View>
 
         {/* Animated checkmark */}
         <AnimatedCheckmark />
@@ -397,8 +397,8 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   planeEmoji: {
-    fontSize: 48,
     marginBottom: 4,
+    alignItems: 'center',
   },
   title: {
     color: Colors.success,

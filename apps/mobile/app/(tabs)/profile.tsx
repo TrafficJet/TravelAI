@@ -874,7 +874,7 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={styles.pencilIcon}>✏️</Text>
+              <Ionicons name="pencil-outline" size={16} color={Colors.textMuted} />
             </TouchableOpacity>
           </View>
 
@@ -1010,9 +1010,10 @@ export default function ProfileScreen() {
             </View>
           ) : recentBookings.length === 0 ? (
             <View style={[styles.card, styles.tripEmptyCard]}>
-              <Text style={styles.tripEmptyText}>
-                Поездок пока нет — начни планировать в чате 🗺️
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                <Text style={styles.tripEmptyText}>Поездок пока нет — начни планировать в чате</Text>
+                <Ionicons name="map-outline" size={16} color={Colors.textMuted} />
+              </View>
               <TouchableOpacity
                 style={styles.tripEmptyBtn}
                 onPress={() => router.push('/(tabs)')}
@@ -1033,9 +1034,11 @@ export default function ProfileScreen() {
                   onPress={() => router.push(`/bookings/${booking.id}` as any)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.tripIcon}>
-                    {booking.type === 'FLIGHT' ? '✈️' : '🏨'}
-                  </Text>
+                  <Ionicons
+                    name={booking.type === 'FLIGHT' ? 'airplane-outline' : 'bed-outline'}
+                    size={20}
+                    color={Colors.primary}
+                  />
                   <View style={styles.tripBody}>
                     <Text style={styles.tripLabel} numberOfLines={1}>
                       {getBookingLabel(booking)}
@@ -1214,7 +1217,7 @@ export default function ProfileScreen() {
             activeOpacity={0.8}
           >
             <View style={styles.priceAlertsBtnLeft}>
-              <Text style={styles.priceAlertsBtnEmoji}>🔔</Text>
+              <Ionicons name="notifications-outline" size={18} color={Colors.primary} />
               <View>
                 <Text style={styles.priceAlertsBtnTitle}>Ценовые алерты</Text>
                 <Text style={styles.priceAlertsBtnSub}>Слежка за ценами на рейсы и отели</Text>
@@ -1271,7 +1274,7 @@ export default function ProfileScreen() {
 
         {/* ── About app ───────────────────────────────────────────────── */}
         <View style={styles.aboutSection}>
-          <Text style={styles.aboutEmoji}>✈️</Text>
+          <Ionicons name="airplane" size={32} color={Colors.primary} />
           <Text style={styles.aboutName}>TravelAI</Text>
           <Text style={styles.aboutVersion}>Версия 1.0.0</Text>
           <Text style={styles.aboutCopy}>Ваш AI-ассистент для путешествий</Text>
@@ -1335,9 +1338,6 @@ const styles = StyleSheet.create({
   },
   pencilBtn: {
     padding: 2,
-  },
-  pencilIcon: {
-    fontSize: 16,
   },
   email: {
     fontFamily: 'Inter',
@@ -1703,10 +1703,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
     gap: 4,
   },
-  aboutEmoji: {
-    fontSize: 28,
-    marginBottom: 4,
-  },
   aboutName: {
     fontFamily: 'Sora',
     color: Colors.textMuted,
@@ -1736,11 +1732,6 @@ const styles = StyleSheet.create({
   tripRowBorder: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-  },
-  tripIcon: {
-    fontSize: 20,
-    width: 28,
-    textAlign: 'center',
   },
   tripBody: {
     flex: 1,
@@ -1837,9 +1828,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     flex: 1,
-  },
-  priceAlertsBtnEmoji: {
-    fontSize: 22,
   },
   priceAlertsBtnTitle: {
     color: Colors.text,

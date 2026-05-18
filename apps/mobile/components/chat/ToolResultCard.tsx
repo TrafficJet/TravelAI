@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
@@ -20,7 +21,7 @@ export function FlightSearchSummary({ count, minPrice, maxPrice, currency }: Fli
   return (
     <View style={summaryStyles.card}>
       <View style={summaryStyles.iconRow}>
-        <Text style={summaryStyles.icon}>✈️</Text>
+        <Ionicons name="airplane" size={20} color={Colors.primary} />
         <Text style={summaryStyles.label}>Найдено рейсов</Text>
       </View>
       <Text style={summaryStyles.count}>{count}</Text>
@@ -54,7 +55,7 @@ export function HotelSearchSummary({ count, minPrice, maxPrice, currency }: Hote
   return (
     <View style={summaryStyles.card}>
       <View style={summaryStyles.iconRow}>
-        <Text style={summaryStyles.icon}>🏨</Text>
+        <Ionicons name="bed-outline" size={20} color={Colors.primary} />
         <Text style={summaryStyles.label}>Найдено отелей</Text>
       </View>
       <Text style={summaryStyles.count}>{count}</Text>
@@ -650,7 +651,7 @@ function JourneyTimingCard({ data }: { data: JourneyTimingResult }) {
   return (
     <View style={[timingStyles.card, isTight && timingStyles.cardWarning]}>
       <View style={timingStyles.row}>
-        <Text style={timingStyles.icon}>{isTight ? '⚠️' : 'ℹ️'}</Text>
+        <Ionicons name={isTight ? 'warning-outline' : 'information-circle-outline'} size={14} color={isTight ? Colors.warning : Colors.textMuted} />
         <Text style={[timingStyles.title, isTight && timingStyles.titleWarning]}>
           {isTight ? 'Стыковка под угрозой' : 'Время в пути'}
         </Text>
@@ -688,7 +689,6 @@ const timingStyles = StyleSheet.create({
     gap: 8,
     marginBottom: 6,
   },
-  icon: { fontSize: 16 },
   title: {
     color: Colors.text,
     fontSize: Typography.sizes.sm,
@@ -840,7 +840,7 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
   if (isFlight && offers !== null && offers.length === 0) {
     return (
       <View style={chatResultStyles.fallback}>
-        <Text style={chatResultStyles.fallbackIcon}>✈️</Text>
+        <Ionicons name="airplane" size={20} color={Colors.primary} />
         <Text style={chatResultStyles.fallbackText}>Рейсов не найдено по вашему запросу</Text>
       </View>
     );
@@ -849,7 +849,7 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
   if (isHotel && offers !== null && offers.length === 0) {
     return (
       <View style={chatResultStyles.fallback}>
-        <Text style={chatResultStyles.fallbackIcon}>🏨</Text>
+        <Ionicons name="bed-outline" size={20} color={Colors.primary} />
         <Text style={chatResultStyles.fallbackText}>Отелей не найдено по вашему запросу</Text>
       </View>
     );
@@ -865,10 +865,18 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
     : isActivities
     ? 'Активности найдены'
     : 'Готово';
-  const fallbackIcon = isFlight ? '✈️' : isHotel ? '🏨' : isTransfer ? '🚗' : isActivities ? '🎯' : '🔍';
+  const fallbackIconName: React.ComponentProps<typeof Ionicons>['name'] = isFlight
+    ? 'airplane'
+    : isHotel
+    ? 'bed-outline'
+    : isTransfer
+    ? 'car-outline'
+    : isActivities
+    ? 'flag-outline'
+    : 'search-outline';
   return (
     <View style={chatResultStyles.fallback}>
-      <Text style={chatResultStyles.fallbackIcon}>{fallbackIcon}</Text>
+      <Ionicons name={fallbackIconName} size={20} color={Colors.primary} />
       <Text style={chatResultStyles.fallbackText}>{fallbackText}</Text>
     </View>
   );
@@ -938,9 +946,6 @@ const chatResultStyles = StyleSheet.create({
     paddingVertical: 6,
     marginHorizontal: 16,
     marginVertical: 4,
-  },
-  fallbackIcon: {
-    fontSize: 13,
   },
   fallbackText: {
     color: Colors.textMuted,

@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../stores/authStore';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
@@ -71,7 +72,7 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.logo}>✈️</Text>
+          <Ionicons name="airplane" size={48} color={Colors.primary} />
           <Text style={styles.title}>Создать аккаунт</Text>
           <Text style={styles.subtitle}>Начните планировать путешествия</Text>
         </View>
@@ -151,10 +152,6 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: Spacing.xl,
-  },
-  logo: {
-    fontSize: Typography.sizes['4xl'],
-    marginBottom: Spacing.sm,
   },
   title: {
     ...TextPresets.h2,

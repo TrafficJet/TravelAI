@@ -8,6 +8,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -152,7 +153,7 @@ export function HotelFiltersSheet({
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Фильтры отелей</Text>
             <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Text style={styles.closeBtn}>✕</Text>
+              <Ionicons name="close" size={22} color={Colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -299,10 +300,6 @@ const styles = StyleSheet.create({
     color: Colors.text,
     fontSize: 17,
     fontWeight: '700',
-  },
-  closeBtn: {
-    color: Colors.textMuted,
-    fontSize: 18,
   },
   scroll: {
     flex: 1,

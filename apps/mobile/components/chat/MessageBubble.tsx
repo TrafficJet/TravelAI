@@ -6,6 +6,7 @@ import {
   Animated,
   Easing,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { ChatToolResult } from './ToolResultCard';
@@ -500,7 +501,7 @@ export function MessageBubble({ message, isStreaming, streamingText }: Props) {
       >
         {/* Avatar */}
         <View style={styles.avatar}>
-          <Text style={styles.avatarIcon}>✈️</Text>
+          <Ionicons name="airplane" size={16} color={Colors.primary} />
         </View>
 
         <View style={[styles.bubble, styles.bubbleAssistant]}>
@@ -555,9 +556,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 2,
     flexShrink: 0,
-  },
-  avatarIcon: {
-    fontSize: 15,
   },
 
   // Bubbles
