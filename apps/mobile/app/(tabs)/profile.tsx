@@ -17,7 +17,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+// expo-image-picker loaded lazily to avoid crash when native module not compiled in
+type ImagePickerModule = typeof import('expo-image-picker');
+let _ImagePicker: ImagePickerModule | null = null;
+async function getImagePicker(): Promise<ImagePickerModule | null> {
+  if (_ImagePicker) return _ImagePicker;
+  try {
+    _ImagePicker = await import('expo-image-picker');
+    return _ImagePicker;
+  } catch {
+    return null;
+  }
+}
 import { useAuthStore } from '../../stores/authStore';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
@@ -777,6 +788,16 @@ export default function ProfileScreen() {
   }
 
   async function pickAndScanDocument(source: 'camera' | 'gallery') {
+    const ImagePicker = await getImagePicker();
+    if (!ImagePicker) {
+      Alert.alert(
+        'Недоступно',
+        'Сканирование документов недоступно в этой версии приложения. Пожалуйста, обновите приложение.',
+        [{ text: 'ОК' }],
+      );
+      return;
+    }
+
     if (source === 'camera') {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
@@ -799,8 +820,8 @@ export default function ProfileScreen() {
       }
     }
 
-    const pickerOptions: ImagePicker.ImagePickerOptions = {
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    const pickerOptions = {
+      mediaTypes: (ImagePicker as any).MediaTypeOptions?.Images ?? 'Images',
       allowsEditing: true,
       quality: 0.8,
       base64: true,
