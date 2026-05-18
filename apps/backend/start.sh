@@ -28,11 +28,9 @@ fi
 
 echo "[start.sh] Migrations complete."
 
-# Run demo seed if SEED_DEMO=true (safe to run — idempotent)
-if [ "$SEED_DEMO" = "true" ]; then
-  echo "[start.sh] Running demo seed..."
-  npx ts-node prisma/seed-demo.ts || echo "[start.sh] Seed failed (non-fatal)"
-fi
+# Always run demo seed to ensure demo user exists with PREMIUM subscription
+echo "[start.sh] Running demo seed (idempotent — safe to run on every deploy)..."
+npx ts-node prisma/seed-demo.ts || echo "[start.sh] Seed failed (non-fatal)"
 
 echo "[start.sh] Starting node server..."
 exec node dist/server.js

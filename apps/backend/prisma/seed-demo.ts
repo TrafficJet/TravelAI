@@ -54,21 +54,21 @@ async function main() {
     console.log('Created wallet with balance 500.00 USD.');
   }
 
-  // 3. Subscription FREE — demo account starts on the free plan
+  // 3. Subscription PREMIUM — demo account has no daily limits for presentation
   await prisma.subscription.upsert({
     where: { userId: user.id },
     update: {
-      plan: SubscriptionPlan.FREE,
+      plan: SubscriptionPlan.PREMIUM,
       status: SubscriptionStatus.ACTIVE,
       expiresAt: null,
     },
     create: {
       userId: user.id,
-      plan: SubscriptionPlan.FREE,
+      plan: SubscriptionPlan.PREMIUM,
       status: SubscriptionStatus.ACTIVE,
     },
   });
-  console.log('Upserted FREE subscription for demo user.');
+  console.log('Upserted PREMIUM subscription for demo user.');
 
   // 4. Bookings (only create if the user has fewer than 2 bookings)
   const bookingCount = await prisma.booking.count({ where: { userId: user.id } });

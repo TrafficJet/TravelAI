@@ -33,13 +33,13 @@ export async function ensureDemoUser(prisma: PrismaClient): Promise<void> {
       console.log('[seed] Repaired demo user password/provider');
     }
 
-    // 2. Ensure FREE subscription (upsert)
+    // 2. Ensure PREMIUM subscription for demo user (no limits during demo)
     await prisma.subscription.upsert({
       where: { userId: user.id },
-      update: { plan: 'FREE', status: 'ACTIVE', expiresAt: null },
-      create: { userId: user.id, plan: 'FREE', status: 'ACTIVE' },
+      update: { plan: 'PREMIUM', status: 'ACTIVE', expiresAt: null },
+      create: { userId: user.id, plan: 'PREMIUM', status: 'ACTIVE' },
     });
-    console.log('[seed] Demo user has FREE subscription');
+    console.log('[seed] Demo user has PREMIUM subscription');
 
     // 3. Ensure wallet exists with $500.00
     const wallet = await prisma.wallet.findUnique({ where: { userId: user.id } });
