@@ -1374,6 +1374,7 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
   quickLinksRow: {
+    alignSelf: 'stretch',
     backgroundColor: Colors.card,
     borderRadius: 12,
     borderWidth: 1,
