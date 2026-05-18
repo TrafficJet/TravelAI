@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
@@ -35,12 +36,11 @@ import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
 import { useTheme } from '../../src/theme/ThemeContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsContext } from '../../context/NotificationsContext';
 import { toast } from '../../lib/toast';
 import i18n from '../../src/i18n';
 import api from '../../services/api';
-import { bookingService } from '../../services/bookingService';
-import type { Booking, FlightDetails, HotelDetails } from '../../types';
 
 const LANGUAGE_KEY = 'app_language';
 
@@ -641,6 +641,7 @@ export default function ProfileScreen() {
   const { user, logout, setUser } = useAuthStore();
   const { colors, isDark, setTheme } = useTheme();
   const { unreadCount } = useNotificationsContext();
+  const insets = useSafeAreaInsets();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isBookingModalVisible, setIsBookingModalVisible] = useState(false);
@@ -656,10 +657,6 @@ export default function ProfileScreen() {
 
   // Theme / language
   const [language, setLanguageState] = useState<'ru' | 'en'>('ru');
-
-  // Recent trips — local state, no global store
-  const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
-  const [isLoadingBookings, setIsLoadingBookings] = useState(true);
 
   // Booking data (read-only display; editing is done via modal)
   const [bookingData, setBookingData] = useState<BookingData>({
@@ -712,14 +709,6 @@ export default function ProfileScreen() {
         // non-fatal — use data from auth store
       }
 
-      try {
-        const res = await bookingService.getBookings({ limit: 3 });
-        setRecentBookings(res.bookings ?? []);
-      } catch {
-        // non-fatal — show empty state silently
-      } finally {
-        setIsLoadingBookings(false);
-      }
     }
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -821,7 +810,7 @@ export default function ProfileScreen() {
     }
 
     const pickerOptions = {
-      mediaTypes: (ImagePicker as any).MediaTypeOptions?.Images ?? 'Images',
+      mediaTypes: ['images'] as import('expo-image-picker').MediaType[],
       allowsEditing: true,
       quality: 0.8,
       base64: true,
@@ -951,57 +940,6 @@ export default function ProfileScreen() {
 
   // ── render helpers ──────────────────────────────────────────────────────────
 
-  function formatTripDate(dateStr: string): string {
-    const d = new Date(dateStr);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}.${month}.${year}`;
-  }
-
-  function getBookingLabel(booking: Booking): string {
-    if (booking.type === 'FLIGHT') {
-      const d = booking.details as Partial<FlightDetails>;
-      if (d.origin && d.destination) {
-        return `${d.origin} → ${d.destination}`;
-      }
-    }
-    if (booking.type === 'HOTEL') {
-      const d = booking.details as Partial<HotelDetails>;
-      if (d.name) return d.name;
-    }
-    return booking.type === 'FLIGHT' ? 'Рейс' : 'Отель';
-  }
-
-  function getStatusColor(status: Booking['status']): string {
-    switch (status) {
-      case 'CONFIRMED':
-        return Colors.success;
-      case 'PENDING':
-        return Colors.warning;
-      case 'CANCELLED':
-      case 'FAILED':
-        return Colors.error;
-      default:
-        return Colors.textMuted;
-    }
-  }
-
-  function getStatusLabel(status: Booking['status']): string {
-    switch (status) {
-      case 'CONFIRMED':
-        return 'Подтверждено';
-      case 'PENDING':
-        return 'Ожидание';
-      case 'CANCELLED':
-        return 'Отменено';
-      case 'FAILED':
-        return 'Ошибка';
-      default:
-        return status;
-    }
-  }
-
   function renderInfoRow(icon: string, label: string, value: string, isLast = false) {
     // Map emoji strings to Ionicon names to avoid [?] squares on iOS
     const iconMap: Record<string, string> = {
@@ -1030,7 +968,7 @@ export default function ProfileScreen() {
     <>
       <ScrollView
         style={[styles.container, { backgroundColor: Colors.background }]}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 24 }]}
       >
         {/* ── Profile header ──────────────────────────────────────────── */}
         <View style={styles.avatarSection}>
@@ -1388,7 +1326,7 @@ export default function ProfileScreen() {
 
             <TouchableOpacity
               style={styles.legalRow}
-              onPress={() => router.push('/privacy-policy')}
+              onPress={() => void Linking.openURL('https://travelai.app/terms')}
               activeOpacity={0.7}
             >
               <Text style={styles.legalRowText}>Условия использования</Text>
@@ -1965,95 +1903,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
     marginTop: 2,
-  },
-
-  // ── Recent trips ─────────────────────────────────────────────────────────
-  tripRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    gap: Spacing.sm,
-  },
-  tripRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  tripBody: {
-    flex: 1,
-    gap: 2,
-  },
-  tripLabel: {
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.medium,
-  },
-  tripDate: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-  },
-  tripStatus: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
-  },
-  tripsEmptyState: {
-    alignItems: 'center',
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-  },
-  tripsEmptyText: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
-    textAlign: 'center',
-    marginBottom: 16,
-    lineHeight: 20,
-  },
-  tripsNewChatBtn: {
-    backgroundColor: Colors.primary,
-    borderRadius: 22,
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-  },
-  tripsNewChatBtnText: {
-    color: Colors.textInverse,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.bold,
-  },
-  // Skeleton
-  tripSkeletonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    gap: Spacing.sm,
-  },
-  tripSkeletonRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  tripSkeletonIcon: {
-    width: 28,
-    height: 20,
-    borderRadius: Radius.xs,
-    backgroundColor: Colors.border,
-  },
-  tripSkeletonBody: {
-    flex: 1,
-    gap: 6,
-  },
-  tripSkeletonLine: {
-    height: 14,
-    borderRadius: Radius.xs,
-    backgroundColor: Colors.border,
-    width: '70%',
-  },
-  tripSkeletonLineSm: {
-    height: 11,
-    borderRadius: Radius.xs,
-    backgroundColor: Colors.border,
-    width: '40%',
   },
 
   // ── Scan document card ────────────────────────────────────────────────────

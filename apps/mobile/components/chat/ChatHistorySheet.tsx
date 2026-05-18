@@ -420,6 +420,8 @@ export function ChatHistorySheet({
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [pinnedIds, setPinnedIds] = useState<string[]>([]);
+  const [renameSession, setRenameSession] = useState<ChatSession | null>(null);
+  const [renameText, setRenameText] = useState('');
 
   // Load pinned chats when sheet opens
   useEffect(() => {
@@ -460,10 +462,8 @@ export function ChatHistorySheet({
         session.title,
       );
     } else {
-      Alert.alert(
-        'Переименовать чат',
-        'Переименование через текстовый ввод скоро будет доступно на Android.',
-      );
+      setRenameText(session.title);
+      setRenameSession(session);
     }
   }
 
@@ -581,10 +581,121 @@ export function ChatHistorySheet({
           }
           showsVerticalScrollIndicator={false}
         />
+
+        {/* Rename Modal (Android) */}
+        <Modal
+          visible={renameSession !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setRenameSession(null)}
+        >
+          <View style={renameStyles.overlay}>
+            <View style={renameStyles.dialog}>
+              <Text style={renameStyles.title}>Переименовать чат</Text>
+              <TextInput
+                style={renameStyles.input}
+                value={renameText}
+                onChangeText={setRenameText}
+                placeholder="Название чата"
+                placeholderTextColor={Colors.textMuted}
+                autoFocus
+                maxLength={100}
+              />
+              <View style={renameStyles.buttons}>
+                <TouchableOpacity
+                  style={renameStyles.cancelBtn}
+                  onPress={() => setRenameSession(null)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={renameStyles.cancelText}>Отмена</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={renameStyles.saveBtn}
+                  onPress={() => {
+                    if (renameText.trim() && renameSession) {
+                      updateSessionTitle(renameSession.id, renameText.trim());
+                    }
+                    setRenameSession(null);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Text style={renameStyles.saveText}>Сохранить</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </Modal>
   );
 }
+
+const renameStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  dialog: {
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    gap: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  title: {
+    fontFamily: 'Sora',
+    fontSize: 18,
+    fontWeight: '600' as const,
+    color: Colors.text,
+  },
+  input: {
+    backgroundColor: Colors.card,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    color: Colors.text,
+    fontFamily: 'Inter',
+    fontSize: 15,
+  },
+  buttons: {
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'flex-end',
+  },
+  cancelBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  cancelText: {
+    color: Colors.textMuted,
+    fontFamily: 'Inter',
+    fontSize: 14,
+    fontWeight: '500' as const,
+  },
+  saveBtn: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: Colors.primary,
+  },
+  saveText: {
+    color: Colors.textInverse,
+    fontFamily: 'Inter',
+    fontSize: 14,
+    fontWeight: '600' as const,
+  },
+});
 
 const sheetStyles = StyleSheet.create({
   container: {

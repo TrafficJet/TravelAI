@@ -154,6 +154,7 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: t('tabs.profile'),
+          headerShown: false,
           tabBarIcon: (props) => (
             <TabIcon {...props} icon="person-outline" iconFocused="person" />
           ),

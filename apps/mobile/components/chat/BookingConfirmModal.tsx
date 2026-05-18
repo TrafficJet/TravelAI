@@ -14,7 +14,6 @@ import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { sendBookingConfirmation } from '../../services/notifications.service';
 import { analytics, Events } from '../../src/analytics';
-import { toast } from '../../lib/toast';
 import type { BookingDraft, FlightDetails } from '../../types';
 
 interface Props {
@@ -144,8 +143,6 @@ export function BookingConfirmModal({
     setIsLoading(true);
     try {
       await onConfirm();
-      onCancel(); // закрыть модалку
-      toast.success('Бронирование успешно оплачено!');
 
       // Send local notification on successful booking
       if (booking.type === 'FLIGHT') {

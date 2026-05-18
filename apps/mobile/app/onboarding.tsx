@@ -267,7 +267,7 @@ export default function OnboardingScreen() {
 
       {/* Animated background gradient — reacts to current slide */}
       <LinearGradient
-        colors={[Colors.background, SLIDES[currentIndex].gradientEnd]}
+        colors={[Colors.background, SLIDES[currentIndex]?.gradientEnd ?? Colors.background]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.6, y: 1 }}
         style={StyleSheet.absoluteFill}
