@@ -32,7 +32,7 @@ type FilterTab = 'all' | 'income' | 'expense';
 
 const FILTER_TABS: { key: FilterTab; label: string }[] = [
   { key: 'all', label: 'Все' },
-  { key: 'income', label: 'Доходы' },
+  { key: 'income', label: 'Пополнения' },
   { key: 'expense', label: 'Расходы' },
 ];
 
@@ -435,17 +435,11 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
       {/* Action buttons */}
       <View style={heroStyles.actionsRow}>
         <TouchableOpacity
-          style={heroStyles.topUpBtn}
+          style={[heroStyles.topUpBtn, { flex: 1 }]}
           onPress={onTopUp}
           activeOpacity={0.8}
         >
           <Text style={heroStyles.topUpBtnText}>+ Пополнить</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={heroStyles.historyBtn}
-          activeOpacity={0.8}
-        >
-          <Text style={heroStyles.historyBtnText}>История</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -489,7 +483,7 @@ const heroStyles = StyleSheet.create({
     marginRight: 52,
   },
   currencySymbol: {
-    fontSize: 24,
+    fontSize: 42,
     fontWeight: Typography.weights.bold,
     color: Colors.primary,
     lineHeight: 52,

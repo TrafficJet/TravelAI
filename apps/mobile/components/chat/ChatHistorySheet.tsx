@@ -3,6 +3,7 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  useEffect,
 } from 'react';
 import {
   Modal,
@@ -23,6 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatStore } from '../../stores/chatStore';
 import { Colors, TextPresets, Radius, Spacing } from '../../constants';
 import type { ChatSession } from '../../types';
@@ -98,11 +100,14 @@ const searchStyles = StyleSheet.create({
 interface SessionItemProps {
   session: ChatSession;
   isActive: boolean;
+  isPinned: boolean;
   onPress: () => void;
   onDelete: () => void;
+  onRename: (session: ChatSession) => void;
+  onTogglePin: () => void;
 }
 
-function SessionItem({ session, isActive, onPress, onDelete }: SessionItemProps) {
+function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename, onTogglePin }: SessionItemProps) {
   const translateX = useRef(new Animated.Value(0)).current;
   const isOpen = useRef(false);
 
@@ -201,9 +206,14 @@ function SessionItem({ session, isActive, onPress, onDelete }: SessionItemProps)
           </View>
 
           <View style={itemStyles.content}>
-            <Text style={itemStyles.title} numberOfLines={1}>
-              {session.title}
-            </Text>
+            <View style={itemStyles.titleRow}>
+              {isPinned && (
+                <Ionicons name="pin" size={11} color={Colors.primary} style={{ marginRight: 4 }} />
+              )}
+              <Text style={itemStyles.title} numberOfLines={1}>
+                {session.title}
+              </Text>
+            </View>
             {session.lastMessage ? (
               <Text style={itemStyles.subtitle} numberOfLines={1}>
                 {session.lastMessage}
@@ -212,6 +222,26 @@ function SessionItem({ session, isActive, onPress, onDelete }: SessionItemProps)
           </View>
 
           <View style={itemStyles.rightCol}>
+            <View style={itemStyles.actions}>
+              <TouchableOpacity
+                onPress={onTogglePin}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={isPinned ? 'pin' : 'pin-outline'}
+                  size={14}
+                  color={isPinned ? Colors.primary : Colors.textMuted}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => onRename(session)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="pencil-outline" size={14} color={Colors.textMuted} />
+              </TouchableOpacity>
+            </View>
             <Text style={itemStyles.time}>{formatItemTime(session.updatedAt)}</Text>
             {isActive && <View style={itemStyles.activeDot} />}
           </View>
@@ -287,12 +317,17 @@ const itemStyles = StyleSheet.create({
     flex: 1,
     gap: 3,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   title: {
     fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: '600' as const,
     color: Colors.text,
     lineHeight: 20,
+    flex: 1,
   },
   subtitle: {
     fontFamily: 'Inter',
@@ -303,8 +338,13 @@ const itemStyles = StyleSheet.create({
   },
   rightCol: {
     alignItems: 'flex-end',
-    gap: 6,
+    gap: 4,
     flexShrink: 0,
+  },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   time: {
     ...TextPresets.label,
@@ -375,40 +415,65 @@ export function ChatHistorySheet({
   onSelectSession,
   onNewChat,
 }: ChatHistorySheetProps) {
-  const { sessions, deleteSession, createSession } = useChatStore();
+  const { sessions, deleteSession, createSession, updateSessionTitle } = useChatStore();
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [pinnedIds, setPinnedIds] = useState<string[]>([]);
 
-  const filteredSessions = useMemo(() => {
+  // Load pinned chats when sheet opens
+  useEffect(() => {
+    if (visible) {
+      AsyncStorage.getItem('pinnedChats').then((val) => {
+        if (val) setPinnedIds(JSON.parse(val) as string[]);
+      }).catch(() => {});
+    }
+  }, [visible]);
+
+  const sortedSessions = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return sessions ?? [];
-    return (sessions ?? []).filter(
-      (s) =>
-        s.title.toLowerCase().includes(q) ||
-        (s.lastMessage ?? '').toLowerCase().includes(q),
+    const list = (sessions ?? []).filter((s) =>
+      !q || s.title.toLowerCase().includes(q) || (s.lastMessage ?? '').toLowerCase().includes(q)
     );
-  }, [sessions, searchQuery]);
+    const pinned = list.filter((s) => pinnedIds.includes(s.id));
+    const unpinned = list.filter((s) => !pinnedIds.includes(s.id));
+    return [...pinned, ...unpinned];
+  }, [sessions, searchQuery, pinnedIds]);
 
-  function handleSessionDelete(session: ChatSession) {
-    Alert.alert(
-      'Удалить чат?',
-      `Чат "${session.title}" будет удалён без возможности восстановления.`,
-      [
-        { text: 'Отмена', style: 'cancel' },
-        {
-          text: 'Удалить',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteSession(session.id);
-            } catch {
-              Alert.alert('Ошибка', 'Не удалось удалить чат. Попробуйте снова.');
-            }
-          },
+  async function handleSessionDelete(session: ChatSession) {
+    try {
+      await deleteSession(session.id);
+    } catch {
+      Alert.alert('Ошибка', 'Не удалось удалить чат. Попробуйте снова.');
+    }
+  }
+
+  function handleRename(session: ChatSession) {
+    if (Platform.OS === 'ios') {
+      Alert.prompt(
+        'Переименовать чат',
+        'Введите новое название',
+        (newTitle) => {
+          if (newTitle?.trim()) updateSessionTitle(session.id, newTitle.trim());
         },
-      ],
-    );
+        'plain-text',
+        session.title,
+      );
+    } else {
+      Alert.alert(
+        'Переименовать чат',
+        'Переименование через текстовый ввод скоро будет доступно на Android.',
+      );
+    }
+  }
+
+  async function handleTogglePin(sessionId: string) {
+    const newPinned = pinnedIds.includes(sessionId)
+      ? pinnedIds.filter((id) => id !== sessionId)
+      : [sessionId, ...pinnedIds];
+    setPinnedIds(newPinned);
+    await AsyncStorage.setItem('pinnedChats', JSON.stringify(newPinned));
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }
 
   const handleNewChat = useCallback(async () => {
@@ -482,17 +547,20 @@ export function ChatHistorySheet({
 
         {/* Sessions list */}
         <FlatList
-          data={filteredSessions}
+          data={sortedSessions}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <SessionItem
               session={item}
               isActive={item.id === currentSessionId}
+              isPinned={pinnedIds.includes(item.id)}
               onPress={() => {
                 onClose();
                 onSelectSession(item.id);
               }}
               onDelete={() => handleSessionDelete(item)}
+              onRename={handleRename}
+              onTogglePin={() => { void handleTogglePin(item.id); }}
             />
           )}
           ListEmptyComponent={
@@ -507,7 +575,7 @@ export function ChatHistorySheet({
             )
           }
           contentContainerStyle={
-            filteredSessions.length === 0
+            sortedSessions.length === 0
               ? sheetStyles.emptyList
               : sheetStyles.list
           }

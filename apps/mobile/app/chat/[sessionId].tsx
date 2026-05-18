@@ -10,7 +10,6 @@ import {
   Animated,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   PanResponder,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -219,7 +218,6 @@ export default function ChatScreen() {
     sessions,
     updateSessionTitle,
     deleteSession,
-    createSession,
   } = useChatStore();
 
   const { balance, currency: walletCurrency, load: loadWallet, isLoading: isWalletLoading } = useWalletStore();
@@ -230,7 +228,6 @@ export default function ChatScreen() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [pendingBookingId, setPendingBookingId] = React.useState<string | null>(null);
   const [historyVisible, setHistoryVisible] = useState(false);
-  const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
 
   // ── Swipe left → bookings ─────────────────────────────────────────────────
@@ -324,20 +321,6 @@ export default function ChatScreen() {
     );
   }, [sessionId, currentSession, deleteSession, loadMessages]);
 
-  async function handleNewChatFromHeader() {
-    if (isCreatingNew) return;
-    setIsCreatingNew(true);
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      const id = await createSession();
-      router.replace((`/chat/${id}`) as never);
-    } catch {
-      Alert.alert('Ошибка', 'Не удалось создать чат. Попробуйте снова.');
-    } finally {
-      setIsCreatingNew(false);
-    }
-  }
-
   useEffect(() => {
     if (!sessionId) return;
     const session = (sessions ?? []).find((s) => s.id === sessionId);
@@ -376,19 +359,6 @@ export default function ChatScreen() {
             <Ionicons name="person-circle-outline" size={26} color={Colors.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={chatHeaderStyles.newChatBtn}
-            onPress={() => { void handleNewChatFromHeader(); }}
-            activeOpacity={0.7}
-            disabled={isCreatingNew}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            {isCreatingNew ? (
-              <ActivityIndicator color={Colors.primary} size="small" />
-            ) : (
-              <Ionicons name="add" size={22} color={Colors.primary} />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
             style={chatHeaderStyles.menuBtn}
             onPress={handleHeaderMenu}
             activeOpacity={0.7}
@@ -400,7 +370,7 @@ export default function ChatScreen() {
       ),
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu, historyVisible, isCreatingNew]);
+  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu, historyVisible]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -713,17 +683,6 @@ const chatHeaderStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-  },
-  // New chat button
-  newChatBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: Colors.primaryMuted,
-    borderWidth: 1,
-    borderColor: `${Colors.primary}50`,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   // Profile button
   profileBtn: {

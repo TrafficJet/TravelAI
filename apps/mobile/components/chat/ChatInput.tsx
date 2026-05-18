@@ -102,6 +102,47 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
     Alert.alert('Голосовой ввод', 'Скоро будет доступен');
   }
 
+  function handleAttach() {
+    Alert.alert(
+      'Прикрепить',
+      'Выберите тип вложения',
+      [
+        { text: '📷 Сфотографировать', onPress: () => handlePickMedia('camera') },
+        { text: '🖼️ Из галереи', onPress: () => handlePickMedia('gallery') },
+        { text: '📄 Документ', onPress: () => Alert.alert('Документы', 'Скоро будет доступно') },
+        { text: 'Отмена', style: 'cancel' },
+      ],
+    );
+  }
+
+  async function handlePickMedia(source: 'camera' | 'gallery') {
+    try {
+      const ImagePicker = await import('expo-image-picker');
+      let result;
+      if (source === 'camera') {
+        const perm = await ImagePicker.requestCameraPermissionsAsync();
+        if (perm.status !== 'granted') {
+          Alert.alert('Нет доступа', 'Разрешите доступ к камере в настройках');
+          return;
+        }
+        result = await ImagePicker.launchCameraAsync({ base64: false, quality: 0.8 });
+      } else {
+        const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (perm.status !== 'granted') {
+          Alert.alert('Нет доступа', 'Разрешите доступ к фото в настройках');
+          return;
+        }
+        result = await ImagePicker.launchImageLibraryAsync({ base64: false, quality: 0.8 });
+      }
+      if (!result.canceled && result.assets[0]) {
+        const uri = result.assets[0].uri;
+        onSend(`[Изображение: ${uri}]`);
+      }
+    } catch {
+      Alert.alert('Ошибка', 'Не удалось открыть галерею. Попробуйте ещё раз.');
+    }
+  }
+
   function handleSuggestionSelect(suggestion: string) {
     setText(suggestion);
     if (onSuggestionSelect) {
@@ -137,6 +178,11 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
 
       {/* Input row */}
       <View style={styles.container}>
+        {/* Attach button */}
+        <TouchableOpacity style={styles.attachBtn} onPress={handleAttach} activeOpacity={0.7}>
+          <Ionicons name="add" size={22} color={Colors.primary} />
+        </TouchableOpacity>
+
         {/* Text input — pill shape */}
         <TextInput
           value={text}
@@ -261,5 +307,16 @@ const styles = StyleSheet.create({
     opacity: 0.65,
     shadowOpacity: 0,
     elevation: 0,
+  },
+  attachBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
   },
 });
