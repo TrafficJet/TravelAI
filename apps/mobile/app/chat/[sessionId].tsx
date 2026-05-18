@@ -448,11 +448,13 @@ export default function ChatScreen() {
 
   useEffect(() => {
     if (!sessionId) return;
+    // Reset streaming state on session change to prevent stuck "isStreaming=true" from a previous session
+    setStreaming(false);
     loadMessages(sessionId)
       .catch(() => {})
       .finally(() => setIsLoading(false));
     loadWallet().catch(() => {});
-  }, [sessionId, loadMessages, loadWallet]);
+  }, [sessionId, loadMessages, loadWallet, setStreaming]);
 
   // Auto-send initialMessage once messages have loaded and streaming is idle
   const autoSentRef = useRef(false);
@@ -562,6 +564,9 @@ export default function ChatScreen() {
         },
         Object.keys(filtersPayload).length > 0 ? filtersPayload : undefined,
       );
+      // Safety net: ensure streaming is reset even if onDone/onError weren't called
+      // (e.g. server closed connection without a "done" event)
+      setStreaming(false);
     } catch (err: unknown) {
       setStreaming(false);
       captureError(err, { sessionId, source: 'sse_catch' });
