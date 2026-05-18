@@ -67,7 +67,14 @@
         }
       ],
       "@sentry/react-native",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Для фото профиля и выбора документа из галереи",
+          "cameraPermission": "Для фото профиля и сканирования документов (паспорт, права)"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
