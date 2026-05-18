@@ -423,7 +423,7 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
     >
       {/* Wallet icon — top right */}
       <View style={heroStyles.walletIconWrap}>
-        <Text style={heroStyles.walletIcon}>👛</Text>
+        <Ionicons name="wallet-outline" size={22} color={Colors.primary} />
       </View>
 
       {/* Balance */}

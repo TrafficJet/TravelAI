@@ -457,7 +457,7 @@ function BookingsEmptyState() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <Text style={emptyStyles.icon}>🎫</Text>
+        <Ionicons name="ticket-outline" size={38} color={Colors.primary} />
       </LinearGradient>
 
       <Text style={emptyStyles.title}>Пока нет бронирований</Text>

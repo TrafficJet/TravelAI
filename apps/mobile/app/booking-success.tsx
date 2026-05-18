@@ -17,6 +17,7 @@ import Animated, {
   FadeIn,
 } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
@@ -117,7 +118,7 @@ function AnimatedCheckmark() {
       <Animated.View style={[checkStyles.ring, ringStyle]} />
       {/* Main circle */}
       <Animated.View style={[checkStyles.circle, circleStyle]}>
-        <Text style={checkStyles.icon}>✓</Text>
+        <Ionicons name="checkmark" size={48} color={Colors.success} />
       </Animated.View>
     </View>
   );
