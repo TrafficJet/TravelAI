@@ -379,8 +379,6 @@ const HOTELS_BY_CITY: Record<string, HotelMockEntry[]> = {
       currency: 'EUR',
     },
   ],
-};
-
   madrid: [
     {
       hotelName: 'Hotel Ritz Madrid',
