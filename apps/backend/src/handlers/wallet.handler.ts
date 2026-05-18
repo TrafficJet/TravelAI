@@ -55,9 +55,12 @@ export async function getWallet(request: FastifyRequest, reply: FastifyReply) {
     throw Errors.notFound('Кошелёк');
   }
 
+  // Normalize legacy RUB wallets to USD — all prices in app are in USD
+  const normalizedCurrency = wallet.currency === 'RUB' ? 'USD' : wallet.currency;
+
   return reply.send({
     balance: wallet.balance.toString(),
-    currency: wallet.currency,
+    currency: normalizedCurrency,
     transactions: wallet.transactions.map(formatTransaction),
   });
 }
