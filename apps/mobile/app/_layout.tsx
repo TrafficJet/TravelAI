@@ -11,7 +11,8 @@ import type { EventSubscription } from 'expo-modules-core';
 import { useAuthStore } from '../stores/authStore';
 import { useWalletStore } from '../stores/walletStore';
 import { Colors } from '../constants/colors';
-import { setupNotificationHandlers } from '../services/notifications.service';
+import { setupNotificationHandlers, registerForPushNotifications } from '../services/notifications.service';
+import api from '../services/api';
 import { ThemeProvider } from '../src/theme/ThemeContext';
 import { NotificationsProvider } from '../context/NotificationsContext';
 import { initSentry } from '../lib/sentry';
@@ -110,6 +111,7 @@ export default function RootLayout() {
   const { isAuthenticated, isLoading, loadStoredAuth } = useAuthStore();
   const loadWallet = useWalletStore((state) => state.load);
   const responseListenerRef = useRef<EventSubscription | null>(null);
+  const prevAuthenticatedRef = useRef<boolean>(false);
 
   // Controls whether to show the custom brand splash
   const [showBrandSplash, setShowBrandSplash] = useState(true);
@@ -150,8 +152,24 @@ export default function RootLayout() {
   }, [loadStoredAuth]);
 
   useEffect(() => {
+    const wasAuthenticated = prevAuthenticatedRef.current;
+    prevAuthenticatedRef.current = isAuthenticated;
+
     if (isAuthenticated) {
       loadWallet().catch(() => {});
+
+      // Register push token and send it to the backend.
+      // Graceful: on simulator / permission denied / web → returns null, nothing sent.
+      registerForPushNotifications()
+        .then((token) => {
+          if (token) {
+            api.post('/users/me/push-token', { token }).catch(() => {});
+          }
+        })
+        .catch(() => {});
+    } else if (wasAuthenticated) {
+      // User just logged out — clear push token from the backend.
+      api.post('/users/me/push-token', { token: null }).catch(() => {});
     }
   }, [isAuthenticated, loadWallet]);
 
