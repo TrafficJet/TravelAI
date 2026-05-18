@@ -391,7 +391,8 @@ export async function searchFlights(params: SearchFlightsParams): Promise<Flight
   try {
     return await searchFlightsDuffelReal(params, client);
   } catch (error) {
-    console.error('[Duffel] Real API call failed, falling back to mock:', error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[Duffel] Fallback to mock: ${message}`);
     return searchFlightsMock(params);
   }
 }

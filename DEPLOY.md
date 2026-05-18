@@ -67,6 +67,62 @@ startCommand = "npx prisma migrate deploy && node dist/server.js"
 
 ---
 
+## 1.6 Railway Environment Variables — full reference
+
+Copy-paste the block below into the Railway **Variables** tab (one variable per line,
+use **Raw Editor** / "Paste as text" for bulk import).  
+Replace placeholder values with your actual keys before saving.
+
+```
+# ─── Database (injected automatically by Railway PostgreSQL plugin) ───────────
+DATABASE_URL=postgresql://...  # set automatically — do not override
+
+# ─── Auth ─────────────────────────────────────────────────────────────────────
+JWT_ACCESS_SECRET=<random-min-32-chars>   # openssl rand -hex 32
+JWT_REFRESH_SECRET=<random-min-32-chars>  # openssl rand -hex 32
+
+# ─── AI ───────────────────────────────────────────────────────────────────────
+ANTHROPIC_API_KEY=sk-ant-...             # Anthropic console → API Keys
+
+# ─── Flight search (Duffel) ───────────────────────────────────────────────────
+# Test key:  duffel_test_...   (sandbox — no real tickets)
+# Live key:  duffel_live_...   (requires Duffel production approval)
+DUFFEL_API_KEY=duffel_test_...           # app.duffel.com → Settings → API Tokens
+
+# ─── Flight price data (Aviasales / Travelpayouts) ────────────────────────────
+AVIASALES_TOKEN=...                      # travelpayouts.com → Tools → API
+
+# ─── Payments (YooKassa) ──────────────────────────────────────────────────────
+# Test credentials (official, ready to use):
+#   YOOKASSA_SHOP_ID=381764
+#   YOOKASSA_SECRET_KEY=test_OTE4NDM2NTE0MDk4NzI0MA==
+YOOKASSA_SHOP_ID=381764
+YOOKASSA_SECRET_KEY=test_OTE4NDM2NTE0MDk4NzI0MA==  # yookassa.ru → Integration → Security
+PAYMENT_MOCK_MODE=false                  # true = skip real payment gateway
+
+# ─── Push notifications (Expo) ────────────────────────────────────────────────
+EXPO_ACCESS_TOKEN=...                    # expo.dev → Account Settings → Access Tokens
+
+# ─── Runtime ──────────────────────────────────────────────────────────────────
+NODE_ENV=production
+PORT=3000
+LOG_LEVEL=info
+CORS_ORIGIN=*                            # or your exact mobile/web app origin
+```
+
+> **Diagnostic check**: after deploying, call `GET /health/providers` to confirm
+> which integrations are active:
+> ```json
+> {
+>   "duffel":    { "configured": true,  "mode": "real" },
+>   "aviasales": { "configured": true },
+>   "yookassa":  { "configured": true }
+> }
+> ```
+> If a key is missing the service falls back to mock data automatically.
+
+---
+
 ## 2. Getting API keys
 
 ### 2.1 Anthropic (Claude AI)

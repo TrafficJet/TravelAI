@@ -54,4 +54,26 @@ export async function healthRoutes(fastify: FastifyInstance) {
       return reply.status(503).send({ ready: false, error: 'Database unavailable' });
     }
   });
+
+  // GET /health/providers — diagnostic endpoint: which 3rd-party integrations are configured
+  // Returns whether each provider key is present in env and which mode (real/mock) is active.
+  fastify.get('/providers', async (_request, reply) => {
+    const duffelKey = process.env.DUFFEL_API_KEY;
+    const aviasalesToken = process.env.AVIASALES_TOKEN;
+    const yookassaShopId = process.env.YOOKASSA_SHOP_ID;
+    const yookassaSecret = process.env.YOOKASSA_SECRET_KEY;
+
+    return reply.send({
+      duffel: {
+        configured: Boolean(duffelKey),
+        mode: duffelKey ? 'real' : 'mock',
+      },
+      aviasales: {
+        configured: Boolean(aviasalesToken),
+      },
+      yookassa: {
+        configured: Boolean(yookassaShopId && yookassaSecret),
+      },
+    });
+  });
 }
