@@ -28,6 +28,7 @@ import { priceAlertsRoutes } from './routes/price-alerts.routes';
 import { notificationsRoutes } from './routes/notifications.routes';
 import { integrationsRoutes } from './routes/integrations.routes';
 import { favoritesRoutes } from './routes/favorites.routes';
+import { stripeRoutes } from './routes/stripe.routes';
 
 // Workers
 import { registerPriceAlertWorker } from './workers/priceAlert.worker';
@@ -124,6 +125,9 @@ async function buildServer() {
   await fastify.register(priceAlertsRoutes, { prefix: '/api/price-alerts' });
   await fastify.register(notificationsRoutes, { prefix: '/api/notifications' });
   await fastify.register(favoritesRoutes, { prefix: '/api/users/me/favorites' });
+
+  // Stripe webhook — public (no auth), raw body for signature verification
+  await fastify.register(stripeRoutes, { prefix: '/api/stripe' });
 
   // Integration status — public monitoring endpoint
   await fastify.register(integrationsRoutes, { prefix: '/api/integrations' });

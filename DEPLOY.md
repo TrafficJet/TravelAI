@@ -44,6 +44,8 @@ In the service **Variables** tab add:
 | `AVIASALES_TOKEN` | token string | see section 2.3 |
 | `YOOKASSA_SHOP_ID` | numeric shop ID | see section 2.4 |
 | `YOOKASSA_SECRET_KEY` | `test_...` or `live_...` | see section 2.4 |
+| `STRIPE_SECRET_KEY` | `sk_live_...` or `sk_test_...` | see section 2.5 |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_...` | see section 2.5 |
 | `NODE_ENV` | `production` | — |
 | `PORT` | `3000` | — |
 | `LOG_LEVEL` | `info` | — |
@@ -92,7 +94,19 @@ DUFFEL_API_KEY=duffel_test_...           # app.duffel.com → Settings → API T
 # ─── Flight price data (Aviasales / Travelpayouts) ────────────────────────────
 AVIASALES_TOKEN=...                      # travelpayouts.com → Tools → API
 
-# ─── Payments (YooKassa) ──────────────────────────────────────────────────────
+# ─── Payments (Stripe) — primary method for international users ───────────────
+# If STRIPE_SECRET_KEY is set, Stripe takes priority over YooKassa.
+# Without either key the server falls back to mock mode (dev only).
+#
+# Test key:  sk_test_...   (sandbox — no real charges)
+# Live key:  sk_live_...   (requires Stripe account activation)
+STRIPE_SECRET_KEY=sk_test_...            # dashboard.stripe.com → Developers → API Keys
+STRIPE_WEBHOOK_SECRET=whsec_...         # dashboard.stripe.com → Developers → Webhooks → signing secret
+                                         # Register endpoint: POST https://<your-host>/api/stripe/webhook
+                                         # Events to listen: payment_intent.succeeded
+
+# ─── Payments (YooKassa) — Russian users fallback ────────────────────────────
+# Used only when STRIPE_SECRET_KEY is NOT set.
 # Test credentials (official, ready to use):
 #   YOOKASSA_SHOP_ID=381764
 #   YOOKASSA_SECRET_KEY=test_OTE4NDM2NTE0MDk4NzI0MA==
@@ -150,6 +164,44 @@ CORS_ORIGIN=*                            # or your exact mobile/web app origin
    (Russian interface: Инструменты → API → Получить токен).
 3. Your API token appears on that page.
 4. The `AVIASALES_MARKER` value (affiliate marker) is shown in your partner profile.
+
+### 2.5 Stripe (payments — international)
+
+Stripe is the primary payment method for international users.
+When `STRIPE_SECRET_KEY` is set it takes priority over YooKassa.
+
+**Test credentials:**
+
+1. Go to https://dashboard.stripe.com and sign in (or create a free account).
+2. In the top-right toggle switch to **Test mode**.
+3. Go to **Developers** → **API Keys**.
+4. Copy the **Secret key** — it starts with `sk_test_`.
+5. Set `STRIPE_SECRET_KEY=sk_test_...` in your environment.
+
+**Webhook secret (required in production):**
+
+1. In the Stripe dashboard go to **Developers** → **Webhooks**.
+2. Click **Add endpoint**.
+3. Set the URL to `https://<your-railway-host>/api/stripe/webhook`.
+4. Under **Events to listen** select `payment_intent.succeeded`.
+5. Click **Add endpoint** then open the new webhook and copy the **Signing secret** — it starts with `whsec_`.
+6. Set `STRIPE_WEBHOOK_SECRET=whsec_...` in your environment.
+
+**Local webhook testing (Stripe CLI):**
+
+```bash
+# Install Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Forward webhooks to local server
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+# The CLI prints a webhook signing secret — set it as STRIPE_WEBHOOK_SECRET in .env
+```
+
+**Live credentials:**
+
+Live keys (`sk_live_...`) require activating your Stripe account (business details + bank account).
+Use test keys for MVP/development.
 
 ### 2.4 YooKassa (payments)
 

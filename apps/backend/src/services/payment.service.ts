@@ -119,6 +119,75 @@ export async function processCardTopup(params: {
   };
 }
 
+// ─── Stripe ──────────────────────────────────────────────────────────────────
+import StripeLib from 'stripe';
+// StripeLib is the callable constructor; StripeLib.Stripe is the instance type
+type StripeInstance = InstanceType<typeof StripeLib>;
+
+function getStripeClient(): StripeInstance | null {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+  return new StripeLib(key, { apiVersion: '2026-04-22.dahlia' });
+}
+
+export function isStripeConfigured(): boolean {
+  return Boolean(process.env.STRIPE_SECRET_KEY);
+}
+
+/**
+ * Create Stripe Payment Intent for wallet topup.
+ * Returns { clientSecret, paymentIntentId } — mobile app uses clientSecret with Stripe SDK.
+ * Falls back to mock if STRIPE_SECRET_KEY is not set.
+ */
+export async function createStripeTopup(params: {
+  amount: number;      // in dollars/euros (not cents)
+  currency: string;    // 'usd' | 'eur'
+  userId: string;
+  walletTransactionId: string;
+}): Promise<{
+  success: boolean;
+  clientSecret: string | null;
+  paymentIntentId: string;
+  amount: number;
+  currency: string;
+  mode: 'real' | 'mock';
+}> {
+  const stripe = getStripeClient();
+
+  if (!stripe) {
+    // Mock mode — immediately succeed
+    return {
+      success: true,
+      clientSecret: null,
+      paymentIntentId: `mock_pi_${Date.now()}`,
+      amount: params.amount,
+      currency: params.currency,
+      mode: 'mock',
+    };
+  }
+
+  const amountInCents = Math.round(params.amount * 100);
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: amountInCents,
+    currency: params.currency.toLowerCase(),
+    metadata: {
+      userId: params.userId,
+      walletTransactionId: params.walletTransactionId,
+    },
+    automatic_payment_methods: { enabled: true },
+  });
+
+  return {
+    success: true,
+    clientSecret: paymentIntent.client_secret,
+    paymentIntentId: paymentIntent.id,
+    amount: params.amount,
+    currency: params.currency,
+    mode: 'real',
+  };
+}
+
 // ─── Booking payment (stays as mock for now) ──────────────────────────────────
 
 /**

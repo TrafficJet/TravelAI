@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../lib/prisma';
 import { Errors } from '../lib/errors';
-import { processCardTopup } from '../services/payment.service';
+import { processCardTopup, createStripeTopup, isStripeConfigured } from '../services/payment.service';
 
 const ALLOWED_TOPUP_AMOUNTS = [500, 1000, 2000, 5000] as const;
 type AllowedTopupAmount = (typeof ALLOWED_TOPUP_AMOUNTS)[number];
@@ -65,12 +65,17 @@ export async function getWallet(request: FastifyRequest, reply: FastifyReply) {
 /**
  * POST /api/wallet/topup — initiate a funds top-up.
  *
- * Two flows:
- *   1. YooKassa configured → create pending WalletTransaction (status PENDING),
- *      return { status: 'pending', paymentUrl, paymentId, amount }.
- *      Funds are credited by the webhook after payment.succeeded.
+ * Three flows (checked in priority order):
+ *   1. Stripe configured (STRIPE_SECRET_KEY set) →
+ *        create pending WalletTransaction, return { status: 'pending', mode: 'stripe', clientSecret, paymentIntentId }.
+ *        Funds are credited by POST /api/stripe/webhook after payment_intent.succeeded.
  *
- *   2. Mock mode → atomically credit the wallet immediately, return new balance.
+ *   2. YooKassa configured (YOOKASSA_SHOP_ID + YOOKASSA_SECRET_KEY set) →
+ *        create pending WalletTransaction, return { status: 'pending', mode: 'yookassa', paymentUrl, paymentId }.
+ *        Funds are credited by POST /api/payments/yookassa/webhook after payment.succeeded.
+ *
+ *   3. Mock mode (no payment keys) →
+ *        atomically credit the wallet immediately, return new balance.
  */
 export async function topupWallet(request: FastifyRequest, reply: FastifyReply) {
   const userId = request.userId;
@@ -91,11 +96,51 @@ export async function topupWallet(request: FastifyRequest, reply: FastifyReply) 
     throw Errors.notFound('Кошелёк');
   }
 
+  // ── Flow 1: Stripe ─────────────────────────────────────────────────────────
+  if (isStripeConfigured()) {
+    // Step 1: create a PENDING transaction record
+    const pendingTx = await prisma.walletTransaction.create({
+      data: {
+        walletId: wallet.id,
+        amount,
+        type: 'TOPUP',
+        status: 'PENDING',
+        description: `Wallet top-up ${amount} ${wallet.currency} (awaiting payment)`,
+      },
+    });
+
+    // Step 2: create the Payment Intent in Stripe
+    let stripeResult;
+    try {
+      stripeResult = await createStripeTopup({
+        amount,
+        currency: wallet.currency.toLowerCase() === 'rub' ? 'usd' : wallet.currency.toLowerCase(),
+        userId,
+        walletTransactionId: pendingTx.id,
+      });
+    } catch (err) {
+      await prisma.walletTransaction.delete({ where: { id: pendingTx.id } });
+      request.log.error({ err }, '[Stripe] createPaymentIntent failed');
+      throw Errors.internal('Не удалось создать платёж. Попробуйте позже.');
+    }
+
+    return reply.send({
+      status: 'pending',
+      mode: 'stripe',
+      clientSecret: stripeResult.clientSecret,
+      paymentIntentId: stripeResult.paymentIntentId,
+      amount,
+      currency: stripeResult.currency,
+      allowedAmounts: ALLOWED_TOPUP_AMOUNTS,
+    });
+  }
+
+  // ── Flow 2: YooKassa ───────────────────────────────────────────────────────
   const yookassaEnabled =
     Boolean(process.env.YOOKASSA_SHOP_ID) && Boolean(process.env.YOOKASSA_SECRET_KEY);
 
   if (yookassaEnabled) {
-    // ── Step 1: create a PENDING transaction record ──────────────────────────
+    // Step 1: create a PENDING transaction record
     const pendingTx = await prisma.walletTransaction.create({
       data: {
         walletId: wallet.id,
@@ -106,7 +151,7 @@ export async function topupWallet(request: FastifyRequest, reply: FastifyReply) 
       },
     });
 
-    // ── Step 2: create the payment in YooKassa ───────────────────────────────
+    // Step 2: create the payment in YooKassa
     let paymentResult;
     try {
       paymentResult = await processCardTopup({
@@ -124,6 +169,7 @@ export async function topupWallet(request: FastifyRequest, reply: FastifyReply) 
 
     return reply.send({
       status: 'pending',
+      mode: 'yookassa',
       paymentUrl: paymentResult.confirmationUrl,
       paymentId: paymentResult.yookassaPaymentId,
       amount,
@@ -131,8 +177,7 @@ export async function topupWallet(request: FastifyRequest, reply: FastifyReply) 
     });
   }
 
-  // ── Mock mode: atomic credit + transaction record ────────────────────────────
-  // SAFE IN MOCK MODE: processCardTopup returns mock data when YOOKASSA_SHOP_ID is not configured
+  // ── Flow 3: Mock mode — atomic credit + transaction record ─────────────────
   const paymentResult = await processCardTopup({
     amount,
     currency: wallet.currency,
