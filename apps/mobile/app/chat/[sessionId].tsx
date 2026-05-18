@@ -306,11 +306,15 @@ export default function ChatScreen() {
   // Subscribe to network state changes
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
-      setIsOffline(state.isConnected === false);
+      // На web Platform NetInfo может ложно сообщать offline.
+      // Считаем offline только если оба признака подтверждают отсутствие сети.
+      const offline = state.isConnected === false && state.isInternetReachable === false;
+      setIsOffline(offline);
     });
     // Check immediately on mount
     NetInfo.fetch().then((state) => {
-      setIsOffline(state.isConnected === false);
+      const offline = state.isConnected === false && state.isInternetReachable === false;
+      setIsOffline(offline);
     });
     return unsubscribe;
   }, []);
