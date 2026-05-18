@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/colors';
@@ -44,7 +45,7 @@ function StarRow({ count, rating }: { count: number; rating?: number }) {
         <Ionicons key={`f${i}`} name="star" size={12} color="#F59E0B" />
       ))}
       {Array.from({ length: empty }).map((_, i) => (
-        <Ionicons key={`e${i}`} name="star-outline" size={12} color={Colors.border} />
+        <Ionicons key={`e${i}`} name="star-outline" size={12} color="rgba(255,255,255,0.5)" />
       ))}
       {rating !== undefined && (
         <Text style={starStyles.rating}>{rating.toFixed(1)}/10</Text>
@@ -61,7 +62,7 @@ const starStyles = StyleSheet.create({
     flexShrink: 1,
   },
   rating: {
-    color: Colors.primary,
+    color: '#F59E0B',
     fontSize: 12,
     fontWeight: '700',
     marginLeft: 6,
@@ -118,6 +119,7 @@ export function HotelCard({ hotel, onBook }: Props) {
     hotel.checkIn && hotel.checkOut ? nightsCount(hotel.checkIn, hotel.checkOut) : 0;
   const currencySymbol = formatCurrency(hotel.currency);
   const total = nights > 0 ? hotel.pricePerNight * nights : undefined;
+  const photoUri = `https://picsum.photos/seed/${encodeURIComponent(hotel.name)}/400/200`;
 
   function handlePress() {
     router.push({
@@ -147,86 +149,96 @@ export function HotelCard({ hotel, onBook }: Props) {
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.82} style={styles.card}>
 
-      {/* Favorite — absolute top-right */}
-      <View style={styles.favWrap}>
-        <FavoriteButton type="hotel" item={hotel} size={18} />
-      </View>
+      {/* ── Photo section with overlay ── */}
+      <View style={styles.photoContainer}>
+        <Image
+          source={{ uri: photoUri }}
+          style={styles.photo}
+          resizeMode="cover"
+        />
 
-      {/* ── 1. Hotel name large + location ── */}
-      <View style={styles.headerSection}>
-        <Text style={styles.hotelIcon}>🏨</Text>
-        <View style={styles.headerText}>
-          <Text style={styles.hotelName} numberOfLines={2}>
-            {hotel.name}
-          </Text>
-          {(hotel.address || hotel.city) && (
-            <View style={styles.locationRow}>
-              <Ionicons name="location-outline" size={11} color={Colors.textMuted} />
-              <Text style={styles.locationText} numberOfLines={1}>
-                {[hotel.address, hotel.city].filter(Boolean).join(' · ')}
-              </Text>
+        {/* Dark gradient overlay at the bottom of the photo */}
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.7)']}
+          style={styles.photoOverlay}
+        >
+          <View style={styles.overlayContent}>
+            <Text style={styles.overlayHotelName} numberOfLines={1}>
+              {hotel.name}
+            </Text>
+            <View style={styles.overlayBottom}>
+              {(hotel.address || hotel.city) && (
+                <View style={styles.locationRow}>
+                  <Ionicons name="location-outline" size={11} color="rgba(255,255,255,0.85)" />
+                  <Text style={styles.locationText} numberOfLines={1}>
+                    {[hotel.address, hotel.city].filter(Boolean).join(' · ')}
+                  </Text>
+                </View>
+              )}
+              {hotel.stars !== undefined && hotel.stars > 0 && (
+                <StarRow count={hotel.stars} rating={hotel.rating} />
+              )}
             </View>
-          )}
+          </View>
+        </LinearGradient>
+
+        {/* Favourite button — top-right corner of photo */}
+        <View style={styles.favWrap}>
+          <FavoriteButton type="hotel" item={hotel} size={18} />
         </View>
       </View>
 
-      {/* ── 2. Stars + rating ── */}
-      {hotel.stars !== undefined && hotel.stars > 0 && (
-        <View style={styles.starsRow}>
-          <StarRow count={hotel.stars} rating={hotel.rating} />
-        </View>
-      )}
+      {/* ── Card body ── */}
+      <View style={styles.cardBody}>
 
-      {/* ── Divider ── */}
-      <View style={styles.divider} />
+        {/* ── 3. Amenities chips (first 3) ── */}
+        {topAmenities.length > 0 && (
+          <View style={styles.amenitiesRow}>
+            {topAmenities.map((a, i) => (
+              <AmenityChip key={i} label={a} />
+            ))}
+          </View>
+        )}
 
-      {/* ── 3. Amenities chips (first 3) ── */}
-      {topAmenities.length > 0 && (
-        <View style={styles.amenitiesRow}>
-          {topAmenities.map((a, i) => (
-            <AmenityChip key={i} label={a} />
-          ))}
-        </View>
-      )}
+        {/* ── Dates row ── */}
+        {hotel.checkIn && hotel.checkOut && (
+          <View style={styles.datesRow}>
+            <Text style={styles.datesIcon}>📅</Text>
+            <Text style={styles.datesText}>
+              {formatDate(hotel.checkIn)} — {formatDate(hotel.checkOut)}
+            </Text>
+            {nights > 0 && (
+              <Text style={styles.nightsText}>
+                ({nights} {nights === 1 ? 'ночь' : nights < 5 ? 'ночи' : 'ночей'})
+              </Text>
+            )}
+          </View>
+        )}
 
-      {/* ── Dates row ── */}
-      {hotel.checkIn && hotel.checkOut && (
-        <View style={styles.datesRow}>
-          <Text style={styles.datesIcon}>📅</Text>
-          <Text style={styles.datesText}>
-            {formatDate(hotel.checkIn)} — {formatDate(hotel.checkOut)}
+        {/* ── 4. Price per night (large, amber) ── */}
+        <View style={styles.priceRow}>
+          <Text style={styles.pricePerNight}>
+            {currencySymbol}{hotel.pricePerNight.toLocaleString('ru-RU')}
+            <Text style={styles.pricePerNightLabel}>/ночь</Text>
           </Text>
-          {nights > 0 && (
-            <Text style={styles.nightsText}>
-              ({nights} {nights === 1 ? 'ночь' : nights < 5 ? 'ночи' : 'ночей'})
+          {total !== undefined && (
+            <Text style={styles.totalPrice}>
+              Итого: {currencySymbol}{total.toLocaleString('ru-RU')}
             </Text>
           )}
         </View>
-      )}
 
-      {/* ── 4. Price per night (large, amber) ── */}
-      <View style={styles.priceRow}>
-        <Text style={styles.pricePerNight}>
-          {currencySymbol}{hotel.pricePerNight.toLocaleString('ru-RU')}
-          <Text style={styles.pricePerNightLabel}>/ночь</Text>
-        </Text>
-        {total !== undefined && (
-          <Text style={styles.totalPrice}>
-            Итого: {currencySymbol}{total.toLocaleString('ru-RU')}
-          </Text>
-        )}
+        {/* ── 5. "Посмотреть" button ── */}
+        <View style={styles.bottomDivider} />
+        <TouchableOpacity
+          style={styles.bookBtn}
+          onPress={onBook ?? handlePress}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.bookBtnText}>Посмотреть →</Text>
+        </TouchableOpacity>
+
       </View>
-
-      {/* ── 5. "Посмотреть" button ── */}
-      <View style={styles.bottomDivider} />
-      <TouchableOpacity
-        style={styles.bookBtn}
-        onPress={onBook ?? handlePress}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.bookBtnText}>Посмотреть →</Text>
-      </TouchableOpacity>
-
     </TouchableOpacity>
   );
 }
@@ -235,68 +247,89 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.card,
     borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingTop: 12,
-    paddingBottom: 14,
     marginHorizontal: 0,
     marginVertical: 4,
     borderWidth: 1,
     borderColor: Colors.border,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
-  // Fav
-  favWrap: {
+  // Photo area
+  photoContainer: {
+    width: '100%',
+    height: 140,
+    position: 'relative',
+  },
+  photo: {
+    width: '100%',
+    height: 140,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+  },
+  photoOverlay: {
     position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 90,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    justifyContent: 'flex-end',
+    paddingHorizontal: 12,
+    paddingBottom: 10,
   },
-
-  // 1. Header
-  headerSection: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-    marginBottom: 6,
-    paddingRight: 28,
-  },
-  hotelIcon: {
-    fontSize: 22,
-    lineHeight: 28,
-    flexShrink: 0,
-  },
-  headerText: {
-    flex: 1,
+  overlayContent: {
     gap: 3,
   },
-  hotelName: {
-    color: Colors.text,
+  overlayHotelName: {
+    color: '#FFFFFF',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     fontFamily: 'Sora',
     lineHeight: 22,
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  overlayBottom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 6,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
+    flex: 1,
   },
   locationText: {
-    color: Colors.textMuted,
+    color: 'rgba(255,255,255,0.85)',
     fontSize: Typography.sizes.xs,
     flex: 1,
   },
 
-  // 2. Stars row
-  starsRow: {
-    marginBottom: 10,
+  // Favourite button over photo
+  favWrap: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 2,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    borderRadius: 20,
+    padding: 5,
   },
 
-  // Divider
-  divider: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginBottom: 10,
+  // Card body (below photo)
+  cardBody: {
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 14,
   },
 
   // 3. Amenities chips

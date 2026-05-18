@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
@@ -10,6 +10,109 @@ interface Props {
   flight: FlightOffer;
   onBook?: () => void;
 }
+
+// ── Airline logo helpers ───────────────────────────────────────────────────────
+
+const AIRLINE_IATA: Record<string, string> = {
+  'Wizz Air': 'W6',
+  'Ryanair': 'FR',
+  'LOT Polish Airlines': 'LO',
+  'LOT': 'LO',
+  'British Airways': 'BA',
+  'Lufthansa': 'LH',
+  'Air France': 'AF',
+  'KLM': 'KL',
+  'Turkish Airlines': 'TK',
+  'easyJet': 'U2',
+  'EasyJet': 'U2',
+  'Iberia': 'IB',
+  'Vueling': 'VY',
+  'Swiss': 'LX',
+  'Austrian': 'OS',
+  'SAS': 'SK',
+  'Finnair': 'AY',
+  'Alitalia': 'AZ',
+  'ITA Airways': 'AZ',
+  'Aeroflot': 'SU',
+  'Ukraine International': 'PS',
+  'UIA': 'PS',
+  'Qatar Airways': 'QR',
+  'Emirates': 'EK',
+  'Pegasus': 'PC',
+  'Flydubai': 'FZ',
+};
+
+const AIRLINE_COLORS = [
+  '#E63946',
+  '#2196F3',
+  '#4CAF50',
+  '#FF9800',
+  '#9C27B0',
+  '#00BCD4',
+  '#F44336',
+  '#3F51B5',
+];
+
+function airlineColor(name: string): string {
+  let h = 0;
+  for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+  return AIRLINE_COLORS[h % AIRLINE_COLORS.length];
+}
+
+function airlineInitials(name: string): string {
+  return name.slice(0, 2).toUpperCase();
+}
+
+interface AirlineLogoProps {
+  name: string;
+}
+
+function AirlineLogo({ name }: AirlineLogoProps) {
+  const iata = AIRLINE_IATA[name];
+  const [failed, setFailed] = useState(false);
+
+  if (iata && !failed) {
+    return (
+      <Image
+        source={{ uri: `https://pics.avs.io/80/80/${iata}.png` }}
+        style={logoStyles.logo}
+        resizeMode="contain"
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+
+  // Fallback: coloured circle with initials
+  return (
+    <View style={[logoStyles.fallback, { backgroundColor: airlineColor(name) }]}>
+      <Text style={logoStyles.fallbackText}>{airlineInitials(name)}</Text>
+    </View>
+  );
+}
+
+const logoStyles = StyleSheet.create({
+  logo: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  fallback: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fallbackText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+});
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -129,11 +232,13 @@ export function FlightCard({ flight, onBook }: Props) {
         <FavoriteButton type="flight" item={flight} size={18} />
       </View>
 
-      {/* ── 1. Top: airline + plane icon ── */}
+      {/* ── 1. Top: airline logo + name + flight number ── */}
       <View style={styles.airlineRow}>
-        <Text style={styles.airlineIcon}>✈️</Text>
-        <Text style={styles.airlineName}>{flight.airline}</Text>
-        <Text style={styles.flightNumber}>{flight.flightNumber}</Text>
+        <AirlineLogo name={flight.airline} />
+        <View style={styles.airlineTextBlock}>
+          <Text style={styles.airlineName}>{flight.airline}</Text>
+          <Text style={styles.flightNumber}>{flight.flightNumber}</Text>
+        </View>
       </View>
 
       {/* ── Divider ── */}
@@ -197,12 +302,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.card,
     borderRadius: 14,
     paddingHorizontal: 14,
-    paddingTop: 12,
-    paddingBottom: 14,
+    paddingTop: 14,
+    paddingBottom: 16,
     marginHorizontal: 0,
     marginVertical: 4,
     borderWidth: 1,
     borderColor: Colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
   // Fav button
@@ -217,19 +327,18 @@ const styles = StyleSheet.create({
   airlineRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 10,
     marginBottom: 10,
-    paddingRight: 28,
+    paddingRight: 32,
   },
-  airlineIcon: {
-    fontSize: 14,
-    lineHeight: 18,
+  airlineTextBlock: {
+    flex: 1,
+    gap: 1,
   },
   airlineName: {
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium,
-    flex: 1,
   },
   flightNumber: {
     color: Colors.textDisabled,
