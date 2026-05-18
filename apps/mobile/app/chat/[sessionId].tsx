@@ -282,7 +282,7 @@ export default function ChatScreen() {
     deleteSession,
   } = useChatStore();
 
-  const { balance, currency: walletCurrency, load: loadWallet } = useWalletStore();
+  const { balance, currency: walletCurrency, load: loadWallet, isLoading: isWalletLoading } = useWalletStore();
   const { confirmBooking } = useBookingStore();
   const { streamMessage } = useSSE();
   const flatListRef = useRef<FlatList<Message & { _streaming?: boolean }>>(null);
@@ -734,6 +734,7 @@ export default function ChatScreen() {
           walletCurrency={walletCurrency}
           onConfirm={handleConfirmBooking}
           onCancel={() => { setPendingBooking(null); setPendingBookingId(null); }}
+          isWalletLoading={isWalletLoading}
         />
       )}
 

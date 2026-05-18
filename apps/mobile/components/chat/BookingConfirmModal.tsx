@@ -23,6 +23,7 @@ interface Props {
   walletCurrency: string;
   onConfirm: () => Promise<void>;
   onCancel: () => void;
+  isWalletLoading?: boolean;
 }
 
 function BookingDetails({ booking }: { booking: BookingDraft }) {
@@ -125,6 +126,7 @@ export function BookingConfirmModal({
   walletCurrency,
   onConfirm,
   onCancel,
+  isWalletLoading,
 }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const hasEnoughBalance = walletBalance >= booking.totalPrice;
@@ -162,6 +164,9 @@ export function BookingConfirmModal({
           price: booking.totalPrice,
         });
       }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Ошибка при оплате';
+      Alert.alert('Ошибка оплаты', msg);
     } finally {
       setIsLoading(false);
     }
@@ -227,11 +232,11 @@ export function BookingConfirmModal({
                   price: booking.totalPrice,
                   currency: booking.currency,
                 });
-                handleConfirm();
+                void handleConfirm();
               }}
-              disabled={isLoading}
+              disabled={isLoading || isWalletLoading}
             >
-              {isLoading ? (
+              {isLoading || isWalletLoading ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
                 <Text style={styles.confirmText}>

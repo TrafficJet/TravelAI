@@ -9,6 +9,7 @@ import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { EventSubscription } from 'expo-modules-core';
 import { useAuthStore } from '../stores/authStore';
+import { useWalletStore } from '../stores/walletStore';
 import { Colors } from '../constants/colors';
 import { setupNotificationHandlers } from '../services/notifications.service';
 import { ThemeProvider } from '../src/theme/ThemeContext';
@@ -107,6 +108,7 @@ const splashStyles = StyleSheet.create({
 
 export default function RootLayout() {
   const { isAuthenticated, isLoading, loadStoredAuth } = useAuthStore();
+  const loadWallet = useWalletStore((state) => state.load);
   const responseListenerRef = useRef<EventSubscription | null>(null);
 
   // Controls whether to show the custom brand splash
@@ -146,6 +148,12 @@ export default function RootLayout() {
   useEffect(() => {
     loadStoredAuth();
   }, [loadStoredAuth]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadWallet().catch(() => {});
+    }
+  }, [isAuthenticated, loadWallet]);
 
   // Hide the native splash once fonts + auth are ready, then show brand splash
   useEffect(() => {
