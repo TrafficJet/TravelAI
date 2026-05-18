@@ -54,6 +54,10 @@ jest.mock('../lib/prisma', () => ({
       // checkBookingLimit checks subscription plan; return PREMIUM to skip the booking-count check
       findUnique: (...args: unknown[]) => mockSubscriptionFindUnique(...args),
     },
+    // notification.create is called fire-and-forget after booking confirmation
+    notification: {
+      create: jest.fn().mockResolvedValue({}),
+    },
     $transaction: (...args: unknown[]) => mockTransaction(...args),
   },
 }));

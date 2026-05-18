@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Tabs, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -7,7 +7,6 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
-  interpolate,
 } from 'react-native-reanimated';
 import { Colors } from '../../constants';
 import { Typography } from '../../constants/typography';
@@ -67,17 +66,13 @@ function TabIcon({ focused, color, size, icon, iconFocused, badge }: TabIconProp
   }, [focused, focusedSV]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const scale = withSpring(focusedSV.value === 1 ? 1.15 : 1, {
+    const scale = withSpring(focusedSV.value === 1 ? 1.08 : 1, {
       damping: 14,
       stiffness: 200,
     });
     const opacity = withTiming(focusedSV.value === 1 ? 1 : 0.75, { duration: 150 });
-    const translateY = withSpring(focusedSV.value === 1 ? -1 : 0, {
-      damping: 14,
-      stiffness: 200,
-    });
     return {
-      transform: [{ scale }, { translateY }],
+      transform: [{ scale }],
       opacity,
     };
   });
@@ -87,55 +82,6 @@ function TabIcon({ focused, color, size, icon, iconFocused, badge }: TabIconProp
       <Ionicons name={focused ? iconFocused : icon} size={size} color={color} />
       {badge !== undefined && <TabBadge count={badge} />}
     </Animated.View>
-  );
-}
-
-// ── Active indicator dot ──────────────────────────────────────────────────────
-
-interface TabIndicatorProps {
-  focused: boolean;
-}
-
-function TabIndicator({ focused }: TabIndicatorProps) {
-  const focusedSV = useSharedValue(focused ? 1 : 0);
-
-  useEffect(() => {
-    focusedSV.value = focused ? 1 : 0;
-  }, [focused, focusedSV]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    const opacity = withTiming(focusedSV.value === 1 ? 1 : 0, { duration: 200 });
-    const scale = withSpring(focusedSV.value === 1 ? 1 : 0, { damping: 12, stiffness: 180 });
-    const width = interpolate(scale, [0, 1], [0, 4]);
-    return { opacity, transform: [{ scaleX: scale }], width };
-  });
-
-  return (
-    <Animated.View
-      style={[indicatorStyles.dot, animatedStyle]}
-    />
-  );
-}
-
-const indicatorStyles = StyleSheet.create({
-  dot: {
-    height: 3,
-    width: 4,
-    borderRadius: 2,
-    backgroundColor: Colors.primary,
-    marginTop: 3,
-    alignSelf: 'center',
-  },
-});
-
-// ── Combined icon + indicator ─────────────────────────────────────────────────
-
-function TabIconWithIndicator(props: TabIconProps) {
-  return (
-    <View style={{ alignItems: 'center' }}>
-      <TabIcon {...props} />
-      <TabIndicator focused={props.focused} />
-    </View>
   );
 }
 

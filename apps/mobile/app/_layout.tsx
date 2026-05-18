@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Stack, router } from 'expo-router';
-import { Linking, View, Text, StyleSheet, Animated } from 'react-native';
+import { Linking, View, Text, StyleSheet, Animated, LogBox } from 'react-native';
+
+// NativeWind v4 + React 19 known compatibility warnings — safe to suppress in dev
+LogBox.ignoreLogs([
+  'useInsertionEffect must not schedule updates',
+  'expo-linking needs access to the expo-constants manifest',
+]);
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastContainer } from '../components/ui/Toast';
 import { StatusBar } from 'expo-status-bar';
