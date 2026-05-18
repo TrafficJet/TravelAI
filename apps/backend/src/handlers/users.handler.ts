@@ -238,23 +238,24 @@ export async function getPreferences(request: FastifyRequest, reply: FastifyRepl
 }
 
 const savePushTokenSchema = z.object({
-  token: z.string().min(1),
+  token: z.string().min(1).nullable(),
 });
 
-// POST /api/users/me/push-token — save Expo push token for the current user
+// POST /api/users/me/push-token — save or clear Expo push token for the current user
+// Pass { token: "ExponentPushToken[...]" } to register, { token: null } to clear on logout
 export async function savePushToken(request: FastifyRequest, reply: FastifyReply) {
   const userId = request.userId;
 
   const parsed = savePushTokenSchema.safeParse(request.body);
   if (!parsed.success) {
-    throw Errors.validation('Поле token обязательно');
+    throw Errors.validation('Поле token должно быть строкой или null');
   }
 
   const { token } = parsed.data;
 
   await prisma.user.update({
     where: { id: userId },
-    data: { pushToken: token },
+    data: { pushToken: token ?? null },
   });
 
   return reply.send({ success: true });

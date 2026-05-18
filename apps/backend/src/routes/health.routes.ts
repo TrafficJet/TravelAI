@@ -62,6 +62,7 @@ export async function healthRoutes(fastify: FastifyInstance) {
     const aviasalesToken = process.env.AVIASALES_TOKEN;
     const yookassaShopId = process.env.YOOKASSA_SHOP_ID;
     const yookassaSecret = process.env.YOOKASSA_SECRET_KEY;
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
 
     return reply.send({
       duffel: {
@@ -73,6 +74,10 @@ export async function healthRoutes(fastify: FastifyInstance) {
       },
       yookassa: {
         configured: Boolean(yookassaShopId && yookassaSecret),
+      },
+      stripe: {
+        configured: Boolean(stripeKey),
+        mode: stripeKey ? 'real' : 'mock',
       },
     });
   });

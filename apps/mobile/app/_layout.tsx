@@ -311,6 +311,10 @@ export default function RootLayout() {
                 name="hotels-map"
                 options={{ title: 'Отели на карте', headerShown: false }}
               />
+              <Stack.Screen
+                name="privacy-policy"
+                options={{ title: 'Политика конфиденциальности', headerBackTitle: 'Назад' }}
+              />
               <Stack.Screen name="+not-found" options={{ title: 'Не найдено' }} />
             </Stack>
             <ToastContainer />
