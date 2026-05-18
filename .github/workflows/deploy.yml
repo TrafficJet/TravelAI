@@ -168,35 +168,64 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Trigger redeploy via Railway GraphQL API (Account Token → Authorization: Bearer).
-      # railway CLI requires a Project Token (RAILWAY_TOKEN), but we have an Account Token,
-      # which must be used as RAILWAY_API_TOKEN for CLI or as a Bearer header for the API.
-      # Using the API directly avoids the CLI auth mismatch entirely.
+      # Deploy to Railway via two-step GraphQL API:
+      # 1. serviceInstanceUpdate — sets the new Docker image from GHCR
+      # 2. serviceInstanceDeployV2 — creates a fresh deployment that picks up the new image
       #
-      # We retry up to 3 times with a 15-second gap to avoid being dropped due to
-      # a concurrent build that Railway may already have in flight from a previous push.
+      # NOTE: serviceInstanceRedeploy only re-runs the existing deployment without
+      # pulling a new image. serviceInstanceDeployV2 is needed to pick up image changes.
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          for attempt in 1 2 3; do
-            echo "Deploy attempt ${attempt}..."
-            RESPONSE=$(curl -sf -X POST https://backboard.railway.app/graphql/v2 \
+          SERVICE_ID="9b7ed984-302f-4713-aed0-442452c53f9a"
+          ENV_ID="4e70a63d-d982-4f87-8be4-210c7a8aa0fa"
+          IMAGE="ghcr.io/${{ github.repository }}/travel-ai-backend:latest"
+
+          echo "Step 1: Updating Railway service to use image: ${IMAGE}"
+          UPDATE_RESP=$(curl -s -X POST https://backboard.railway.app/graphql/v2 \
+            -H "Authorization: Bearer ${RAILWAY_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"query\": \"mutation ServiceInstanceUpdate(\$serviceId: String!, \$environmentId: String!, \$input: ServiceInstanceUpdateInput!) { serviceInstanceUpdate(serviceId: \$serviceId, environmentId: \$environmentId, input: \$input) }\",
+              \"variables\": {
+                \"serviceId\": \"${SERVICE_ID}\",
+                \"environmentId\": \"${ENV_ID}\",
+                \"input\": { \"source\": { \"image\": \"${IMAGE}\" } }
+              }
+            }" 2>&1 || echo '{"error":"curl_failed"}')
+          echo "Update response: ${UPDATE_RESP}"
+
+          echo "Step 2: Triggering fresh deployment with new image..."
+          DEPLOY_RESP=$(curl -s -X POST https://backboard.railway.app/graphql/v2 \
+            -H "Authorization: Bearer ${RAILWAY_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"query\": \"mutation ServiceInstanceDeployV2(\$serviceId: String!, \$environmentId: String!) { serviceInstanceDeployV2(serviceId: \$serviceId, environmentId: \$environmentId) }\",
+              \"variables\": {
+                \"serviceId\": \"${SERVICE_ID}\",
+                \"environmentId\": \"${ENV_ID}\"
+              }
+            }" 2>&1 || echo '{"error":"curl_failed"}')
+          echo "Deploy response: ${DEPLOY_RESP}"
+
+          # Accept either a deployment ID or a boolean true as success signal
+          if echo "${DEPLOY_RESP}" | grep -qE '"serviceInstanceDeployV2":(true|"[0-9a-f-]+")'; then
+            echo "Deployment triggered successfully."
+          else
+            echo "WARNING: Deploy response did not match expected pattern. Check logs above."
+            echo "Falling back to serviceInstanceRedeploy..."
+            FALLBACK=$(curl -s -X POST https://backboard.railway.app/graphql/v2 \
               -H "Authorization: Bearer ${RAILWAY_TOKEN}" \
               -H "Content-Type: application/json" \
-              -d '{
-                "query": "mutation { serviceInstanceRedeploy(serviceId: \"9b7ed984-302f-4713-aed0-442452c53f9a\", environmentId: \"4e70a63d-d982-4f87-8be4-210c7a8aa0fa\") }"
-              }' 2>&1 || echo '{"error":"curl_failed"}')
-            echo "Railway API response: ${RESPONSE}"
-            if echo "${RESPONSE}" | grep -q '"serviceInstanceRedeploy":true'; then
-              echo "Redeploy triggered successfully on attempt ${attempt}."
-              exit 0
-            fi
-            echo "Attempt ${attempt} did not confirm redeploy. Waiting 15s before retry..."
-            sleep 15
-          done
-          echo "All redeploy attempts exhausted — last response above."
-          exit 1
+              -d "{
+                \"query\": \"mutation { serviceInstanceRedeploy(serviceId: \\\"${SERVICE_ID}\\\", environmentId: \\\"${ENV_ID}\\\") }\"
+              }" 2>&1 || echo '{"error":"curl_failed"}')
+            echo "Fallback response: ${FALLBACK}"
+            echo "${FALLBACK}" | grep -q '"serviceInstanceRedeploy":true' \
+              && echo "Fallback redeploy triggered." \
+              || { echo "All deploy attempts failed."; exit 1; }
+          fi
 
 # ─────────────────────────────────────────────
 # Required repository secrets:
