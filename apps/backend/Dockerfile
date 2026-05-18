@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────
 # Stage 1: builder
 # ─────────────────────────────────────────────
-FROM node:20.15-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Required for bcrypt native bindings + openssl for Prisma
 RUN apk add --no-cache python3 make g++ openssl openssl-dev curl
@@ -30,7 +30,7 @@ RUN npm run build
 # ─────────────────────────────────────────────
 # Stage 2: runner
 # ─────────────────────────────────────────────
-FROM node:20.15-alpine AS runner
+FROM node:20-alpine AS runner
 
 # Required for bcrypt native bindings + openssl for Prisma
 RUN apk add --no-cache python3 make g++ openssl openssl-dev
