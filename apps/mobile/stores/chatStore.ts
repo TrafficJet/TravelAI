@@ -69,6 +69,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       set({ isStreaming: false });
     } else {
       set({ isStreaming: true, streamingText: '' });
+      // Auto-reset safety net: if streaming gets stuck (server drops connection
+      // without sending "done" or "error"), unblock the UI after 60 seconds.
+      setTimeout(() => {
+        if (get().isStreaming) {
+          console.warn('[chatStore] isStreaming auto-reset after 60s timeout');
+          set({ isStreaming: false });
+        }
+      }, 60_000);
     }
   },
 

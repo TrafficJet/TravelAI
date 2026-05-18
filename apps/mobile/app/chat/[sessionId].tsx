@@ -484,7 +484,14 @@ export default function ChatScreen() {
   }, [safeMessages.length, streamingText, scrollToBottom]);
 
   async function handleSend(content: string, overrideFilters?: { flight: FlightFilters; hotel: HotelFilters }) {
-    if (!sessionId || isStreaming) return;
+    if (!sessionId) {
+      console.warn('[ChatScreen] handleSend blocked: no sessionId');
+      return;
+    }
+    if (isStreaming) {
+      console.warn('[ChatScreen] handleSend blocked: isStreaming=true — waiting for previous response to finish');
+      return;
+    }
 
     // TEMP: disabled hard block — NetInfo may falsely report offline on some devices/web
     // if (isOffline) {

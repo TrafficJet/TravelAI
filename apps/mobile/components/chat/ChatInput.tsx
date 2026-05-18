@@ -14,6 +14,7 @@ import {
   Alert,
   Animated,
   Text,
+  ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Colors } from '../../constants/colors';
@@ -193,7 +194,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           <Ionicons name="add-outline" size={22} color={Colors.textMuted} />
         </TouchableOpacity>
 
-        {/* Send button — amber arrow when has text, muted when empty */}
+        {/* Send button — amber arrow when has text, spinner when streaming, muted when empty */}
         <Animated.View style={{ transform: [{ scale: sendScale }] }}>
           <TouchableOpacity
             onPress={hasText ? handleSend : handleVoice}
@@ -201,14 +202,19 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
             style={[
               styles.sendButton,
               !hasText && styles.sendButtonEmpty,
+              disabled && hasText && styles.sendButtonDisabled,
             ]}
             activeOpacity={0.8}
           >
-            <Ionicons
-              name={hasText ? 'arrow-up' : 'mic'}
-              size={18}
-              color={hasText ? Colors.textInverse : Colors.textMuted}
-            />
+            {disabled && hasText ? (
+              <ActivityIndicator size="small" color={Colors.textInverse} />
+            ) : (
+              <Ionicons
+                name={hasText ? 'arrow-up' : 'mic'}
+                size={18}
+                color={hasText ? Colors.textInverse : Colors.textMuted}
+              />
+            )}
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -288,6 +294,13 @@ const styles = StyleSheet.create({
   },
   sendButtonEmpty: {
     backgroundColor: Colors.card,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  sendButtonDisabled: {
+    // Use primaryDark so the button stays visually amber but clearly dimmed
+    backgroundColor: Colors.primaryDark,
+    opacity: 0.65,
     shadowOpacity: 0,
     elevation: 0,
   },

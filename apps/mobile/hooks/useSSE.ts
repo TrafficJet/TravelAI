@@ -194,6 +194,7 @@ export function useSSE() {
             if (xhr.status === 401) {
               useAuthStore.getState().logout();
               handlers.onError('Сессия истекла. Войдите снова.');
+              // Resolve (not reject) — onError already handled the UI feedback.
               settle();
               return;
             }
@@ -205,7 +206,10 @@ export function useSSE() {
               message = `Ошибка сервера (${xhr.status})`;
             }
             handlers.onError(message);
-            settle(message);
+            // Resolve (not reject) — onError already notified the caller via
+            // handlers.onError which calls setStreaming(false) and shows Alert.
+            // Rejecting here would cause a second Alert in handleSend's catch block.
+            settle();
             return;
           }
 
