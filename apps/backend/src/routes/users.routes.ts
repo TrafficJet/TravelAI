@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { getMe, updateMe, getMeStats, deleteMe, getPreferences, updatePreferences } from '../handlers/users.handler';
+import { getMe, updateMe, getMeStats, deleteMe, getPreferences, updatePreferences, savePushToken } from '../handlers/users.handler';
 import { authenticate } from '../middleware/auth.middleware';
 
 // Users routes — all require authentication
@@ -59,6 +59,21 @@ export async function usersRoutes(fastify: FastifyInstance) {
       },
     },
     handler: updatePreferences,
+  });
+
+  // POST /api/users/me/push-token — register Expo push token for the current user
+  fastify.post('/me/push-token', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['token'],
+        properties: {
+          token: { type: 'string', minLength: 1 },
+        },
+        additionalProperties: false,
+      },
+    },
+    handler: savePushToken,
   });
 
   // DELETE /api/users/me — soft-delete account after password confirmation

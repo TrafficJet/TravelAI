@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../lib/prisma';
 import { AppError, Errors } from '../lib/errors';
 import { emailService } from '../lib/email';
+import { sendExpoPush } from '../services/push.service';
 
 interface BookingsQuery {
   page?: number;
@@ -254,6 +255,32 @@ export async function confirmBooking(request: FastifyRequest, reply: FastifyRepl
         details: updatedBooking.details as object,
       }).catch(() => {});
     }
+  }).catch(() => {});
+
+  // Fire-and-forget — send push notification and create in-app notification record
+  const bookingRef = updatedBooking.id.slice(0, 8).toUpperCase();
+  const notifTitle = 'Бронирование подтверждено';
+  const notifBody = `Рейс забронирован. Номер: ${bookingRef}`;
+
+  prisma.user.findUnique({ where: { id: userId }, select: { pushToken: true } }).then(async (u) => {
+    if (u?.pushToken) {
+      await sendExpoPush({
+        pushToken: u.pushToken,
+        title: notifTitle,
+        body: notifBody,
+        data: { bookingId: updatedBooking.id, type: 'booking_confirmed' },
+      });
+    }
+  }).catch(() => {});
+
+  // Create in-app notification record (non-blocking)
+  prisma.notification.create({
+    data: {
+      userId,
+      type: 'BOOKING_CONFIRMED',
+      title: notifTitle,
+      body: notifBody,
+    },
   }).catch(() => {});
 
   return reply.send({

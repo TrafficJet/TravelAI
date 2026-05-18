@@ -26,6 +26,7 @@ model User {
   emergencyName  String?   @map("emergency_name")
   emergencyPhone String?   @map("emergency_phone")
   preferredLang  String?   @default("ru") @map("preferred_lang")
+  pushToken      String?   @map("push_token")
 
   wallet               Wallet?
   subscription         Subscription?
@@ -265,6 +266,7 @@ model Notification {
 enum NotificationType {
   PRICE_ALERT
   BOOKING_UPDATE
+  BOOKING_CONFIRMED
   SYSTEM
 }
 

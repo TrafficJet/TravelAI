@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
+import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { Errors } from '../lib/errors';
 
@@ -234,6 +235,29 @@ export async function getPreferences(request: FastifyRequest, reply: FastifyRepl
   };
 
   return reply.send({ preferences });
+}
+
+const savePushTokenSchema = z.object({
+  token: z.string().min(1),
+});
+
+// POST /api/users/me/push-token — save Expo push token for the current user
+export async function savePushToken(request: FastifyRequest, reply: FastifyReply) {
+  const userId = request.userId;
+
+  const parsed = savePushTokenSchema.safeParse(request.body);
+  if (!parsed.success) {
+    throw Errors.validation('Поле token обязательно');
+  }
+
+  const { token } = parsed.data;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { pushToken: token },
+  });
+
+  return reply.send({ success: true });
 }
 
 // PATCH /api/users/me/preferences — update user preferences (partial merge)
