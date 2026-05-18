@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -521,6 +522,7 @@ function SkeletonList() {
 // ── Main Screen ───────────────────────────────────────────────────────────────
 
 export default function BookingsScreen() {
+  const insets = useSafeAreaInsets();
   const { bookings, load, isLoading, appendBookings } = useBookingStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [filter, setFilter] = useState<FilterTab>('ALL');
@@ -581,7 +583,7 @@ export default function BookingsScreen() {
 
   if (isLoading && (bookings ?? []).length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
         <FilterTabs active={filter} onChange={setFilter} />
         <SkeletonList />
       </View>
@@ -589,7 +591,7 @@ export default function BookingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <FilterTabs active={filter} onChange={setFilter} />
 
       <FlatList

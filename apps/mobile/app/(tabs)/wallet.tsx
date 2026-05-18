@@ -13,6 +13,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useWalletStore } from '../../stores/walletStore';
@@ -535,6 +536,7 @@ const heroStyles = StyleSheet.create({
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function WalletScreen() {
+  const insets = useSafeAreaInsets();
   const { balance, currency, transactions, isLoading, load } = useWalletStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [topUpVisible, setTopUpVisible] = useState(false);
@@ -566,7 +568,7 @@ export default function WalletScreen() {
 
   if (isLoading && (transactions ?? []).length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
         <SkeletonWalletCard />
         <Skeleton width="40%" height={44} borderRadius={12} style={styles.skeletonBtn} />
         <Skeleton width="60%" height={12} borderRadius={6} style={styles.skeletonLabel} />
@@ -585,7 +587,7 @@ export default function WalletScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <FlatList
         data={filteredTransactions}
         keyExtractor={(item) => item.id}
