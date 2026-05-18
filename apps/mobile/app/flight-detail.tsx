@@ -67,6 +67,7 @@ const badge = StyleSheet.create({
     marginRight: 5,
   },
   text: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -130,6 +131,7 @@ const card = StyleSheet.create({
   },
   title: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.8,
@@ -147,14 +149,17 @@ const card = StyleSheet.create({
   },
   label: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   value: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
   valueLarge: {
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
     color: Colors.primary,
@@ -476,6 +481,7 @@ const includedCard = StyleSheet.create({
   },
   title: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.8,
@@ -506,12 +512,14 @@ const includedCard = StyleSheet.create({
   },
   itemLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
     lineHeight: 16,
   },
   itemValue: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
     textAlign: 'center',
@@ -530,6 +538,7 @@ const airlineCard = StyleSheet.create({
   },
   sectionTitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.8,
@@ -560,11 +569,13 @@ const airlineCard = StyleSheet.create({
   },
   name: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
   flightNum: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   ratingWrap: {
@@ -573,12 +584,14 @@ const airlineCard = StyleSheet.create({
   },
   ratingVal: {
     color: Colors.success,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
     lineHeight: 28,
   },
   ratingLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     position: 'absolute',
     right: 0,
@@ -589,6 +602,7 @@ const airlineCard = StyleSheet.create({
     gap: 1,
   },
   star: {
+    fontFamily: 'Inter',
     fontSize: 12,
     color: Colors.border,
   },
@@ -624,6 +638,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
@@ -650,6 +665,7 @@ const styles = StyleSheet.create({
   },
   heroSub: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
   },
@@ -693,6 +709,7 @@ const styles = StyleSheet.create({
   },
   timeAirport: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
     letterSpacing: 1,
@@ -704,6 +721,7 @@ const styles = StyleSheet.create({
   },
   durationLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium,
   },
@@ -732,6 +750,7 @@ const styles = StyleSheet.create({
   },
   cityName: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     flex: 1,
   },
@@ -745,6 +764,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
 
@@ -770,6 +790,7 @@ const styles = StyleSheet.create({
   },
   bookBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.3,

@@ -19,7 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useWalletStore } from '../../stores/walletStore';
 import { SkeletonWalletCard, Skeleton } from '../../components/ui/Skeleton';
 import { Colors } from '../../constants/colors';
-import { Typography } from '../../constants/typography';
+import { Typography, TextPresets } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
 import { toast } from '../../lib/toast';
@@ -105,12 +105,12 @@ const txStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: Spacing.itemGap,
     paddingHorizontal: Spacing.md,
     marginHorizontal: Spacing.md,
-    marginBottom: 8,
-    backgroundColor: '#1C1C2E',
-    borderRadius: 12,
+    marginBottom: Spacing.sm,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.card,
     borderWidth: 1,
     borderColor: Colors.border,
   },
@@ -126,25 +126,29 @@ const txStyles = StyleSheet.create({
     fontSize: 20,
   },
   signText: {
+    fontFamily: 'Inter',
     fontSize: 22,
     fontWeight: Typography.weights.bold,
     lineHeight: 26,
   },
   info: {
     flex: 1,
-    marginRight: 8,
+    marginRight: Spacing.sm,
   },
   label: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
   },
   date: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginTop: 2,
   },
   amount: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
@@ -311,15 +315,17 @@ const modalStyles = StyleSheet.create({
   },
   title: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     marginBottom: Spacing.lg,
   },
   label: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
     letterSpacing: 0.5,
   },
   inputWrapper: {
@@ -334,6 +340,7 @@ const modalStyles = StyleSheet.create({
   },
   currencyPrefix: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.medium,
     marginRight: 6,
@@ -341,6 +348,7 @@ const modalStyles = StyleSheet.create({
   input: {
     flex: 1,
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.bold,
     paddingVertical: 14,
@@ -365,6 +373,7 @@ const modalStyles = StyleSheet.create({
   },
   presetText: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
@@ -382,6 +391,7 @@ const modalStyles = StyleSheet.create({
   },
   confirmBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
@@ -469,7 +479,7 @@ const heroStyles = StyleSheet.create({
     fontSize: 22,
   },
   amount: {
-    fontFamily: 'Sora_Bold',
+    fontFamily: 'Sora',
     color: Colors.primary,
     fontSize: 42,
     fontWeight: Typography.weights.bold,
@@ -479,6 +489,7 @@ const heroStyles = StyleSheet.create({
   },
   availableLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: Spacing.lg,
   },
@@ -495,6 +506,7 @@ const heroStyles = StyleSheet.create({
   },
   topUpBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
@@ -508,6 +520,7 @@ const heroStyles = StyleSheet.create({
   },
   historyBtnText: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
@@ -666,12 +679,14 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.bold,
     letterSpacing: Typography.letterSpacing.tight,
   },
   headerSubtitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginTop: 2,
   },
@@ -699,15 +714,18 @@ const styles = StyleSheet.create({
   },
   tabText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
   },
   tabTextActive: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontWeight: Typography.weights.semibold,
   },
   sectionTitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
     letterSpacing: Typography.letterSpacing.wide,
@@ -727,12 +745,14 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
     marginBottom: 6,
   },
   emptySubtext: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     textAlign: 'center',
     lineHeight: 20,

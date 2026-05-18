@@ -94,12 +94,14 @@ const ratingStyles = StyleSheet.create({
   },
   outOf: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
     marginBottom: 2,
   },
   reviews: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
 });
@@ -205,8 +207,8 @@ const row = StyleSheet.create({
     marginRight: 12,
   },
   content: { flex: 1 },
-  label: { color: Colors.textMuted, fontSize: Typography.sizes.xs, marginBottom: 2 },
-  value: { color: Colors.text, fontSize: Typography.sizes.base, fontWeight: Typography.weights.medium },
+  label: { color: Colors.textMuted, fontFamily: 'Inter', fontSize: Typography.sizes.xs, marginBottom: 2 },
+  value: { color: Colors.text, fontFamily: 'Inter', fontSize: Typography.sizes.base, fontWeight: Typography.weights.medium },
 });
 
 // ── Screen ─────────────────────────────────────────────────────────────────────
@@ -567,6 +569,7 @@ const styles = StyleSheet.create({
   backBtn: { padding: 4 },
   headerTitle: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
@@ -604,6 +607,7 @@ const styles = StyleSheet.create({
   },
   locationText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     flex: 1,
   },
@@ -647,6 +651,7 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.8,
@@ -665,6 +670,7 @@ const styles = StyleSheet.create({
   // Description
   description: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     lineHeight: 22,
   },
@@ -727,6 +733,7 @@ const styles = StyleSheet.create({
   },
   mapLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     position: 'absolute',
     bottom: 8,
@@ -739,6 +746,7 @@ const styles = StyleSheet.create({
   },
   addressText: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     flex: 1,
     lineHeight: 20,
@@ -767,6 +775,7 @@ const styles = StyleSheet.create({
   },
   pricePerNightLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
     marginBottom: 2,
@@ -782,10 +791,12 @@ const styles = StyleSheet.create({
   },
   priceDateLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   priceDateValue: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
   },
@@ -799,10 +810,12 @@ const styles = StyleSheet.create({
   },
   priceTotalLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
   },
   priceTotalValue: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
   },
@@ -828,6 +841,7 @@ const styles = StyleSheet.create({
   },
   bookBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.3,

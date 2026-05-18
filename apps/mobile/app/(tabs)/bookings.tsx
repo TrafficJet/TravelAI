@@ -41,10 +41,10 @@ const FILTER_TABS: FilterTabConfig[] = [
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const STATUS_BADGE_CONFIG: Record<BookingStatus, { bg: string; color: string; label: string }> = {
-  CONFIRMED: { bg: 'rgba(16,185,129,0.15)',  color: '#10B981', label: 'ПОДТВЕРЖДЕНО' },
-  PENDING:   { bg: 'rgba(245,158,11,0.15)',  color: '#F59E0B', label: 'ОЖИДАЕТ' },
-  CANCELLED: { bg: 'rgba(244,63,94,0.15)',   color: '#F43F5E', label: 'ОТМЕНЕНО' },
-  FAILED:    { bg: 'rgba(244,63,94,0.15)',   color: '#F43F5E', label: 'ОШИБКА' },
+  CONFIRMED: { bg: Colors.successLight,  color: Colors.success, label: 'ПОДТВЕРЖДЕНО' },
+  PENDING:   { bg: Colors.warningLight,  color: Colors.warning, label: 'ОЖИДАЕТ' },
+  CANCELLED: { bg: Colors.errorLight,    color: Colors.error,   label: 'ОТМЕНЕНО' },
+  FAILED:    { bg: Colors.errorLight,    color: Colors.error,   label: 'ОШИБКА' },
 };
 
 function getTypeIcon(booking: Booking): string {
@@ -196,6 +196,7 @@ const tabStyles = StyleSheet.create({
     position: 'relative',
   },
   label: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
     color: Colors.textMuted,
@@ -237,6 +238,7 @@ const badgeStyles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   label: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
     letterSpacing: 0.5,
@@ -252,10 +254,10 @@ interface BookingCardProps {
 }
 
 const STATUS_STRIPE_COLOR: Record<BookingStatus, string> = {
-  CONFIRMED: '#10B981',
-  PENDING:   '#F59E0B',
-  CANCELLED: '#F43F5E',
-  FAILED:    '#F43F5E',
+  CONFIRMED: Colors.success,
+  PENDING:   Colors.warning,
+  CANCELLED: Colors.error,
+  FAILED:    Colors.error,
 };
 
 function FlightCardContent({ booking }: { booking: Booking }) {
@@ -373,8 +375,8 @@ const cardStyles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   card: {
-    backgroundColor: '#1C1C2E',
-    borderRadius: 16,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.card,
     overflow: 'hidden',
     flexDirection: 'row',
   },
@@ -384,8 +386,8 @@ const cardStyles = StyleSheet.create({
   },
   innerContent: {
     flex: 1,
-    padding: 16,
-    gap: 10,
+    padding: Spacing.md,
+    gap: Spacing.itemGap,
   },
   topRow: {
     flexDirection: 'row',
@@ -396,7 +398,7 @@ const cardStyles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(245,158,11,0.15)',
+    backgroundColor: Colors.primaryMuted,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
@@ -499,8 +501,8 @@ const emptyStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(245,158,11,0.25)',
-    marginBottom: 8,
+    borderColor: `${Colors.primary}40`,
+    marginBottom: Spacing.sm,
   },
   icon: {
     fontSize: 48,
@@ -534,7 +536,7 @@ const emptyStyles = StyleSheet.create({
     alignItems: 'center',
   },
   btnText: {
-    fontFamily: 'Sora',
+    fontFamily: 'Inter',
     fontSize: 16,
     fontWeight: '600' as const,
     color: Colors.textInverse,

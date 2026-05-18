@@ -15,7 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../stores/authStore';
-import { Colors, TextPresets, Spacing } from '../constants';
+import { Colors, TextPresets, Spacing, Radius } from '../constants';
 
 export const ONBOARDING_KEY = 'onboarding_done';
 
@@ -199,7 +199,7 @@ const slideStyles = StyleSheet.create({
     lineHeight: 76,
   },
   title: {
-    fontFamily: 'Sora_Bold',
+    fontFamily: 'Sora',
     fontSize: 26,
     fontWeight: '700',
     lineHeight: 34,
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
   nextBtn: {
     backgroundColor: Colors.primary,
     paddingVertical: 16,
-    borderRadius: 32,
+    borderRadius: Radius.button,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: Colors.primary,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   nextBtnText: {
-    fontFamily: 'Sora_Bold',
+    fontFamily: 'Sora',
     fontSize: 17,
     fontWeight: '700',
     color: Colors.textInverse,
@@ -433,13 +433,14 @@ const styles = StyleSheet.create({
   },
   loginBtn: {
     paddingVertical: 14,
-    borderRadius: 32,
+    borderRadius: Radius.button,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
     borderColor: Colors.border,
   },
   loginBtnText: {
+    fontFamily: 'Inter',
     fontSize: 15,
     fontWeight: '600',
     color: Colors.textMuted,

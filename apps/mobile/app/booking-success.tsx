@@ -156,6 +156,7 @@ const checkStyles = StyleSheet.create({
   },
   icon: {
     color: Colors.success,
+    fontFamily: 'Inter',
     fontSize: 44,
     fontWeight: Typography.weights.bold,
     lineHeight: 52,
@@ -190,11 +191,13 @@ const detailStyles = StyleSheet.create({
   },
   label: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
   },
   value: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
     maxWidth: '60%',
@@ -398,6 +401,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Colors.success,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes['3xl'],
     fontWeight: Typography.weights.extrabold,
     letterSpacing: 0.3,
@@ -406,6 +410,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     textAlign: 'center',
     lineHeight: 24,
@@ -427,6 +432,7 @@ const styles = StyleSheet.create({
   },
   routeLabel: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
     letterSpacing: 1,
@@ -434,6 +440,7 @@ const styles = StyleSheet.create({
   },
   routeSub: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     textAlign: 'center',
   },
@@ -450,11 +457,13 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
   },
   totalValue: {
     color: Colors.primary,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.extrabold,
   },

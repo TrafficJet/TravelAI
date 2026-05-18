@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
+import { Radius } from '../../constants/radius';
 import { FavoriteButton } from '../ui/FavoriteButton';
 import type { Hotel } from '../../types';
 
@@ -42,7 +43,7 @@ function StarRow({ count, rating }: { count: number; rating?: number }) {
   return (
     <View style={starStyles.row}>
       {Array.from({ length: n }).map((_, i) => (
-        <Ionicons key={`f${i}`} name="star" size={12} color="#F59E0B" />
+        <Ionicons key={`f${i}`} name="star" size={12} color={Colors.primary} />
       ))}
       {Array.from({ length: empty }).map((_, i) => (
         <Ionicons key={`e${i}`} name="star-outline" size={12} color="rgba(255,255,255,0.5)" />
@@ -62,7 +63,8 @@ const starStyles = StyleSheet.create({
     flexShrink: 1,
   },
   rating: {
-    color: '#F59E0B',
+    color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: 12,
     fontWeight: '700',
     marginLeft: 6,
@@ -353,12 +355,14 @@ const styles = StyleSheet.create({
   },
   datesText: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
     flexShrink: 1,
   },
   nightsText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
 
@@ -377,12 +381,14 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   pricePerNightLabel: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
     color: Colors.textMuted,
   },
   totalPrice: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
 
@@ -398,11 +404,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.primary,
-    borderRadius: 12,
+    borderRadius: Radius.buttonSm,
     paddingVertical: 10,
   },
   bookBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.3,

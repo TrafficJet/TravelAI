@@ -58,6 +58,7 @@ const logoStyles = StyleSheet.create({
   },
   letters: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.5,
@@ -109,6 +110,7 @@ const stopStyles = StyleSheet.create({
     borderRadius: 8,
   },
   text: {
+    fontFamily: 'Inter',
     fontSize: 11,
     fontWeight: '600',
   },
@@ -259,11 +261,13 @@ const styles = StyleSheet.create({
   },
   airline: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
   flightNum: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   shareBtn: {
@@ -275,6 +279,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   statusText: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
   },
@@ -295,16 +300,19 @@ const styles = StyleSheet.create({
   },
   city: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   date: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },
   duration: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },
@@ -318,6 +326,7 @@ const styles = StyleSheet.create({
   },
   price: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },

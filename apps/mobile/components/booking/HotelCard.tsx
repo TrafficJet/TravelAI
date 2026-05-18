@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
   },
   stars: {
     color: Colors.warning,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   statusBadge: {
@@ -109,17 +110,20 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   statusText: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
   },
   hotelName: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
     marginBottom: 4,
   },
   address: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: 10,
   },
@@ -130,10 +134,12 @@ const styles = StyleSheet.create({
   },
   dates: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   nights: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   footer: {
@@ -145,10 +151,12 @@ const styles = StyleSheet.create({
   },
   guests: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   price: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },

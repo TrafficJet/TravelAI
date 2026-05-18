@@ -166,16 +166,19 @@ const modalStyles = StyleSheet.create({
     padding: 24,
   },
   title: {
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     marginBottom: 8,
   },
   subtitle: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     lineHeight: 20,
     marginBottom: 16,
   },
   input: {
+    fontFamily: 'Inter',
     borderRadius: 10,
     borderWidth: 1,
     paddingHorizontal: 14,
@@ -199,6 +202,7 @@ const modalStyles = StyleSheet.create({
     borderColor: Colors.error,
   },
   btnText: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
@@ -289,11 +293,13 @@ const rowStyles = StyleSheet.create({
     flex: 1,
   },
   label: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
     color: Colors.text,
   },
   sublabel: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     color: Colors.textMuted,
     marginTop: 1,
@@ -361,6 +367,7 @@ const presetStyles = StyleSheet.create({
     backgroundColor: `${Colors.primary}15`,
   },
   btnText: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
     color: Colors.textMuted,
@@ -391,6 +398,7 @@ const sectionStyles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     color: Colors.textMuted,
@@ -469,6 +477,7 @@ const optGroupStyles = StyleSheet.create({
     flexShrink: 0,
   },
   label: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
     color: Colors.text,
@@ -880,6 +889,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     textAlign: 'center',
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
     color: Colors.text,
@@ -897,6 +907,7 @@ const styles = StyleSheet.create({
     paddingBottom: 48,
   },
   versionText: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     color: Colors.textMuted,
     fontWeight: Typography.weights.medium,

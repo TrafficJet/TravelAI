@@ -11,6 +11,7 @@ import {
 import { router } from 'expo-router';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
+import { Radius } from '../../constants/radius';
 import { sendBookingConfirmation } from '../../services/notifications.service';
 import { analytics, Events } from '../../src/analytics';
 import { toast } from '../../lib/toast';
@@ -276,12 +277,14 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     marginBottom: 4,
   },
   provider: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: 20,
   },
@@ -295,6 +298,7 @@ const styles = StyleSheet.create({
   },
   detailTitle: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 1,
@@ -307,10 +311,12 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   detailValue: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
     maxWidth: '60%',
@@ -326,20 +332,24 @@ const styles = StyleSheet.create({
   },
   priceLabel: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
   priceValue: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
   balanceLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   balanceValue: {
     color: Colors.success,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
   },
@@ -354,12 +364,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: Radius.buttonSm,
     borderWidth: 1.5,
     borderColor: Colors.border,
   },
   cancelText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
@@ -368,13 +379,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     paddingVertical: 14,
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: Radius.buttonSm,
   },
   confirmBtnDisabled: {
     opacity: 0.5,
   },
   confirmText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },

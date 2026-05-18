@@ -270,6 +270,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingTop: 10,
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     maxHeight: 120,
     borderWidth: 1,
@@ -327,6 +328,7 @@ const styles = StyleSheet.create({
   },
   hintChipText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: '500',
   },

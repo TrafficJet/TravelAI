@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
   },
   loginTextAccent: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontWeight: Typography.weights.semibold,
   },
 });

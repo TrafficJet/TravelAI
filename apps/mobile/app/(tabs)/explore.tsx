@@ -103,17 +103,20 @@ const routeCardStyles = StyleSheet.create({
   },
   iata: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.3,
   },
   separator: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
   city: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: 8,
   },
@@ -124,11 +127,13 @@ const routeCardStyles = StyleSheet.create({
   },
   price: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
   duration: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
 });
@@ -225,6 +230,7 @@ const flightStyles = StyleSheet.create({
   },
   label: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
     marginBottom: Spacing.xs,
@@ -236,6 +242,7 @@ const flightStyles = StyleSheet.create({
   },
   route: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
   },
@@ -244,6 +251,7 @@ const flightStyles = StyleSheet.create({
   },
   count: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
   },
@@ -295,12 +303,14 @@ const hotelStyles = StyleSheet.create({
   },
   city: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
     textAlign: 'center',
   },
   country: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
     marginTop: 2,
@@ -352,12 +362,13 @@ const sectionStyles = StyleSheet.create({
   },
   title: {
     color: Colors.text,
-    fontFamily: 'Sora_SemiBold',
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   subtitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginTop: 1,
   },
@@ -669,6 +680,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     paddingVertical: 14,
   },
@@ -691,6 +703,7 @@ const styles = StyleSheet.create({
   },
   mapBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
   },
@@ -732,11 +745,13 @@ const styles = StyleSheet.create({
   },
   filterChipText: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
   emptyText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     textAlign: 'center',
     paddingVertical: Spacing.md,

@@ -108,6 +108,7 @@ const logoStyles = StyleSheet.create({
   },
   fallbackText: {
     color: '#FFFFFF',
+    fontFamily: 'Inter',
     fontSize: 13,
     fontWeight: '700',
     letterSpacing: 0.3,
@@ -337,11 +338,13 @@ const styles = StyleSheet.create({
   },
   airlineName: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium,
   },
   flightNumber: {
     color: Colors.textDisabled,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
 
@@ -374,6 +377,7 @@ const styles = StyleSheet.create({
   },
   routeTime: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
     marginTop: 2,
@@ -388,6 +392,7 @@ const styles = StyleSheet.create({
   // 3. Duration
   duration: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
   },
@@ -416,6 +421,7 @@ const styles = StyleSheet.create({
   },
   cabinText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   selectBtn: {
@@ -426,6 +432,7 @@ const styles = StyleSheet.create({
   },
   selectBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.3,

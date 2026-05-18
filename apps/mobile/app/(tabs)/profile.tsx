@@ -117,6 +117,7 @@ const avatarStyles = StyleSheet.create({
   },
   initials: {
     color: Colors.textInverse,
+    fontFamily: 'Sora',
     fontWeight: Typography.weights.bold,
   },
 });
@@ -229,22 +230,24 @@ const modalStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-    paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
     paddingBottom: 40,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 32,
+    marginBottom: Spacing.xl,
   },
   cancelBtn: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
   },
   title: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
@@ -256,6 +259,7 @@ const modalStyles = StyleSheet.create({
   },
   label: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: Typography.letterSpacing.wider,
@@ -271,6 +275,7 @@ const modalStyles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: 14,
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
   },
   inputDisabled: {
@@ -278,6 +283,7 @@ const modalStyles = StyleSheet.create({
   },
   hint: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     marginTop: Spacing.xs,
   },
@@ -292,6 +298,7 @@ const modalStyles = StyleSheet.create({
   },
   saveBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
@@ -487,22 +494,24 @@ const bmStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 32,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.xl,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 24,
+    marginBottom: Spacing.lg,
   },
   cancelBtn: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
   },
   title: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
@@ -510,6 +519,7 @@ const bmStyles = StyleSheet.create({
   scroll: { flex: 1 },
   sectionLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: Typography.letterSpacing.wider,
@@ -518,6 +528,7 @@ const bmStyles = StyleSheet.create({
   },
   label: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
     letterSpacing: Typography.letterSpacing.wide,
@@ -533,6 +544,7 @@ const bmStyles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: 14,
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
   },
   dividerRow: {
@@ -548,6 +560,7 @@ const bmStyles = StyleSheet.create({
   },
   dividerText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
     letterSpacing: Typography.letterSpacing.wide,
@@ -569,6 +582,7 @@ const bmStyles = StyleSheet.create({
   },
   cancelPillText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
@@ -582,6 +596,7 @@ const bmStyles = StyleSheet.create({
   savePillDisabled: { opacity: 0.6 },
   savePillText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
@@ -1159,7 +1174,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   subscriptionBadgePremium: {
-    backgroundColor: 'rgba(245,158,11,0.15)',
+    backgroundColor: Colors.primaryMuted,
     borderColor: Colors.primary,
   },
   subscriptionBadgeFree: {
@@ -1167,6 +1182,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
   },
   subscriptionBadgeText: {
+    fontFamily: 'Inter',
     fontSize: 11,
     fontWeight: '700' as const,
     letterSpacing: 1,
@@ -1200,12 +1216,14 @@ const styles = StyleSheet.create({
   },
   bellBadgeText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: 9,
     fontWeight: Typography.weights.bold,
     lineHeight: 11,
   },
   bellBtnText: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -1217,6 +1235,7 @@ const styles = StyleSheet.create({
   },
   settingsBtnText: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -1227,6 +1246,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: Typography.letterSpacing.wider,
@@ -1245,17 +1265,20 @@ const styles = StyleSheet.create({
   },
   sectionTitleWithIcon: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
     marginBottom: 2,
   },
   sectionSubtitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     lineHeight: 16,
   },
   editSectionBtn: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
     paddingTop: 2,
@@ -1283,21 +1306,25 @@ const styles = StyleSheet.create({
   },
   planNamePremium: {
     color: Colors.success,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
   planNameFree: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
   planFreeSub: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginTop: 2,
   },
   planExpiry: {
     color: Colors.success,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginTop: 2,
   },
@@ -1311,6 +1338,7 @@ const styles = StyleSheet.create({
   },
   planBadgeTextPremium: {
     color: Colors.success,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: Typography.letterSpacing.wide,
@@ -1323,6 +1351,7 @@ const styles = StyleSheet.create({
   },
   planBadgeTextFree: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: Typography.letterSpacing.wide,
@@ -1335,6 +1364,7 @@ const styles = StyleSheet.create({
   },
   upgradeBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
@@ -1362,10 +1392,12 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   infoValue: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
     maxWidth: '55%',
@@ -1373,6 +1405,7 @@ const styles = StyleSheet.create({
   },
   infoValueMuted: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontStyle: 'italic',
     maxWidth: '55%',
@@ -1397,11 +1430,13 @@ const styles = StyleSheet.create({
   },
   switchTitle: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
   },
   switchSubtitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },
@@ -1420,6 +1455,7 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: Colors.error,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
@@ -1438,6 +1474,7 @@ const styles = StyleSheet.create({
   },
   langOption: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -1446,6 +1483,7 @@ const styles = StyleSheet.create({
   },
   langDivider: {
     color: Colors.border,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
 
@@ -1468,10 +1506,12 @@ const styles = StyleSheet.create({
   },
   aboutVersion: {
     color: Colors.textDisabled,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   aboutCopy: {
     color: Colors.textDisabled,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
     marginTop: 2,
@@ -1500,16 +1540,19 @@ const styles = StyleSheet.create({
   },
   priceAlertsBtnTitle: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
     marginBottom: 2,
   },
   priceAlertsBtnSub: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   priceAlertsBtnChevron: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
     lineHeight: 24,

@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: 8,
     letterSpacing: 0.5,
@@ -48,12 +49,14 @@ const styles = StyleSheet.create({
   },
   amount: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: 48,
     fontWeight: Typography.weights.bold,
     letterSpacing: -1,
   },
   currency: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.medium,
     paddingBottom: 6,

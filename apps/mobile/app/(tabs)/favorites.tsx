@@ -72,6 +72,7 @@ const tabStyles = StyleSheet.create({
   },
   label: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -115,12 +116,14 @@ const emptyStyles = StyleSheet.create({
   },
   title: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     marginBottom: Spacing.sm,
   },
   subtitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     textAlign: 'center',
     lineHeight: Typography.sizes.sm * Typography.lineHeights.normal,
@@ -281,15 +284,18 @@ const rowStyles = StyleSheet.create({
   },
   name: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
   sub: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   price: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -372,6 +378,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
   },

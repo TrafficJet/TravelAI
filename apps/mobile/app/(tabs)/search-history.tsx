@@ -318,6 +318,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.extrabold,
     letterSpacing: 0.3,
@@ -333,6 +334,7 @@ const styles = StyleSheet.create({
   },
   clearText: {
     color: Colors.error,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -361,6 +363,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.5,
@@ -374,6 +377,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   countText: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
   },
@@ -401,6 +405,7 @@ const styles = StyleSheet.create({
   },
   query: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
     lineHeight: 20,
@@ -411,10 +416,12 @@ const styles = StyleSheet.create({
   },
   metaText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   metaDot: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   repeatBtn: {
@@ -432,6 +439,7 @@ const styles = StyleSheet.create({
   },
   repeatText: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
   },
@@ -460,12 +468,14 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     textAlign: 'center',
   },
   emptySub: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     textAlign: 'center',
     lineHeight: 22,

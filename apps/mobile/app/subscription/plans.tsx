@@ -72,6 +72,7 @@ const featureStyles = StyleSheet.create({
   },
   text: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     flex: 1,
   },
@@ -176,6 +177,7 @@ const cardStyles = StyleSheet.create({
   },
   planNameFree: {
     color: Colors.textMuted,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.extrabold,
     letterSpacing: 1,
@@ -183,6 +185,7 @@ const cardStyles = StyleSheet.create({
   },
   planNamePremium: {
     color: Colors.primary,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.extrabold,
     letterSpacing: 1,
@@ -204,11 +207,13 @@ const cardStyles = StyleSheet.create({
   },
   priceAmount: {
     color: Colors.primary,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
   },
   pricePeriod: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     paddingBottom: 3,
   },
@@ -225,6 +230,7 @@ const cardStyles = StyleSheet.create({
   },
   recommendedBadgeText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.8,
@@ -239,6 +245,7 @@ const cardStyles = StyleSheet.create({
   },
   currentBadgeText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
   },
@@ -253,6 +260,7 @@ const cardStyles = StyleSheet.create({
   },
   activePillText: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
@@ -331,6 +339,7 @@ const screenStyles = StyleSheet.create({
   },
   title: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.extrabold,
     textAlign: 'center',
@@ -338,6 +347,7 @@ const screenStyles = StyleSheet.create({
   },
   subtitle: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     textAlign: 'center',
     marginBottom: 20,
@@ -356,11 +366,13 @@ const screenStyles = StyleSheet.create({
   },
   ctaBtnText: {
     color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
   disclaimer: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
     lineHeight: 18,

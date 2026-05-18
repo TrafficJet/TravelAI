@@ -281,11 +281,13 @@ function RichLine({ text, baseStyle }: RichLineProps) {
 
 const richStyles = StyleSheet.create({
   bold: {
+    fontFamily: 'Inter',
     fontWeight: '700',
     color: Colors.text,
   },
   price: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontWeight: '600',
   },
 });
@@ -382,12 +384,14 @@ const contentStyles = StyleSheet.create({
     lineHeight: 22,
   },
   user: {
-    color: '#0A0A14',
+    color: Colors.textInverse,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     lineHeight: 22,
   },
   headingH1: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: (Typography.sizes['2xl'] as number | undefined) ?? 22,
     fontWeight: '700',
     lineHeight: 30,
@@ -396,6 +400,7 @@ const contentStyles = StyleSheet.create({
   },
   heading: {
     color: Colors.text,
+    fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: '700',
     lineHeight: 26,
@@ -404,6 +409,7 @@ const contentStyles = StyleSheet.create({
   },
   paragraph: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     lineHeight: 22,
   },
@@ -414,6 +420,7 @@ const contentStyles = StyleSheet.create({
   },
   bullet: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     lineHeight: 22,
     width: 18,
@@ -421,6 +428,7 @@ const contentStyles = StyleSheet.create({
   },
   listItem: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     lineHeight: 22,
     flex: 1,
@@ -560,24 +568,26 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   bubbleUser: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.primary,
     borderBottomRightRadius: 4,
   },
   bubbleAssistant: {
-    backgroundColor: '#1C1C2E',
+    backgroundColor: Colors.card,
     borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: '#2A2A42',
+    borderColor: Colors.border,
   },
 
   // Timestamps
   timeUser: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
-    color: 'rgba(10,10,20,0.55)',
+    color: `${Colors.textInverse}88`,
     textAlign: 'right',
     marginTop: 4,
   },
   timeAssistant: {
+    fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     color: Colors.textMuted,
     textAlign: 'left',

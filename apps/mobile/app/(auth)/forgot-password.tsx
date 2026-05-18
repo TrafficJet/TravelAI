@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
   },
   emailHighlight: {
     color: Colors.text,
+    fontFamily: 'Inter',
     fontWeight: Typography.weights.semibold,
   },
   form: {
@@ -191,6 +192,7 @@ const styles = StyleSheet.create({
   },
   backTextAccent: {
     color: Colors.primary,
+    fontFamily: 'Inter',
     fontWeight: Typography.weights.semibold,
   },
 });

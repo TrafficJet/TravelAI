@@ -104,10 +104,12 @@ const styles = StyleSheet.create({
   },
   eyeText: {
     color: Colors.textMuted,
+    fontFamily: 'Inter',
     fontSize: 13,
   },
   errorText: {
     color: Colors.error,
+    fontFamily: 'Inter',
     fontSize: 12,
     marginTop: 4,
   },
