@@ -11,6 +11,7 @@ import {
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBookingStore } from '../../stores/bookingStore';
 import { bookingService } from '../../services/bookingService';
@@ -47,9 +48,9 @@ const STATUS_BADGE_CONFIG: Record<BookingStatus, { bg: string; color: string; la
   FAILED:    { bg: Colors.errorLight,    color: Colors.error,   label: 'ОШИБКА' },
 };
 
-function getTypeIcon(booking: Booking): string {
-  if (booking.type === 'HOTEL') return '🏨';
-  return '✈️';
+function getTypeIconName(booking: Booking): React.ComponentProps<typeof Ionicons>['name'] {
+  if (booking.type === 'HOTEL') return 'bed-outline';
+  return 'airplane-outline';
 }
 
 function formatPrice(price: number | string, currency: string): string {
@@ -277,7 +278,7 @@ function FlightCardContent({ booking }: { booking: Booking }) {
       {/* Top row: icon + route + price */}
       <View style={cardStyles.topRow}>
         <View style={cardStyles.iconCircle}>
-          <Text style={cardStyles.iconEmoji}>✈️</Text>
+          <Ionicons name="airplane-outline" size={18} color={Colors.primary} />
         </View>
         <View style={cardStyles.routeBlock}>
           <Text style={cardStyles.route} numberOfLines={1}>
@@ -318,7 +319,7 @@ function HotelCardContent({ booking }: { booking: Booking }) {
       {/* Top row: icon + name + price */}
       <View style={cardStyles.topRow}>
         <View style={cardStyles.iconCircle}>
-          <Text style={cardStyles.iconEmoji}>🏨</Text>
+          <Ionicons name="bed-outline" size={18} color={Colors.primary} />
         </View>
         <View style={cardStyles.routeBlock}>
           <Text style={cardStyles.route} numberOfLines={1}>
@@ -402,9 +403,6 @@ const cardStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-  },
-  iconEmoji: {
-    fontSize: 18,
   },
   routeBlock: {
     flex: 1,

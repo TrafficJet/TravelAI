@@ -12,6 +12,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { useLocalSearchParams, useNavigation, router } from 'expo-router';
@@ -111,7 +112,7 @@ function EmptyState({ onSelectSuggestion }: EmptyStateProps) {
   return (
     <View style={emptyStyles.container}>
       <View style={emptyStyles.center}>
-        <Text style={emptyStyles.planeIcon}>✈️</Text>
+        <Ionicons name="airplane" size={64} color={Colors.primary} style={{ opacity: 0.3, marginBottom: 20 }} />
         <Text style={emptyStyles.title}>Куда летим?</Text>
         <Text style={emptyStyles.subtitle}>
           Напишите маршрут и я подберу рейсы, отели и трансфер
@@ -195,10 +196,6 @@ const emptyStyles = StyleSheet.create({
   },
   center: {
     alignItems: 'center',
-  },
-  planeIcon: {
-    fontSize: 56,
-    marginBottom: 20,
   },
   title: {
     color: Colors.text,
@@ -449,7 +446,7 @@ export default function ChatScreen() {
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Text style={chatHeaderStyles.historyBtnIcon}>🕐</Text>
+          <Ionicons name="time-outline" size={18} color={Colors.primary} style={{ marginRight: 4 }} />
           <Text style={chatHeaderStyles.historyBtnText}>История</Text>
         </TouchableOpacity>
       ),
@@ -465,7 +462,7 @@ export default function ChatScreen() {
             {isCreatingNew ? (
               <ActivityIndicator color={Colors.primary} size="small" />
             ) : (
-              <Text style={chatHeaderStyles.newChatBtnText}>＋</Text>
+              <Ionicons name="add" size={22} color={Colors.primary} />
             )}
           </TouchableOpacity>
           <TouchableOpacity
@@ -474,7 +471,7 @@ export default function ChatScreen() {
             activeOpacity={0.7}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={chatHeaderStyles.menuBtnText}>•••</Text>
+            <Ionicons name="ellipsis-horizontal" size={20} color={Colors.textMuted} />
           </TouchableOpacity>
         </View>
       ),
@@ -839,9 +836,6 @@ const chatHeaderStyles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 6,
   },
-  historyBtnIcon: {
-    fontSize: 17,
-  },
   historyBtnText: {
     fontFamily: 'Inter',
     fontSize: 14,
@@ -866,12 +860,6 @@ const chatHeaderStyles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 4,
   },
-  newChatBtnText: {
-    color: Colors.primary,
-    fontSize: Platform.select({ ios: 20, android: 18, default: 20 }),
-    fontWeight: Typography.weights.bold,
-    lineHeight: Platform.select({ ios: 24, android: 22, default: 24 }),
-  },
   // Menu (•••) button
   menuBtn: {
     width: 44,
@@ -879,13 +867,8 @@ const chatHeaderStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  menuBtnText: {
-    color: Colors.textMuted,
-    fontSize: 18,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: 1,
-  },
 });
+
 
 const styles = StyleSheet.create({
   container: {

@@ -205,7 +205,7 @@ export function HotelCard({ hotel, onBook }: Props) {
         {/* ── Dates row ── */}
         {hotel.checkIn && hotel.checkOut && (
           <View style={styles.datesRow}>
-            <Text style={styles.datesIcon}>📅</Text>
+            <Ionicons name="calendar-outline" size={13} color={Colors.textMuted} style={{ marginRight: 4 }} />
             <Text style={styles.datesText}>
               {formatDate(hotel.checkIn)} — {formatDate(hotel.checkOut)}
             </Text>
@@ -349,9 +349,6 @@ const styles = StyleSheet.create({
     gap: 5,
     marginBottom: 10,
     flexWrap: 'wrap',
-  },
-  datesIcon: {
-    fontSize: 13,
   },
   datesText: {
     color: Colors.text,

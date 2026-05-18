@@ -22,6 +22,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useChatStore } from '../../stores/chatStore';
 import { Colors, TextPresets, Radius, Spacing } from '../../constants';
 import type { ChatSession } from '../../types';
@@ -58,7 +59,7 @@ interface SearchBarProps {
 function SearchBar({ value, onChangeText }: SearchBarProps) {
   return (
     <View style={searchStyles.container}>
-      <Text style={searchStyles.icon}>🔍</Text>
+      <Ionicons name="search-outline" size={16} color={Colors.textMuted} style={{ marginRight: 8 }} />
       <TextInput
         style={searchStyles.input}
         value={value}
@@ -83,10 +84,6 @@ const searchStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
     paddingHorizontal: 12,
-  },
-  icon: {
-    fontSize: 15,
-    marginRight: 8,
   },
   input: {
     flex: 1,
@@ -180,7 +177,7 @@ function SessionItem({ session, isActive, onPress, onDelete }: SessionItemProps)
           onPress={handleDelete}
           activeOpacity={0.8}
         >
-          <Text style={itemStyles.deleteBtnIcon}>🗑️</Text>
+          <Ionicons name="trash-outline" size={20} color="#fff" />
           <Text style={itemStyles.deleteBtnText}>Удалить</Text>
         </TouchableOpacity>
       </View>
@@ -200,7 +197,7 @@ function SessionItem({ session, isActive, onPress, onDelete }: SessionItemProps)
           style={itemStyles.card}
         >
           <View style={[itemStyles.iconCircle, isActive && itemStyles.iconCircleActive]}>
-            <Text style={itemStyles.iconEmoji}>✈️</Text>
+            <Ionicons name="airplane-outline" size={20} color={Colors.primary} />
           </View>
 
           <View style={itemStyles.content}>
@@ -248,9 +245,6 @@ const itemStyles = StyleSheet.create({
     justifyContent: 'center',
     gap: 4,
   },
-  deleteBtnIcon: {
-    fontSize: 18,
-  },
   deleteBtnText: {
     ...TextPresets.label,
     color: '#fff',
@@ -288,9 +282,6 @@ const itemStyles = StyleSheet.create({
     backgroundColor: `${Colors.primary}30`,
     borderWidth: 1.5,
     borderColor: Colors.primary,
-  },
-  iconEmoji: {
-    fontSize: 20,
   },
   content: {
     flex: 1,
@@ -333,7 +324,7 @@ const itemStyles = StyleSheet.create({
 function EmptyHistory() {
   return (
     <View style={emptyStyles.container}>
-      <Text style={emptyStyles.icon}>💬</Text>
+      <Ionicons name="chatbubbles-outline" size={44} color={Colors.textMuted} style={{ marginBottom: 4 }} />
       <Text style={emptyStyles.title}>Нет истории чатов</Text>
       <Text style={emptyStyles.subtitle}>
         Начни новый чат, и он появится здесь
@@ -350,10 +341,6 @@ const emptyStyles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingVertical: 40,
     gap: 10,
-  },
-  icon: {
-    fontSize: 40,
-    marginBottom: 4,
   },
   title: {
     fontFamily: 'Sora',
@@ -460,7 +447,7 @@ export function ChatHistorySheet({
             activeOpacity={0.7}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={sheetStyles.closeBtnText}>✕</Text>
+            <Ionicons name="close" size={16} color={Colors.textMuted} />
           </TouchableOpacity>
         </View>
 
@@ -568,12 +555,6 @@ const sheetStyles = StyleSheet.create({
     borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  closeBtnText: {
-    color: Colors.textMuted,
-    fontSize: 14,
-    fontWeight: '600' as const,
-    lineHeight: Platform.select({ ios: 18, android: 17, default: 18 }),
   },
   newChatBtn: {
     marginHorizontal: 16,

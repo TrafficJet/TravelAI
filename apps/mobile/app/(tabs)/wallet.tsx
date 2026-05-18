@@ -16,6 +16,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useWalletStore } from '../../stores/walletStore';
 import { SkeletonWalletCard, Skeleton } from '../../components/ui/Skeleton';
 import { Colors } from '../../constants/colors';
@@ -46,18 +47,18 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   UAH: '₴',
 };
 
-function getTransactionIcon(type: TransactionType, description: string): string {
+function getTransactionIconName(type: TransactionType, description: string): React.ComponentProps<typeof Ionicons>['name'] {
   const lower = description.toLowerCase();
-  if (type === 'TOPUP') return '💰';
-  if (lower.includes('возврат') || lower.includes('refund') || lower.includes('return')) return '↩️';
-  if (lower.includes('отель') || lower.includes('hotel') || lower.includes('гостиница')) return '🏨';
+  if (type === 'TOPUP') return 'arrow-down-circle-outline';
+  if (lower.includes('возврат') || lower.includes('refund')) return 'refresh-outline';
+  if (lower.includes('отель') || lower.includes('hotel')) return 'bed-outline';
   if (
     lower.includes('рейс') ||
     lower.includes('flight') ||
     lower.includes('авиа') ||
     lower.includes('билет')
-  ) return '✈️';
-  return '💳';
+  ) return 'airplane-outline';
+  return 'card-outline';
 }
 
 // ── Transaction item ──────────────────────────────────────────────────────────
@@ -83,8 +84,8 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
 
   return (
     <View style={txStyles.row}>
-      <View style={[txStyles.iconContainer, { backgroundColor: `${amountColor}20`, borderWidth: 1, borderColor: `${amountColor}35` }]}>
-        <Text style={[txStyles.signText, { color: amountColor }]}>{amountPrefix}</Text>
+      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: isIncoming ? Colors.successLight : Colors.errorLight, alignItems: 'center', justifyContent: 'center' }}>
+        <Ionicons name={getTransactionIconName(transaction.type, transaction.description)} size={18} color={isIncoming ? Colors.success : Colors.error} />
       </View>
       <View style={txStyles.info}>
         <Text style={txStyles.label} numberOfLines={1}>{transaction.description}</Text>

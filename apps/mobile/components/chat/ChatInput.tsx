@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     }),
   },
   iconButton: {
-    width: 36,
+    width: 40,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
