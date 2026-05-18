@@ -11,7 +11,7 @@ const FREE_BOOKINGS_PER_MONTH = 2;
 // In-memory per-user per-minute rate limiter for chat messages
 // ---------------------------------------------------------------------------
 
-const CHAT_RATE_LIMIT = 10; // messages per minute
+const CHAT_RATE_LIMIT = 30; // messages per minute
 const CHAT_RATE_WINDOW_MS = 60 * 1000; // 1 minute
 
 interface RateBucket {

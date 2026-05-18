@@ -5,6 +5,9 @@ const config = {
   testMatch: ['**/__tests__/**/*.test.ts'],
   moduleFileExtensions: ['ts', 'js'],
   maxWorkers: 1,
+  // Exclude compiled output so Jest does not find duplicate manual mocks in dist/
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  roots: ['<rootDir>/src'],
   // jwks-rsa depends on jose (ESM) which ts-jest cannot transpile in CJS mode.
   // Replace it globally with a hand-written stub.
   moduleNameMapper: {
