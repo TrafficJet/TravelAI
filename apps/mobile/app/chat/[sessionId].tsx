@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import {
   View,
   FlatList,
@@ -10,6 +10,7 @@ import {
   Animated,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
@@ -23,6 +24,7 @@ import { ChatInput, type ChatInputHandle } from '../../components/chat/ChatInput
 import { BookingConfirmModal } from '../../components/chat/BookingConfirmModal';
 import { FlightFilterBar, FlightFiltersSheet, type FlightFilters } from '../../components/chat/FlightFilters';
 import { HotelFilterBar, HotelFiltersSheet, type HotelFilters } from '../../components/chat/HotelFiltersSheet';
+import { ChatHistorySheet } from '../../components/chat/ChatHistorySheet';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { SkeletonChatMessage } from '../../components/ui/Skeleton';
 import { Colors } from '../../constants/colors';
@@ -280,6 +282,7 @@ export default function ChatScreen() {
     sessions,
     updateSessionTitle,
     deleteSession,
+    createSession,
   } = useChatStore();
 
   const { balance, currency: walletCurrency, load: loadWallet, isLoading: isWalletLoading } = useWalletStore();
@@ -289,6 +292,8 @@ export default function ChatScreen() {
   const chatInputRef = useRef<ChatInputHandle>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [pendingBookingId, setPendingBookingId] = React.useState<string | null>(null);
+  const [historyVisible, setHistoryVisible] = useState(false);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
 
   // ── Filter state ──────────────────────────────────────────────────────────
   const [flightFilters, setFlightFilters] = React.useState<FlightFilters>({});
@@ -407,6 +412,20 @@ export default function ChatScreen() {
     );
   }, [sessionId, currentSession, deleteSession, loadMessages]);
 
+  async function handleNewChatFromHeader() {
+    if (isCreatingNew) return;
+    setIsCreatingNew(true);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      const id = await createSession();
+      router.replace((`/chat/${id}`) as never);
+    } catch {
+      Alert.alert('Ошибка', 'Не удалось создать чат. Попробуйте снова.');
+    } finally {
+      setIsCreatingNew(false);
+    }
+  }
+
   useEffect(() => {
     if (!sessionId) return;
     const session = (sessions ?? []).find((s) => s.id === sessionId);
@@ -425,26 +444,43 @@ export default function ChatScreen() {
       },
       headerLeft: () => (
         <TouchableOpacity
-          style={chatHeaderStyles.backBtn}
-          onPress={() => router.back()}
+          style={chatHeaderStyles.historyBtn}
+          onPress={() => setHistoryVisible(true)}
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Text style={chatHeaderStyles.backBtnText}>{'←'}</Text>
+          <Text style={chatHeaderStyles.historyBtnIcon}>🕐</Text>
+          <Text style={chatHeaderStyles.historyBtnText}>История</Text>
         </TouchableOpacity>
       ),
       headerRight: () => (
-        <TouchableOpacity
-          style={chatHeaderStyles.menuBtn}
-          onPress={handleHeaderMenu}
-          activeOpacity={0.7}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Text style={chatHeaderStyles.menuBtnText}>•••</Text>
-        </TouchableOpacity>
+        <View style={chatHeaderStyles.rightGroup}>
+          <TouchableOpacity
+            style={chatHeaderStyles.newChatBtn}
+            onPress={() => { void handleNewChatFromHeader(); }}
+            activeOpacity={0.7}
+            disabled={isCreatingNew}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            {isCreatingNew ? (
+              <ActivityIndicator color={Colors.primary} size="small" />
+            ) : (
+              <Text style={chatHeaderStyles.newChatBtnText}>＋</Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={chatHeaderStyles.menuBtn}
+            onPress={handleHeaderMenu}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={chatHeaderStyles.menuBtnText}>•••</Text>
+          </TouchableOpacity>
+        </View>
       ),
     });
-  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu, historyVisible, isCreatingNew]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -777,22 +813,68 @@ export default function ChatScreen() {
         onApply={handleHotelFiltersApply}
         onClose={() => setHotelFiltersVisible(false)}
       />
+
+      {/* Chat history bottom sheet */}
+      <ChatHistorySheet
+        visible={historyVisible}
+        currentSessionId={sessionId}
+        onClose={() => setHistoryVisible(false)}
+        onSelectSession={(id) => {
+          router.replace((`/chat/${id}`) as never);
+        }}
+        onNewChat={() => {
+          // navigation already handled inside ChatHistorySheet via onSelectSession
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }
 
 const chatHeaderStyles = StyleSheet.create({
-  backBtn: {
-    paddingHorizontal: 12,
+  // History button (left side)
+  historyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 8,
     paddingVertical: 6,
   },
-  backBtnText: {
-    color: Colors.primary,
-    fontSize: 22,
-    fontWeight: Typography.weights.bold,
+  historyBtnIcon: {
+    fontSize: 17,
   },
+  historyBtnText: {
+    fontFamily: 'Inter',
+    fontSize: 14,
+    fontWeight: '500' as const,
+    color: Colors.primary,
+  },
+  // Right side group
+  rightGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  // New chat button
+  newChatBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.primaryMuted,
+    borderWidth: 1,
+    borderColor: `${Colors.primary}50`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 4,
+  },
+  newChatBtnText: {
+    color: Colors.primary,
+    fontSize: Platform.select({ ios: 18, android: 16, default: 18 }),
+    fontWeight: Typography.weights.bold,
+    lineHeight: Platform.select({ ios: 22, android: 20, default: 22 }),
+  },
+  // Menu (•••) button
   menuBtn: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 6,
   },
   menuBtnText: {
