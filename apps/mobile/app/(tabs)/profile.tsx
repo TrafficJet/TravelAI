@@ -869,12 +869,12 @@ export default function ProfileScreen() {
           <View style={styles.nameRow}>
             <Text style={[styles.name, { color: colors.text }]}>{user.name}</Text>
             <TouchableOpacity
-              style={styles.pencilBtn}
+              style={{ backgroundColor: Colors.primaryMuted, borderRadius: 12, padding: 4, borderWidth: 1, borderColor: Colors.border }}
               onPress={() => setIsEditModalVisible(true)}
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Ionicons name="pencil-outline" size={16} color={Colors.textMuted} />
+              <Ionicons name="pencil-outline" size={18} color={Colors.primary} />
             </TouchableOpacity>
           </View>
 
@@ -898,34 +898,39 @@ export default function ProfileScreen() {
           {/* Email */}
           <Text style={[styles.email, { color: colors.textSecondary }]}>{user.email}</Text>
 
-          {/* Bell icon */}
-          <TouchableOpacity
-            style={styles.bellBtn}
-            onPress={() => router.push('/(tabs)/notifications')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.bellIconWrap}>
-              <Ionicons name="notifications-outline" size={22} color={Colors.primary} />
-              {unreadCount > 0 && (
-                <View style={styles.bellBadge}>
-                  <Text style={styles.bellBadgeText}>
-                    {unreadCount > 99 ? '99+' : String(unreadCount)}
-                  </Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.bellBtnText}>Уведомления</Text>
-          </TouchableOpacity>
+          {/* Quick links: Notifications + Settings */}
+          <View style={styles.quickLinksRow}>
+            <TouchableOpacity
+              style={styles.quickLinkItem}
+              onPress={() => router.push('/(tabs)/notifications')}
+              activeOpacity={0.7}
+            >
+              <View style={styles.quickLinkIconWrap}>
+                <Ionicons name="notifications-outline" size={20} color={Colors.primary} />
+                {unreadCount > 0 && (
+                  <View style={styles.quickLinkBadge}>
+                    <Text style={styles.quickLinkBadgeText}>{unreadCount > 9 ? '9+' : String(unreadCount)}</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={styles.quickLinkText}>Уведомления</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+            </TouchableOpacity>
 
-          {/* Settings shortcut */}
-          <TouchableOpacity
-            style={styles.settingsBtn}
-            onPress={() => router.push('/settings')}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="settings-outline" size={18} color={Colors.primary} />
-            <Text style={styles.settingsBtnText}>Настройки</Text>
-          </TouchableOpacity>
+            <View style={styles.quickLinkDivider} />
+
+            <TouchableOpacity
+              style={styles.quickLinkItem}
+              onPress={() => router.push('/settings')}
+              activeOpacity={0.7}
+            >
+              <View style={styles.quickLinkIconWrap}>
+                <Ionicons name="settings-outline" size={20} color={Colors.primary} />
+              </View>
+              <Text style={styles.quickLinkText}>Настройки</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* ── Subscription block ──────────────────────────────────────── */}
@@ -1009,17 +1014,15 @@ export default function ProfileScreen() {
               ))}
             </View>
           ) : recentBookings.length === 0 ? (
-            <View style={[styles.card, styles.tripEmptyCard]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
-                <Text style={styles.tripEmptyText}>Поездок пока нет — начни планировать в чате</Text>
-                <Ionicons name="map-outline" size={16} color={Colors.textMuted} />
-              </View>
+            <View style={[styles.card, styles.tripsEmptyState]}>
+              <Ionicons name="map-outline" size={32} color={Colors.textMuted} style={{ opacity: 0.5, marginBottom: 8 }} />
+              <Text style={styles.tripsEmptyText}>Поездок пока нет — начни планировать в чате</Text>
               <TouchableOpacity
-                style={styles.tripEmptyBtn}
+                style={styles.tripsNewChatBtn}
                 onPress={() => router.push('/(tabs)')}
                 activeOpacity={0.8}
               >
-                <Text style={styles.tripEmptyBtnText}>Новый чат</Text>
+                <Text style={styles.tripsNewChatBtnText}>Новый чат</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -1336,9 +1339,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: Typography.weights.bold,
   },
-  pencilBtn: {
-    padding: 2,
-  },
   email: {
     fontFamily: 'Inter',
     color: Colors.textMuted,
@@ -1373,51 +1373,55 @@ const styles = StyleSheet.create({
   subscriptionBadgeTextFree: {
     color: Colors.textMuted,
   },
-  bellBtn: {
+  quickLinksRow: {
+    backgroundColor: Colors.card,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginTop: 16,
+    overflow: 'hidden',
+  },
+  quickLinkItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 14,
-    gap: Spacing.xs,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    gap: 12,
   },
-  bellIconWrap: {
+  quickLinkIconWrap: {
     position: 'relative',
+    width: 24,
+    alignItems: 'center',
   },
-  bellBadge: {
+  quickLinkBadge: {
     position: 'absolute',
     top: -4,
     right: -6,
-    minWidth: 16,
-    height: 16,
-    borderRadius: Radius.badge,
+    minWidth: 14,
+    height: 14,
+    borderRadius: 7,
     backgroundColor: Colors.error,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 3,
+    paddingHorizontal: 2,
   },
-  bellBadgeText: {
-    color: Colors.textInverse,
-    fontFamily: 'Inter',
+  quickLinkBadgeText: {
+    color: '#fff',
     fontSize: 9,
-    fontWeight: Typography.weights.bold,
-    lineHeight: 11,
+    fontWeight: '700' as const,
+    lineHeight: 10,
   },
-  bellBtnText: {
-    color: Colors.primary,
+  quickLinkText: {
+    flex: 1,
+    color: Colors.text,
     fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.semibold,
+    fontSize: Typography.sizes.base,
+    fontWeight: '500' as const,
   },
-  settingsBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: Spacing.sm,
-    gap: Spacing.xs,
-  },
-  settingsBtnText: {
-    color: Colors.primary,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.semibold,
+  quickLinkDivider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginLeft: 52,
   },
 
   // ── Section ───────────────────────────────────────────────────────────────
@@ -1753,29 +1757,29 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
   },
-  tripEmptyCard: {
+  tripsEmptyState: {
     alignItems: 'center',
-    paddingVertical: Spacing.lg,
-    gap: Spacing.md,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
   },
-  tripEmptyText: {
+  tripsEmptyText: {
     color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
+    fontSize: Typography.sizes.sm,
     textAlign: 'center',
-    lineHeight: 22,
+    marginBottom: 16,
+    lineHeight: 20,
   },
-  tripEmptyBtn: {
+  tripsNewChatBtn: {
     backgroundColor: Colors.primary,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.button,
+    borderRadius: 22,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
   },
-  tripEmptyBtnText: {
+  tripsNewChatBtnText: {
     color: Colors.textInverse,
     fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.semibold,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.bold,
   },
   // Skeleton
   tripSkeletonRow: {

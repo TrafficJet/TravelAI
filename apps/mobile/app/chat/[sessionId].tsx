@@ -119,16 +119,22 @@ function EmptyState({ onSelectSuggestion }: EmptyStateProps) {
         </Text>
       </View>
       <View style={emptyStyles.chips}>
-        {SUGGESTIONS.map((s) => (
-          <TouchableOpacity
-            key={s}
-            style={emptyStyles.chip}
-            onPress={() => onSelectSuggestion(s)}
-            activeOpacity={0.7}
-          >
-            <Text style={emptyStyles.chipText}>{s}</Text>
+        <View style={emptyStyles.chipRow}>
+          <TouchableOpacity style={emptyStyles.chip} onPress={() => onSelectSuggestion('Варшава → Барселона')} activeOpacity={0.7}>
+            <Text style={emptyStyles.chipText}>Варшава → Барселона</Text>
           </TouchableOpacity>
-        ))}
+          <TouchableOpacity style={emptyStyles.chip} onPress={() => onSelectSuggestion('Москва → Дубай')} activeOpacity={0.7}>
+            <Text style={emptyStyles.chipText}>Москва → Дубай</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={emptyStyles.chipRow}>
+          <TouchableOpacity style={emptyStyles.chip} onPress={() => onSelectSuggestion('Лондон → Рим')} activeOpacity={0.7}>
+            <Text style={emptyStyles.chipText}>Лондон → Рим</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={emptyStyles.chip} onPress={() => onSelectSuggestion('Амстердам → Прага')} activeOpacity={0.7}>
+            <Text style={emptyStyles.chipText}>Амстердам → Прага</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -212,24 +218,30 @@ const emptyStyles = StyleSheet.create({
     maxWidth: 280,
   },
   chips: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
     gap: 10,
     paddingBottom: 8,
+    width: '100%',
+  },
+  chipRow: {
+    flexDirection: 'row',
+    gap: 10,
+    width: '100%',
   },
   chip: {
+    flex: 1,
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: `${Colors.primary}40`,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 9,
+    alignItems: 'center',
   },
   chipText: {
     color: Colors.primary,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
+    textAlign: 'center',
   },
 });
 

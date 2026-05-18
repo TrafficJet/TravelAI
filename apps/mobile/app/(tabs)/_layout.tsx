@@ -40,7 +40,7 @@ const badgeStyles = StyleSheet.create({
     paddingHorizontal: 3,
   },
   text: {
-    color: Colors.text,
+    color: '#FFFFFF',
     fontSize: 9,
     fontWeight: Typography.weights.bold,
     lineHeight: 11,

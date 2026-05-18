@@ -633,7 +633,7 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
       >
         {/* Main filters button */}
         <QuickChip
-          icon="airplane-outline"
+          icon="options-outline"
           label={`Фильтры${activeCount > 0 ? ` (${activeCount})` : ''}`}
           active={activeCount > 0}
           onPress={onOpenFilters}
