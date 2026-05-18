@@ -123,6 +123,15 @@ export default function RegisterScreen() {
               <Text style={styles.loginTextAccent}>Войти</Text>
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.push('/privacy-policy')}
+            style={styles.privacyLink}
+          >
+            <Text style={styles.privacyText}>
+              Регистрируясь, вы соглашаетесь с Политикой конфиденциальности
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -174,5 +183,18 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontFamily: 'Inter',
     fontWeight: Typography.weights.semibold,
+  },
+  privacyLink: {
+    marginTop: 16,
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+  },
+  privacyText: {
+    color: Colors.textMuted,
+    fontSize: 12,
+    textAlign: 'center',
+    fontFamily: 'Inter',
+    lineHeight: 18,
+    textDecorationLine: 'underline',
   },
 });

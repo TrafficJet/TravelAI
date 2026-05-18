@@ -1236,6 +1236,39 @@ export default function ProfileScreen() {
           </Text>
         </TouchableOpacity>
 
+        {/* ── Legal / Info section ─────────────────────────────────── */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Информация</Text>
+          <View style={styles.card}>
+            <TouchableOpacity
+              style={styles.legalRow}
+              onPress={() => router.push('/privacy-policy')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.legalRowText}>Политика конфиденциальности</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+            </TouchableOpacity>
+
+            <View style={styles.legalDivider} />
+
+            <TouchableOpacity
+              style={styles.legalRow}
+              onPress={() => router.push('/privacy-policy')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.legalRowText}>Условия использования</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+            </TouchableOpacity>
+
+            <View style={styles.legalDivider} />
+
+            <View style={[styles.legalRow, styles.legalRowNoPress]}>
+              <Text style={styles.legalRowText}>Версия</Text>
+              <Text style={styles.legalRowValue}>1.0.0</Text>
+            </View>
+          </View>
+        </View>
+
         {/* ── About app ───────────────────────────────────────────────── */}
         <View style={styles.aboutSection}>
           <Text style={styles.aboutEmoji}>✈️</Text>
@@ -1632,6 +1665,35 @@ const styles = StyleSheet.create({
     color: Colors.border,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
+  },
+
+  // ── Legal / Info rows ────────────────────────────────────────────────────
+  legalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 13,
+    paddingHorizontal: Spacing.md,
+  },
+  legalRowNoPress: {
+    // static row, no press feedback needed
+  },
+  legalRowText: {
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.base,
+    color: Colors.text,
+    fontWeight: Typography.weights.medium,
+  },
+  legalRowValue: {
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.sm,
+    color: Colors.textMuted,
+    fontWeight: Typography.weights.medium,
+  },
+  legalDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.border,
+    marginHorizontal: Spacing.md,
   },
 
   // ── About section ────────────────────────────────────────────────────────

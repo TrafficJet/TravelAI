@@ -22,7 +22,12 @@
       "buildNumber": "1",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Для поиска отелей рядом с вами",
-        "NSCameraUsageDescription": "Для загрузки фото профиля"
+        "NSCameraUsageDescription": "Для загрузки фото профиля",
+        "NSUserNotificationUsageDescription": "Уведомления о статусе бронирований",
+        "NSPhotoLibraryUsageDescription": "Для загрузки фото профиля"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {

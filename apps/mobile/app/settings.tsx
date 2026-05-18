@@ -824,14 +824,14 @@ export default function SettingsScreen() {
             icon="document-text-outline"
             iconColor={Colors.textMuted}
             label="Политика конфиденциальности"
-            onPress={() => Linking.openURL('https://travelai.app/privacy')}
+            onPress={() => router.push('/privacy-policy')}
           />
           <SettingsRow
             icon="reader-outline"
             iconColor={Colors.textMuted}
             label="Условия использования"
             isLast
-            onPress={() => Linking.openURL('https://travelai.app/terms')}
+            onPress={() => router.push('/privacy-policy')}
           />
         </Section>
 
