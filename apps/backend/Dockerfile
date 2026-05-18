@@ -3,11 +3,8 @@
 # ─────────────────────────────────────────────
 FROM node:20-alpine AS builder
 
-# Cache-bust arg — increment when you need a forced rebuild
-ARG CACHE_BUST=20260518
-
 # Required for bcrypt native bindings + openssl for Prisma
-RUN apk add --no-cache python3 make g++ openssl openssl-dev
+RUN apk add --no-cache python3 make g++ openssl openssl-dev curl
 
 WORKDIR /app
 
