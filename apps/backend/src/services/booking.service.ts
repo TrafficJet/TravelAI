@@ -381,6 +381,207 @@ const HOTELS_BY_CITY: Record<string, HotelMockEntry[]> = {
   ],
 };
 
+  madrid: [
+    {
+      hotelName: 'Hotel Ritz Madrid',
+      address: 'Plaza de la Lealtad 5, Madrid',
+      starRating: 5,
+      rating: 9.4,
+      reviewCount: 2134,
+      roomType: 'Делюкс',
+      amenities: ['WiFi', 'Спа', 'Ресторан', 'Бар', 'Фитнес', 'Консьерж'],
+      fixedPricePerNight: 320,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'NH Collection Gran Hotel de Zaragoza',
+      address: 'Calle Joaquín Costa 5, Madrid',
+      starRating: 4,
+      rating: 8.5,
+      reviewCount: 3201,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Фитнес', 'Ресторан', 'Бар', 'Кондиционер'],
+      fixedPricePerNight: 120,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Hostal Opera Madrid',
+      address: 'Calle del Arenal 15, Madrid',
+      starRating: 2,
+      rating: 7.9,
+      reviewCount: 4521,
+      roomType: 'Стандартный номер',
+      amenities: ['WiFi', 'Кондиционер'],
+      fixedPricePerNight: 65,
+      currency: 'EUR',
+    },
+  ],
+  berlin: [
+    {
+      hotelName: 'Hotel Adlon Kempinski Berlin',
+      address: 'Unter den Linden 77, Berlin',
+      starRating: 5,
+      rating: 9.1,
+      reviewCount: 2876,
+      roomType: 'Делюкс',
+      amenities: ['WiFi', 'Спа', 'Бассейн', 'Ресторан', 'Бар', 'Фитнес'],
+      fixedPricePerNight: 280,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Mitte Hotel Berlin',
+      address: 'Linienstrasse 160, Berlin Mitte',
+      starRating: 4,
+      rating: 8.6,
+      reviewCount: 3102,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Фитнес', 'Ресторан', 'Кондиционер'],
+      fixedPricePerNight: 110,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Generator Hostel Berlin Mitte',
+      address: 'Storkower Strasse 160, Berlin',
+      starRating: 2,
+      rating: 7.8,
+      reviewCount: 8123,
+      roomType: 'Стандартный номер',
+      amenities: ['WiFi', 'Бар', 'Камера хранения'],
+      fixedPricePerNight: 35,
+      currency: 'EUR',
+    },
+  ],
+  vienna: [
+    {
+      hotelName: 'Hotel Sacher Wien',
+      address: 'Philharmoniker Str. 4, Vienna',
+      starRating: 5,
+      rating: 9.3,
+      reviewCount: 1987,
+      roomType: 'Делюкс',
+      amenities: ['WiFi', 'Спа', 'Ресторан', 'Бар', 'Консьерж'],
+      fixedPricePerNight: 350,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Austria Trend Hotel Schillerpark',
+      address: 'Schillerplatz 4, Vienna',
+      starRating: 4,
+      rating: 8.4,
+      reviewCount: 2341,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Фитнес', 'Ресторан', 'Кондиционер'],
+      fixedPricePerNight: 115,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Ibis Wien City',
+      address: 'Mariahilfer Gürtel 22–24, Vienna',
+      starRating: 3,
+      rating: 7.9,
+      reviewCount: 5432,
+      roomType: 'Стандартный номер',
+      amenities: ['WiFi', 'Ресторан', 'Кондиционер'],
+      fixedPricePerNight: 70,
+      currency: 'EUR',
+    },
+  ],
+  prague: [
+    {
+      hotelName: 'Four Seasons Hotel Prague',
+      address: 'Veleslavínova 2a/1098, Prague',
+      starRating: 5,
+      rating: 9.4,
+      reviewCount: 1654,
+      roomType: 'Делюкс с видом на реку',
+      amenities: ['WiFi', 'Спа', 'Ресторан', 'Бар', 'Фитнес', 'Консьерж'],
+      fixedPricePerNight: 300,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Mosaic House Prague',
+      address: 'Odborů 4, New Town, Prague',
+      starRating: 4,
+      rating: 8.7,
+      reviewCount: 3214,
+      roomType: 'Стандарт',
+      amenities: ['WiFi', 'Бар', 'Общая кухня', 'Кондиционер', 'Велопрокат'],
+      fixedPricePerNight: 85,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Czech Inn Hostel',
+      address: 'Francouzská 76, Vinohrady, Prague',
+      starRating: 2,
+      rating: 8.0,
+      reviewCount: 6789,
+      roomType: 'Стандартный номер',
+      amenities: ['WiFi', 'Кухня', 'Камера хранения'],
+      fixedPricePerNight: 28,
+      currency: 'EUR',
+    },
+  ],
+  paris: [
+    {
+      hotelName: 'Le Meurice',
+      address: '228 Rue de Rivoli, Paris 1er',
+      starRating: 5,
+      rating: 9.5,
+      reviewCount: 1432,
+      roomType: 'Делюкс',
+      amenities: ['WiFi', 'Спа', 'Ресторан', 'Бар', 'Консьерж', 'Дворецкий'],
+      fixedPricePerNight: 480,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'Hotel Malte',
+      address: '63 Rue de Richelieu, Paris 2e',
+      starRating: 4,
+      rating: 8.6,
+      reviewCount: 2341,
+      roomType: 'Классический',
+      amenities: ['WiFi', 'Ресторан', 'Кондиционер', 'Консьерж'],
+      fixedPricePerNight: 150,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'ibis Paris Gare du Nord',
+      address: '197 Rue La Fayette, Paris 10e',
+      starRating: 3,
+      rating: 7.7,
+      reviewCount: 8901,
+      roomType: 'Стандартный номер',
+      amenities: ['WiFi', 'Ресторан', 'Кондиционер'],
+      fixedPricePerNight: 90,
+      currency: 'EUR',
+    },
+  ],
+  kyiv: [
+    {
+      hotelName: 'InterContinental Kyiv',
+      address: 'Вулиця Велика Житомирська, 2/1, Київ',
+      starRating: 5,
+      rating: 8.9,
+      reviewCount: 2109,
+      roomType: 'Делюкс',
+      amenities: ['WiFi', 'Спа', 'Бассейн', 'Фитнес', 'Ресторан', 'Бар'],
+      fixedPricePerNight: 120,
+      currency: 'EUR',
+    },
+    {
+      hotelName: 'ibis Kiev City Center',
+      address: 'Вул. Антоновича 2, Київ',
+      starRating: 3,
+      rating: 8.0,
+      reviewCount: 4213,
+      roomType: 'Стандартный номер',
+      amenities: ['WiFi', 'Ресторан', 'Кондиционер'],
+      fixedPricePerNight: 55,
+      currency: 'EUR',
+    },
+  ],
+};
+
 const DEFAULT_HOTELS: HotelMockEntry[] = [
   {
     hotelName: 'Grand Hotel City Center',
@@ -416,16 +617,69 @@ function getNights(checkIn: string, checkOut: string): number {
   return Math.max(1, Math.round(diff / (1000 * 60 * 60 * 24)));
 }
 
+// Mapping of Russian/alternative city names → canonical HOTELS_BY_CITY key
+const CITY_ALIASES: Record<string, string> = {
+  // Russian names
+  'рим':        'rome',
+  'roma':       'rome',
+  'лондон':     'london',
+  'барселона':  'barcelona',
+  'мадрид':     'madrid',
+  'варшава':    'warsaw',
+  'варшave':    'warsaw',
+  'амстердам':  'amsterdam',
+  'париж':      'paris',
+  'дубай':      'dubai',
+  'стамбул':    'istanbul',
+  'берлин':     'berlin',
+  'вена':       'vienna',
+  'прага':      'prague',
+  'киев':       'kyiv',
+  'киiв':       'kyiv',
+  'москва':     'москва',
+  // English aliases
+  'wien':       'vienna',
+  'rome':       'rome',
+  'london':     'london',
+  'barcelona':  'barcelona',
+  'madrid':     'madrid',
+  'warsaw':     'warsaw',
+  'amsterdam':  'amsterdam',
+  'paris':      'paris',
+  'dubai':      'dubai',
+  'istanbul':   'istanbul',
+  'berlin':     'berlin',
+  'vienna':     'vienna',
+  'prague':     'prague',
+};
+
 function lookupHotels(city: string): HotelMockEntry[] {
   const normalized = city.toLowerCase().trim();
+
+  // 1. Check alias map first for exact/substring matches
+  for (const [alias, canonicalKey] of Object.entries(CITY_ALIASES)) {
+    if (normalized.includes(alias)) {
+      const hotels = HOTELS_BY_CITY[canonicalKey];
+      if (hotels) return hotels;
+    }
+  }
+
+  // 2. Direct key lookup in HOTELS_BY_CITY (handles English names without alias)
   for (const [key, hotels] of Object.entries(HOTELS_BY_CITY)) {
     if (normalized.includes(key)) return hotels;
   }
+
   return DEFAULT_HOTELS;
 }
 
 // Cities where prices are quoted in EUR
-const EUR_CITIES = new Set(['barcelona', 'warsaw', 'rome', 'amsterdam', 'london', 'paris', 'dubai']);
+const EUR_CITIES = new Set([
+  'barcelona', 'warsaw', 'rome', 'amsterdam', 'london', 'paris', 'dubai',
+  'madrid', 'berlin', 'vienna', 'prague', 'kyiv',
+  // Russian city names
+  'барселона', 'варшава', 'рим', 'амстердам', 'лондон', 'париж', 'дубай',
+  'мадрид', 'берлин', 'вена', 'прага', 'киев', 'киiв',
+]);
 
 // Base price ranges per star rating in EUR (min..spread) — used as fallback when no fixedPricePerNight
 const EUR_BASE: Record<number, { min: number; spread: number }> = {

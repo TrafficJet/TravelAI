@@ -1,0 +1,81 @@
+{
+  "results": {
+    "steps": [
+      {
+        "name": "1. App opens",
+        "status": "PASS",
+        "detail": "Onboarding visible, text starts: \"Пропустить 🌍 Твой личный AI-помощник в путешествиях Просто \""
+      },
+      {
+        "name": "2. Onboarding skip",
+        "status": "PASS",
+        "detail": "Clicked \"Пропустить\""
+      },
+      {
+        "name": "3. Try Demo clicked",
+        "status": "PASS",
+        "detail": "Clicked Try Demo, waiting for navigation"
+      },
+      {
+        "name": "4. Navigation to main screen",
+        "status": "PASS",
+        "detail": "Main screen visible after login"
+      },
+      {
+        "name": "5. FAB new chat button",
+        "status": "PASS",
+        "detail": "Clicked + button"
+      },
+      {
+        "name": "6. Chat message typed + sent",
+        "status": "PASS",
+        "detail": "Typed query, sent via Enter"
+      },
+      {
+        "name": "7. AI response + flight cards",
+        "status": "PASS",
+        "detail": "Flight content visible, Hotel: false"
+      },
+      {
+        "name": "8. Profile tab",
+        "status": "FAIL",
+        "detail": "Profile tab not found/clicked"
+      },
+      {
+        "name": "9. Bookings tab",
+        "status": "WARN",
+        "detail": "Брони tab not clicked"
+      },
+      {
+        "name": "10. Wallet tab",
+        "status": "WARN",
+        "detail": "Кошелёк tab not clicked"
+      }
+    ],
+    "issues": [
+      {
+        "severity": "major",
+        "loc": "ChatScreen",
+        "desc": "\"Нет подключения к интернету\" banner shown in chat",
+        "fix": "App shows offline banner even though backend is accessible — check network connectivity detection or websocket connection in web environment"
+      },
+      {
+        "severity": "minor",
+        "loc": "TabBar",
+        "desc": "Bookings/Брони tab coordinate click failed",
+        "fix": "Check tab bar rendering position"
+      },
+      {
+        "severity": "minor",
+        "loc": "TabBar",
+        "desc": "Wallet/Кошелёк tab coordinate click failed",
+        "fix": "Check tab bar rendering position"
+      }
+    ]
+  },
+  "consoleErrors": [
+    "Invalid Sentry Dsn: $SENTRY_DSN",
+    "Invalid Sentry Dsn: $SENTRY_DSN",
+    "Failed to load resource: the server responded with a status of 401 ()"
+  ]
+}

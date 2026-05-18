@@ -1,0 +1,272 @@
+{
+  "consoleLogs": [
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "time": 1779047774335
+    },
+    {
+      "type": "log",
+      "text": "Running application \"main\" with appParams:\n {rootTag: #root, hydrate: undefined} \nDevelopment-level warnings: ON.\nPerformance optimizations: OFF.",
+      "time": 1779047774371
+    },
+    {
+      "type": "warning",
+      "text": "\"shadow*\" style props are deprecated. Use \"boxShadow\".",
+      "time": 1779047774380
+    },
+    {
+      "type": "error",
+      "text": "Invalid Sentry Dsn: $SENTRY_DSN",
+      "time": 1779047774451
+    },
+    {
+      "type": "error",
+      "text": "Invalid Sentry Dsn: $SENTRY_DSN",
+      "time": 1779047774453
+    },
+    {
+      "type": "warning",
+      "text": "props.pointerEvents is deprecated. Use style.pointerEvents",
+      "time": 1779047774476
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 ()",
+      "time": 1779047775009
+    },
+    {
+      "type": "warning",
+      "text": "Animated: `useNativeDriver` is not supported because the native animated module is missing. Falling back to JS-based animation. To resolve this, add `RCTAnimation` module to this app, or remove `useNativeDriver`. Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md",
+      "time": 1779047784273
+    }
+  ],
+  "networkRequests": [
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/",
+      "status": 200,
+      "time": 1779047774069
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=app",
+      "status": 200,
+      "time": 1779047774256
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40expo%2Fvector-icons%2Fbuild%2Fvendor%2Freact-native-vector-icons%2FFonts/Ionicons.ttf",
+      "status": 200,
+      "time": 1779047774536
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40expo-google-fonts%2Fplus-jakarta-sans%2F600SemiBold/PlusJakartaSans_600SemiBold.ttf",
+      "status": 200,
+      "time": 1779047774568
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40expo-google-fonts%2Fplus-jakarta-sans%2F400Regular/PlusJakartaSans_400Regular.ttf",
+      "status": 200,
+      "time": 1779047774568
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40expo-google-fonts%2Fplus-jakarta-sans%2F500Medium/PlusJakartaSans_500Medium.ttf",
+      "status": 200,
+      "time": 1779047774568
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40expo-google-fonts%2Fplus-jakarta-sans%2F700Bold/PlusJakartaSans_700Bold.ttf",
+      "status": 200,
+      "time": 1779047774568
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40expo-google-fonts%2Fplus-jakarta-sans%2F800ExtraBold/PlusJakartaSans_800ExtraBold.ttf",
+      "status": 200,
+      "time": 1779047774568
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40expo-google-fonts%2Finter%2F400Regular/Inter_400Regular.ttf",
+      "status": 200,
+      "time": 1779047774568
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40expo-google-fonts%2Finter%2F500Medium/Inter_500Medium.ttf",
+      "status": 200,
+      "time": 1779047774569
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40expo-google-fonts%2Finter%2F600SemiBold/Inter_600SemiBold.ttf",
+      "status": 200,
+      "time": 1779047774569
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/chat/sessions",
+      "status": 401,
+      "time": 1779047775009
+    },
+    {
+      "event": "response",
+      "method": "POST",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/auth/login",
+      "status": 200,
+      "time": 1779047779068
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/users/me",
+      "status": 200,
+      "time": 1779047779536
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/notifications?page=1&limit=50",
+      "status": 200,
+      "time": 1779047779645
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/chat/sessions",
+      "status": 200,
+      "time": 1779047779693
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/notifications/unread-count",
+      "status": 200,
+      "time": 1779047779708
+    },
+    {
+      "event": "requestfailed",
+      "method": "HEAD",
+      "url": "http://localhost:8081/",
+      "failure": "net::ERR_ABORTED",
+      "time": 1779047783700
+    },
+    {
+      "event": "requestfailed",
+      "method": "HEAD",
+      "url": "http://localhost:8081/",
+      "failure": "net::ERR_ABORTED",
+      "time": 1779047783700
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/wallet",
+      "status": 200,
+      "time": 1779047784234
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/chat/sessions/45169e72-b81b-4887-a182-433259030d7b/messages",
+      "status": 200,
+      "time": 1779047784239
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "http://localhost:8081/assets/?unstable_path=.%2Fnode_modules%2F%40react-navigation%2Felements%2Flib%2Fmodule%2Fassets/back-icon.png",
+      "status": 200,
+      "time": 1779047784353
+    },
+    {
+      "event": "response",
+      "method": "HEAD",
+      "url": "http://localhost:8081/",
+      "status": 200,
+      "time": 1779047784513
+    },
+    {
+      "event": "requestfailed",
+      "method": "HEAD",
+      "url": "http://localhost:8081/",
+      "failure": "net::ERR_ABORTED",
+      "time": 1779047784513
+    }
+  ],
+  "apiReqs": [
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/chat/sessions",
+      "status": 401,
+      "time": 1779047775009
+    },
+    {
+      "event": "response",
+      "method": "POST",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/auth/login",
+      "status": 200,
+      "time": 1779047779068
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/users/me",
+      "status": 200,
+      "time": 1779047779536
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/notifications?page=1&limit=50",
+      "status": 200,
+      "time": 1779047779645
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/chat/sessions",
+      "status": 200,
+      "time": 1779047779693
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/notifications/unread-count",
+      "status": 200,
+      "time": 1779047779708
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/wallet",
+      "status": 200,
+      "time": 1779047784234
+    },
+    {
+      "event": "response",
+      "method": "GET",
+      "url": "https://travel-ai-backend-production-90a0.up.railway.app/api/chat/sessions/45169e72-b81b-4887-a182-433259030d7b/messages",
+      "status": 200,
+      "time": 1779047784239
+    }
+  ]
+}

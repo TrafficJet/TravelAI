@@ -123,7 +123,8 @@ export type SSEEvent =
   | { type: 'booking_draft'; booking: BookingDraft; bookingId: string }
   | { type: 'done' }
   | { type: 'error'; message: string }
-  | { type: 'session_title_update'; title: string };
+  | { type: 'session_title_update'; title: string }
+  | { type: 'cache_status'; xCache: string };
 
 export interface PaginatedResponse<T> {
   data: T[];
