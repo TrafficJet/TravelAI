@@ -27,6 +27,8 @@ import { useNotificationsContext } from '../../context/NotificationsContext';
 import { toast } from '../../lib/toast';
 import i18n from '../../src/i18n';
 import api from '../../services/api';
+import { bookingService } from '../../services/bookingService';
+import type { Booking, FlightDetails, HotelDetails } from '../../types';
 
 const LANGUAGE_KEY = 'app_language';
 
@@ -627,6 +629,10 @@ export default function ProfileScreen() {
   // Theme / language
   const [language, setLanguageState] = useState<'ru' | 'en'>('ru');
 
+  // Recent trips — local state, no global store
+  const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
+  const [isLoadingBookings, setIsLoadingBookings] = useState(true);
+
   // Booking data (read-only display; editing is done via modal)
   const [bookingData, setBookingData] = useState<BookingData>({
     phone: user?.phone ?? '',
@@ -676,6 +682,15 @@ export default function ProfileScreen() {
         });
       } catch {
         // non-fatal — use data from auth store
+      }
+
+      try {
+        const res = await bookingService.getBookings({ limit: 3 });
+        setRecentBookings(res.bookings ?? []);
+      } catch {
+        // non-fatal — show empty state silently
+      } finally {
+        setIsLoadingBookings(false);
       }
     }
     loadAll();
@@ -774,6 +789,57 @@ export default function ProfileScreen() {
   const isPremium = user.subscription?.plan === 'PREMIUM' || user.subscription?.plan === 'PRO';
 
   // ── render helpers ──────────────────────────────────────────────────────────
+
+  function formatTripDate(dateStr: string): string {
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}.${month}.${year}`;
+  }
+
+  function getBookingLabel(booking: Booking): string {
+    if (booking.type === 'FLIGHT') {
+      const d = booking.details as Partial<FlightDetails>;
+      if (d.origin && d.destination) {
+        return `${d.origin} → ${d.destination}`;
+      }
+    }
+    if (booking.type === 'HOTEL') {
+      const d = booking.details as Partial<HotelDetails>;
+      if (d.name) return d.name;
+    }
+    return booking.type === 'FLIGHT' ? 'Рейс' : 'Отель';
+  }
+
+  function getStatusColor(status: Booking['status']): string {
+    switch (status) {
+      case 'CONFIRMED':
+        return Colors.success;
+      case 'PENDING':
+        return Colors.warning;
+      case 'CANCELLED':
+      case 'FAILED':
+        return Colors.error;
+      default:
+        return Colors.textMuted;
+    }
+  }
+
+  function getStatusLabel(status: Booking['status']): string {
+    switch (status) {
+      case 'CONFIRMED':
+        return 'Подтверждено';
+      case 'PENDING':
+        return 'Ожидание';
+      case 'CANCELLED':
+        return 'Отменено';
+      case 'FAILED':
+        return 'Ошибка';
+      default:
+        return status;
+    }
+  }
 
   function renderInfoRow(icon: string, label: string, value: string, isLast = false) {
     return (
@@ -907,6 +973,87 @@ export default function ProfileScreen() {
               >
                 <Text style={styles.upgradeBtnText}>Upgrade to Premium</Text>
               </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        {/* ── Recent trips block ──────────────────────────────────────── */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Последние поездки</Text>
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/bookings')}
+              activeOpacity={0.7}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            >
+              <Text style={styles.editSectionBtn}>Все брони</Text>
+            </TouchableOpacity>
+          </View>
+
+          {isLoadingBookings ? (
+            <View style={styles.card}>
+              {[0, 1, 2].map((i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.tripSkeletonRow,
+                    i < 2 && styles.tripSkeletonRowBorder,
+                  ]}
+                >
+                  <View style={styles.tripSkeletonIcon} />
+                  <View style={styles.tripSkeletonBody}>
+                    <View style={styles.tripSkeletonLine} />
+                    <View style={styles.tripSkeletonLineSm} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          ) : recentBookings.length === 0 ? (
+            <View style={[styles.card, styles.tripEmptyCard]}>
+              <Text style={styles.tripEmptyText}>
+                Поездок пока нет — начни планировать в чате 🗺️
+              </Text>
+              <TouchableOpacity
+                style={styles.tripEmptyBtn}
+                onPress={() => router.push('/(tabs)')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.tripEmptyBtnText}>Новый чат</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.card}>
+              {recentBookings.map((booking, idx) => (
+                <TouchableOpacity
+                  key={booking.id}
+                  style={[
+                    styles.tripRow,
+                    idx < recentBookings.length - 1 && styles.tripRowBorder,
+                  ]}
+                  onPress={() => router.push(`/bookings/${booking.id}` as any)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.tripIcon}>
+                    {booking.type === 'FLIGHT' ? '✈️' : '🏨'}
+                  </Text>
+                  <View style={styles.tripBody}>
+                    <Text style={styles.tripLabel} numberOfLines={1}>
+                      {getBookingLabel(booking)}
+                    </Text>
+                    <Text style={styles.tripDate}>
+                      {formatTripDate(booking.createdAt)}
+                    </Text>
+                  </View>
+                  <Text
+                    style={[
+                      styles.tripStatus,
+                      { color: getStatusColor(booking.status) },
+                    ]}
+                  >
+                    {getStatusLabel(booking.status)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
           )}
         </View>
@@ -1515,6 +1662,100 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
     marginTop: 2,
+  },
+
+  // ── Recent trips ─────────────────────────────────────────────────────────
+  tripRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    gap: Spacing.sm,
+  },
+  tripRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  tripIcon: {
+    fontSize: 20,
+    width: 28,
+    textAlign: 'center',
+  },
+  tripBody: {
+    flex: 1,
+    gap: 2,
+  },
+  tripLabel: {
+    color: Colors.text,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
+  },
+  tripDate: {
+    color: Colors.textMuted,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.xs,
+  },
+  tripStatus: {
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.semibold,
+  },
+  tripEmptyCard: {
+    alignItems: 'center',
+    paddingVertical: Spacing.lg,
+    gap: Spacing.md,
+  },
+  tripEmptyText: {
+    color: Colors.textMuted,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.base,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  tripEmptyBtn: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.button,
+  },
+  tripEmptyBtnText: {
+    color: Colors.textInverse,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.semibold,
+  },
+  // Skeleton
+  tripSkeletonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    gap: Spacing.sm,
+  },
+  tripSkeletonRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  tripSkeletonIcon: {
+    width: 28,
+    height: 20,
+    borderRadius: Radius.xs,
+    backgroundColor: Colors.border,
+  },
+  tripSkeletonBody: {
+    flex: 1,
+    gap: 6,
+  },
+  tripSkeletonLine: {
+    height: 14,
+    borderRadius: Radius.xs,
+    backgroundColor: Colors.border,
+    width: '70%',
+  },
+  tripSkeletonLineSm: {
+    height: 11,
+    borderRadius: Radius.xs,
+    backgroundColor: Colors.border,
+    width: '40%',
   },
 
   // ── Price Alerts button ───────────────────────────────────────────────────
