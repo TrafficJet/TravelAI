@@ -8,13 +8,20 @@ const client = new Anthropic({
 // Claude model to use
 const MODEL = 'claude-opus-4-5';
 
-// Base system prompt for Travel AI assistant
-const BASE_SYSTEM_PROMPT = `Ты — TravelAI, персональный AI-ассистент для путешествий. Твоя миссия: полностью сопроводить пользователя из точки А в точку Б за минимум кликов.
+// Build the base system prompt with dynamic current date injection
+function buildBaseSystemPrompt(): string {
+  const today = new Date();
+  const TODAY = today.toISOString().slice(0, 10);
+  const plus14Date = new Date(today);
+  plus14Date.setDate(plus14Date.getDate() + 14);
+  const PLUS14 = plus14Date.toISOString().slice(0, 10);
+
+  return `Ты — TravelAI, персональный AI-ассистент для путешествий. Твоя миссия: полностью сопроводить пользователя из точки А в точку Б за минимум кликов.
 
 КРИТИЧЕСКИ ВАЖНО — ВСЕГДА ИСПОЛЬЗОВАТЬ ИНСТРУМЕНТЫ:
 Если пользователь упоминает путешествие, маршрут, город назначения, страну или говорит "хочу поехать/полететь/съездить" — НЕМЕДЛЕННО вызывай search_flights + search_hotels ПАРАЛЛЕЛЬНО без каких-либо предварительных вопросов.
 
-Дата по умолчанию (если не указана): через 14 дней от сегодня.
+Сегодняшняя дата: ${TODAY}. Дата по умолчанию (если не указана): через 14 дней — ${PLUS14}.
 Пассажиры по умолчанию: 1 взрослый.
 Класс по умолчанию: economy.
 
@@ -100,7 +107,25 @@ const BASE_SYSTEM_PROMPT = `Ты — TravelAI, персональный AI-ас�
 5. Активности/экскурсии €50-200/поездка
 = Итого от €XXX
 
+ФОРМАТ ПОКАЗА РЕЙСОВ И ОТЕЛЕЙ:
+Карточки рейсов (FlightCard) и отелей (HotelCard) показываются в UI автоматически после вызова инструментов. НЕ дублируй их в виде таблиц или списков в тексте.
+
+После поиска рейсов напиши ТОЛЬКО 3 коротких строки — по одной на вариант:
+💸 [Авиакомпания] €[цена] — [1-2 слова: "без багажа" / "с багажом" / "раннее утро" / "удобное время"]
+⚖️ [Авиакомпания] €[цена] — [1-2 слова почему лучший выбор]
+👑 [Авиакомпания] €[цена] — [1-2 слова: "бизнес" / "комфорт" / "гибкий тариф"]
+
+Не пиши таблицы. Не пиши заголовки. Не пиши рекомендации в формате таблицы.
+Именно в таком порядке: самый дешёвый, лучший по соотношению, премиальный.
+
+ПОСЛЕ ПОКАЗА РЕЙСОВ:
+1. Немедленно вызови search_hotels для города назначения
+2. После показа отелей уточни: "Сколько человек едет?" — если уже известно из контекста,
+   уточни тип номера: "Нужны 2 отдельные кровати или двуспальная? Или отдельные номера?"
+3. Вызывай search_hotels с параметром guests = количество пассажиров из запроса на рейс
+
 АКТИВНЫЕ АЛЕРТЫ: {priceAlerts}`;
+}
 
 // Context data that can be passed when creating a session
 export interface SessionContextData {
@@ -121,9 +146,9 @@ export interface SessionContextData {
 
 // Build the full system prompt with optional user context
 export function buildSystemPrompt(contextData?: SessionContextData): string {
-  if (!contextData) return BASE_SYSTEM_PROMPT;
+  if (!contextData) return buildBaseSystemPrompt();
 
-  const sections: string[] = [BASE_SYSTEM_PROMPT];
+  const sections: string[] = [buildBaseSystemPrompt()];
 
   if (
     contextData.walletBalance !== undefined &&
@@ -239,7 +264,7 @@ export class ClaudeService {
     } = params;
 
     // Resolve base prompt (provided or default)
-    let activeSystemPrompt = systemPrompt ?? BASE_SYSTEM_PROMPT;
+    let activeSystemPrompt = systemPrompt ?? buildBaseSystemPrompt();
 
     // Substitute {priceAlerts} placeholder with actual value from userContext
     if (userContext?.priceAlerts !== undefined) {
