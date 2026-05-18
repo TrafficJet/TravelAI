@@ -673,7 +673,7 @@ export default function ChatScreen() {
       {displayMessages.length === 0 ? (
         <EmptyState
           onSelectSuggestion={(suggestion) => {
-            chatInputRef.current?.setText(suggestion);
+            void handleSend(suggestion);
           }}
         />
       ) : (
@@ -698,7 +698,7 @@ export default function ChatScreen() {
       {showPostSuggestions && (
         <PostMessageSuggestions
           onSelect={(suggestion) => {
-            chatInputRef.current?.setText(suggestion);
+            void handleSend(suggestion);
           }}
         />
       )}
