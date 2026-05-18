@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Tabs, router } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
+import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   useAnimatedStyle,
@@ -109,18 +109,24 @@ export default function TabsLayout() {
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarLabelStyle: {
-          fontSize: Typography.sizes.xs,
+          fontSize: 10,
           fontWeight: Typography.weights.medium,
+          includeFontPadding: false,
+          letterSpacing: 0,
+        },
+        tabBarItemStyle: {
+          paddingHorizontal: 0,
         },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: t('tabs.chat'),
+          title: '',
           headerShown: false,
+          tabBarLabel: () => null,
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="chatbubble-outline" iconFocused="chatbubble" />
+            <TabIcon {...props} icon="arrow-back-outline" iconFocused="arrow-back" />
           ),
         }}
       />
@@ -150,16 +156,6 @@ export default function TabsLayout() {
           title: t('tabs.profile'),
           tabBarIcon: (props) => (
             <TabIcon {...props} icon="person-outline" iconFocused="person" />
-          ),
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() => router.push('/settings')}
-              activeOpacity={0.7}
-              style={{ marginRight: 16, padding: 4 }}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Ionicons name="settings-outline" size={22} color={Colors.primary} />
-            </TouchableOpacity>
           ),
         }}
       />

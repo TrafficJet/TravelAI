@@ -879,12 +879,15 @@ export default function ProfileScreen() {
 
   function applyScanResult() {
     if (!scannedData) return;
+    const scannedName =
+      [scannedData.firstName, scannedData.lastName].filter(Boolean).join(' ') || undefined;
     setBookingData((prev) => ({
       ...prev,
       dateOfBirth: scannedData.dateOfBirth ?? prev.dateOfBirth,
       nationality: scannedData.nationality ?? prev.nationality,
       passportNumber: scannedData.documentNumber ?? prev.passportNumber,
       passportExpiry: scannedData.expiryDate ?? prev.passportExpiry,
+      emergencyName: scannedName ?? prev.emergencyName,
     }));
     setShowScanConfirmModal(false);
     setScannedData(null);
@@ -1174,24 +1177,46 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Scan document button */}
+          {/* Scan document button — passport card style */}
           <TouchableOpacity
-            style={[styles.scanBtn, isScanning && styles.scanBtnDisabled]}
+            style={[styles.scanDocumentCard, isScanning && styles.scanBtnDisabled]}
             onPress={handleScanDocument}
             disabled={isScanning}
             activeOpacity={0.75}
           >
-            {isScanning ? (
-              <ActivityIndicator color={Colors.primary} size="small" />
-            ) : (
-              <Ionicons name="scan-outline" size={20} color={Colors.primary} />
-            )}
-            <View style={styles.scanBtnTextBlock}>
-              <Text style={styles.scanBtnTitle}>
-                {isScanning ? 'Распознаём документ...' : 'Сканировать документ'}
-              </Text>
-              {!isScanning && (
-                <Text style={styles.scanBtnSub}>Паспорт, права, загранпаспорт</Text>
+            {/* Mini passport illustration */}
+            <View style={styles.passportMini}>
+              <View style={styles.passportMiniTop} />
+              <View style={styles.passportMiniBody}>
+                <View style={styles.passportMiniPhoto} />
+                <View style={styles.passportMiniLines}>
+                  <View style={styles.passportMiniLine} />
+                  <View style={[styles.passportMiniLine, { width: '55%' }]} />
+                  <View style={[styles.passportMiniLine, { width: '75%' }]} />
+                </View>
+              </View>
+              <View style={styles.passportMiniMRZ}>
+                <View style={[styles.passportMiniLine, { width: '100%' }]} />
+                <View style={[styles.passportMiniLine, { width: '100%', marginTop: 3 }]} />
+              </View>
+            </View>
+
+            {/* Text block */}
+            <View style={styles.scanCardContent}>
+              {isScanning ? (
+                <>
+                  <ActivityIndicator color={Colors.primary} size="small" style={{ marginBottom: 4 }} />
+                  <Text style={styles.scanCardTitle}>Распознаём документ...</Text>
+                </>
+              ) : (
+                <>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                    <Ionicons name="scan-outline" size={16} color={Colors.primary} />
+                    <Text style={styles.scanCardTitle}>Сканировать документ</Text>
+                  </View>
+                  <Text style={styles.scanCardSub}>Паспорт · Загранпаспорт · Права</Text>
+                  <Text style={styles.scanCardHint}>Данные заполнятся автоматически</Text>
+                </>
               )}
             </View>
           </TouchableOpacity>
@@ -1471,7 +1496,7 @@ export default function ProfileScreen() {
           </View>
 
           <Text style={scanModalStyles.hint}>
-            ФИО не будет изменено — имя уже сохранено в вашем профиле.
+            Проверьте данные — они будут применены к полям бронирования и имени контакта.
           </Text>
 
           <View style={scanModalStyles.btnRow}>
@@ -2010,36 +2035,85 @@ const styles = StyleSheet.create({
     width: '40%',
   },
 
-  // ── Scan document button ──────────────────────────────────────────────────
-  scanBtn: {
+  // ── Scan document card ────────────────────────────────────────────────────
+  scanDocumentCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: Colors.primaryMuted,
     borderWidth: 1.5,
     borderColor: Colors.primary,
-    borderStyle: 'dashed',
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 14,
     marginBottom: 16,
-    gap: 8,
+    gap: 14,
   },
   scanBtnDisabled: {
     opacity: 0.6,
   },
-  scanBtnTextBlock: {
-    alignItems: 'center',
+  // Passport mini illustration
+  passportMini: {
+    width: 54,
+    height: 74,
+    backgroundColor: '#1D4ED8',
+    borderRadius: 6,
+    padding: 6,
+    justifyContent: 'space-between',
+    flexShrink: 0,
   },
-  scanBtnTitle: {
+  passportMiniTop: {
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.35)',
+    borderRadius: 2,
+  },
+  passportMiniBody: {
+    flexDirection: 'row',
+    gap: 5,
+    flex: 1,
+    marginTop: 6,
+  },
+  passportMiniPhoto: {
+    width: 16,
+    height: 22,
+    backgroundColor: 'rgba(255,255,255,0.35)',
+    borderRadius: 2,
+    flexShrink: 0,
+  },
+  passportMiniLines: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 4,
+  },
+  passportMiniLine: {
+    height: 3,
+    backgroundColor: 'rgba(255,255,255,0.35)',
+    borderRadius: 1.5,
+    width: '100%',
+  },
+  passportMiniMRZ: {
+    marginTop: 4,
+  },
+  // Scan card text content
+  scanCardContent: {
+    flex: 1,
+  },
+  scanCardTitle: {
     color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
-  scanBtnSub: {
+  scanCardSub: {
     color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     marginTop: 2,
+  },
+  scanCardHint: {
+    color: Colors.textDisabled,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.xs,
+    marginTop: 4,
+    fontStyle: 'italic',
   },
 
   // ── Price Alerts button ───────────────────────────────────────────────────
