@@ -696,7 +696,7 @@ export default function ChatScreen() {
           ref={flatListRef}
           data={displayMessages}
           keyExtractor={(item) => item.id}
-          extraData={messages}
+          extraData={displayMessages}
           renderItem={({ item }) => (
             <MessageBubble
               message={item}

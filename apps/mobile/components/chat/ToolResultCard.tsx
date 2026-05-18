@@ -835,6 +835,25 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
     );
   }
 
+  // ── Empty results ──
+  if (isFlight && offers !== null && offers.length === 0) {
+    return (
+      <View style={chatResultStyles.fallback}>
+        <Text style={chatResultStyles.fallbackIcon}>✈️</Text>
+        <Text style={chatResultStyles.fallbackText}>Рейсов не найдено по вашему запросу</Text>
+      </View>
+    );
+  }
+
+  if (isHotel && offers !== null && offers.length === 0) {
+    return (
+      <View style={chatResultStyles.fallback}>
+        <Text style={chatResultStyles.fallbackIcon}>🏨</Text>
+        <Text style={chatResultStyles.fallbackText}>Отелей не найдено по вашему запросу</Text>
+      </View>
+    );
+  }
+
   // ── Fallback chip ──
   const fallbackText = isFlight
     ? 'Рейсы найдены'
