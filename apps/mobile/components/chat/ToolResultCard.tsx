@@ -836,11 +836,20 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
   }
 
   // ── Fallback chip ──
+  const fallbackText = isFlight
+    ? 'Рейсы найдены'
+    : isHotel
+    ? 'Отели найдены'
+    : isTransfer
+    ? 'Трансфер найден'
+    : isActivities
+    ? 'Активности найдены'
+    : 'Готово';
   const fallbackIcon = isFlight ? '✈️' : isHotel ? '🏨' : isTransfer ? '🚗' : isActivities ? '🎯' : '🔍';
   return (
-    <View style={chatResultStyles.chip}>
-      <Text style={chatResultStyles.chipIcon}>{fallbackIcon}</Text>
-      <Text style={chatResultStyles.chipText}>Поиск завершён</Text>
+    <View style={chatResultStyles.fallback}>
+      <Text style={chatResultStyles.fallbackIcon}>{fallbackIcon}</Text>
+      <Text style={chatResultStyles.fallbackText}>{fallbackText}</Text>
     </View>
   );
 }
@@ -895,5 +904,27 @@ const chatResultStyles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium,
+  },
+  fallback: {
+    flexDirection: 'row' as const,
+    alignSelf: 'flex-start' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginHorizontal: 16,
+    marginVertical: 4,
+  },
+  fallbackIcon: {
+    fontSize: 13,
+  },
+  fallbackText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.medium as '500',
   },
 });

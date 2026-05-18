@@ -545,9 +545,11 @@ export default function ChatScreen() {
             addMessage(toolMsg);
           },
           onToolResult: (toolUseId, result) => {
+            console.log('[SSE] tool_result received:', { toolUseId, resultKeys: result && typeof result === 'object' ? Object.keys(result as object) : result });
             // Attach result to the matching tool message so ChatToolResult can render cards
             const toolMsgId = `local-tool-${toolUseId}`;
             updateMessage(toolMsgId, { toolResult: result });
+            console.log('[SSE] updateMessage called for:', toolMsgId);
           },
           onBookingDraft: (booking, bookingId) => {
             commitStreamingMessage();
@@ -694,6 +696,7 @@ export default function ChatScreen() {
           ref={flatListRef}
           data={displayMessages}
           keyExtractor={(item) => item.id}
+          extraData={messages}
           renderItem={({ item }) => (
             <MessageBubble
               message={item}
