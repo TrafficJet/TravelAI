@@ -484,10 +484,11 @@ export default function ChatScreen() {
   async function handleSend(content: string, overrideFilters?: { flight: FlightFilters; hotel: HotelFilters }) {
     if (!sessionId || isStreaming) return;
 
-    if (isOffline) {
-      Alert.alert('Нет интернета', 'Проверьте подключение и попробуйте снова.');
-      return;
-    }
+    // TEMP: disabled hard block — NetInfo may falsely report offline on some devices/web
+    // if (isOffline) {
+    //   Alert.alert('Нет интернета', 'Проверьте подключение и попробуйте снова.');
+    //   return;
+    // }
 
     const userMessage: Message = {
       id: `local-user-${Date.now()}`,

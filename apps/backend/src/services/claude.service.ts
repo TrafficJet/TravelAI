@@ -6,7 +6,7 @@ const client = new Anthropic({
 });
 
 // Claude model to use
-const MODEL = process.env.CLAUDE_MODEL ?? 'claude-sonnet-4-5';
+const MODEL = 'claude-opus-4-5';
 
 // Base system prompt for Travel AI assistant
 const BASE_SYSTEM_PROMPT = `Ты — TravelAI, персональный AI-ассистент для путешествий. Твоя миссия: полностью сопроводить пользователя из точки А в точку Б за минимум кликов.
