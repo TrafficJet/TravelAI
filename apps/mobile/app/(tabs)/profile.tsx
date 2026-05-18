@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useAuthStore } from '../../stores/authStore';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
@@ -53,6 +54,17 @@ const EMPTY_BOOKING_DATA: BookingData = {
   emergencyName: '',
   emergencyPhone: '',
 };
+
+// ── Scanned document data type ────────────────────────────────────────────────
+
+interface ScannedDocumentData {
+  firstName?: string;
+  lastName?: string;
+  dateOfBirth?: string;
+  nationality?: string;
+  documentNumber?: string;
+  expiryDate?: string;
+}
 
 // ── AsyncStorage keys for notification prefs ──────────────────────────────────
 const NOTIF_BOOKINGS_KEY = 'notif_bookings';
@@ -622,6 +634,11 @@ export default function ProfileScreen() {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isBookingModalVisible, setIsBookingModalVisible] = useState(false);
 
+  // Document scanning
+  const [isScanning, setIsScanning] = useState(false);
+  const [scannedData, setScannedData] = useState<ScannedDocumentData | null>(null);
+  const [showScanConfirmModal, setShowScanConfirmModal] = useState(false);
+
   // Notification prefs
   const [notifBookings, setNotifBookings] = useState(true);
   const [notifPrices, setNotifPrices] = useState(true);
@@ -759,6 +776,126 @@ export default function ProfileScreen() {
     }
   }
 
+  async function pickAndScanDocument(source: 'camera' | 'gallery') {
+    if (source === 'camera') {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Нет доступа',
+          'Разрешите доступ к камере в настройках устройства.',
+          [{ text: 'ОК' }],
+        );
+        return;
+      }
+    } else {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Нет доступа',
+          'Разрешите доступ к галерее в настройках устройства.',
+          [{ text: 'ОК' }],
+        );
+        return;
+      }
+    }
+
+    const pickerOptions: ImagePicker.ImagePickerOptions = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.8,
+      base64: true,
+    };
+
+    const result =
+      source === 'camera'
+        ? await ImagePicker.launchCameraAsync(pickerOptions)
+        : await ImagePicker.launchImageLibraryAsync(pickerOptions);
+
+    if (result.canceled) return;
+
+    const asset = result.assets[0];
+    if (!asset?.base64) return;
+
+    setIsScanning(true);
+    try {
+      const response = await api.post<{
+        success: boolean;
+        data?: ScannedDocumentData;
+      }>('/documents/scan', {
+        image: asset.base64,
+        mimeType: 'image/jpeg',
+        documentType: 'international_passport',
+      });
+
+      if (!response.data.success || !response.data.data) {
+        Alert.alert(
+          'Не удалось распознать',
+          'Не удалось распознать документ. Убедитесь, что документ хорошо освещён и чётко виден.',
+          [{ text: 'ОК' }],
+        );
+        return;
+      }
+
+      setScannedData(response.data.data);
+      setShowScanConfirmModal(true);
+    } catch (err: unknown) {
+      const isNetworkError =
+        err !== null &&
+        typeof err === 'object' &&
+        'message' in err &&
+        typeof (err as { message?: unknown }).message === 'string' &&
+        ((err as { message: string }).message.toLowerCase().includes('network') ||
+          (err as { message: string }).message.toLowerCase().includes('timeout'));
+
+      if (isNetworkError) {
+        Alert.alert('Ошибка сети', 'Проверьте интернет-соединение и попробуйте снова.', [
+          { text: 'ОК' },
+        ]);
+      } else {
+        Alert.alert(
+          'Не удалось распознать',
+          'Не удалось распознать документ. Убедитесь, что документ хорошо освещён и чётко виден.',
+          [{ text: 'ОК' }],
+        );
+      }
+    } finally {
+      setIsScanning(false);
+    }
+  }
+
+  function handleScanDocument() {
+    Alert.alert('Сканировать документ', 'Выберите способ загрузки', [
+      {
+        text: 'Сфотографировать',
+        onPress: () => pickAndScanDocument('camera'),
+      },
+      {
+        text: 'Из галереи',
+        onPress: () => pickAndScanDocument('gallery'),
+      },
+      { text: 'Отмена', style: 'cancel' },
+    ]);
+  }
+
+  function applyScanResult() {
+    if (!scannedData) return;
+    setBookingData((prev) => ({
+      ...prev,
+      dateOfBirth: scannedData.dateOfBirth ?? prev.dateOfBirth,
+      nationality: scannedData.nationality ?? prev.nationality,
+      passportNumber: scannedData.documentNumber ?? prev.passportNumber,
+      passportExpiry: scannedData.expiryDate ?? prev.passportExpiry,
+    }));
+    setShowScanConfirmModal(false);
+    setScannedData(null);
+    toast.success('Данные из документа применены');
+  }
+
+  function cancelScanResult() {
+    setShowScanConfirmModal(false);
+    setScannedData(null);
+  }
+
   async function handleLogout() {
     Alert.alert('Выйти из аккаунта?', 'Вы уверены, что хотите выйти?', [
       { text: 'Отмена', style: 'cancel' },
@@ -842,10 +979,20 @@ export default function ProfileScreen() {
   }
 
   function renderInfoRow(icon: string, label: string, value: string, isLast = false) {
+    // Map emoji strings to Ionicon names to avoid [?] squares on iOS
+    const iconMap: Record<string, string> = {
+      '📞': 'call-outline',
+      '🎂': 'calendar-outline',
+      '🌍': 'earth-outline',
+      '🛂': 'card-outline',
+      '📅': 'today-outline',
+      '👤': 'person-outline',
+    };
+    const ionName = iconMap[icon] || 'information-circle-outline';
     return (
       <View style={[styles.infoRow, isLast && styles.infoRowNoBorder]} key={label}>
         <View style={styles.infoRowLeft}>
-          <Text style={styles.infoRowIcon}>{icon}</Text>
+          <Ionicons name={ionName as any} size={16} color={Colors.primary} style={{ marginRight: 6 }} />
           <Text style={styles.infoLabel}>{label}</Text>
         </View>
         <Text style={value ? styles.infoValue : styles.infoValueMuted}>
@@ -987,88 +1134,6 @@ export default function ProfileScreen() {
           )}
         </View>
 
-        {/* ── Recent trips block ──────────────────────────────────────── */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Последние поездки</Text>
-            <TouchableOpacity
-              onPress={() => router.push('/(tabs)/bookings')}
-              activeOpacity={0.7}
-              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-            >
-              <Text style={styles.editSectionBtn}>Все брони</Text>
-            </TouchableOpacity>
-          </View>
-
-          {isLoadingBookings ? (
-            <View style={styles.card}>
-              {[0, 1, 2].map((i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.tripSkeletonRow,
-                    i < 2 && styles.tripSkeletonRowBorder,
-                  ]}
-                >
-                  <View style={styles.tripSkeletonIcon} />
-                  <View style={styles.tripSkeletonBody}>
-                    <View style={styles.tripSkeletonLine} />
-                    <View style={styles.tripSkeletonLineSm} />
-                  </View>
-                </View>
-              ))}
-            </View>
-          ) : recentBookings.length === 0 ? (
-            <View style={[styles.card, styles.tripsEmptyState]}>
-              <Ionicons name="map-outline" size={32} color={Colors.textMuted} style={{ opacity: 0.5, marginBottom: 8 }} />
-              <Text style={styles.tripsEmptyText}>Поездок пока нет — начни планировать в чате</Text>
-              <TouchableOpacity
-                style={styles.tripsNewChatBtn}
-                onPress={() => router.push('/(tabs)')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.tripsNewChatBtnText}>Новый чат</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.card}>
-              {recentBookings.map((booking, idx) => (
-                <TouchableOpacity
-                  key={booking.id}
-                  style={[
-                    styles.tripRow,
-                    idx < recentBookings.length - 1 && styles.tripRowBorder,
-                  ]}
-                  onPress={() => router.push(`/bookings/${booking.id}` as any)}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons
-                    name={booking.type === 'FLIGHT' ? 'airplane-outline' : 'bed-outline'}
-                    size={20}
-                    color={Colors.primary}
-                  />
-                  <View style={styles.tripBody}>
-                    <Text style={styles.tripLabel} numberOfLines={1}>
-                      {getBookingLabel(booking)}
-                    </Text>
-                    <Text style={styles.tripDate}>
-                      {formatTripDate(booking.createdAt)}
-                    </Text>
-                  </View>
-                  <Text
-                    style={[
-                      styles.tripStatus,
-                      { color: getStatusColor(booking.status) },
-                    ]}
-                  >
-                    {getStatusLabel(booking.status)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </View>
-
         {/* ── Account info block ──────────────────────────────────────── */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Данные аккаунта</Text>
@@ -1108,6 +1173,28 @@ export default function ProfileScreen() {
               <Text style={styles.editSectionBtn}>Редактировать</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Scan document button */}
+          <TouchableOpacity
+            style={[styles.scanBtn, isScanning && styles.scanBtnDisabled]}
+            onPress={handleScanDocument}
+            disabled={isScanning}
+            activeOpacity={0.75}
+          >
+            {isScanning ? (
+              <ActivityIndicator color={Colors.primary} size="small" />
+            ) : (
+              <Ionicons name="scan-outline" size={20} color={Colors.primary} />
+            )}
+            <View style={styles.scanBtnTextBlock}>
+              <Text style={styles.scanBtnTitle}>
+                {isScanning ? 'Распознаём документ...' : 'Сканировать документ'}
+              </Text>
+              {!isScanning && (
+                <Text style={styles.scanBtnSub}>Паспорт, права, загранпаспорт</Text>
+              )}
+            </View>
+          </TouchableOpacity>
 
           <View style={styles.card}>
             {renderInfoRow('📞', 'Телефон', bookingData.phone)}
@@ -1160,6 +1247,7 @@ export default function ProfileScreen() {
                 onValueChange={handleDarkModeChange}
                 trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
                 thumbColor={isDark ? Colors.primary : Colors.textMuted}
+                style={{ transform: [{ scale: 0.82 }] }}
               />
             </View>
 
@@ -1201,6 +1289,7 @@ export default function ProfileScreen() {
                 onValueChange={handleNotifBookingsChange}
                 trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
                 thumbColor={notifBookings ? Colors.primary : Colors.textMuted}
+                style={{ transform: [{ scale: 0.82 }] }}
               />
             </View>
 
@@ -1214,6 +1303,7 @@ export default function ProfileScreen() {
                 onValueChange={handleNotifPricesChange}
                 trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
                 thumbColor={notifPrices ? Colors.primary : Colors.textMuted}
+                style={{ transform: [{ scale: 0.82 }] }}
               />
             </View>
           </View>
@@ -1234,18 +1324,6 @@ export default function ProfileScreen() {
             <Text style={styles.priceAlertsBtnChevron}>›</Text>
           </TouchableOpacity>
         </View>
-
-        {/* ── Logout ──────────────────────────────────────────────────── */}
-        <TouchableOpacity
-          style={[styles.logoutBtn, isLoggingOut && styles.logoutBtnDisabled]}
-          onPress={handleLogout}
-          disabled={isLoggingOut}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.logoutText}>
-            {isLoggingOut ? 'Выход...' : 'Выйти из аккаунта'}
-          </Text>
-        </TouchableOpacity>
 
         {/* ── Legal / Info section ─────────────────────────────────── */}
         <View style={styles.section}>
@@ -1287,6 +1365,18 @@ export default function ProfileScreen() {
           <Text style={styles.aboutVersion}>Версия 1.0.0</Text>
           <Text style={styles.aboutCopy}>Ваш AI-ассистент для путешествий</Text>
         </View>
+
+        {/* ── Logout ──────────────────────────────────────────────────── */}
+        <TouchableOpacity
+          style={[styles.logoutBtn, isLoggingOut && styles.logoutBtnDisabled]}
+          onPress={handleLogout}
+          disabled={isLoggingOut}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.logoutText}>
+            {isLoggingOut ? 'Выход...' : 'Выйти из аккаунта'}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
 
       {/* Edit name modal */}
@@ -1305,6 +1395,104 @@ export default function ProfileScreen() {
         onClose={() => setIsBookingModalVisible(false)}
         onSaved={handleBookingDataSaved}
       />
+
+      {/* Scan confirm modal */}
+      <Modal
+        visible={showScanConfirmModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={cancelScanResult}
+      >
+        <View style={scanModalStyles.container}>
+          <View style={scanModalStyles.header}>
+            <TouchableOpacity onPress={cancelScanResult} activeOpacity={0.7}>
+              <Text style={scanModalStyles.cancelBtn}>Отмена</Text>
+            </TouchableOpacity>
+            <Text style={scanModalStyles.title}>Данные из документа</Text>
+            <View style={scanModalStyles.headerPlaceholder} />
+          </View>
+
+          <Text style={scanModalStyles.subtitle}>
+            Проверьте распознанные данные перед применением
+          </Text>
+
+          <View style={scanModalStyles.dataCard}>
+            {scannedData?.firstName || scannedData?.lastName ? (
+              <View style={scanModalStyles.dataRow}>
+                <View style={scanModalStyles.dataRowLeft}>
+                  <Ionicons name="person-outline" size={16} color={Colors.primary} />
+                  <Text style={scanModalStyles.dataLabel}>ФИО</Text>
+                </View>
+                <Text style={scanModalStyles.dataValue}>
+                  {[scannedData.firstName, scannedData.lastName].filter(Boolean).join(' ')}
+                </Text>
+              </View>
+            ) : null}
+
+            {scannedData?.dateOfBirth ? (
+              <View style={scanModalStyles.dataRow}>
+                <View style={scanModalStyles.dataRowLeft}>
+                  <Ionicons name="calendar-outline" size={16} color={Colors.primary} />
+                  <Text style={scanModalStyles.dataLabel}>Дата рождения</Text>
+                </View>
+                <Text style={scanModalStyles.dataValue}>{scannedData.dateOfBirth}</Text>
+              </View>
+            ) : null}
+
+            {scannedData?.nationality ? (
+              <View style={scanModalStyles.dataRow}>
+                <View style={scanModalStyles.dataRowLeft}>
+                  <Ionicons name="earth-outline" size={16} color={Colors.primary} />
+                  <Text style={scanModalStyles.dataLabel}>Гражданство</Text>
+                </View>
+                <Text style={scanModalStyles.dataValue}>{scannedData.nationality}</Text>
+              </View>
+            ) : null}
+
+            {scannedData?.documentNumber ? (
+              <View style={scanModalStyles.dataRow}>
+                <View style={scanModalStyles.dataRowLeft}>
+                  <Ionicons name="card-outline" size={16} color={Colors.primary} />
+                  <Text style={scanModalStyles.dataLabel}>Номер документа</Text>
+                </View>
+                <Text style={scanModalStyles.dataValue}>{scannedData.documentNumber}</Text>
+              </View>
+            ) : null}
+
+            {scannedData?.expiryDate ? (
+              <View style={[scanModalStyles.dataRow, scanModalStyles.dataRowLast]}>
+                <View style={scanModalStyles.dataRowLeft}>
+                  <Ionicons name="today-outline" size={16} color={Colors.primary} />
+                  <Text style={scanModalStyles.dataLabel}>Срок действия</Text>
+                </View>
+                <Text style={scanModalStyles.dataValue}>{scannedData.expiryDate}</Text>
+              </View>
+            ) : null}
+          </View>
+
+          <Text style={scanModalStyles.hint}>
+            ФИО не будет изменено — имя уже сохранено в вашем профиле.
+          </Text>
+
+          <View style={scanModalStyles.btnRow}>
+            <TouchableOpacity
+              style={scanModalStyles.cancelPill}
+              onPress={cancelScanResult}
+              activeOpacity={0.7}
+            >
+              <Text style={scanModalStyles.cancelPillText}>Отмена</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={scanModalStyles.applyPill}
+              onPress={applyScanResult}
+              activeOpacity={0.8}
+            >
+              <Text style={scanModalStyles.applyPillText}>Применить</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -1583,12 +1771,12 @@ const styles = StyleSheet.create({
   infoLabel: {
     color: Colors.textMuted,
     fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
+    fontSize: Typography.sizes.base,
   },
   infoValue: {
     color: Colors.text,
     fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
+    fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
     maxWidth: '55%',
     textAlign: 'right',
@@ -1596,7 +1784,7 @@ const styles = StyleSheet.create({
   infoValueMuted: {
     color: Colors.textMuted,
     fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
+    fontSize: Typography.sizes.base,
     fontStyle: 'italic',
     maxWidth: '55%',
     textAlign: 'right',
@@ -1621,19 +1809,20 @@ const styles = StyleSheet.create({
   switchTitle: {
     color: Colors.text,
     fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
+    fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
   },
   switchSubtitle: {
     color: Colors.textMuted,
     fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
+    fontSize: Typography.sizes.sm,
     marginTop: 2,
   },
 
   // ── Logout ────────────────────────────────────────────────────────────────
   logoutBtn: {
     marginTop: Spacing.sm,
+    marginBottom: Spacing.xl,
     paddingVertical: 14,
     borderRadius: Radius.input,
     borderWidth: 1.5,
@@ -1706,7 +1895,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
   },
 
-  // ── About section ────────────────────────────────────────────────────────
+  // ── About section ─────────────────────────────────────────────────────────
   aboutSection: {
     alignItems: 'center',
     marginTop: Spacing.xl,
@@ -1821,6 +2010,38 @@ const styles = StyleSheet.create({
     width: '40%',
   },
 
+  // ── Scan document button ──────────────────────────────────────────────────
+  scanBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.primary,
+    borderStyle: 'dashed',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 16,
+    gap: 8,
+  },
+  scanBtnDisabled: {
+    opacity: 0.6,
+  },
+  scanBtnTextBlock: {
+    alignItems: 'center',
+  },
+  scanBtnTitle: {
+    color: Colors.primary,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.semibold,
+  },
+  scanBtnSub: {
+    color: Colors.textMuted,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.xs,
+    marginTop: 2,
+  },
+
   // ── Price Alerts button ───────────────────────────────────────────────────
   priceAlertsBtn: {
     marginTop: Spacing.sm,
@@ -1857,5 +2078,122 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
     lineHeight: 24,
+  },
+});
+
+// ── Scan confirm modal styles ─────────────────────────────────────────────────
+
+const scanModalStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: 40,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.md,
+  },
+  cancelBtn: {
+    color: Colors.primary,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.md,
+  },
+  title: {
+    color: Colors.text,
+    fontFamily: 'Sora',
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
+  },
+  headerPlaceholder: {
+    width: 60,
+  },
+  subtitle: {
+    color: Colors.textMuted,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.sm,
+    marginBottom: Spacing.md,
+    lineHeight: 20,
+  },
+  dataCard: {
+    backgroundColor: Colors.card,
+    borderRadius: Radius.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
+  },
+  dataRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 13,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    gap: 8,
+  },
+  dataRowLast: {
+    borderBottomWidth: 0,
+  },
+  dataRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flex: 1,
+  },
+  dataLabel: {
+    color: Colors.textMuted,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.base,
+  },
+  dataValue: {
+    color: Colors.text,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
+    maxWidth: '55%',
+    textAlign: 'right',
+  },
+  hint: {
+    color: Colors.textDisabled,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.xs,
+    lineHeight: 18,
+    marginBottom: Spacing.xl,
+  },
+  btnRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 'auto' as unknown as number,
+  },
+  cancelPill: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: Radius.button,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+  },
+  cancelPillText: {
+    color: Colors.textMuted,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.semibold,
+  },
+  applyPill: {
+    flex: 2,
+    paddingVertical: 14,
+    borderRadius: Radius.button,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+  },
+  applyPillText: {
+    color: Colors.textInverse,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
   },
 });

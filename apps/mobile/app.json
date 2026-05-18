@@ -22,9 +22,9 @@
       "buildNumber": "1",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Для поиска отелей рядом с вами",
-        "NSCameraUsageDescription": "Для загрузки фото профиля",
+        "NSCameraUsageDescription": "Для фото профиля и сканирования документов (паспорт, права)",
         "NSUserNotificationUsageDescription": "Уведомления о статусе бронирований",
-        "NSPhotoLibraryUsageDescription": "Для загрузки фото профиля"
+        "NSPhotoLibraryUsageDescription": "Для фото профиля и выбора документа из галереи"
       },
       "config": {
         "usesNonExemptEncryption": false

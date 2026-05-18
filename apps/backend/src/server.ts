@@ -29,6 +29,7 @@ import { notificationsRoutes } from './routes/notifications.routes';
 import { integrationsRoutes } from './routes/integrations.routes';
 import { favoritesRoutes } from './routes/favorites.routes';
 import { stripeRoutes } from './routes/stripe.routes';
+import { documentsRoutes } from './routes/documents.routes';
 
 // Workers
 import { registerPriceAlertWorker } from './workers/priceAlert.worker';
@@ -131,6 +132,9 @@ async function buildServer() {
 
   // Integration status — public monitoring endpoint
   await fastify.register(integrationsRoutes, { prefix: '/api/integrations' });
+
+  // Document scanning via Claude Vision API
+  await fastify.register(documentsRoutes, { prefix: '/api/documents' });
 
   // Health check — registered WITHOUT auth middleware
   await fastify.register(healthRoutes, { prefix: '/health' });
