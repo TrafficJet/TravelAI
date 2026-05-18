@@ -6,10 +6,19 @@ import { Typography } from '../../constants/typography';
 import { FavoriteButton } from '../ui/FavoriteButton';
 import type { FlightOffer } from '../../types';
 
+type BadgeType = 'budget' | 'value' | 'premium';
+
 interface Props {
   flight: FlightOffer;
   onBook?: () => void;
+  badge?: BadgeType;
 }
+
+const BADGE_CONFIG: Record<BadgeType, { label: string; bg: string; color: string }> = {
+  budget:  { label: '💸 Дешевле',       bg: 'rgba(16, 185, 129, 0.15)', color: '#10B981' },
+  value:   { label: '⚖️ Лучший выбор',  bg: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B' },
+  premium: { label: '👑 Премиум',        bg: 'rgba(139, 92, 246, 0.15)', color: '#8B5CF6' },
+};
 
 // ── Airline logo helpers ───────────────────────────────────────────────────────
 
@@ -204,7 +213,7 @@ const arrowStyles = StyleSheet.create({
 
 // ── FlightCard ────────────────────────────────────────────────────────────────
 
-export function FlightCard({ flight, onBook }: Props) {
+export function FlightCard({ flight, onBook, badge }: Props) {
   const currencySymbol = formatCurrency(flight.currency);
 
   function handlePress() {
@@ -228,13 +237,27 @@ export function FlightCard({ flight, onBook }: Props) {
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.82} style={styles.card}>
 
+      {/* Badge — absolute top-left */}
+      {badge && (
+        <View
+          style={[
+            styles.badgePill,
+            { backgroundColor: BADGE_CONFIG[badge].bg },
+          ]}
+        >
+          <Text style={[styles.badgeText, { color: BADGE_CONFIG[badge].color }]}>
+            {BADGE_CONFIG[badge].label}
+          </Text>
+        </View>
+      )}
+
       {/* Favorite — absolute top-right */}
       <View style={styles.favWrap}>
         <FavoriteButton type="flight" item={flight} size={18} />
       </View>
 
       {/* ── 1. Top: airline logo + name + flight number ── */}
-      <View style={styles.airlineRow}>
+      <View style={[styles.airlineRow, badge && styles.airlineRowWithBadge]}>
         <AirlineLogo name={flight.airline} />
         <View style={styles.airlineTextBlock}>
           <Text style={styles.airlineName}>{flight.airline}</Text>
@@ -316,6 +339,23 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 
+  // Badge pill — top-left
+  badgePill: {
+    position: 'absolute',
+    top: 10,
+    left: 12,
+    zIndex: 2,
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  badgeText: {
+    fontFamily: 'Inter',
+    fontSize: 11,
+    fontWeight: '600',
+    lineHeight: 15,
+  },
+
   // Fav button
   favWrap: {
     position: 'absolute',
@@ -331,6 +371,9 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 10,
     paddingRight: 32,
+  },
+  airlineRowWithBadge: {
+    marginTop: 22,
   },
   airlineTextBlock: {
     flex: 1,

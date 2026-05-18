@@ -761,11 +761,12 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
   const offers = extractOffers(result);
 
   // ── Flight results ──
+  const FLIGHT_BADGES = ['budget', 'value', 'premium'] as const;
   if (isFlight && offers !== null && isFlightOfferArray(offers)) {
     return (
       <View style={chatResultStyles.wrap}>
         {offers.slice(0, 3).map((flight, i) => (
-          <FlightCard key={flight.id ?? i} flight={flight} />
+          <FlightCard key={flight.id ?? i} flight={flight} badge={FLIGHT_BADGES[i]} />
         ))}
         {offers.length > 3 && (
           <Text style={chatResultStyles.moreText}>+ ещё {offers.length - 3} рейсов</Text>
