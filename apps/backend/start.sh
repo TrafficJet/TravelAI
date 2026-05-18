@@ -25,7 +25,8 @@ if ! DEPLOY_OUT=$(npx prisma migrate deploy 2>&1); then
       20260515130040_add_user_features \
       20260515150437_add_favorites \
       20260517160000_add_oauth_fields \
-      20260517170000_add_user_profile_fields; do
+      20260517170000_add_user_profile_fields \
+      20260518000000_fix_missing_profile_columns; do
       echo "[start.sh] Marking $migration as applied..."
       npx prisma migrate resolve --applied "$migration"
     done
