@@ -1,25 +1,26 @@
 import { FastifyInstance } from 'fastify';
 
-// Integration status route — public endpoint for monitoring
-// Reports whether each external integration is configured (real) or falling back to mock
+// Integration status route — public endpoint for monitoring.
+// Reports whether each external integration is configured (real) or falling back to mock.
 
-type AmadeusStatus = {
-  configured: boolean;
-  mode: 'sandbox' | 'production' | 'mock';
-  base_url?: string;
+type TravelpayoutsStatus = {
+  configured:    boolean;
+  mode:          'real' | 'mock';
+  flights_api?:  string;
+  hotels_api?:   string;
 };
 
 type IntegrationStatus = {
   configured: boolean;
-  mode: 'real' | 'mock';
+  mode:       'real' | 'mock';
 };
 
 type IntegrationsStatusResponse = {
-  amadeus: AmadeusStatus;
-  duffel: IntegrationStatus & { note?: string };
-  aviasales: IntegrationStatus;
-  yookassa: IntegrationStatus;
-  duffelLive: { note: string };
+  travelpayouts: TravelpayoutsStatus;
+  duffel:        IntegrationStatus & { note?: string };
+  aviasales:     IntegrationStatus;
+  yookassa:      IntegrationStatus;
+  duffelLive:    { note: string };
 };
 
 function isConfigured(...keys: string[]): boolean {
@@ -31,30 +32,29 @@ function integrationStatus(...keys: string[]): IntegrationStatus {
   return { configured, mode: configured ? 'real' : 'mock' };
 }
 
-function amadeusStatus(): AmadeusStatus {
-  const clientId = process.env.AMADEUS_CLIENT_ID;
-  const configured = Boolean(clientId);
+function travelpayoutsStatus(): TravelpayoutsStatus {
+  const configured = Boolean(process.env.TRAVELPAYOUTS_API_KEY);
 
   if (!configured) {
     return { configured: false, mode: 'mock' };
   }
 
-  const baseUrl =
-    process.env.AMADEUS_BASE_URL ?? 'https://test.api.amadeus.com';
-  const isProduction = !baseUrl.includes('test.');
-  const mode: AmadeusStatus['mode'] = isProduction ? 'production' : 'sandbox';
-
-  return { configured: true, mode, base_url: baseUrl };
+  return {
+    configured: true,
+    mode:       'real',
+    flights_api: 'https://api.travelpayouts.com/aviasales/v3/prices_for_dates',
+    hotels_api:  'https://engine.hotellook.com/api/v2/cache.json',
+  };
 }
 
 export async function integrationsRoutes(fastify: FastifyInstance) {
   // GET /api/integrations/status — returns configured/mock state of each integration
   fastify.get('/status', async (_request, reply) => {
     const body: IntegrationsStatusResponse = {
-      amadeus: amadeusStatus(),
-      duffel: integrationStatus('DUFFEL_API_KEY'),
-      aviasales: integrationStatus('AVIASALES_TOKEN'),
-      yookassa: integrationStatus('YOOKASSA_SHOP_ID', 'YOOKASSA_SECRET_KEY'),
+      travelpayouts: travelpayoutsStatus(),
+      duffel:        integrationStatus('DUFFEL_API_KEY'),
+      aviasales:     integrationStatus('TRAVELPAYOUTS_API_KEY'),
+      yookassa:      integrationStatus('YOOKASSA_SHOP_ID', 'YOOKASSA_SECRET_KEY'),
       duffelLive: {
         note: 'Requires account verification at duffel.com',
       },

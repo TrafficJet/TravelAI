@@ -8,12 +8,12 @@ import type {
   CreateOfferRequestSlice,
   CreateOfferRequestPassenger,
 } from '@duffel/api/types';
-import { searchFlightsAmadeus } from './amadeus.service.js';
+import { searchFlightsTravelpayouts } from './travelpayouts.service.js';
 
 // Duffel service — international flight search.
-// Priority: Duffel real API → Amadeus real API → mock.
+// Priority: Duffel real API → Travelpayouts (Aviasales) → mock.
 // Uses real Duffel when DUFFEL_API_KEY is set.
-// Falls back to Amadeus when AMADEUS_CLIENT_ID + AMADEUS_CLIENT_SECRET are set.
+// Falls back to Travelpayouts when TRAVELPAYOUTS_API_KEY is set.
 // Falls back to mock data when no keys are present or all real calls fail.
 
 export interface FlightOffer {
@@ -391,18 +391,18 @@ export async function searchFlights(params: SearchFlightsParams): Promise<Flight
       return await searchFlightsDuffelReal(params, client);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      console.warn(`[Duffel] Fallback to Amadeus/mock: ${message}`);
+      console.warn(`[Duffel] Fallback to Travelpayouts/mock: ${message}`);
     }
   }
 
-  // --- Priority 2: Amadeus real API ---
-  if (process.env.AMADEUS_CLIENT_ID && process.env.AMADEUS_CLIENT_SECRET) {
-    console.log('[Amadeus] Duffel unavailable — trying Amadeus flights');
+  // --- Priority 2: Travelpayouts (Aviasales) real API ---
+  if (process.env.TRAVELPAYOUTS_API_KEY) {
+    console.log('[Travelpayouts] Duffel unavailable — trying Travelpayouts flights');
     try {
-      return await searchFlightsAmadeus(params);
+      return await searchFlightsTravelpayouts(params);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      console.warn(`[Amadeus] Fallback to mock: ${message}`);
+      console.warn(`[Travelpayouts] Fallback to mock: ${message}`);
     }
   }
 
