@@ -20,14 +20,14 @@ export default function PrivacyPolicyScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.intro}>
-          TravelAI («мы», «нас» или «наш») серьёзно относится к конфиденциальности ваших данных.
+          SVIT («мы», «нас» или «наш») серьёзно относится к конфиденциальности ваших данных.
           Настоящая Политика описывает, какую информацию мы собираем, как её используем и какие
           права у вас есть в отношении ваших данных.
         </Text>
 
         <Text style={styles.sectionTitle}>1. Какую информацию мы собираем</Text>
         <Text style={styles.body}>
-          При использовании приложения TravelAI мы можем собирать следующие данные:
+          При использовании приложения SVIT мы можем собирать следующие данные:
         </Text>
         <Text style={styles.bullet}>- Имя и адрес электронной почты (при регистрации)</Text>
         <Text style={styles.bullet}>- История поиска рейсов и отелей</Text>
@@ -38,7 +38,7 @@ export default function PrivacyPolicyScreen() {
 
         <Text style={styles.sectionTitle}>2. Как мы используем ваши данные</Text>
         <Text style={styles.body}>
-          Собранные данные используются исключительно для предоставления сервиса TravelAI:
+          Собранные данные используются исключительно для предоставления сервиса SVIT:
         </Text>
         <Text style={styles.bullet}>- Для обработки поиска рейсов и отелей</Text>
         <Text style={styles.bullet}>- Для управления бронированиями и отображения их истории</Text>
@@ -92,7 +92,7 @@ export default function PrivacyPolicyScreen() {
         <Text style={styles.contact}>support@travelai.app</Text>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>TravelAI — ваш AI-ассистент для путешествий</Text>
+          <Text style={styles.footerText}>SVIT — ваш AI-ассистент для путешествий</Text>
           <Text style={styles.footerText}>Версия политики: 1.0.0 от 01.01.2026</Text>
         </View>
       </ScrollView>

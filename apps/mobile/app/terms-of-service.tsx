@@ -20,13 +20,13 @@ export default function TermsOfServiceScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.intro}>
-          Добро пожаловать в TravelAI. Используя наше приложение, вы соглашаетесь с настоящими
+          Добро пожаловать в SVIT. Используя наше приложение, вы соглашаетесь с настоящими
           Условиями использования. Пожалуйста, внимательно ознакомьтесь с ними перед использованием сервиса.
         </Text>
 
         <Text style={styles.sectionTitle}>1. Описание сервиса</Text>
         <Text style={styles.body}>
-          TravelAI — это AI-ассистент для путешественников, который помогает искать авиабилеты и отели,
+          SVIT — это AI-ассистент для путешественников, который помогает искать авиабилеты и отели,
           управлять бронированиями и получать персональные рекомендации. Сервис доступен через мобильное
           приложение на платформах iOS и Android.
         </Text>
@@ -40,30 +40,30 @@ export default function TermsOfServiceScreen() {
 
         <Text style={styles.sectionTitle}>3. Использование сервиса</Text>
         <Text style={styles.body}>
-          Вы соглашаетесь использовать TravelAI только в законных целях и не нарушать права других
+          Вы соглашаетесь использовать SVIT только в законных целях и не нарушать права других
           пользователей. Запрещается:
         </Text>
         <Text style={styles.bullet}>- Использовать сервис для автоматизированного сбора данных (парсинг)</Text>
-        <Text style={styles.bullet}>- Пытаться получить несанкционированный доступ к системам TravelAI</Text>
+        <Text style={styles.bullet}>- Пытаться получить несанкционированный доступ к системам SVIT</Text>
         <Text style={styles.bullet}>- Распространять вредоносное программное обеспечение</Text>
         <Text style={styles.bullet}>- Публиковать незаконный или оскорбительный контент</Text>
 
         <Text style={styles.sectionTitle}>4. Бронирования и оплата</Text>
         <Text style={styles.body}>
-          TravelAI выступает посредником при бронировании авиабилетов и отелей. При оформлении бронирования:
+          SVIT выступает посредником при бронировании авиабилетов и отелей. При оформлении бронирования:
         </Text>
         <Text style={styles.bullet}>- Стоимость рассчитывается на основе актуальных данных партнёров</Text>
-        <Text style={styles.bullet}>- Оплата производится через внутренний кошелёк TravelAI</Text>
+        <Text style={styles.bullet}>- Оплата производится через внутренний кошелёк SVIT</Text>
         <Text style={styles.bullet}>- Бронирование считается подтверждённым после получения уведомления</Text>
         <Text style={styles.bullet}>- Условия отмены и возврата зависят от политики авиакомпании или отеля</Text>
         <Text style={[styles.body, styles.emphasis]}>
-          TravelAI не несёт ответственности за изменения расписания, отмену рейсов или иные действия
+          SVIT не несёт ответственности за изменения расписания, отмену рейсов или иные действия
           авиакомпаний и отелей.
         </Text>
 
         <Text style={styles.sectionTitle}>5. Подписка и тарифы</Text>
         <Text style={styles.body}>
-          TravelAI предлагает бесплатный и Premium-тарифы:
+          SVIT предлагает бесплатный и Premium-тарифы:
         </Text>
         <Text style={styles.bullet}>- Бесплатный: базовый поиск, ограниченное число запросов к AI</Text>
         <Text style={styles.bullet}>- Premium: неограниченный AI-ассистент, приоритетный поиск, эксклюзивные предложения</Text>
@@ -72,14 +72,14 @@ export default function TermsOfServiceScreen() {
 
         <Text style={styles.sectionTitle}>6. Интеллектуальная собственность</Text>
         <Text style={styles.body}>
-          Все материалы приложения TravelAI (логотип, дизайн, тексты, программный код) защищены
-          авторским правом и являются собственностью TravelAI. Копирование или воспроизведение
+          Все материалы приложения SVIT (логотип, дизайн, тексты, программный код) защищены
+          авторским правом и являются собственностью SVIT. Копирование или воспроизведение
           без письменного разрешения запрещено.
         </Text>
 
         <Text style={styles.sectionTitle}>7. Ограничение ответственности</Text>
         <Text style={styles.body}>
-          Сервис предоставляется «как есть». TravelAI не гарантирует бесперебойную работу приложения
+          Сервис предоставляется «как есть». SVIT не гарантирует бесперебойную работу приложения
           и не несёт ответственности за прямые или косвенные убытки, связанные с использованием сервиса,
           включая упущенную выгоду или потерю данных.
         </Text>
@@ -98,7 +98,7 @@ export default function TermsOfServiceScreen() {
         <Text style={styles.contact}>support@travelai.app</Text>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>TravelAI — ваш AI-ассистент для путешествий</Text>
+          <Text style={styles.footerText}>SVIT — ваш AI-ассистент для путешествий</Text>
           <Text style={styles.footerText}>Версия условий: 1.0.0 от 01.01.2026</Text>
         </View>
       </ScrollView>

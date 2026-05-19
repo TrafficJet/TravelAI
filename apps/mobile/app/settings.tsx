@@ -810,7 +810,7 @@ export default function SettingsScreen() {
             icon="information-circle-outline"
             iconColor={colors.info}
             label="Версия приложения"
-            sublabel="TravelAI"
+            sublabel="SVIT"
             rightElement={
               <Text style={[styles.versionText, { color: colors.textMuted }]}>{APP_VERSION}</Text>
             }

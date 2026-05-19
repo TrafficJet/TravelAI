@@ -1978,7 +1978,7 @@ export default function ProfileScreen() {
         {/* ── About app ───────────────────────────────────────────────── */}
         <View style={styles.aboutSection}>
           <Ionicons name="airplane" size={32} color={colors.primary} />
-          <Text style={styles.aboutName}>TravelAI</Text>
+          <Text style={styles.aboutName}>SVIT</Text>
           <Text style={styles.aboutVersion}>Версия 1.0.0</Text>
           <Text style={styles.aboutCopy}>Ваш AI-ассистент для путешествий</Text>
         </View>

@@ -87,7 +87,7 @@ export default function ChatEntryScreen() {
             <Ionicons name="airplane" size={48} color={colors.primary} />
           </LinearGradient>
         </View>
-        <Text style={[styles.brand, { color: colors.text }]}>TravelAI</Text>
+        <Text style={[styles.brand, { color: colors.text }]}>SVIT</Text>
         <Ionicons
           name="cloud-offline-outline"
           size={40}
@@ -123,7 +123,7 @@ export default function ChatEntryScreen() {
           <Ionicons name="airplane" size={48} color={colors.primary} />
         </LinearGradient>
       </View>
-      <Text style={[styles.brand, { color: colors.text }]}>TravelAI</Text>
+      <Text style={[styles.brand, { color: colors.text }]}>SVIT</Text>
       <Text style={[styles.tagline, { color: colors.textMuted }]}>Ваш AI-помощник в путешествиях</Text>
       <ActivityIndicator
         color={colors.primary}

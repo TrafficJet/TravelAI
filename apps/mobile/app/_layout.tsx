@@ -72,8 +72,7 @@ function BrandSplash({ onFinish }: { onFinish: () => void }) {
     <View style={splashStyles.root}>
       <StatusBar style="light" />
       <Animated.View style={[splashStyles.content, { opacity }]}>
-        <Text style={splashStyles.plane}>✈</Text>
-        <Text style={splashStyles.brand}>TravelAI</Text>
+        <Text style={splashStyles.brand}>SVIT</Text>
         <Text style={splashStyles.tagline}>AI-ассистент путешественника</Text>
       </Animated.View>
     </View>
@@ -90,11 +89,6 @@ const splashStyles = StyleSheet.create({
   },
   content: {
     alignItems: 'center',
-  },
-  plane: {
-    fontSize: 80,
-    color: darkColors.primary,
-    marginBottom: 20,
   },
   brand: {
     fontFamily: 'Sora_Bold',

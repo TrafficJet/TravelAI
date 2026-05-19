@@ -196,7 +196,7 @@ function GuestWelcomeState({ onSignIn }: { onSignIn: () => void }) {
   return (
     <View style={guestStyles.container}>
       <Ionicons name="airplane" size={64} color={colors.primary} style={{ opacity: 0.3, marginBottom: 24 }} />
-      <Text style={[guestStyles.title, { color: colors.text }]}>Добро пожаловать в TravelAI</Text>
+      <Text style={[guestStyles.title, { color: colors.text }]}>Добро пожаловать в SVIT</Text>
       <Text style={[guestStyles.subtitle, { color: colors.textMuted }]}>
         AI-ассистент поможет подобрать рейсы, отели и трансфер.{'\n'}
         Войдите, чтобы начать планировать путешествие.
@@ -358,6 +358,27 @@ export default function ChatScreen() {
       undefined,
       [
         {
+          text: 'Переименовать',
+          onPress: () => {
+            if (Platform.OS === 'ios') {
+              Alert.prompt(
+                'Переименовать чат',
+                'Введите новое название',
+                (newTitle) => {
+                  if (newTitle?.trim()) {
+                    updateSessionTitle(sessionId, newTitle.trim());
+                    navigation.setOptions({ title: newTitle.trim() });
+                  }
+                },
+                'plain-text',
+                currentSession?.title ?? '',
+              );
+            } else {
+              Alert.alert('Переименование', 'Откройте историю чатов для переименования.');
+            }
+          },
+        },
+        {
           text: 'Очистить историю',
           onPress: () => {
             Alert.alert(
@@ -406,7 +427,7 @@ export default function ChatScreen() {
       ],
       { cancelable: true },
     );
-  }, [sessionId, currentSession, deleteSession, loadMessages]);
+  }, [sessionId, currentSession, deleteSession, loadMessages, updateSessionTitle, navigation]);
 
   useEffect(() => {
     if (!sessionId) return;

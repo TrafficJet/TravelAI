@@ -78,7 +78,7 @@ export default function LoginScreen() {
           <View style={styles.logoWrap}>
             <Ionicons name="airplane" size={48} color={colors.primary} />
           </View>
-          <Text style={styles.title}>TravelAI</Text>
+          <Text style={styles.title}>SVIT</Text>
           <Text style={styles.subtitle}>AI-ассистент для путешествий</Text>
         </View>
 
