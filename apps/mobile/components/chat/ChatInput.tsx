@@ -201,6 +201,11 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           returnKeyType="default"
           blurOnSubmit={false}
           onSubmitEditing={Platform.OS === 'web' ? handleSend : undefined}
+          onKeyPress={Platform.OS === 'web' ? (e: { nativeEvent: { key: string; shiftKey?: boolean } }) => {
+            if (e.nativeEvent.key === 'Enter' && !e.nativeEvent.shiftKey) {
+              handleSend();
+            }
+          } : undefined}
         />
 
         {/* Send button — gradient circle */}

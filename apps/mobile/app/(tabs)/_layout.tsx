@@ -199,10 +199,6 @@ export default function TabsLayout() {
         name="search-history"
         options={{ href: null }}
       />
-      <Tabs.Screen
-        name="chat/[sessionId]"
-        options={{ href: null, headerShown: false }}
-      />
     </Tabs>
   );
 }

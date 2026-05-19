@@ -134,10 +134,7 @@ function ThemedStack({ fontsLoaded, showBrandSplash, onBrandSplashFinish }: Them
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="chat/[sessionId]"
-          options={{ title: 'Чат', headerBackTitle: 'Назад' }}
-        />
+        {/* chat/[sessionId] now lives inside (tabs) group — tab bar remains visible */}
         <Stack.Screen
           name="bookings/[bookingId]"
           options={{ title: 'Детали брони', headerBackTitle: 'Назад' }}
@@ -248,7 +245,7 @@ export default function RootLayout() {
           data?.type === 'chat_message' &&
           typeof data.sessionId === 'string'
         ) {
-          router.push(`/chat/${data.sessionId}` as Parameters<typeof router.push>[0]);
+          router.push(`/(tabs)/chat/${data.sessionId}` as Parameters<typeof router.push>[0]);
         } else {
           router.push('/(tabs)');
         }
