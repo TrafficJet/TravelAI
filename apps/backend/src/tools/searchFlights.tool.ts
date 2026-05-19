@@ -248,8 +248,12 @@ export async function executeSearchFlights(
   return { ...result, searchId: `search_${Date.now()}`, cacheHit: false };
 }
 
+// RUB → USD conversion rate (hardcoded for MVP; update periodically)
+const RUB_TO_USD_RATE = 90;
+
 // Normalise a raw FlightOffer (duffel/aviasales shape) into the flat
 // MobileFlightOffer shape that FlightCard in the mobile app expects.
+// All prices are normalised to USD — RUB amounts are converted automatically.
 function normaliseMobileOffer(
   offer: FlightOffer,
   origin: string,
@@ -258,6 +262,12 @@ function normaliseMobileOffer(
   const firstSeg = offer.segments[0];
   const lastSeg  = offer.segments[offer.segments.length - 1];
   const totalDuration = offer.segments.reduce((acc, s) => acc + s.duration, 0);
+
+  // Always convert to USD so the mobile FlightCard never shows ruble-range numbers with a $ sign
+  const rawPrice = Number(offer.totalPrice);
+  const isRub = offer.currency?.toUpperCase() === 'RUB';
+  const priceUsd = isRub ? Math.round(rawPrice / RUB_TO_USD_RATE) : rawPrice;
+  const currency = isRub ? 'USD' : (offer.currency ?? 'USD');
 
   return {
     id:            offer.offerId,
@@ -269,13 +279,13 @@ function normaliseMobileOffer(
     cabin:         offer.cabinClass,
     stops:         offer.segments.length - 1,
     durationMin:   totalDuration,
-    price:         Number(offer.totalPrice),       // mobile FlightCard expects price:number
-    currency:      offer.currency,
+    price:         priceUsd,      // always USD; mobile FlightCard expects price:number
+    currency,
     departureTime: firstSeg?.departureAt?.split('T')[1]?.slice(0, 5) ?? undefined,
     arrivalTime:   lastSeg?.arrivalAt?.split('T')[1]?.slice(0, 5) ?? undefined,
     baggage:       offer.baggage,
     provider:      offer.provider,
-    offerId:       offer.offerId,                  // kept for booking creation
+    offerId:       offer.offerId,  // kept for booking creation
     expiresAt:     offer.expiresAt,
   };
 }
