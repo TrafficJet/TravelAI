@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
@@ -123,14 +122,14 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               style={staticStyles.closeBtn}
             >
-              <Ionicons name="close" size={22} color={colors.textMuted} />
+              <Text style={{ fontSize: 22, color: {colors.textMuted}, lineHeight: 26 }}>{'×'}</Text>
             </TouchableOpacity>
           </View>
 
           {/* Reason banner */}
           {reason === 'booking' && (
             <View style={[staticStyles.reasonBanner, { backgroundColor: `${colors.primary}26`, borderColor: colors.primary }]}>
-              <Ionicons name="information-circle-outline" size={16} color={colors.primary} style={{ marginRight: 6 }} />
+              <Text style={{ fontSize: 16, color: {colors.primary}, lineHeight: 20, marginRight: 6 }}>{'ℹ'}</Text>
               <Text style={[staticStyles.reasonBannerText, { color: colors.primary }]}>Для бронирования нужен аккаунт</Text>
             </View>
           )}

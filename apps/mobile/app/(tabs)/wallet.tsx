@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { useWalletStore } from '../../stores/walletStore';
 import { SkeletonWalletCard, Skeleton } from '../../components/ui/Skeleton';
 import { Typography } from '../../constants/typography';

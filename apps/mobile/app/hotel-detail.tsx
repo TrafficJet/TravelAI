@@ -10,7 +10,6 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Typography } from '../constants/typography';
 import { toast } from '../lib/toast';
@@ -106,7 +105,7 @@ const ratingStyles = StyleSheet.create({
 
 // ── Amenity icons & labels ─────────────────────────────────────────────────────
 
-const AMENITY_ICONS: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
+const AMENITY_ICONS: Record<string, string> = {
   wifi: 'wifi',
   pool: 'water',
   gym: 'barbell',
@@ -136,7 +135,7 @@ function AmenityTile({ id }: { id: string }) {
         amenityStyles.iconWrap,
         { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` },
       ]}>
-        <Ionicons name={icon} size={20} color={colors.primary} />
+        <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'•'}</Text>
       </View>
       <Text style={[amenityStyles.label, { color: colors.textMuted }]} numberOfLines={1}>{label}</Text>
     </View>
@@ -171,7 +170,7 @@ function InfoRow({
   label,
   value,
 }: {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
+  icon: string;
   label: string;
   value: string;
 }) {
@@ -179,7 +178,7 @@ function InfoRow({
   return (
     <View style={[row.container, { borderBottomColor: colors.border }]}>
       <View style={[row.iconWrap, { backgroundColor: `${colors.primary}18` }]}>
-        <Ionicons name={icon} size={18} color={colors.primary} />
+        <Text style={{ fontSize: 18, color: {colors.primary}, lineHeight: 22 }}>{'•'}</Text>
       </View>
       <View style={row.content}>
         <Text style={[row.label, { color: colors.textMuted }]}>{label}</Text>
@@ -317,7 +316,7 @@ export default function HotelDetailScreen() {
               onPress={() => router.back()}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Ionicons name="chevron-back" size={24} color={colors.text} />
+              <Text style={{ fontSize: 24, color: {colors.text}, lineHeight: 28 }}>{'‹'}</Text>
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: colors.text }]}>Детали отеля</Text>
             <View style={styles.headerRight}>
@@ -327,7 +326,7 @@ export default function HotelDetailScreen() {
                 onPress={handleShare}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Ionicons name="share-outline" size={22} color={colors.text} />
+                <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'⇪'}</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -349,7 +348,7 @@ export default function HotelDetailScreen() {
                   {stars > 0 ? <StarRow count={stars} /> : null}
                   {(address || city) ? (
                     <View style={styles.locationRow}>
-                      <Ionicons name="location-outline" size={13} color={colors.textMuted} />
+                      <Text style={{ fontSize: 13, color: {colors.textMuted}, lineHeight: 17 }}>{'📍'}</Text>
                       <Text style={[styles.locationText, { color: colors.textMuted }]} numberOfLines={1}>
                         {[address, city].filter(Boolean).join(', ')}
                       </Text>
@@ -457,7 +456,7 @@ export default function HotelDetailScreen() {
               {/* Pin */}
               <View style={styles.mapPin}>
                 <View style={[styles.mapPinCircle, { backgroundColor: `${colors.primary}20`, borderColor: colors.primary, shadowColor: colors.primary }]}>
-                  <Ionicons name="location" size={20} color={colors.primary} />
+                  <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'📍'}</Text>
                 </View>
                 <View style={[styles.mapPinTail, { backgroundColor: colors.primary }]} />
               </View>
@@ -465,7 +464,7 @@ export default function HotelDetailScreen() {
             </LinearGradient>
             {/* Address row */}
             <View style={styles.addressRow}>
-              <Ionicons name="location-outline" size={16} color={colors.primary} />
+              <Text style={{ fontSize: 16, color: {colors.primary}, lineHeight: 20 }}>{'📍'}</Text>
               <Text style={[styles.addressText, { color: colors.text }]}>
                 {[address, city].filter(Boolean).join(', ')}
               </Text>

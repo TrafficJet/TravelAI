@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useNotificationsContext } from '../../context/NotificationsContext';
 import { useTheme } from '../../src/theme/ThemeContext';
 import type { Colors as ColorsType } from '../../src/theme/colors';
@@ -27,7 +26,7 @@ import type { AppNotification, NotificationType } from '../../types';
 const SWIPE_THRESHOLD = 60;
 const DELETE_BTN_WIDTH = 80;
 
-function getNotificationIconName(type: NotificationType): React.ComponentProps<typeof Ionicons>['name'] {
+function getNotificationIconName(type: NotificationType): string {
   switch (type) {
     case 'PRICE_ALERT':
       return 'pricetag';
@@ -185,7 +184,7 @@ function SwipeableRow({
           onPress={() => onDelete(notification.id)}
           activeOpacity={0.8}
         >
-          <Ionicons name="trash-outline" size={22} color={trashColor} />
+          <Text style={{ fontSize: 22, color: {trashColor}, lineHeight: 26 }}>{'🗑'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -200,7 +199,7 @@ function SwipeableRow({
           activeOpacity={0.75}
         >
           <View style={[styles.iconBadge, { backgroundColor: `${iconColor}20` }]}>
-            <Ionicons name={iconName} size={20} color={iconColor} />
+            <Text style={{ fontSize: 20, color: {iconColor}, lineHeight: 24 }}>{'•'}</Text>
           </View>
 
           <View style={styles.rowContent}>
@@ -328,7 +327,7 @@ export default function NotificationsScreen() {
   if (!isLoading && notifications.length === 0) {
     return (
       <View style={[styles.container, styles.emptyContainer, { backgroundColor: colors.background }]}>
-        <Ionicons name="notifications-off-outline" size={56} color={colors.textSecondary} />
+        <Text style={{ fontSize: 56, color: {colors.textSecondary}, lineHeight: 60 }}>{'🔕'}</Text>
         <Text style={[styles.emptyTitle, { color: colors.text }]}>Уведомлений пока нет</Text>
       </View>
     );

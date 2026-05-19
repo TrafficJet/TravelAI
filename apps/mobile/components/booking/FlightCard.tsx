@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Share } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '../../constants/typography';
 import { useTheme } from '../../src/theme/ThemeContext';
 import type { Booking, BookingStatus, FlightDetails } from '../../types';
@@ -189,7 +188,7 @@ export function FlightCard({ booking, onPress }: Props) {
           </View>
           <View style={styles.headerRight}>
             <TouchableOpacity onPress={handleShare} style={styles.shareBtn}>
-              <Ionicons name="share-outline" size={18} color={colors.textMuted} />
+              <Text style={{ fontSize: 18, color: {colors.textMuted}, lineHeight: 22 }}>{'⇪'}</Text>
             </TouchableOpacity>
             <View style={[styles.statusBadge, { backgroundColor: `${statusColor}20` }]}>
               <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
@@ -205,7 +204,7 @@ export function FlightCard({ booking, onPress }: Props) {
           </View>
 
           <View style={styles.routeCenter}>
-            <Ionicons name="airplane" size={18} color={colors.primary} />
+            <Text style={{ fontSize: 18, color: {colors.primary}, lineHeight: 22 }}>{'✈'}</Text>
             {durationMin !== undefined && (
               <Text style={[styles.duration, { color: colors.textMuted }]}>{formatDuration(durationMin)}</Text>
             )}

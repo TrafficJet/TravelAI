@@ -837,8 +837,8 @@ export default function ChatScreen() {
         accessibilityLabel="Новый чат"
         accessibilityRole="button"
       >
-        <Text style={{ fontSize: 28, color: '#fff', lineHeight: 32 }}>
-          {isCreatingNewChat ? '⏳' : '+'}
+        <Text style={{ fontSize: 28, color: '#0E0C1C', lineHeight: 32 }}>
+          {isCreatingNewChat ? '...' : '+'}
         </Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>

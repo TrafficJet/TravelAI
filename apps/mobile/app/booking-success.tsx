@@ -17,7 +17,6 @@ import Animated, {
   FadeIn,
 } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../src/theme/ThemeContext';
 import { Typography } from '../constants/typography';
@@ -120,7 +119,7 @@ function AnimatedCheckmark({ successColor }: { successColor: string }) {
         { backgroundColor: `${successColor}22`, borderColor: successColor, shadowColor: successColor },
         circleStyle,
       ]}>
-        <Ionicons name="checkmark" size={48} color={successColor} />
+        <Text style={{ fontSize: 48, color: {successColor}, lineHeight: 52 }}>{'✓'}</Text>
       </Animated.View>
     </View>
   );
@@ -266,7 +265,7 @@ export default function BookingSuccessScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Animated.View entering={FadeIn.delay(0).duration(400)} style={styles.planeEmoji}>
-          <Ionicons name={isHotel ? 'bed-outline' : 'airplane'} size={64} color={colors.primary} />
+          <Text style={{ fontSize: 64, color: {colors.primary}, lineHeight: 68 }}>{'•'}</Text>
         </Animated.View>
 
         <AnimatedCheckmark successColor={colors.success} />

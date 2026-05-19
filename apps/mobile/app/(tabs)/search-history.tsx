@@ -9,7 +9,6 @@ import {
   Alert,
 } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChatStore } from '../../stores/chatStore';
 import { searchHistoryService } from '../../services/searchHistoryService';
@@ -57,11 +56,7 @@ function HistoryRow({ item, onDelete, onRepeat }: HistoryRowProps) {
         styles.iconWrap,
         { backgroundColor: isFlight ? `${colors.primary}15` : `${colors.success}20` },
       ]}>
-        <Ionicons
-          name={isFlight ? 'airplane' : 'bed'}
-          size={20}
-          color={isFlight ? colors.primary : colors.success}
-        />
+        <Text style={{ fontSize: 20, color: {isFlight ? colors.primary : colors.success}, lineHeight: 24 }}>{'•'}</Text>
       </View>
 
       {/* Content */}
@@ -84,7 +79,7 @@ function HistoryRow({ item, onDelete, onRepeat }: HistoryRowProps) {
           activeOpacity={0.75}
           hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
         >
-          <Ionicons name="refresh-outline" size={13} color={colors.primary} />
+          <Text style={{ fontSize: 13, color: {colors.primary}, lineHeight: 17 }}>{'↺'}</Text>
           <Text style={[styles.repeatText, { color: colors.primary }]}>Повторить поиск</Text>
         </TouchableOpacity>
       </View>
@@ -95,7 +90,7 @@ function HistoryRow({ item, onDelete, onRepeat }: HistoryRowProps) {
         onPress={() => onDelete(item.id)}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Ionicons name="trash-outline" size={18} color={colors.error} />
+        <Text style={{ fontSize: 18, color: {colors.error}, lineHeight: 22 }}>{'🗑'}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -105,7 +100,7 @@ function HistoryRow({ item, onDelete, onRepeat }: HistoryRowProps) {
 
 interface SectionHeaderProps {
   title: string;
-  iconName: React.ComponentProps<typeof Ionicons>['name'];
+  iconName: string;
   iconColor: string;
   count: number;
 }
@@ -115,7 +110,7 @@ function SectionHeader({ title, iconName, iconColor, count }: SectionHeaderProps
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
-        <Ionicons name={iconName} size={16} color={iconColor} />
+        <Text style={{ fontSize: 16, color: {iconColor}, lineHeight: 20 }}>{'•'}</Text>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>{title}</Text>
       </View>
       <View style={[styles.countBadge, { backgroundColor: `${iconColor}22` }]}>
@@ -266,7 +261,7 @@ export default function SearchHistoryScreen() {
             activeOpacity={0.75}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="trash-outline" size={16} color={colors.error} />
+            <Text style={{ fontSize: 16, color: {colors.error}, lineHeight: 20 }}>{'🗑'}</Text>
             <Text style={[styles.clearText, { color: colors.error }]}>Очистить</Text>
           </TouchableOpacity>
         )}

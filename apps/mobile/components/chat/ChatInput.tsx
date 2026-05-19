@@ -19,7 +19,6 @@ import {
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Typography } from '../../constants/typography';
-import { Ionicons } from '@expo/vector-icons';
 import { ChatSuggestions } from './ChatSuggestions';
 import { useTheme } from '../../src/theme/ThemeContext';
 
@@ -165,7 +164,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
             <Text style={[replyStyles.text, { color: colors.textMuted }]} numberOfLines={2}>{replyTo.content}</Text>
           </View>
           <TouchableOpacity onPress={onCancelReply} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons name="close" size={18} color={colors.textMuted} />
+            <Text style={{ fontSize: 18, color: colors.textMuted }}>{'×'}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -186,7 +185,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           onPress={handleAttach}
           activeOpacity={0.7}
         >
-          <Ionicons name="add" size={22} color={colors.primary} />
+          <Text style={{ fontSize: 22, color: colors.primary, lineHeight: 26 }}>{'+'}</Text>
         </TouchableOpacity>
 
         {/* Text input — pill shape */}
@@ -195,7 +194,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           onChangeText={setText}
           placeholder="Куда хотите полететь?..."
           placeholderTextColor={colors.textMuted}
-          style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
+          style={[styles.input, { backgroundColor: colors.elevated, borderColor: colors.border, color: colors.text }]}
           multiline
           maxLength={2000}
           editable={!disabled}
@@ -212,19 +211,17 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
             style={disabled && hasText ? styles.sendButtonDisabledWrap : undefined}
           >
             <LinearGradient
-              colors={['#F59E0B', '#14B8A6']}
+              colors={['#E8A020', '#B87518']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.sendButton}
             >
               {disabled && hasText ? (
-                <ActivityIndicator size="small" color="#0A0A14" />
+                <ActivityIndicator size="small" color="#0E0C1C" />
               ) : (
-                <Ionicons
-                  name={hasText ? 'arrow-up' : 'mic'}
-                  size={18}
-                  color="#0A0A14"
-                />
+                <Text style={{ fontSize: 18, color: '#0E0C1C', lineHeight: 22 }}>
+                  {hasText ? '↑' : '+'}
+                </Text>
               )}
             </LinearGradient>
           </TouchableOpacity>
@@ -290,7 +287,7 @@ const styles = StyleSheet.create({
   },
   sendButtonWrap: {
     flexShrink: 0,
-    shadowColor: '#F59E0B',
+    shadowColor: '#E8A020',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.4,
     shadowRadius: 6,

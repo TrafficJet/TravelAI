@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
 import { Radius } from '../constants/radius';
@@ -150,7 +149,7 @@ export default function HotelsMapWeb() {
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          <Text style={{ fontSize: 20, color: {Colors.text}, lineHeight: 24 }}>{'‹'}</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Карта отелей</Text>
         <View style={styles.headerSpacer} />
@@ -193,7 +192,7 @@ export default function HotelsMapWeb() {
 
           {/* Overlay message */}
           <View style={styles.overlayMsg}>
-            <Ionicons name="map-outline" size={32} color={Colors.primary} />
+            <Text style={{ fontSize: 32, color: {Colors.primary}, lineHeight: 36 }}>{'🗺'}</Text>
             <Text style={styles.overlayTitle}>Карта отелей</Text>
             <Text style={styles.overlaySubtitle}>
               Интерактивная карта доступна{'\n'}в мобильном приложении

@@ -13,7 +13,6 @@ import {
   PanResponder,
 } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '../constants/typography';
 import { useTheme } from '../src/theme/ThemeContext';
 import api from '../services/api';
@@ -111,7 +110,7 @@ function NotificationItem({ item, onPress, onDelete }: NotificationItemProps) {
     <View style={itemStyles.wrapper}>
       {/* Delete hint behind the item */}
       <View style={[itemStyles.deleteHint, { backgroundColor: colors.error }]}>
-        <Ionicons name="trash-outline" size={22} color="#fff" />
+        <Text style={{ fontSize: 22, color: "#fff", lineHeight: 26 }}>{'🗑'}</Text>
         <Text style={itemStyles.deleteHintText}>Удалить</Text>
       </View>
       <Animated.View style={{ transform: [{ translateX }] }} {...panResponder.panHandlers}>
@@ -131,7 +130,7 @@ function NotificationItem({ item, onPress, onDelete }: NotificationItemProps) {
 
           {/* Icon badge */}
           <View style={[itemStyles.iconBadge, { backgroundColor: `${accentColor}18` }]}>
-            <Ionicons name={iconName as any} size={22} color={accentColor} />
+            <Text style={{ fontSize: 22, color: {accentColor}, lineHeight: 26 }}>{'•'}</Text>
           </View>
 
           {/* Content */}
@@ -236,7 +235,7 @@ function EmptyNotifications() {
   return (
     <View style={emptyStyles.container}>
       <View style={[emptyStyles.iconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Ionicons name="notifications-off-outline" size={48} color={colors.textMuted} />
+        <Text style={{ fontSize: 48, color: {colors.textMuted}, lineHeight: 52 }}>{'🔕'}</Text>
       </View>
       <Text style={[emptyStyles.title, { color: colors.text }]}>Нет уведомлений</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
@@ -282,7 +281,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <View style={emptyStyles.container}>
       <View style={[emptyStyles.iconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Ionicons name="cloud-offline-outline" size={48} color={colors.textMuted} />
+        <Text style={{ fontSize: 48, color: {colors.textMuted}, lineHeight: 52 }}>{'☁'}</Text>
       </View>
       <Text style={[emptyStyles.title, { color: colors.text }]}>Не удалось загрузить</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>Проверьте интернет-соединение и повторите попытку</Text>
@@ -291,7 +290,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
         onPress={onRetry}
         activeOpacity={0.8}
       >
-        <Ionicons name="refresh-outline" size={16} color="#fff" />
+        <Text style={{ fontSize: 16, color: "#fff", lineHeight: 20 }}>{'↺'}</Text>
         <Text style={errorStyles.retryText}>Повторить</Text>
       </TouchableOpacity>
     </View>
@@ -415,7 +414,7 @@ export default function NotificationsScreen() {
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="arrow-back" size={22} color={colors.text} />
+          <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'←'}</Text>
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Уведомления</Text>
         {unreadCount > 0 ? (

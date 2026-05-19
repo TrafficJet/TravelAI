@@ -7,7 +7,6 @@ import {
   Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/theme/ThemeContext';
 import { toast, ToastConfig, ToastType } from '../../lib/toast';
 
@@ -31,7 +30,7 @@ function ToastItem({ config, onHide, bottomOffset }: ToastItemProps) {
       borderColor: string;
       iconColor: string;
       textColor: string;
-      icon: React.ComponentProps<typeof Ionicons>['name'];
+      icon: string;
     }
   > = {
     success: {
@@ -120,7 +119,7 @@ function ToastItem({ config, onHide, bottomOffset }: ToastItemProps) {
         },
       ]}
     >
-      <Ionicons name={icon} size={20} color={iconColor} style={styles.icon} />
+      <Text style={{ fontSize: 20, color: {iconColor}, lineHeight: 24, styles.icon }}>{'•'}</Text>
       <Text style={[styles.message, { color: textColor }]} numberOfLines={3}>
         {config.message}
       </Text>

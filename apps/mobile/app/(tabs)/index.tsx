@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useChatStore } from '../../stores/chatStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -84,16 +83,11 @@ export default function ChatEntryScreen() {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <Ionicons name="airplane" size={48} color={colors.primary} />
+            <Text style={{ fontSize: 48, color: {colors.primary}, lineHeight: 52 }}>{'✈'}</Text>
           </LinearGradient>
         </View>
         <Text style={[styles.brand, { color: colors.text }]}>SVIT</Text>
-        <Ionicons
-          name="cloud-offline-outline"
-          size={40}
-          color={colors.textMuted}
-          style={styles.errorIcon}
-        />
+        <Text style={{ fontSize: 40, color: {colors.textMuted}, lineHeight: 44, styles.errorIcon }}>{'☁'}</Text>
         <Text style={[styles.errorTitle, { color: colors.text }]}>Не удалось загрузить чаты</Text>
         <Text style={[styles.errorSubtitle, { color: colors.textMuted }]}>
           Проверьте подключение к интернету и повторите попытку
@@ -103,7 +97,7 @@ export default function ChatEntryScreen() {
           onPress={() => isAuthenticated ? void initAuthenticated() : void initGuest()}
           activeOpacity={0.8}
         >
-          <Ionicons name="refresh-outline" size={18} color="#fff" />
+          <Text style={{ fontSize: 18, color: "#fff", lineHeight: 22 }}>{'↺'}</Text>
           <Text style={styles.retryBtnText}>Повторить</Text>
         </TouchableOpacity>
       </View>
@@ -120,7 +114,7 @@ export default function ChatEntryScreen() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Ionicons name="airplane" size={48} color={colors.primary} />
+          <Text style={{ fontSize: 48, color: {colors.primary}, lineHeight: 52 }}>{'✈'}</Text>
         </LinearGradient>
       </View>
       <Text style={[styles.brand, { color: colors.text }]}>SVIT</Text>

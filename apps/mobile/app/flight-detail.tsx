@@ -10,7 +10,6 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../src/theme/ThemeContext';
 import { Typography } from '../constants/typography';
@@ -247,7 +246,7 @@ export default function FlightDetailScreen() {
               onPress={() => router.back()}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Ionicons name="chevron-back" size={24} color={colors.text} />
+              <Text style={{ fontSize: 24, color: {colors.text}, lineHeight: 28 }}>{'‹'}</Text>
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: colors.text }]}>Детали рейса</Text>
             <View style={styles.headerRight}>
@@ -257,7 +256,7 @@ export default function FlightDetailScreen() {
                 onPress={handleShare}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Ionicons name="share-outline" size={22} color={colors.text} />
+                <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'⇪'}</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -324,7 +323,7 @@ export default function FlightDetailScreen() {
 
           {departureDate ? (
             <View style={styles.dateRow}>
-              <Ionicons name="calendar-outline" size={13} color={colors.textMuted} />
+              <Text style={{ fontSize: 13, color: {colors.textMuted}, lineHeight: 17 }}>{'📅'}</Text>
               <Text style={[styles.dateText, { color: colors.textMuted }]}>{formatDate(departureDate)}</Text>
             </View>
           ) : null}

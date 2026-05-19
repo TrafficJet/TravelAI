@@ -16,7 +16,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../src/theme/ThemeContext';
 import type { Hotel } from '../types';
@@ -145,14 +144,14 @@ function MiniCard({ hotel, onClose, onOpen }: MiniCardProps) {
           <Text style={[miniCardStyles.name, { color: colors.text }]} numberOfLines={1}>{hotel.name}</Text>
           {hotel.city && (
             <View style={miniCardStyles.locationRow}>
-              <Ionicons name="location-outline" size={12} color={colors.textMuted} />
+              <Text style={{ fontSize: 12, color: {colors.textMuted}, lineHeight: 16 }}>{'📍'}</Text>
               <Text style={[miniCardStyles.city, { color: colors.textMuted }]}>{hotel.city}</Text>
             </View>
           )}
           <View style={miniCardStyles.footer}>
             {hotel.rating !== undefined && (
               <View style={[miniCardStyles.ratingBadge, { backgroundColor: `${colors.warning}22` }]}>
-                <Ionicons name="star" size={11} color={colors.warning} />
+                <Text style={{ fontSize: 11, color: {colors.warning}, lineHeight: 15 }}>{'★'}</Text>
                 <Text style={[miniCardStyles.ratingText, { color: colors.warning }]}>{hotel.rating.toFixed(1)}</Text>
               </View>
             )}
@@ -166,7 +165,7 @@ function MiniCard({ hotel, onClose, onOpen }: MiniCardProps) {
           onPress={onClose}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="close" size={18} color={colors.textMuted} />
+          <Text style={{ fontSize: 18, color: {colors.textMuted}, lineHeight: 22 }}>{'×'}</Text>
         </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
@@ -346,7 +345,7 @@ export default function HotelsMapScreen() {
         onPress={() => router.back()}
         activeOpacity={0.85}
       >
-        <Ionicons name="chevron-back" size={22} color={colors.text} />
+        <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'‹'}</Text>
       </TouchableOpacity>
 
       {/* Header title */}
@@ -374,7 +373,7 @@ export default function HotelsMapScreen() {
         onPress={() => router.back()}
         activeOpacity={0.85}
       >
-        <Ionicons name="list" size={18} color="#fff" />
+        <Text style={{ fontSize: 18, color: "#fff", lineHeight: 22 }}>{'☰'}</Text>
         <Text style={styles.listBtnText}>Список</Text>
       </TouchableOpacity>
 
@@ -391,7 +390,7 @@ export default function HotelsMapScreen() {
       {hotels.length === 0 && (
         <View style={[styles.emptyOverlay, { top: insets.top + 70 }]}>
           <View style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Ionicons name="map-outline" size={24} color={colors.textMuted} />
+            <Text style={{ fontSize: 24, color: {colors.textMuted}, lineHeight: 28 }}>{'🗺'}</Text>
             <Text style={[styles.emptyText, { color: colors.textMuted }]}>Нет отелей для отображения</Text>
           </View>
         </View>

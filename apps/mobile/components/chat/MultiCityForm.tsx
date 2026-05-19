@@ -7,7 +7,6 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/theme/ThemeContext';
 
 const MAX_SEGMENTS = 5;
@@ -229,7 +228,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
                   onPress={() => removeSegment(index)}
                   hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                 >
-                  <Ionicons name="close-circle" size={18} color={colors.error} />
+                  <Text style={{ fontSize: 18, color: {colors.error}, lineHeight: 22 }}>{'•'}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -237,12 +236,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
             {/* Fields row */}
             <View style={styles.fieldsRow}>
               <View style={styles.fieldWrap}>
-                <Ionicons
-                  name="airplane-outline"
-                  size={14}
-                  color={colors.textMuted}
-                  style={styles.fieldIcon}
-                />
+                <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18, styles.fieldIcon }}>{'✈'}</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Откуда"
@@ -255,15 +249,10 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
                 />
               </View>
 
-              <Ionicons name="arrow-forward" size={14} color={colors.textMuted} />
+              <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18 }}>{'→'}</Text>
 
               <View style={styles.fieldWrap}>
-                <Ionicons
-                  name="location-outline"
-                  size={14}
-                  color={colors.textMuted}
-                  style={styles.fieldIcon}
-                />
+                <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18, styles.fieldIcon }}>{'📍'}</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Куда"
@@ -278,12 +267,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
             </View>
 
             <View style={styles.dateFieldWrap}>
-              <Ionicons
-                name="calendar-outline"
-                size={14}
-                color={colors.textMuted}
-                style={styles.fieldIcon}
-              />
+              <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18, styles.fieldIcon }}>{'📅'}</Text>
               <TextInput
                 style={[styles.input, styles.dateInput]}
                 placeholder="Дата (напр. 1 июня)"
@@ -306,7 +290,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
           disabled={disabled}
           activeOpacity={0.75}
         >
-          <Ionicons name="add-circle-outline" size={18} color={colors.primary} />
+          <Text style={{ fontSize: 18, color: {colors.primary}, lineHeight: 22 }}>{'•'}</Text>
           <Text style={styles.addBtnText}>Добавить перелёт</Text>
         </TouchableOpacity>
       )}
@@ -318,7 +302,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
         disabled={filledCount === 0 || disabled}
         activeOpacity={0.85}
       >
-        <Ionicons name="search" size={16} color="#0A0A14" />
+        <Text style={{ fontSize: 16, color: "#0A0A14", lineHeight: 20 }}>{'⌕'}</Text>
         <Text style={styles.searchBtnText}>
           Найти{filledCount > 0 ? ` (${filledCount} перелётов)` : ''}
         </Text>

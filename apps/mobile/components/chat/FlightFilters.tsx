@@ -11,7 +11,6 @@ import {
   PanResponder,
   LayoutChangeEvent,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/theme/ThemeContext';
 
 type ThemeColors = ReturnType<typeof useTheme>['colors'];
@@ -463,7 +462,7 @@ export function FlightFiltersSheet({
           <View style={[styles.header, { borderBottomColor: colors.border }]}>
             <Text style={[styles.headerTitle, { color: colors.text }]}>Фильтры рейсов</Text>
             <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Ionicons name="close" size={22} color={colors.text} />
+              <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'×'}</Text>
             </TouchableOpacity>
           </View>
 
@@ -622,7 +621,7 @@ interface QuickChipProps {
   label: string;
   active: boolean;
   onPress: () => void;
-  icon?: React.ComponentProps<typeof Ionicons>['name'];
+  icon?: string;
   colors: ThemeColors;
 }
 
@@ -638,12 +637,7 @@ function QuickChip({ label, active, onPress, icon, colors }: QuickChipProps) {
       ]}
     >
       {icon && (
-        <Ionicons
-          name={icon}
-          size={13}
-          color={active ? '#0A0A14' : colors.textMuted}
-          style={{ marginRight: 4 }}
-        />
+        <Text style={{ fontSize: 13, color: {active ? '#0A0A14' : colors.textMuted}, lineHeight: 17, marginRight: 4 }}>{'•'}</Text>
       )}
       <Text style={[
         styles.chipText,
@@ -711,7 +705,7 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
             activeOpacity={0.75}
             style={[styles.resetChip, { borderColor: colors.error, backgroundColor: `${colors.error}18` }]}
           >
-            <Ionicons name="close-outline" size={14} color={colors.error} style={{ marginRight: 2 }} />
+            <Text style={{ fontSize: 14, color: {colors.error}, lineHeight: 18, marginRight: 2 }}>{'•'}</Text>
             <Text style={[styles.resetChipText, { color: colors.error }]}>Сбросить</Text>
           </TouchableOpacity>
         )}

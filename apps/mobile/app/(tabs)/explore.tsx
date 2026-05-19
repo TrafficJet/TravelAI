@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
@@ -68,7 +67,7 @@ function StaticRouteCard({ item, onPress, index }: StaticRouteCardProps) {
             <Text style={[routeCardStyles.separator, { color: colors.primary }]}> → </Text>
             <Text style={[routeCardStyles.iata, { color: colors.text }]}>{item.destination}</Text>
           </View>
-          <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
+          <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18 }}>{'›'}</Text>
         </View>
 
         {/* City name */}
@@ -206,7 +205,7 @@ function FlightCard({ item, onPress, index }: FlightCardProps) {
           <Text style={[flightStyles.route, { color: colors.textMuted }]}>
             {item.origin}
           </Text>
-          <Ionicons name="arrow-forward" size={12} color={colors.textMuted} style={flightStyles.arrow} />
+          <Text style={{ fontSize: 12, color: {colors.textMuted}, lineHeight: 16, flightStyles.arrow }}>{'→'}</Text>
           <Text style={[flightStyles.route, { color: colors.textMuted }]}>
             {item.destination}
           </Text>
@@ -488,7 +487,7 @@ export default function ExploreScreen() {
       {/* Search bar + map button */}
       <Animated.View entering={FadeIn.duration(400)} style={styles.searchRow}>
         <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Ionicons name="search" size={16} color={colors.textMuted} style={styles.searchIcon} />
+          <Text style={{ fontSize: 16, color: {colors.textMuted}, lineHeight: 20, styles.searchIcon }}>{'⌕'}</Text>
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
             placeholder="Куда летим?"
@@ -509,7 +508,7 @@ export default function ExploreScreen() {
           onPress={() => router.push('/hotels-map')}
           activeOpacity={0.8}
         >
-          <Ionicons name="map-outline" size={18} color="#fff" />
+          <Text style={{ fontSize: 18, color: "#fff", lineHeight: 22 }}>{'🗺'}</Text>
           <Text style={styles.mapBtnText}>Карта</Text>
         </TouchableOpacity>
       </Animated.View>

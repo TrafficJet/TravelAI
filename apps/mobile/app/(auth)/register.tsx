@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Stack } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../stores/authStore';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
@@ -72,7 +71,7 @@ export default function RegisterScreen() {
         options={{
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()} style={{ paddingLeft: 4 }}>
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
+              <Text style={{ fontSize: 24, color: {colors.text}, lineHeight: 28 }}>{'←'}</Text>
             </TouchableOpacity>
           ),
         }}
@@ -86,7 +85,7 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Ionicons name="airplane" size={48} color={colors.primary} />
+          <Text style={{ fontSize: 48, color: {colors.primary}, lineHeight: 52 }}>{'✈'}</Text>
           <Text style={styles.title}>Создать аккаунт</Text>
           <Text style={styles.subtitle}>Начните планировать путешествия</Text>
         </View>

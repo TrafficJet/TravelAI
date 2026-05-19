@@ -1,13 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { TextPresets, Radius } from '../../constants';
 import { useTheme } from '../../src/theme/ThemeContext';
 
-type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 interface EmptyStateProps {
-  icon: IoniconName;
+  icon: string;
   title: string;
   subtitle: string;
   onAction?: () => void;
@@ -55,7 +53,7 @@ export function EmptyState({ icon, title, subtitle, onAction, actionLabel }: Emp
   return (
     <View style={styles.container}>
       <View style={styles.iconWrap}>
-        <Ionicons name={icon} size={56} color={colors.textMuted} />
+        <Text style={{ fontSize: 56, color: {colors.textMuted}, lineHeight: 60 }}>{'•'}</Text>
       </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>

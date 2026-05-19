@@ -21,7 +21,6 @@ import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { safeStorage } from '../../utils/safeStorage';
 import { useChatStore } from '../../stores/chatStore';
 import { TextPresets, Radius, Spacing } from '../../constants';
@@ -57,7 +56,7 @@ function SearchBar({ value, onChangeText }: SearchBarProps) {
   const { colors } = useTheme();
   return (
     <View style={[searchStyles.container, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <Ionicons name="search-outline" size={16} color={colors.textMuted} style={{ marginRight: 8 }} />
+      <Text style={{ fontSize: 16, color: {colors.textMuted}, lineHeight: 20, marginRight: 8 }}>{'⌕'}</Text>
       <TextInput
         style={[searchStyles.input, { color: colors.text }]}
         value={value}
@@ -117,7 +116,7 @@ function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename,
         }}
         activeOpacity={0.8}
       >
-        <Ionicons name="trash-outline" size={20} color="#fff" />
+        <Text style={{ fontSize: 20, color: "#fff", lineHeight: 24 }}>{'🗑'}</Text>
         <Text style={itemStyles.deleteBtnText}>Удалить</Text>
       </TouchableOpacity>
     );
@@ -157,13 +156,13 @@ function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename,
           { backgroundColor: `${colors.primary}26` },
           isActive && { backgroundColor: `${colors.primary}30`, borderWidth: 1.5, borderColor: colors.primary },
         ]}>
-          <Ionicons name="airplane-outline" size={20} color={colors.primary} />
+          <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'✈'}</Text>
         </View>
 
         <View style={itemStyles.content}>
           <View style={itemStyles.titleRow}>
             {isPinned && (
-              <Ionicons name="pin" size={11} color={colors.primary} style={{ marginRight: 4 }} />
+              <Text style={{ fontSize: 11, color: {colors.primary}, lineHeight: 15, marginRight: 4 }}>{'•'}</Text>
             )}
             <Text style={[itemStyles.title, { color: colors.text }]} numberOfLines={1}>
               {session.title}
@@ -183,18 +182,14 @@ function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename,
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               activeOpacity={0.7}
             >
-              <Ionicons
-                name={isPinned ? 'pin' : 'pin-outline'}
-                size={14}
-                color={isPinned ? colors.primary : colors.textMuted}
-              />
+              <Text style={{ fontSize: 14, color: {isPinned ? colors.primary : colors.textMuted}, lineHeight: 18 }}>{'•'}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => onRename(session)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               activeOpacity={0.7}
             >
-              <Ionicons name="pencil-outline" size={14} color={colors.textMuted} />
+              <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18 }}>{'•'}</Text>
             </TouchableOpacity>
           </View>
           <Text style={[itemStyles.time, { color: colors.textMuted }]}>{formatItemTime(session.updatedAt)}</Text>
@@ -289,7 +284,7 @@ function EmptyHistory() {
   const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
-      <Ionicons name="chatbubbles-outline" size={44} color={colors.textMuted} style={{ marginBottom: 4 }} />
+      <Text style={{ fontSize: 44, color: {colors.textMuted}, lineHeight: 48, marginBottom: 4 }}>{'•'}</Text>
       <Text style={[emptyStyles.title, { color: colors.text }]}>Нет истории чатов</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
         Начни новый чат, и он появится здесь
@@ -452,7 +447,7 @@ export function ChatHistorySheet({
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Ionicons name="close" size={16} color={colors.textMuted} />
+              <Text style={{ fontSize: 16, color: {colors.textMuted}, lineHeight: 20 }}>{'×'}</Text>
             </TouchableOpacity>
           </View>
 

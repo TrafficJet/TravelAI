@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { safeStorage as AsyncStorage } from '../utils/safeStorage';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '../constants/typography';
 import { useTheme } from '../src/theme/ThemeContext';
 import { toast } from '../lib/toast';
@@ -210,7 +209,7 @@ const modalStyles = StyleSheet.create({
 // ── Reusable row components ───────────────────────────────────────────────────
 
 interface RowItem {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
+  icon: string;
   iconColor?: string;
   label: string;
   sublabel?: string;
@@ -246,7 +245,7 @@ function SettingsRow({
       disabled={disabled || !onPress}
     >
       <View style={[rowStyles.iconWrap, { backgroundColor: `${resolvedIconColor}18` }]}>
-        <Ionicons name={icon} size={18} color={resolvedIconColor} />
+        <Text style={{ fontSize: 18, color: {resolvedIconColor}, lineHeight: 22 }}>{'•'}</Text>
       </View>
       <View style={rowStyles.labelBlock}>
         <Text style={[rowStyles.label, { color: labelColor ?? colors.text }]}>
@@ -259,7 +258,7 @@ function SettingsRow({
       <View style={rowStyles.right}>
         {rightElement ?? (
           onPress ? (
-            <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+            <Text style={{ fontSize: 16, color: {colors.textMuted}, lineHeight: 20 }}>{'›'}</Text>
           ) : null
         )}
       </View>
@@ -409,7 +408,7 @@ const sectionStyles = StyleSheet.create({
 // ── Option row inside a card (with inline label + preset group below) ─────────
 
 interface OptionGroupRowProps<T extends string> {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
+  icon: string;
   iconColor?: string;
   label: string;
   options: { value: T; label: string }[];
@@ -436,7 +435,7 @@ function OptionGroupRow<T extends string>({
     ]}>
       <View style={optGroupStyles.header}>
         <View style={[optGroupStyles.iconWrap, { backgroundColor: `${resolvedIconColor}18` }]}>
-          <Ionicons name={icon} size={18} color={resolvedIconColor} />
+          <Text style={{ fontSize: 18, color: {resolvedIconColor}, lineHeight: 22 }}>{'•'}</Text>
         </View>
         <Text style={[optGroupStyles.label, { color: colors.text }]}>{label}</Text>
       </View>
@@ -666,7 +665,7 @@ export default function SettingsScreen() {
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="arrow-back" size={22} color={colors.text} />
+          <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'←'}</Text>
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Настройки</Text>
         <View style={styles.headerRight} />

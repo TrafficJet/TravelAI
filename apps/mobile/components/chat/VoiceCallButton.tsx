@@ -1,6 +1,5 @@
 import React from 'react';
 import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/theme/ThemeContext';
 
 // ── VoiceCallButton ───────────────────────────────────────────────────────────
@@ -52,7 +51,7 @@ export function VoiceCallButton({ size = 56 }: VoiceCallButtonProps) {
       accessibilityLabel="AI Голосовой ассистент"
       accessibilityRole="button"
     >
-      <Ionicons name="call-outline" size={22} color={colors.primary} />
+      <Text style={{ fontSize: 22, color: {colors.primary}, lineHeight: 26 }}>{'📞'}</Text>
     </TouchableOpacity>
   );
 }

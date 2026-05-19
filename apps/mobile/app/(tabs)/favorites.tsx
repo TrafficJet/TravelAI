@@ -8,7 +8,6 @@ import {
   ListRenderItemInfo,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Typography } from '../../constants/typography';
@@ -87,7 +86,7 @@ function EmptyState() {
   return (
     <View style={emptyStyles.container}>
       <View style={[emptyStyles.iconWrap, { backgroundColor: colors.card }]}>
-        <Ionicons name="heart-outline" size={48} color={colors.textMuted} />
+        <Text style={{ fontSize: 48, color: {colors.textMuted}, lineHeight: 52 }}>{'♡'}</Text>
       </View>
       <Text style={[emptyStyles.title, { color: colors.text }]}>Пока пусто</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
@@ -188,7 +187,7 @@ function HotelRow({ hotel, index, onRemove }: HotelRowProps) {
           onPress={onRemove}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="trash-outline" size={20} color={colors.error} />
+          <Text style={{ fontSize: 20, color: {colors.error}, lineHeight: 24 }}>{'🗑'}</Text>
         </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
@@ -236,7 +235,7 @@ function FlightRow({ flight, index, onRemove }: FlightRowProps) {
         activeOpacity={0.8}
       >
         <View style={[rowStyles.iconWrap, { backgroundColor: `${colors.primary}15` }]}>
-          <Ionicons name="airplane" size={22} color={colors.primary} />
+          <Text style={{ fontSize: 22, color: {colors.primary}, lineHeight: 26 }}>{'✈'}</Text>
         </View>
         <View style={rowStyles.info}>
           <Text style={[rowStyles.name, { color: colors.text }]} numberOfLines={1}>
@@ -254,7 +253,7 @@ function FlightRow({ flight, index, onRemove }: FlightRowProps) {
           onPress={onRemove}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="trash-outline" size={20} color={colors.error} />
+          <Text style={{ fontSize: 20, color: {colors.error}, lineHeight: 24 }}>{'🗑'}</Text>
         </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
