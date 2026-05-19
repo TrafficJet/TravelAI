@@ -11,7 +11,7 @@ export const searchHotelsTool: Anthropic.Tool = {
     properties: {
       city: {
         type: 'string',
-        description: 'Название города (например, "Стамбул", "Дубай", "Москва", "Сочи")',
+        description: 'Название города (например, "Стамбул", "Дубай", "Тбилиси", "Варшава")',
       },
       check_in: {
         type: 'string',
@@ -32,7 +32,7 @@ export const searchHotelsTool: Anthropic.Tool = {
       },
       max_price_per_night: {
         type: 'number',
-        description: 'Максимальная цена за ночь в рублях',
+        description: 'Максимальная цена за ночь в USD',
       },
     },
     required: ['city'],

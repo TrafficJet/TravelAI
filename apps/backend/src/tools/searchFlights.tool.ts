@@ -28,7 +28,7 @@ export const searchFlightsTool: Anthropic.Tool = {
     properties: {
       origin: {
         type: 'string',
-        description: 'Код IATA аэропорта вылета (например, SVO, DME, LED)',
+        description: 'Код IATA аэропорта вылета (например, WAW, KBP, TBS, IST)',
       },
       destination: {
         type: 'string',
@@ -53,7 +53,7 @@ export const searchFlightsTool: Anthropic.Tool = {
       },
       max_price: {
         type: 'number',
-        description: 'Максимальная цена билета (в рублях)',
+        description: 'Максимальная цена билета (в USD)',
       },
       max_stops: {
         type: 'number',

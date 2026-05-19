@@ -92,14 +92,14 @@ export async function runPriceAlertCheck(): Promise<void> {
         const lowestPrice = Math.min(...items.map((i) => i.currentPrice));
         const maxThreshold = Math.max(...items.map((i) => i.alert.maxPrice));
         title = `Цена снизилась: ${routeKey}`;
-        body = `Текущая цена ${Math.round(lowestPrice)} ₽ не превышает ваш порог ${maxThreshold} ₽. Бронируйте сейчас!`;
+        body = `Текущая цена $${Math.round(lowestPrice)} не превышает ваш порог $${maxThreshold}. Бронируйте сейчас!`;
       } else {
         // Multiple routes — batch message
         title = `Цены изменились на ${totalRoutes} направлениях`;
         const routeList = routes
           .map(([routeKey, items]) => {
             const lowestPrice = Math.min(...items.map((i) => i.currentPrice));
-            return `${routeKey}: от ${Math.round(lowestPrice)} ₽`;
+            return `${routeKey}: от $${Math.round(lowestPrice)}`;
           })
           .join(', ');
         body = `Найдены выгодные цены: ${routeList}. Бронируйте сейчас!`;

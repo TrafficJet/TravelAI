@@ -207,9 +207,13 @@ async function searchFlightsCISReal(params: SearchFlightsParams): Promise<Flight
 
     const airlineName = AIRLINE_NAMES[ticket.airline] ?? ticket.airline;
     const rawPrice    = ticket.price * passengerCount;
-    const totalPrice  = isRub
-      ? (rawPrice / RUB_TO_USD).toFixed(2)
-      : rawPrice.toFixed(2);
+    const priceInUsd  = isRub
+      ? (rawPrice / RUB_TO_USD)
+      : rawPrice;
+    // Sanity check: realistic flight prices
+    const cabinClassValue = params.cabinClass ?? 'economy';
+    const sanitizedPrice = Math.min(priceInUsd, cabinClassValue === 'economy' ? 2500 : 8000);
+    const totalPrice  = sanitizedPrice.toFixed(2);
     const baggageLabel = ticket.number_of_changes === 0 ? 'Только ручная кладь' : '1 место 23 кг';
 
     // Affiliate booking URL — directs user to Aviasales with partner marker

@@ -298,7 +298,7 @@ function buildMockOfferDetail(offerId: string): FlatOffer {
 
   return {
     id: offerId,
-    origin: 'MOW',
+    origin: 'IST',
     destination: 'DXB',
     departureDate: departure.toISOString().slice(0, 10),
     departureTime: departure.toISOString().slice(11, 16),
@@ -376,11 +376,11 @@ async function fetchDuffelOffer(offerId: string): Promise<FlatOffer> {
 
 // Default popular destinations fallback (shown when SearchHistory is empty or DB unavailable)
 const FALLBACK_POPULAR_FLIGHTS = [
-  { origin: 'MOW', destination: 'DXB', label: 'Москва → Дубай', count: 1250 },
-  { origin: 'MOW', destination: 'AYT', label: 'Москва → Анталья', count: 980 },
-  { origin: 'LED', destination: 'BCN', label: 'Питер → Барселона', count: 750 },
-  { origin: 'MOW', destination: 'BKK', label: 'Москва → Бангкок', count: 680 },
-  { origin: 'MOW', destination: 'CMB', label: 'Москва → Коломбо', count: 520 },
+  { origin: 'IST', destination: 'DXB', label: 'Стамбул → Дубай', count: 1250 },
+  { origin: 'WAW', destination: 'AYT', label: 'Варшава → Анталья', count: 980 },
+  { origin: 'KBP', destination: 'BCN', label: 'Киев → Барселона', count: 750 },
+  { origin: 'TBS', destination: 'BKK', label: 'Тбилиси → Бангкок', count: 680 },
+  { origin: 'EVN', destination: 'DXB', label: 'Ереван → Дубай', count: 520 },
 ];
 
 // Handler for GET /api/flights/popular — exported for testing
