@@ -566,6 +566,14 @@ function PaymentMethods() {
         <Text style={[pmStyles.icon, { color: colors.text }]}></Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>Apple Pay</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
+        activeOpacity={0.7}
+        onPress={() => {}}
+      >
+        <Text style={[pmStyles.icon, { color: '#EB001B' }]}>◈</Text>
+        <Text style={[pmStyles.label, { color: colors.textMuted }]}>MC ••5678</Text>
+      </TouchableOpacity>
     </View>
   );
 }
