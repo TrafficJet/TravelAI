@@ -189,8 +189,9 @@ export async function searchFlightsMock(params: SearchFlightsParams): Promise<Fl
   const route = getRouteData(origin, destination);
   const passengerCount = passengers.adults + (passengers.children ?? 0);
 
-  // Use EUR pricing for European / Ukrainian origins, RUB for CIS/other
-  const isEurOrUkr = EUR_ORIGIN_AIRPORTS.has(origin.toUpperCase());
+  // Use EUR pricing when EITHER origin OR destination is a European/Ukrainian airport.
+  // Prevents RUB being returned for e.g. SVO→WAW (Moscow→Warsaw).
+  const isEurOrUkr = EUR_ORIGIN_AIRPORTS.has(origin.toUpperCase()) || EUR_ORIGIN_AIRPORTS.has(destination.toUpperCase());
   const currency = isEurOrUkr ? 'EUR' : 'RUB';
 
   // Use route-specific price range when available, else fall back to generic ranges

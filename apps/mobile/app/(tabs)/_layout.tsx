@@ -104,9 +104,9 @@ export default function TabsLayout() {
         headerTitleStyle: { fontWeight: Typography.weights.bold, color: colors.text },
         headerShadowVisible: false,
         tabBarStyle: {
-          // Design spec: bg #12121F, border-top #1E1E30, height 70px
+          // Design spec: bg #12121F, border-top #2A2A42, height 70px
           backgroundColor: '#12121F',
-          borderTopColor: '#1E1E30',
+          borderTopColor: '#2A2A42',
           borderTopWidth: 1,
           height: tabBarHeight,
           paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
@@ -144,7 +144,7 @@ export default function TabsLayout() {
           title: 'Поездки',
           headerShown: false,
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="location-outline" iconFocused="location" />
+            <TabIcon {...props} icon="airplane-outline" iconFocused="airplane" />
           ),
         }}
       />
@@ -166,7 +166,7 @@ export default function TabsLayout() {
           title: 'Профиль',
           headerShown: false,
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="person-outline" iconFocused="person" />
+            <TabIcon {...props} icon="person-circle-outline" iconFocused="person-circle" />
           ),
         }}
       />

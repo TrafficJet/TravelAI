@@ -417,7 +417,8 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
   const isUser = message.role === 'user';
   const rawContent =
     isStreaming && streamingText !== undefined ? streamingText : message.content;
-  const displayContent = isUser ? rawContent : stripEmoji(rawContent);
+  // For user bubbles keep as-is; for AI — show full content including emoji
+  const displayContent = rawContent;
 
   const { opacity, translateY } = useEntranceAnim();
 

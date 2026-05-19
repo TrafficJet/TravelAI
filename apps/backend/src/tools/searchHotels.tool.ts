@@ -119,6 +119,8 @@ function normaliseMobileHotel(
     roomType:      hotel.roomType,
     provider:      hotel.provider,
     expiresAt:     hotel.expiresAt,
+    imageUrl:      hotel.imageUrl ?? null,
+    bookingUrl:    (hotel as { bookingUrl?: string }).bookingUrl ?? null,
   };
 }
 

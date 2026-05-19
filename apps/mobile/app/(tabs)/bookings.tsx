@@ -170,19 +170,19 @@ const tabStyles = StyleSheet.create({
 function StatusBadge({ status }: { status: BookingStatus }) {
   const { colors } = useTheme();
 
-  const STATUS_BADGE_CONFIG: Record<BookingStatus, { bg: string; color: string; label: string }> = {
-    CONFIRMED: { bg: `${colors.success}20`, color: colors.success, label: 'ПОДТВЕРЖДЕНО' },
-    PENDING:   { bg: `${colors.warning}20`, color: colors.warning, label: 'ОЖИДАЕТ' },
-    CANCELLED: { bg: `${colors.error}15`,   color: colors.error,   label: 'ОТМЕНЕНО' },
-    FAILED:    { bg: `${colors.error}15`,   color: colors.error,   label: 'ОШИБКА' },
+  const STATUS_BADGE_CONFIG: Record<BookingStatus, { bg: string; color: string; label: string; showCheck: boolean }> = {
+    CONFIRMED: { bg: `${colors.success}20`, color: colors.success, label: 'ПОДТВЕРЖДЕНО', showCheck: true },
+    PENDING:   { bg: `${colors.warning}20`, color: colors.warning, label: 'ОЖИДАЕТ',      showCheck: false },
+    CANCELLED: { bg: `${colors.error}15`,   color: colors.error,   label: 'ОТМЕНЕНО',     showCheck: false },
+    FAILED:    { bg: `${colors.error}15`,   color: colors.error,   label: 'ОШИБКА',       showCheck: false },
   };
 
-  const { bg, color, label } = STATUS_BADGE_CONFIG[status];
-  const checkmark = status === 'CONFIRMED' ? ' ✓' : '';
+  const { bg, color, label, showCheck } = STATUS_BADGE_CONFIG[status];
   return (
-    <View style={[badgeStyles.wrap, { backgroundColor: bg }]}>
+    <View style={[badgeStyles.wrap, { backgroundColor: bg, flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
+      {showCheck && <Ionicons name="checkmark" size={10} color={color} />}
       <Text style={[badgeStyles.label, { color }]}>
-        {label}{checkmark}
+        {label}
       </Text>
     </View>
   );

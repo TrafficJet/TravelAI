@@ -673,37 +673,37 @@ function lookupHotels(city: string): HotelMockEntry[] {
   return DEFAULT_HOTELS;
 }
 
-// Cities where prices are quoted in EUR
-const EUR_CITIES = new Set([
-  'barcelona', 'warsaw', 'rome', 'amsterdam', 'london', 'paris', 'dubai',
-  'madrid', 'berlin', 'vienna', 'prague', 'kyiv',
-  // Russian city names
-  'барселона', 'варшава', 'рим', 'амстердам', 'лондон', 'париж', 'дубай',
-  'мадрид', 'берлин', 'вена', 'прага', 'киев', 'киiв',
-]);
-
-// Base price ranges per star rating in EUR (min..spread) — used as fallback when no fixedPricePerNight
-const EUR_BASE: Record<number, { min: number; spread: number }> = {
-  2: { min: 25,  spread: 40  }, // 25–65 EUR (hostels / budget)
-  3: { min: 60,  spread: 60  }, // 60–120 EUR
-  4: { min: 100, spread: 130 }, // 100–230 EUR
-  5: { min: 200, spread: 350 }, // 200–550 EUR
-  7: { min: 700, spread: 300 }, // 700–1000 EUR (Burj Al Arab style)
+// Base price ranges per star rating in USD (min..spread) — used as fallback when no fixedPricePerNight
+const USD_BASE: Record<number, { min: number; spread: number }> = {
+  2: { min: 25,  spread: 40  }, // $25–65 (hostels / budget)
+  3: { min: 60,  spread: 60  }, // $60–120
+  4: { min: 100, spread: 130 }, // $100–230
+  5: { min: 200, spread: 350 }, // $200–550
+  7: { min: 700, spread: 300 }, // $700–1000 (Burj Al Arab style)
 };
 
-function getCurrencyAndBasePrice(city: string, stars: number): { currency: string; base: number } {
-  const normalized = city.toLowerCase().trim();
-  const isEur = [...EUR_CITIES].some((key) => normalized.includes(key));
+function getBaseUsdPrice(stars: number): number {
+  const range = USD_BASE[stars] ?? USD_BASE[3];
+  return range.min + Math.floor(Math.random() * range.spread);
+}
 
-  if (isEur) {
-    const range = EUR_BASE[stars] ?? EUR_BASE[3];
-    const base = range.min + Math.floor(Math.random() * range.spread);
-    return { currency: 'EUR', base };
-  }
+// Exchange rates for price conversion to USD (hardcoded for MVP)
+const EUR_TO_USD = 1.09; // 1 EUR = 1.09 USD
+const RUB_TO_USD = 90;   // 1 USD = 90 RUB
 
-  // RUB pricing: existing logic — 2500..7500 base scaled by star multiplier
-  const base = 2500 + Math.floor(Math.random() * 5000);
-  return { currency: 'RUB', base };
+// Unsplash hotel photo URLs by category
+const HOTEL_PHOTOS = {
+  luxury: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=250&fit=crop',
+  pool:   'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=250&fit=crop',
+  mountain: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=250&fit=crop',
+  city:   'https://images.unsplash.com/photo-1551882547-ff40c4a49f25?w=400&h=250&fit=crop',
+};
+
+function getHotelPhoto(stars: number): string {
+  if (stars >= 5) return HOTEL_PHOTOS.luxury;
+  if (stars >= 4) return HOTEL_PHOTOS.city;
+  if (stars >= 3) return HOTEL_PHOTOS.pool;
+  return HOTEL_PHOTOS.mountain;
 }
 
 // Mock implementation — preserved as fallback when Amadeus is unavailable
@@ -730,25 +730,24 @@ export async function searchHotelsMock(params: SearchHotelsParams): Promise<Hote
   return filtered.slice(0, 5).map((hotel): HotelOffer => {
     const stars = hotel.starRating ?? 3;
 
-    // Use fixedPricePerNight when available for accurate mock data
-    let perNight: number;
-    let currency: string;
+    // Convert fixed prices to USD; generate random USD price when no fixed price is set
+    let perNightUsd: number;
 
     if (hotel.fixedPricePerNight !== undefined) {
-      perNight = hotel.fixedPricePerNight;
-      currency = hotel.currency ?? 'EUR';
-    } else {
-      const priceData = getCurrencyAndBasePrice(city, stars);
-      currency = priceData.currency;
-      if (currency === 'EUR') {
-        perNight = Math.round(priceData.base);
+      const srcCurrency = (hotel.currency ?? 'EUR').toUpperCase();
+      if (srcCurrency === 'EUR') {
+        perNightUsd = Math.round(hotel.fixedPricePerNight * EUR_TO_USD);
+      } else if (srcCurrency === 'RUB') {
+        perNightUsd = Math.round(hotel.fixedPricePerNight / RUB_TO_USD);
       } else {
-        const starMultiplier = stars * 0.5;
-        perNight = Math.round(priceData.base * starMultiplier);
+        // already USD or unknown — use as-is
+        perNightUsd = hotel.fixedPricePerNight;
       }
+    } else {
+      perNightUsd = getBaseUsdPrice(stars);
     }
 
-    const total = perNight * nights;
+    const total = perNightUsd * nights;
 
     return {
       offerId: uuidv4(),
@@ -760,10 +759,10 @@ export async function searchHotelsMock(params: SearchHotelsParams): Promise<Hote
       reviewCount: hotel.reviewCount ?? 500,
       roomType: hotel.roomType ?? 'Стандартный номер',
       totalPrice: total.toFixed(2),
-      pricePerNight: perNight.toFixed(2),
-      currency,
+      pricePerNight: perNightUsd.toFixed(2),
+      currency: 'USD',
       amenities: hotel.amenities ?? ['WiFi'],
-      imageUrl: null,
+      imageUrl: getHotelPhoto(stars),
       expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hour
     };
   });

@@ -412,7 +412,7 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
 
   return (
     <LinearGradient
-      colors={['#F59E0B', '#14B8A6']}
+      colors={['#E8A020', '#7C5CFC']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={heroStyles.card}
@@ -589,19 +589,19 @@ export default function WalletScreen() {
             {/* Payment methods row (design: 4 tiles — Visa, Bitcoin, USDT, Apple Pay) */}
             <View style={styles.pmRow}>
               <View style={[styles.pmTile]}>
-                <Text style={styles.pmIcon}>💳</Text>
+                <Ionicons name="card" size={18} color={colors.textMuted} />
                 <Text style={[styles.pmLabel, { color: colors.textMuted }]}>Visa ••4821</Text>
               </View>
               <View style={styles.pmTile}>
-                <Text style={styles.pmIcon}>₿</Text>
+                <Ionicons name="logo-bitcoin" size={18} color="#F7931A" />
                 <Text style={[styles.pmLabel, { color: colors.textMuted }]}>Bitcoin</Text>
               </View>
               <View style={styles.pmTile}>
-                <Text style={styles.pmIcon}>🪙</Text>
+                <Ionicons name="cash-outline" size={18} color="#26A17B" />
                 <Text style={[styles.pmLabel, { color: colors.textMuted }]}>USDT</Text>
               </View>
               <TouchableOpacity style={[styles.pmTile]} activeOpacity={0.7} onPress={() => {}}>
-                <Ionicons name="logo-apple" size={16} color="#F4F4F8" />
+                <Ionicons name="logo-apple" size={18} color={colors.text} />
                 <Text style={[styles.pmLabel, { color: colors.textMuted }]}>Apple Pay</Text>
               </TouchableOpacity>
             </View>
@@ -686,9 +686,9 @@ const styles = StyleSheet.create({
   },
   pmTile: {
     flex: 1,
-    backgroundColor: '#1C1C2E',
+    backgroundColor: '#1E1C2C',
     borderWidth: 1,
-    borderColor: '#2A2A42',
+    borderColor: '#2E2B42',
     borderRadius: 11,
     paddingVertical: 9,
     paddingHorizontal: 4,
@@ -696,10 +696,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   pmTileActive: {
-    borderColor: 'rgba(245,158,11,0.4)',
-  },
-  pmIcon: {
-    fontSize: 16,
+    borderColor: 'rgba(232,160,32,0.4)',
   },
   pmLabel: {
     fontSize: 8.5,

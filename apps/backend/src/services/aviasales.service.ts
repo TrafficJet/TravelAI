@@ -12,6 +12,9 @@ import type { FlightOffer, FlightSegment, SearchFlightsParams } from './duffel.s
 //   TRAVELPAYOUTS_TOKEN  — API token for data requests.
 //   TRAVELPAYOUTS_MARKER — affiliate partner/marker ID (default: 530860).
 
+// Exchange rate for RUB → USD conversion (1 USD = 90 RUB, hardcoded for MVP)
+const RUB_TO_USD = 90;
+
 // ---------------------------------------------------------------------------
 // Mock data (kept as graceful fallback — do not remove)
 // ---------------------------------------------------------------------------
@@ -70,13 +73,13 @@ export async function searchFlightsCISMock(params: SearchFlightsParams): Promise
       `${departureDate}T${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}:00`,
     );
     const arrival = new Date(departure.getTime() + (route.duration + idx * 10) * 60 * 1000);
-    const totalPrice = Math.round(basePrice * (1 + idx * 0.12) * passengerCount);
+    const totalPriceUsd = Math.round((basePrice * (1 + idx * 0.12) * passengerCount) / RUB_TO_USD);
 
     return {
       offerId: uuidv4(),
       provider: 'AVIASALES' as const,
-      totalPrice: totalPrice.toFixed(2),
-      currency: 'RUB',
+      totalPrice: totalPriceUsd.toFixed(2),
+      currency: 'USD',
       cabinClass: (cabinClass === 'business' || cabinClass === 'first' ? cabinClass : 'economy') as 'economy' | 'business' | 'first',
       segments: [
         {
@@ -182,7 +185,9 @@ async function searchFlightsCISReal(params: SearchFlightsParams): Promise<Flight
   }
 
   const passengerCount = passengers.adults + (passengers.children ?? 0);
-  const currency = json.currency?.toUpperCase() ?? 'RUB';
+  // API returns prices in RUB — convert to USD for display
+  const apiCurrency = (json.currency ?? 'rub').toLowerCase();
+  const isRub = apiCurrency === 'rub';
 
   // Convert dict entries to array, sorted by price ascending
   const tickets = Object.values(destData).sort((a, b) => a.price - b.price);
@@ -201,7 +206,10 @@ async function searchFlightsCISReal(params: SearchFlightsParams): Promise<Flight
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
     const airlineName = AIRLINE_NAMES[ticket.airline] ?? ticket.airline;
-    const totalPrice = (ticket.price * passengerCount).toFixed(2);
+    const rawPrice    = ticket.price * passengerCount;
+    const totalPrice  = isRub
+      ? (rawPrice / RUB_TO_USD).toFixed(2)
+      : rawPrice.toFixed(2);
     const baggageLabel = ticket.number_of_changes === 0 ? 'Только ручная кладь' : '1 место 23 кг';
 
     // Affiliate booking URL — directs user to Aviasales with partner marker
@@ -216,7 +224,7 @@ async function searchFlightsCISReal(params: SearchFlightsParams): Promise<Flight
       offerId: uuidv4(),
       provider: 'AVIASALES',
       totalPrice,
-      currency,
+      currency: 'USD',
       cabinClass: 'economy' as const,
       segments: [
         {

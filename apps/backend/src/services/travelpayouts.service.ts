@@ -97,6 +97,9 @@ const AIRLINE_NAMES: Record<string, string> = {
   PS: 'МАУ',
 };
 
+// Exchange rate for RUB → USD conversion (1 USD = 90 RUB, hardcoded for MVP)
+const RUB_TO_USD = 90;
+
 // ---------------------------------------------------------------------------
 // Mock flights (fallback when key absent or API fails)
 // ---------------------------------------------------------------------------
@@ -110,7 +113,8 @@ const MOCK_AIRLINES = [
 function buildMockFlightOffers(params: SearchFlightsParams): FlightOffer[] {
   const { origin, destination, departureDate, passengers, cabinClass } = params;
   const passengerCount = passengers.adults + (passengers.children ?? 0);
-  const basePrice = 8000 + Math.floor(Math.random() * 20000);
+  // Base price in USD (roughly $90–$310 per passenger before scaling)
+  const basePriceRub = 8000 + Math.floor(Math.random() * 20000);
   const departureTimes = ['07:00', '12:30', '18:45'];
 
   return MOCK_AIRLINES.map((airline, idx): FlightOffer => {
@@ -120,13 +124,13 @@ function buildMockFlightOffers(params: SearchFlightsParams): FlightOffer[] {
     );
     const durationMin = 180 + idx * 30;
     const arrival = new Date(departure.getTime() + durationMin * 60 * 1000);
-    const totalPrice = Math.round(basePrice * (1 + idx * 0.15) * passengerCount);
+    const totalPriceUsd = Math.round((basePriceRub * (1 + idx * 0.15) * passengerCount) / RUB_TO_USD);
 
     return {
       offerId:    uuidv4(),
       provider:   'AVIASALES',
-      totalPrice: totalPrice.toFixed(2),
-      currency:   'RUB',
+      totalPrice: totalPriceUsd.toFixed(2),
+      currency:   'USD',
       cabinClass: (cabinClass === 'business' || cabinClass === 'first'
         ? cabinClass
         : 'economy') as FlightOffer['cabinClass'],
@@ -151,6 +155,14 @@ function buildMockFlightOffers(params: SearchFlightsParams): FlightOffer[] {
 // Mock hotels (fallback when key absent or API fails)
 // ---------------------------------------------------------------------------
 
+// Unsplash photo URLs for fallback hotel images
+const HOTEL_PHOTOS = [
+  'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=250&fit=crop', // luxury hotel
+  'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=250&fit=crop', // hotel pool
+  'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=250&fit=crop', // mountain hotel
+  'https://images.unsplash.com/photo-1551882547-ff40c4a49f25?w=400&h=250&fit=crop',   // city hotel
+];
+
 function buildMockHotelOffers(params: SearchHotelsParams): HotelOffer[] {
   const { city, checkIn, checkOut } = params;
   const nights = Math.max(
@@ -160,10 +172,11 @@ function buildMockHotelOffers(params: SearchHotelsParams): HotelOffer[] {
     ),
   );
 
+  // Prices in USD
   const mockHotels = [
-    { name: `Grand Hotel ${city}`,      stars: 5, perNight: 350, rating: 8.9, reviews: 2300 },
-    { name: `City Center Hotel ${city}`, stars: 4, perNight: 150, rating: 8.2, reviews: 1500 },
-    { name: `Budget Inn ${city}`,        stars: 3, perNight:  75, rating: 7.5, reviews:  900 },
+    { name: `Grand Hotel ${city}`,       stars: 5, perNight: 220, rating: 8.9, reviews: 2300, photo: HOTEL_PHOTOS[0] },
+    { name: `City Center Hotel ${city}`, stars: 4, perNight:  95, rating: 8.2, reviews: 1500, photo: HOTEL_PHOTOS[3] },
+    { name: `Budget Inn ${city}`,        stars: 3, perNight:  45, rating: 7.5, reviews:  900, photo: HOTEL_PHOTOS[1] },
   ];
 
   return mockHotels.map((h): HotelOffer => ({
@@ -177,9 +190,9 @@ function buildMockHotelOffers(params: SearchHotelsParams): HotelOffer[] {
     roomType:     'Стандартный номер',
     totalPrice:   (h.perNight * nights).toFixed(2),
     pricePerNight: h.perNight.toFixed(2),
-    currency:     'EUR',
+    currency:     'USD',
     amenities:    ['WiFi', 'Завтрак', 'Кондиционер'],
-    imageUrl:     null,
+    imageUrl:     h.photo,
     expiresAt:    new Date(Date.now() + 60 * 60 * 1000).toISOString(),
   }));
 }
@@ -228,7 +241,9 @@ async function searchFlightsTravelpayoutsReal(
   }
 
   const passengerCount = passengers.adults + (passengers.children ?? 0);
-  const currency = (json.currency ?? 'rub').toUpperCase();
+  // API returns prices in RUB — convert to USD for display
+  const apiCurrency = (json.currency ?? 'rub').toLowerCase();
+  const isRub = apiCurrency === 'rub';
 
   return json.data.slice(0, 5).map((ticket): FlightOffer => {
     const departureAt = ticket.departure_at.includes('T')
@@ -245,14 +260,17 @@ async function searchFlightsTravelpayoutsReal(
     ).toISOString();
 
     const airlineName = AIRLINE_NAMES[ticket.airline] ?? ticket.airline;
-    const totalPrice  = (ticket.price * passengerCount).toFixed(2);
+    const rawPrice    = ticket.price * passengerCount;
+    const totalPrice  = isRub
+      ? (rawPrice / RUB_TO_USD).toFixed(2)
+      : rawPrice.toFixed(2);
     const baggage     = ticket.transfers === 0 ? 'Только ручная кладь' : '1 место 23 кг';
 
     return {
       offerId:    uuidv4(),
       provider:   'AVIASALES',
       totalPrice,
-      currency,
+      currency:   'USD',
       cabinClass: 'economy' as const,
       segments: [
         {
@@ -299,14 +317,25 @@ function buildHotellookAffiliateUrl(params: {
   return url.toString();
 }
 
+/** Pick a fallback Unsplash photo based on hotel star rating */
+function fallbackHotelPhoto(stars: number): string {
+  if (stars >= 5) return HOTEL_PHOTOS[0]; // luxury
+  if (stars >= 4) return HOTEL_PHOTOS[3]; // city hotel
+  if (stars >= 3) return HOTEL_PHOTOS[1]; // pool/mid-range
+  return HOTEL_PHOTOS[2];                  // budget/mountain
+}
+
 /** Map Hotellook hotel entry to our HotelOffer shape */
 function mapHotellookHotel(hotel: HotellookHotel, nights: number): HotelOffer | null {
   const rawPrice = hotel.price ?? hotel.priceFrom ?? hotel.minPrice ?? 0;
   if (rawPrice <= 0) return null;
 
-  const priceTotal   = rawPrice;              // API returns per-stay or per-night total
-  const pricePerNight = priceTotal / nights;
-  const currency      = (hotel.currency ?? 'RUB').toUpperCase();
+  // API requests currency=rub — convert to USD
+  const apiCurrency = (hotel.currency ?? 'RUB').toUpperCase();
+  const isRub = apiCurrency === 'RUB';
+  const priceTotalUsd   = isRub ? rawPrice / RUB_TO_USD : rawPrice;
+  const pricePerNightUsd = priceTotalUsd / nights;
+
   const stars         = Math.max(1, Math.min(5, hotel.stars ?? 3));
   const hotelName     = hotel.hotelName ?? hotel.name ?? 'Отель';
   const address       = hotel.address ?? hotel.location?.name ?? hotelName;
@@ -314,6 +343,7 @@ function mapHotellookHotel(hotel: HotellookHotel, nights: number): HotelOffer | 
   const reviewCount   = hotel.reviewCount ?? Math.floor(Math.random() * 2000) + 500;
   const amenities     = hotel.amenities ?? hotel.rooms?.[0]?.amenities ?? ['WiFi'];
   const roomType      = hotel.rooms?.[0]?.roomName ?? 'Стандартный номер';
+  const imageUrl      = hotel.photoUrl ?? fallbackHotelPhoto(stars);
 
   return {
     offerId:      uuidv4(),
@@ -324,11 +354,11 @@ function mapHotellookHotel(hotel: HotellookHotel, nights: number): HotelOffer | 
     rating:       Math.round(rating * 10) / 10,
     reviewCount,
     roomType,
-    totalPrice:   priceTotal.toFixed(2),
-    pricePerNight: pricePerNight.toFixed(2),
-    currency,
+    totalPrice:   priceTotalUsd.toFixed(2),
+    pricePerNight: pricePerNightUsd.toFixed(2),
+    currency:     'USD',
     amenities:    Array.isArray(amenities) ? amenities.slice(0, 8) : ['WiFi'],
-    imageUrl:     hotel.photoUrl ?? null,
+    imageUrl,
     expiresAt:    new Date(Date.now() + 60 * 60 * 1000).toISOString(),
   };
 }
