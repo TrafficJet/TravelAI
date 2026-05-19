@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import Markdown from 'react-native-markdown-display';
 import { Typography } from '../../constants/typography';
 import { ChatToolResult } from './ToolResultCard';
 import { useTheme } from '../../src/theme/ThemeContext';
@@ -22,6 +23,16 @@ interface Props {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+const stripEmoji = (text: string): string => {
+  return text
+    .replace(
+      /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{FE00}-\u{FE0F}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FAFF}]/gu,
+      '',
+    )
+    .replace(/\s+/g, ' ')
+    .trim();
+};
 
 function formatTime(dateStr: string): string {
   const date = new Date(dateStr);
@@ -472,8 +483,9 @@ function useEntranceAnim() {
 export function MessageBubble({ message, isStreaming, streamingText, onLongPress }: Props) {
   const { colors } = useTheme();
   const isUser = message.role === 'user';
-  const displayContent =
+  const rawContent =
     isStreaming && streamingText !== undefined ? streamingText : message.content;
+  const displayContent = isUser ? rawContent : stripEmoji(rawContent);
 
   const { opacity, translateY } = useEntranceAnim();
 

@@ -284,7 +284,7 @@ function extractTitleFromMessage(message: string): string | null {
   if (ruMatch) {
     const origin = ruMatch[1].trim();
     const dest = ruMatch[2].trim();
-    return `✈️ ${origin} → ${dest}`.slice(0, 50);
+    return `Рейс: ${origin} → ${dest}`.slice(0, 50);
   }
 
   // Pattern: "X → Y" (arrow with unicode or ASCII)
@@ -292,7 +292,7 @@ function extractTitleFromMessage(message: string): string | null {
   if (arrowMatch) {
     const origin = arrowMatch[1].trim();
     const dest = arrowMatch[2].trim();
-    return `✈️ ${origin} → ${dest}`.slice(0, 50);
+    return `Рейс: ${origin} → ${dest}`.slice(0, 50);
   }
 
   // Pattern: "X to Y" (English)
@@ -300,7 +300,7 @@ function extractTitleFromMessage(message: string): string | null {
   if (toMatch) {
     const origin = toMatch[1].trim();
     const dest = toMatch[2].trim();
-    return `✈️ ${origin} → ${dest}`.slice(0, 50);
+    return `Рейс: ${origin} → ${dest}`.slice(0, 50);
   }
 
   // Pattern: "X - Y" (dash separator, at least 3 chars each side)
@@ -308,7 +308,7 @@ function extractTitleFromMessage(message: string): string | null {
   if (dashMatch) {
     const origin = dashMatch[1].trim();
     const dest = dashMatch[2].trim();
-    return `✈️ ${origin} → ${dest}`.slice(0, 50);
+    return `Рейс: ${origin} → ${dest}`.slice(0, 50);
   }
 
   // Fallback: first 40 characters of the message
