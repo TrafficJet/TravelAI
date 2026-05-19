@@ -8,7 +8,7 @@ import Animated, {
   interpolate,
   Extrapolation,
 } from 'react-native-reanimated';
-import { Colors } from '../../constants';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 // ── Base Skeleton with shimmer ─────────────────────────────────────────────────
 
@@ -25,6 +25,7 @@ export function Skeleton({
   borderRadius = 8,
   style,
 }: SkeletonProps) {
+  const { colors } = useTheme();
   const shimmer = useSharedValue(0);
 
   useEffect(() => {
@@ -48,9 +49,8 @@ export function Skeleton({
   return (
     <Animated.View
       style={[
-        styles.base,
-        { height, borderRadius },
-        width !== undefined ? { width } : styles.fullWidth,
+        { backgroundColor: colors.card, height, borderRadius },
+        width !== undefined ? { width } : { width: '100%' },
         animatedStyle,
         style,
       ]}
@@ -62,22 +62,23 @@ export function Skeleton({
 
 /** Skeleton for a flight card in bookings/explore lists */
 export function SkeletonFlightCard() {
+  const { colors } = useTheme();
   return (
-    <View style={presets.flightCard}>
+    <View style={[presetStyles.flightCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
       {/* Top row: badge + route */}
-      <View style={presets.row}>
+      <View style={presetStyles.row}>
         <Skeleton width={60} height={22} borderRadius={11} />
-        <View style={[presets.rowRight, { gap: 6 }]}>
+        <View style={[presetStyles.rowRight, { gap: 6 }]}>
           <Skeleton width={36} height={14} borderRadius={7} />
           <Skeleton width={16} height={12} borderRadius={6} />
           <Skeleton width={36} height={14} borderRadius={7} />
         </View>
       </View>
       {/* Airline + date */}
-      <Skeleton width="55%" height={12} borderRadius={6} style={presets.mt10} />
-      <Skeleton width="35%" height={12} borderRadius={6} style={presets.mt6} />
+      <Skeleton width="55%" height={12} borderRadius={6} style={presetStyles.mt10} />
+      <Skeleton width="35%" height={12} borderRadius={6} style={presetStyles.mt6} />
       {/* Price */}
-      <View style={[presets.row, presets.mt10]}>
+      <View style={[presetStyles.row, presetStyles.mt10]}>
         <Skeleton width={90} height={18} borderRadius={9} />
         <Skeleton width={100} height={36} borderRadius={10} />
       </View>
@@ -87,15 +88,16 @@ export function SkeletonFlightCard() {
 
 /** Skeleton for a hotel card with image placeholder */
 export function SkeletonHotelCard() {
+  const { colors } = useTheme();
   return (
-    <View style={presets.hotelCard}>
+    <View style={[presetStyles.hotelCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
       {/* Image placeholder */}
       <Skeleton width="100%" height={120} borderRadius={12} />
       {/* Content */}
-      <View style={presets.hotelContent}>
+      <View style={presetStyles.hotelContent}>
         <Skeleton width="70%" height={15} borderRadius={7} />
-        <Skeleton width="45%" height={12} borderRadius={6} style={presets.mt6} />
-        <View style={[presets.row, presets.mt8]}>
+        <Skeleton width="45%" height={12} borderRadius={6} style={presetStyles.mt6} />
+        <View style={[presetStyles.row, presetStyles.mt8]}>
           <Skeleton width={50} height={12} borderRadius={6} />
           <Skeleton width={80} height={18} borderRadius={9} />
         </View>
@@ -106,13 +108,14 @@ export function SkeletonHotelCard() {
 
 /** Skeleton for a chat message bubble */
 export function SkeletonChatMessage() {
+  const { colors } = useTheme();
   return (
-    <View style={presets.chatMessage}>
+    <View style={presetStyles.chatMessage}>
       <Skeleton width={36} height={36} borderRadius={18} />
-      <View style={presets.chatBubble}>
+      <View style={[presetStyles.chatBubble, { backgroundColor: colors.surface }]}>
         <Skeleton width="80%" height={13} borderRadius={6} />
-        <Skeleton width="60%" height={13} borderRadius={6} style={presets.mt6} />
-        <Skeleton width="40%" height={10} borderRadius={5} style={presets.mt6} />
+        <Skeleton width="60%" height={13} borderRadius={6} style={presetStyles.mt6} />
+        <Skeleton width="40%" height={10} borderRadius={5} style={presetStyles.mt6} />
       </View>
     </View>
   );
@@ -120,18 +123,19 @@ export function SkeletonChatMessage() {
 
 /** Skeleton for a booking list item */
 export function SkeletonBookingItem() {
+  const { colors } = useTheme();
   return (
-    <View style={presets.bookingItem}>
-      <View style={presets.bookingItemLeft}>
+    <View style={[presetStyles.bookingItem, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={presetStyles.bookingItemLeft}>
         <Skeleton width={40} height={40} borderRadius={12} />
       </View>
       <View style={{ flex: 1 }}>
-        <View style={presets.row}>
+        <View style={presetStyles.row}>
           <Skeleton width="50%" height={14} borderRadius={7} />
           <Skeleton width={60} height={20} borderRadius={10} />
         </View>
-        <Skeleton width="75%" height={12} borderRadius={6} style={presets.mt8} />
-        <Skeleton width="40%" height={11} borderRadius={5} style={presets.mt6} />
+        <Skeleton width="75%" height={12} borderRadius={6} style={presetStyles.mt8} />
+        <Skeleton width="40%" height={11} borderRadius={5} style={presetStyles.mt6} />
       </View>
     </View>
   );
@@ -139,16 +143,17 @@ export function SkeletonBookingItem() {
 
 /** Skeleton for a notification list item */
 export function SkeletonNotificationItem() {
+  const { colors } = useTheme();
   return (
-    <View style={presets.notifItem}>
+    <View style={[presetStyles.notifItem, { borderBottomColor: colors.border }]}>
       <Skeleton width={44} height={44} borderRadius={22} />
       <View style={{ flex: 1 }}>
-        <View style={presets.row}>
+        <View style={presetStyles.row}>
           <Skeleton width="50%" height={13} borderRadius={6} />
           <Skeleton width={8} height={8} borderRadius={4} />
         </View>
-        <Skeleton width="85%" height={12} borderRadius={6} style={presets.mt6} />
-        <Skeleton width="30%" height={10} borderRadius={5} style={presets.mt6} />
+        <Skeleton width="85%" height={12} borderRadius={6} style={presetStyles.mt6} />
+        <Skeleton width="30%" height={10} borderRadius={5} style={presetStyles.mt6} />
       </View>
     </View>
   );
@@ -157,73 +162,65 @@ export function SkeletonNotificationItem() {
 // ── Legacy presets kept for backward compatibility ─────────────────────────────
 
 export function SkeletonChatRow() {
+  const { colors } = useTheme();
   return (
-    <View style={presets.chatRow}>
+    <View style={[presetStyles.chatRow, { borderBottomColor: colors.border }]}>
       <Skeleton width={44} height={44} borderRadius={22} />
-      <View style={presets.chatRowContent}>
+      <View style={presetStyles.chatRowContent}>
         <Skeleton width="60%" height={14} borderRadius={7} />
-        <Skeleton width="85%" height={12} borderRadius={6} style={presets.mt6} />
+        <Skeleton width="85%" height={12} borderRadius={6} style={presetStyles.mt6} />
       </View>
     </View>
   );
 }
 
 export function SkeletonBookingCard() {
+  const { colors } = useTheme();
   return (
-    <View style={presets.bookingCard}>
-      <View style={presets.bookingHeader}>
+    <View style={[presetStyles.bookingCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={presetStyles.bookingHeader}>
         <Skeleton width={80} height={12} borderRadius={6} />
         <Skeleton width={60} height={20} borderRadius={10} />
       </View>
-      <Skeleton width="100%" height={14} borderRadius={7} style={presets.mt10} />
-      <Skeleton width="70%" height={14} borderRadius={7} style={presets.mt6} />
+      <Skeleton width="100%" height={14} borderRadius={7} style={presetStyles.mt10} />
+      <Skeleton width="70%" height={14} borderRadius={7} style={presetStyles.mt6} />
     </View>
   );
 }
 
 export function SkeletonWalletCard() {
   return (
-    <View style={presets.walletCard}>
+    <View style={presetStyles.walletCard}>
       <Skeleton width={120} height={14} borderRadius={7} />
-      <Skeleton width={180} height={52} borderRadius={10} style={presets.mt12} />
+      <Skeleton width={180} height={52} borderRadius={10} style={presetStyles.mt12} />
     </View>
   );
 }
 
 export function SkeletonNotificationRow() {
+  const { colors } = useTheme();
   return (
-    <View style={presets.notifRow}>
+    <View style={[presetStyles.notifRow, { borderBottomColor: colors.border }]}>
       <Skeleton width={40} height={40} borderRadius={20} />
-      <View style={presets.notifRowContent}>
+      <View style={presetStyles.notifRowContent}>
         <Skeleton width="50%" height={13} borderRadius={6} />
-        <Skeleton width="85%" height={12} borderRadius={6} style={presets.mt6} />
-        <Skeleton width="30%" height={10} borderRadius={5} style={presets.mt6} />
+        <Skeleton width="85%" height={12} borderRadius={6} style={presetStyles.mt6} />
+        <Skeleton width="30%" height={10} borderRadius={5} style={presetStyles.mt6} />
       </View>
     </View>
   );
 }
 
-// ── Styles ─────────────────────────────────────────────────────────────────────
+// ── Static layout styles (no color tokens) ─────────────────────────────────────
 
-const styles = StyleSheet.create({
-  base: {
-    backgroundColor: Colors.elevated,
-  },
-  fullWidth: {
-    width: '100%',
-  },
-});
-
-const presets = StyleSheet.create({
+const presetStyles = StyleSheet.create({
   // SkeletonFlightCard
   flightCard: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   row: {
     flexDirection: 'row',
@@ -236,13 +233,11 @@ const presets = StyleSheet.create({
   },
   // SkeletonHotelCard
   hotelCard: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     overflow: 'hidden',
     marginHorizontal: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   hotelContent: {
     padding: 12,
@@ -257,7 +252,6 @@ const presets = StyleSheet.create({
   },
   chatBubble: {
     flex: 1,
-    backgroundColor: Colors.surface,
     borderRadius: 16,
     padding: 12,
   },
@@ -265,13 +259,11 @@ const presets = StyleSheet.create({
   bookingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 14,
     marginHorizontal: 16,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: Colors.border,
     gap: 12,
   },
   bookingItemLeft: {
@@ -284,7 +276,6 @@ const presets = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
     gap: 12,
   },
   // Legacy
@@ -294,20 +285,17 @@ const presets = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   chatRowContent: {
     flex: 1,
     marginLeft: 12,
   },
   bookingCard: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   bookingHeader: {
     flexDirection: 'row',
@@ -324,7 +312,6 @@ const presets = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   notifRowContent: {
     flex: 1,

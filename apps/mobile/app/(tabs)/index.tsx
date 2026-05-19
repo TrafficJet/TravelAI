@@ -11,11 +11,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useChatStore } from '../../stores/chatStore';
 import { useAuthStore } from '../../stores/authStore';
-import { Colors, Spacing } from '../../constants';
+import { Spacing } from '../../constants';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 // ── Main entry screen ─────────────────────────────────────────────────────────
 
 export default function ChatEntryScreen() {
+  const { colors } = useTheme();
   const { sessions, loadSessions, createSession } = useChatStore();
   const { isAuthenticated, guestId } = useAuthStore();
   const [hasError, setHasError] = useState(false);
@@ -74,7 +76,7 @@ export default function ChatEntryScreen() {
   // ── Error state (only when authenticated user's session load failed) ───────
   if (hasError) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background, paddingHorizontal: Spacing.xl }]}>
         <View style={styles.logoWrap}>
           <LinearGradient
             colors={['rgba(245,158,11,0.25)', 'rgba(245,158,11,0.06)']}
@@ -82,22 +84,22 @@ export default function ChatEntryScreen() {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <Ionicons name="airplane" size={48} color={Colors.primary} />
+            <Ionicons name="airplane" size={48} color={colors.primary} />
           </LinearGradient>
         </View>
-        <Text style={styles.brand}>TravelAI</Text>
+        <Text style={[styles.brand, { color: colors.text }]}>TravelAI</Text>
         <Ionicons
           name="cloud-offline-outline"
           size={40}
-          color={Colors.textMuted}
+          color={colors.textMuted}
           style={styles.errorIcon}
         />
-        <Text style={styles.errorTitle}>Не удалось загрузить чаты</Text>
-        <Text style={styles.errorSubtitle}>
+        <Text style={[styles.errorTitle, { color: colors.text }]}>Не удалось загрузить чаты</Text>
+        <Text style={[styles.errorSubtitle, { color: colors.textMuted }]}>
           Проверьте подключение к интернету и повторите попытку
         </Text>
         <TouchableOpacity
-          style={styles.retryBtn}
+          style={[styles.retryBtn, { backgroundColor: colors.primary }]}
           onPress={() => isAuthenticated ? void initAuthenticated() : void initGuest()}
           activeOpacity={0.8}
         >
@@ -110,7 +112,7 @@ export default function ChatEntryScreen() {
 
   // ── Loading spinner while redirecting (guest or authenticated user) ─────────
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingHorizontal: Spacing.xl }]}>
       <View style={styles.logoWrap}>
         <LinearGradient
           colors={['rgba(245,158,11,0.25)', 'rgba(245,158,11,0.06)']}
@@ -118,13 +120,13 @@ export default function ChatEntryScreen() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Ionicons name="airplane" size={48} color={Colors.primary} />
+          <Ionicons name="airplane" size={48} color={colors.primary} />
         </LinearGradient>
       </View>
-      <Text style={styles.brand}>TravelAI</Text>
-      <Text style={styles.tagline}>Ваш AI-помощник в путешествиях</Text>
+      <Text style={[styles.brand, { color: colors.text }]}>TravelAI</Text>
+      <Text style={[styles.tagline, { color: colors.textMuted }]}>Ваш AI-помощник в путешествиях</Text>
       <ActivityIndicator
-        color={Colors.primary}
+        color={colors.primary}
         size="large"
         style={styles.spinner}
       />
@@ -136,11 +138,9 @@ export default function ChatEntryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
-    paddingHorizontal: Spacing.xl,
   },
   logoWrap: {
     marginBottom: 8,
@@ -158,13 +158,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 28,
     fontWeight: '700' as const,
-    color: Colors.text,
     letterSpacing: -0.5,
   },
   tagline: {
     fontFamily: 'Inter',
     fontSize: 14,
-    color: Colors.textMuted,
     letterSpacing: 0.2,
     textAlign: 'center',
   },
@@ -178,13 +176,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 18,
     fontWeight: '600' as const,
-    color: Colors.text,
     textAlign: 'center',
   },
   errorSubtitle: {
     fontFamily: 'Inter',
     fontSize: 14,
-    color: Colors.textMuted,
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -192,7 +188,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: Colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 12,

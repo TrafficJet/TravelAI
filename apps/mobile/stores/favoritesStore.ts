@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { persist } from 'zustand/middleware';
+import { zustandStorage } from '../utils/safeStorage';
 import api from '../services/api';
 import { favoritesService } from '../services/favoritesService';
 import type { Hotel, FlightOffer } from '../types';
@@ -112,7 +112,7 @@ export const useFavoritesStore = create<FavoritesStore>()(
     }),
     {
       name: 'favorites-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: zustandStorage,
     },
   ),
 );

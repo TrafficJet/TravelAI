@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVIT — App Store Screenshots</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:    #6C63FF;
+      --accent:     #00B4D8;
+      --gold:       #FFB347;
+      --bg-dark:    #1A1A2E;
+      --bg-card:    #16213E;
+      --bg-light:   #F8F9FF;
+      --text-pri:   #1A1A2E;
+      --text-sec:   #64748B;
+      --white:      #FFFFFF;
+      --glass-bg:   rgba(255,255,255,0.07);
+      --glass-br:   rgba(255,255,255,0.13);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #F0F2F8;
+      padding: 60px 40px 80px;
+      color: var(--text-pri);
+    }
+
+    h1.page-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-pri);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    p.page-subtitle {
+      text-align: center;
+      font-size: 15px;
+      color: var(--text-sec);
+      margin-bottom: 56px;
+    }
+
+    /* ── Grid ── */
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px 36px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* ── Caption above iPhone ── */
+    .screenshot-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+    .caption {
+      text-align: center;
+      max-width: 320px;
+    }
+    .caption h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-pri);
+      line-height: 1.25;
+      margin-bottom: 5px;
+      letter-spacing: -0.3px;
+    }
+    .caption p {
+      font-size: 13px;
+      color: var(--text-sec);
+      line-height: 1.5;
+    }
+
+    /* ── iPhone Frame ── */
+    .iphone-frame {
+      position: relative;
+      width: 320px;
+      height: 694px;
+      background: #E8E8E8;
+      border-radius: 52px;
+      padding: 12px;
+      box-shadow:
+        0 0 0 1px #C8C8CC,
+        0 0 0 2px #B0B0B5,
+        inset 0 0 0 1px #D4D4D8,
+        0 30px 70px rgba(0,0,0,0.22),
+        0 10px 30px rgba(0,0,0,0.14);
+      flex-shrink: 0;
+    }
+
+    /* Side buttons */
+    .iphone-frame::before {
+      content: '';
+      position: absolute;
+      left: -3px;
+      top: 120px;
+      width: 3px;
+      height: 36px;
+      background: #C0C0C5;
+      border-radius: 2px 0 0 2px;
+      box-shadow: 0 48px 0 #C0C0C5, 0 88px 0 #C0C0C5;
+    }
+    .iphone-frame::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 158px;
+      width: 3px;
+      height: 64px;
+      background: #C0C0C5;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Inner bezel */
+    .iphone-inner {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-dark);
+      border-radius: 42px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 34px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 100;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 58px;
+      z-index: 10;
+    }
+    .status-time {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      padding-top: 4px;
+    }
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-top: 4px;
+    }
+    .status-icons svg {
+      fill: var(--white);
+    }
+
+    /* Screen content area */
+    .screen-content {
+      height: calc(100% - 58px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Shared UI Atoms ── */
+
+    /* App header */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .app-header .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .app-header .brand-icon {
+      width: 30px;
+      height: 30px;
+    }
+    .app-header .brand-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: 1.5px;
+    }
+    .header-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-br);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Chat scroll area */
+    .chat-area {
+      flex: 1;
+      overflow: hidden;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Message bubble user */
+    .msg-user {
+      align-self: flex-end;
+      max-width: 80%;
+      background: var(--primary);
+      color: var(--white);
+      border-radius: 18px 18px 4px 18px;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    /* Message bubble AI */
+    .msg-ai {
+      align-self: flex-start;
+      max-width: 88%;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .msg-ai-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .msg-ai-bubble {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-br);
+      border-radius: 4px 18px 18px 18px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.92);
+      line-height: 1.5;
+    }
+    /* Typing indicator */
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 4px 0;
+    }
+    .typing-dots span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      opacity: 0.8;
+    }
+
+    /* Flight card inside bubble */
+    .flight-card {
+      background: rgba(108,99,255,0.15);
+      border: 1px solid rgba(108,99,255,0.35);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 4px;
+    }
+    .flight-card-alt {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      opacity: 0.7;
+    }
+    .flight-route {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 3px;
+    }
+    .flight-airline {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 6px;
+    }
+    .flight-time {
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 4px;
+    }
+    .flight-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .btn-book {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      padding: 9px 0;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    /* Hotel card */
+    .hotel-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 11px 13px;
+      margin-top: 6px;
+    }
+    .hotel-card:first-child { margin-top: 0; }
+    .hotel-tier {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .tier-budget { color: var(--accent); }
+    .tier-mid    { color: var(--gold); }
+    .tier-lux    { color: #E879F9; }
+    .hotel-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+    .hotel-stars { color: var(--gold); font-size: 11px; }
+    .hotel-price {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 2px;
+    }
+    .hotel-loc {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+    }
+
+    /* Day plan */
+    .day-plan {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .day-plan-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .plan-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .plan-time {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      min-width: 44px;
+      padding-top: 1px;
+    }
+    .plan-text {
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.4;
+    }
+    .plan-tip {
+      background: rgba(255,179,71,0.12);
+      border: 1px solid rgba(255,179,71,0.25);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 11.5px;
+      color: var(--gold);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* Bottom sheet */
+    .bottom-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1E1E3A;
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      padding: 20px 20px 28px;
+      z-index: 50;
+    }
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      margin: 0 auto 18px;
+    }
+    .sheet-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .sheet-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .sheet-row:last-of-type { border-bottom: none; }
+    .sheet-row-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.65);
+    }
+    .sheet-row-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .sheet-total {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0 0;
+      margin-top: 4px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .sheet-total-label { font-size: 14px; font-weight: 700; color: var(--white); }
+    .sheet-total-price { font-size: 18px; font-weight: 800; color: var(--primary); }
+    .btn-pay {
+      display: block;
+      width: 100%;
+      margin-top: 14px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 14px;
+      padding: 13px 0;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .btn-pay-alt {
+      display: block;
+      width: 100%;
+      margin-top: 8px;
+      background: rgba(255,255,255,0.07);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 14px;
+      padding: 12px 0;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .sheet-note {
+      text-align: center;
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      margin-top: 10px;
+    }
+
+    /* Trip card */
+    .trip-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-br);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+    .trip-city {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 3px;
+    }
+    .trip-dates {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 5px;
+    }
+    .trip-details {
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 10px;
+    }
+    .trip-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-trip-sm {
+      flex: 1;
+      background: rgba(108,99,255,0.2);
+      border: 1px solid rgba(108,99,255,0.4);
+      border-radius: 9px;
+      padding: 7px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary);
+      text-align: center;
+    }
+
+    /* Tab bar */
+    .tab-bar {
+      display: flex;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 0 20px;
+      background: rgba(26,26,46,0.97);
+      flex-shrink: 0;
+    }
+    .tab-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .tab-icon {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tab-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+    }
+    .tab-item.active .tab-label { color: var(--primary); }
+
+    /* Chat input */
+    .chat-input-bar {
+      padding: 8px 14px 14px;
+      flex-shrink: 0;
+    }
+    .chat-input-inner {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 8px 8px 8px 16px;
+      gap: 8px;
+    }
+    .chat-input-placeholder {
+      flex: 1;
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+    }
+    .input-icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .input-icon-mic {
+      background: rgba(255,255,255,0.08);
+    }
+    .input-icon-send {
+      background: var(--primary);
+    }
+
+    /* Payment screen */
+    .payment-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .payment-header-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--white);
+      text-align: center;
+    }
+    .payment-body {
+      flex: 1;
+      overflow: hidden;
+      padding: 16px 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .payment-summary {
+      background: rgba(108,99,255,0.1);
+      border: 1px solid rgba(108,99,255,0.25);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .payment-summary-left {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.6;
+    }
+    .payment-summary-right {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .pay-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+    .pay-method {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-br);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .pay-method.selected {
+      border-color: var(--primary);
+      background: rgba(108,99,255,0.12);
+    }
+    .pay-method-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .pay-method-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .pay-method-desc {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+    }
+    .pay-method-radio {
+      margin-left: auto;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pay-method.selected .pay-method-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+    .pay-method.selected .pay-method-radio::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: white;
+    }
+    .payment-footer {
+      padding: 10px 16px 24px;
+      flex-shrink: 0;
+    }
+
+    /* SVIT Logo SVG inline helper */
+    .svit-logo-svg {
+      display: block;
+    }
+
+    /* Trips page header */
+    .page-header {
+      padding: 14px 20px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .page-header-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--white);
+    }
+    .page-header-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+    .trips-body {
+      flex: 1;
+      overflow: hidden;
+      padding: 14px 16px 0;
+    }
+    .trips-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    /* Dim overlay for bottom sheet */
+    .dim-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 40;
+    }
+
+    /* Chat with reduced blur for full chat screens */
+    .chat-bg-blur {
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1 class="page-title">SVIT — App Store Screenshots</h1>
+<p class="page-subtitle">7 экранов · iPhone 14 · Dark Mode · Русскоязычная аудитория СНГ</p>
+
+<div class="screenshots-grid">
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SCREENSHOT 1 — Chat Home   ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="screenshot-wrap">
+    <div class="caption">
+      <h2>Напиши — и всё готово</h2>
+      <p>Скажи куда хочешь. SVIT найдёт рейс и отель.</p>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-inner">
+        <div class="dynamic-island"></div>
+        <!-- Status bar -->
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <!-- Signal -->
+            <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="0.5"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+            <!-- WiFi -->
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm0-3.8c1.7 0 3.2.7 4.3 1.8l1.4-1.4A9 9 0 0 0 8 4a9 9 0 0 0-5.7 2.1l1.4 1.4A6.4 6.4 0 0 1 8 5.7zm0-3.9c2.7 0 5.1 1.1 6.9 2.9l1.4-1.4A12.5 12.5 0 0 0 8 0C5.3 0 2.8 1 .8 2.7l1.4 1.4A10.2 10.2 0 0 1 8 1.8z"/></svg>
+            <!-- Battery -->
+            <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-width="1" fill="none" opacity="0.5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><path d="M22.5 4v4a2 2 0 0 0 0-4z" fill="white" opacity="0.5"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <!-- Decorative blurs -->
+          <div class="chat-bg-blur" style="background:rgba(108,99,255,0.25);top:-40px;right:-40px;"></div>
+          <div class="chat-bg-blur" style="background:rgba(0,180,216,0.15);bottom:100px;left:-40px;"></div>
+
+          <!-- Header -->
+          <div class="app-header">
+            <div class="brand">
+              <svg class="brand-icon" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="15" cy="15" r="13" stroke="#6C63FF" stroke-width="1.5"/>
+                <circle cx="15" cy="15" r="2" fill="#6C63FF"/>
+                <line x1="15" y1="2" x2="15" y2="6" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="15" y1="24" x2="15" y2="28" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="2" y1="15" x2="6" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="24" y1="15" x2="28" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M15 8 C12 10, 10 12, 10 15 C10 18, 12 20, 15 22 C18 20, 20 18, 20 15 C20 12, 18 10, 15 8Z" stroke="#6C63FF" stroke-width="1.2" fill="none"/>
+              </svg>
+              <span class="brand-name">SVIT</span>
+            </div>
+            <div class="header-icon-btn">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
+                <circle cx="8" cy="7" r="2.5" fill="rgba(255,255,255,0.6)"/>
+                <path d="M3.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Chat -->
+          <div class="chat-area" style="padding-bottom: 4px;">
+            <!-- Date separator -->
+            <div style="text-align:center;font-size:10.5px;color:rgba(255,255,255,0.25);padding:2px 0 4px;">Сегодня</div>
+
+            <!-- AI greeting -->
+            <div class="msg-ai">
+              <div class="msg-ai-avatar">
+                <svg width="14" height="14" viewBox="0 0 30 30" fill="none">
+                  <circle cx="15" cy="15" r="13" stroke="white" stroke-width="1.5"/>
+                  <circle cx="15" cy="15" r="2" fill="white"/>
+                  <line x1="15" y1="2" x2="15" y2="6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="15" y1="24" x2="15" y2="28" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="2" y1="15" x2="6" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="24" y1="15" x2="28" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="msg-ai-bubble">
+                Привет! Я SVIT — твой AI-помощник в путешествиях. Куда летим? ✈️
+              </div>
+            </div>
+
+            <!-- User message -->
+            <div class="msg-user">
+              Хочу в Барселону на 5 дней, бюджет €500 с перелётом
+            </div>
+
+            <!-- AI typing -->
+            <div class="msg-ai">
+              <div class="msg-ai-avatar">
+                <svg width="14" height="14" viewBox="0 0 30 30" fill="none">
+                  <circle cx="15" cy="15" r="13" stroke="white" stroke-width="1.5"/>
+                  <circle cx="15" cy="15" r="2" fill="white"/>
+                  <line x1="15" y1="2" x2="15" y2="6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="15" y1="24" x2="15" y2="28" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="2" y1="15" x2="6" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="24" y1="15" x2="28" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="msg-ai-bubble">
+                Ищу лучшие варианты... ✈️
+                <div class="typing-dots" style="margin-top:6px;">
+                  <span style="animation:none;background:#6C63FF;"></span>
+                  <span style="background:#00B4D8;opacity:0.6;"></span>
+                  <span style="background:#6C63FF;opacity:0.35;"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input bar -->
+          <div class="chat-input-bar">
+            <div class="chat-input-inner">
+              <span class="chat-input-placeholder">Написать сообщение...</span>
+              <div class="input-icon-btn input-icon-mic">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <rect x="4.5" y="1" width="5" height="8" rx="2.5" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
+                  <path d="M2 7.5a5 5 0 0 0 10 0" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+                  <line x1="7" y1="12.5" x2="7" y2="14" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="input-icon-btn input-icon-send">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M12.5 7 L2 2 L4.5 7 L2 12 Z" fill="white"/>
+                  <line x1="4.5" y1="7" x2="12.5" y2="7" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔═════════════════════════════════╗ -->
+  <!-- ║  SCREENSHOT 2 — Flight Results ║ -->
+  <!-- ╚═════════════════════════════════╝ -->
+  <div class="screenshot-wrap">
+    <div class="caption">
+      <h2>Билеты за секунды</h2>
+      <p>AI ищет среди сотен рейсов и выбирает лучший.</p>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-inner">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="0.5"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm0-3.8c1.7 0 3.2.7 4.3 1.8l1.4-1.4A9 9 0 0 0 8 4a9 9 0 0 0-5.7 2.1l1.4 1.4A6.4 6.4 0 0 1 8 5.7zm0-3.9c2.7 0 5.1 1.1 6.9 2.9l1.4-1.4A12.5 12.5 0 0 0 8 0C5.3 0 2.8 1 .8 2.7l1.4 1.4A10.2 10.2 0 0 1 8 1.8z"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-width="1" fill="none" opacity="0.5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><path d="M22.5 4v4a2 2 0 0 0 0-4z" fill="white" opacity="0.5"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div class="chat-bg-blur" style="background:rgba(108,99,255,0.2);top:-40px;right:-40px;"></div>
+          <div class="app-header">
+            <div class="brand">
+              <svg class="brand-icon" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="13" stroke="#6C63FF" stroke-width="1.5"/><circle cx="15" cy="15" r="2" fill="#6C63FF"/><line x1="15" y1="2" x2="15" y2="6" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="24" x2="15" y2="28" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="15" x2="6" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="24" y1="15" x2="28" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><path d="M15 8 C12 10, 10 12, 10 15 C10 18, 12 20, 15 22 C18 20, 20 18, 20 15 C20 12, 18 10, 15 8Z" stroke="#6C63FF" stroke-width="1.2" fill="none"/></svg>
+              <span class="brand-name">SVIT</span>
+            </div>
+            <div class="header-icon-btn">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/><circle cx="8" cy="7" r="2.5" fill="rgba(255,255,255,0.6)"/><path d="M3.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="chat-area">
+            <div style="text-align:center;font-size:10.5px;color:rgba(255,255,255,0.25);padding:2px 0 4px;">Сегодня</div>
+            <div class="msg-user">
+              Хочу в Барселону на 5 дней, бюджет €500 с перелётом
+            </div>
+            <div class="msg-ai">
+              <div class="msg-ai-avatar">
+                <svg width="14" height="14" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="13" stroke="white" stroke-width="1.5"/><circle cx="15" cy="15" r="2" fill="white"/><line x1="15" y1="2" x2="15" y2="6" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="24" x2="15" y2="28" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="15" x2="6" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="24" y1="15" x2="28" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div class="msg-ai-bubble">
+                <div style="margin-bottom:8px;color:rgba(255,255,255,0.7);">Нашёл отличный вариант! Вот лучший рейс:</div>
+                <div class="flight-card">
+                  <div class="flight-route">✈️ Варшава → Барселона</div>
+                  <div class="flight-airline">Wizz Air · W6 1234</div>
+                  <div class="flight-time">06:45 → 09:10 · 2ч 25м · прямой</div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+                    <span class="flight-price">€67</span>
+                    <span style="font-size:11px;color:rgba(255,255,255,0.5);">эконом · 1 чемодан</span>
+                  </div>
+                  <div class="btn-book">Забронировать</div>
+                </div>
+                <div class="flight-card-alt">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                      <div style="font-size:12px;color:rgba(255,255,255,0.65);">Ryanair · FR 5890</div>
+                      <div style="font-size:11px;color:rgba(255,255,255,0.4);">07:20 → 10:05 · 2ч 45м</div>
+                    </div>
+                    <span style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.5);">€89</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-bar">
+            <div class="chat-input-inner">
+              <span class="chat-input-placeholder">Написать сообщение...</span>
+              <div class="input-icon-btn input-icon-mic"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4.5" y="1" width="5" height="8" rx="2.5" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/><path d="M2 7.5a5 5 0 0 0 10 0" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/><line x1="7" y1="12.5" x2="7" y2="14" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+              <div class="input-icon-btn input-icon-send"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12.5 7 L2 2 L4.5 7 L2 12 Z" fill="white"/><line x1="4.5" y1="7" x2="12.5" y2="7" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔═══════════════════════════════╗ -->
+  <!-- ║  SCREENSHOT 3 — Hotel Options ║ -->
+  <!-- ╚═══════════════════════════════╝ -->
+  <div class="screenshot-wrap">
+    <div class="caption">
+      <h2>Три варианта отеля</h2>
+      <p>Бюджетный, стандарт или люкс — выбираешь ты.</p>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-inner">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="0.5"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm0-3.8c1.7 0 3.2.7 4.3 1.8l1.4-1.4A9 9 0 0 0 8 4a9 9 0 0 0-5.7 2.1l1.4 1.4A6.4 6.4 0 0 1 8 5.7zm0-3.9c2.7 0 5.1 1.1 6.9 2.9l1.4-1.4A12.5 12.5 0 0 0 8 0C5.3 0 2.8 1 .8 2.7l1.4 1.4A10.2 10.2 0 0 1 8 1.8z"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-width="1" fill="none" opacity="0.5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><path d="M22.5 4v4a2 2 0 0 0 0-4z" fill="white" opacity="0.5"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div class="chat-bg-blur" style="background:rgba(0,180,216,0.15);bottom:120px;right:-40px;"></div>
+          <div class="app-header">
+            <div class="brand">
+              <svg class="brand-icon" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="13" stroke="#6C63FF" stroke-width="1.5"/><circle cx="15" cy="15" r="2" fill="#6C63FF"/><line x1="15" y1="2" x2="15" y2="6" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="24" x2="15" y2="28" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="15" x2="6" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="24" y1="15" x2="28" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><path d="M15 8 C12 10, 10 12, 10 15 C10 18, 12 20, 15 22 C18 20, 20 18, 20 15 C20 12, 18 10, 15 8Z" stroke="#6C63FF" stroke-width="1.2" fill="none"/></svg>
+              <span class="brand-name">SVIT</span>
+            </div>
+            <div class="header-icon-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/><circle cx="8" cy="7" r="2.5" fill="rgba(255,255,255,0.6)"/><path d="M3.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          </div>
+          <div class="chat-area">
+            <div style="text-align:center;font-size:10.5px;color:rgba(255,255,255,0.25);padding:2px 0 4px;">Сегодня</div>
+            <div class="msg-user" style="font-size:12px;">Рейс Wizz Air выбрал. Теперь отель</div>
+            <div class="msg-ai">
+              <div class="msg-ai-avatar">
+                <svg width="14" height="14" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="13" stroke="white" stroke-width="1.5"/><circle cx="15" cy="15" r="2" fill="white"/><line x1="15" y1="2" x2="15" y2="6" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="24" x2="15" y2="28" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="15" x2="6" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="24" y1="15" x2="28" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div class="msg-ai-bubble" style="width:100%;">
+                <div style="margin-bottom:10px;color:rgba(255,255,255,0.75);">Три варианта под твой бюджет:</div>
+
+                <div class="hotel-card">
+                  <div class="hotel-tier tier-budget">💸 Бюджет</div>
+                  <div class="hotel-name">Generator Barcelona</div>
+                  <div class="hotel-stars">★★★</div>
+                  <div class="hotel-price">€28/ночь · 5 ночей = €140</div>
+                  <div class="hotel-loc">Gracia · центр города</div>
+                </div>
+
+                <div class="hotel-card" style="border-color:rgba(255,179,71,0.3);background:rgba(255,179,71,0.07);">
+                  <div class="hotel-tier tier-mid">⚖️ Стандарт</div>
+                  <div class="hotel-name">Catalonia Ramblas</div>
+                  <div class="hotel-stars">★★★★</div>
+                  <div class="hotel-price">€95/ночь · 5 ночей = €475</div>
+                  <div class="hotel-loc">Las Ramblas · топ локация</div>
+                </div>
+
+                <div class="hotel-card" style="border-color:rgba(232,121,249,0.3);background:rgba(232,121,249,0.06);">
+                  <div class="hotel-tier tier-lux">👑 Люкс</div>
+                  <div class="hotel-name">Hotel Arts Barcelona</div>
+                  <div class="hotel-stars">★★★★★</div>
+                  <div class="hotel-price">€180/ночь · 5 ночей = €900</div>
+                  <div class="hotel-loc">Порт Олимпик · вид на море</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-bar">
+            <div class="chat-input-inner">
+              <span class="chat-input-placeholder">Выбери вариант или напиши...</span>
+              <div class="input-icon-btn input-icon-mic"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4.5" y="1" width="5" height="8" rx="2.5" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/><path d="M2 7.5a5 5 0 0 0 10 0" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/><line x1="7" y1="12.5" x2="7" y2="14" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+              <div class="input-icon-btn input-icon-send"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12.5 7 L2 2 L4.5 7 L2 12 Z" fill="white"/><line x1="4.5" y1="7" x2="12.5" y2="7" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔═══════════════════════════════╗ -->
+  <!-- ║  SCREENSHOT 4 — Day Schedule  ║ -->
+  <!-- ╚═══════════════════════════════╝ -->
+  <div class="screenshot-wrap">
+    <div class="caption">
+      <h2>Маршрут на каждый день</h2>
+      <p>AI составит план активностей под твой стиль.</p>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-inner">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="0.5"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm0-3.8c1.7 0 3.2.7 4.3 1.8l1.4-1.4A9 9 0 0 0 8 4a9 9 0 0 0-5.7 2.1l1.4 1.4A6.4 6.4 0 0 1 8 5.7zm0-3.9c2.7 0 5.1 1.1 6.9 2.9l1.4-1.4A12.5 12.5 0 0 0 8 0C5.3 0 2.8 1 .8 2.7l1.4 1.4A10.2 10.2 0 0 1 8 1.8z"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-width="1" fill="none" opacity="0.5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><path d="M22.5 4v4a2 2 0 0 0 0-4z" fill="white" opacity="0.5"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div class="chat-bg-blur" style="background:rgba(108,99,255,0.18);top:-30px;left:-30px;"></div>
+          <div class="app-header">
+            <div class="brand">
+              <svg class="brand-icon" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="13" stroke="#6C63FF" stroke-width="1.5"/><circle cx="15" cy="15" r="2" fill="#6C63FF"/><line x1="15" y1="2" x2="15" y2="6" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="24" x2="15" y2="28" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="15" x2="6" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="24" y1="15" x2="28" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><path d="M15 8 C12 10, 10 12, 10 15 C10 18, 12 20, 15 22 C18 20, 20 18, 20 15 C20 12, 18 10, 15 8Z" stroke="#6C63FF" stroke-width="1.2" fill="none"/></svg>
+              <span class="brand-name">SVIT</span>
+            </div>
+            <div class="header-icon-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/><circle cx="8" cy="7" r="2.5" fill="rgba(255,255,255,0.6)"/><path d="M3.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          </div>
+          <div class="chat-area">
+            <div style="text-align:center;font-size:10.5px;color:rgba(255,255,255,0.25);padding:2px 0 4px;">Сегодня</div>
+            <div class="msg-user" style="font-size:12px;">Составь план на каждый день</div>
+            <div class="msg-ai">
+              <div class="msg-ai-avatar">
+                <svg width="14" height="14" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="13" stroke="white" stroke-width="1.5"/><circle cx="15" cy="15" r="2" fill="white"/><line x1="15" y1="2" x2="15" y2="6" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="24" x2="15" y2="28" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="15" x2="6" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="24" y1="15" x2="28" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div class="msg-ai-bubble" style="width:100%;">
+                <div class="day-plan">
+                  <div class="day-plan-header">📅 День 1 — Прибытие</div>
+                  <div class="plan-item">
+                    <span class="plan-time">15:00</span>
+                    <span class="plan-text">🏖️ <strong style="color:white;">Барселонета</strong><br/><span style="font-size:11px;color:rgba(255,255,255,0.5);">Пляж · 20 мин от отеля</span></span>
+                  </div>
+                  <div class="plan-item">
+                    <span class="plan-time">18:00</span>
+                    <span class="plan-text">🏛️ <strong style="color:white;">Квартал Готика</strong><br/><span style="font-size:11px;color:rgba(255,255,255,0.5);">Пешая прогулка · бесплатно</span></span>
+                  </div>
+                  <div class="plan-item">
+                    <span class="plan-time">20:00</span>
+                    <span class="plan-text">🍷 <strong style="color:white;">Ужин на Las Ramblas</strong><br/><span style="font-size:11px;color:rgba(255,255,255,0.5);">Средний чек €20–30</span></span>
+                  </div>
+                  <div class="plan-tip">
+                    💡 Совет: купи карту T-10 в метро — €11.35 на 10 поездок. Удобно для всей поездки.
+                  </div>
+                  <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);">
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);">Хочешь план на День 2? Нажми ниже</div>
+                    <div style="display:flex;gap:8px;margin-top:6px;">
+                      <div style="background:rgba(108,99,255,0.25);border:1px solid rgba(108,99,255,0.4);border-radius:8px;padding:6px 10px;font-size:11px;color:#6C63FF;font-weight:600;">День 2</div>
+                      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 10px;font-size:11px;color:rgba(255,255,255,0.4);">День 3</div>
+                      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 10px;font-size:11px;color:rgba(255,255,255,0.4);">День 4</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-bar">
+            <div class="chat-input-inner">
+              <span class="chat-input-placeholder">Написать сообщение...</span>
+              <div class="input-icon-btn input-icon-mic"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4.5" y="1" width="5" height="8" rx="2.5" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/><path d="M2 7.5a5 5 0 0 0 10 0" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/><line x1="7" y1="12.5" x2="7" y2="14" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+              <div class="input-icon-btn input-icon-send"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12.5 7 L2 2 L4.5 7 L2 12 Z" fill="white"/><line x1="4.5" y1="7" x2="12.5" y2="7" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔═══════════════════════════════╗ -->
+  <!-- ║  SCREENSHOT 5 — Booking       ║ -->
+  <!-- ╚═══════════════════════════════╝ -->
+  <div class="screenshot-wrap">
+    <div class="caption">
+      <h2>Один тап — и забронировано</h2>
+      <p>Рейс и отель оплачены прямо в чате. Без форм.</p>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-inner">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="0.5"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm0-3.8c1.7 0 3.2.7 4.3 1.8l1.4-1.4A9 9 0 0 0 8 4a9 9 0 0 0-5.7 2.1l1.4 1.4A6.4 6.4 0 0 1 8 5.7zm0-3.9c2.7 0 5.1 1.1 6.9 2.9l1.4-1.4A12.5 12.5 0 0 0 8 0C5.3 0 2.8 1 .8 2.7l1.4 1.4A10.2 10.2 0 0 1 8 1.8z"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-width="1" fill="none" opacity="0.5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><path d="M22.5 4v4a2 2 0 0 0 0-4z" fill="white" opacity="0.5"/></svg>
+          </div>
+        </div>
+        <div class="screen-content" style="position:relative;">
+          <!-- Background chat (dimmed) -->
+          <div class="app-header" style="opacity:0.4;">
+            <div class="brand">
+              <svg class="brand-icon" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="13" stroke="#6C63FF" stroke-width="1.5"/><circle cx="15" cy="15" r="2" fill="#6C63FF"/><line x1="15" y1="2" x2="15" y2="6" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="24" x2="15" y2="28" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="15" x2="6" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><line x1="24" y1="15" x2="28" y2="15" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/><path d="M15 8 C12 10, 10 12, 10 15 C10 18, 12 20, 15 22 C18 20, 20 18, 20 15 C20 12, 18 10, 15 8Z" stroke="#6C63FF" stroke-width="1.2" fill="none"/></svg>
+              <span class="brand-name">SVIT</span>
+            </div>
+          </div>
+          <div style="padding:12px 16px;opacity:0.35;flex:1;">
+            <div class="msg-user" style="max-width:85%;font-size:12px;">Generator Barcelona выбрал. Бронируй оба!</div>
+          </div>
+
+          <!-- Dim overlay -->
+          <div class="dim-overlay"></div>
+
+          <!-- Bottom sheet -->
+          <div class="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-title">Подтвердить бронирование</div>
+
+            <div class="sheet-row">
+              <span class="sheet-row-label">✈️ WAW → BCN · Wizz Air</span>
+              <span class="sheet-row-val">€67</span>
+            </div>
+            <div class="sheet-row">
+              <span class="sheet-row-label">🏨 Generator Barcelona · 2 ночи</span>
+              <span class="sheet-row-val">€56</span>
+            </div>
+            <div class="sheet-row">
+              <span class="sheet-row-label">🛡️ Страховка поездки</span>
+              <span class="sheet-row-val" style="color:rgba(255,255,255,0.4);">+ €12</span>
+            </div>
+            <div class="sheet-total">
+              <span class="sheet-total-label">Итого</span>
+              <span class="sheet-total-price">€135</span>
+            </div>
+
+            <div class="btn-book" style="border-radius:14px;padding:13px 0;font-size:14px;font-weight:700;margin-top:16px;">
+              Оплатить картой
+            </div>
+            <div class="btn-pay-alt">₿ Оплатить криптовалютой</div>
+            <div class="sheet-note">Бронирование через защищённых партнёров · SSL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SCREENSHOT 6 — Trip History ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="screenshot-wrap">
+    <div class="caption">
+      <h2>Все поездки в одном месте</h2>
+      <p>Брони, маршруты и документы — всегда под рукой.</p>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-inner">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="0.5"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm0-3.8c1.7 0 3.2.7 4.3 1.8l1.4-1.4A9 9 0 0 0 8 4a9 9 0 0 0-5.7 2.1l1.4 1.4A6.4 6.4 0 0 1 8 5.7zm0-3.9c2.7 0 5.1 1.1 6.9 2.9l1.4-1.4A12.5 12.5 0 0 0 8 0C5.3 0 2.8 1 .8 2.7l1.4 1.4A10.2 10.2 0 0 1 8 1.8z"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-width="1" fill="none" opacity="0.5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><path d="M22.5 4v4a2 2 0 0 0 0-4z" fill="white" opacity="0.5"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div class="page-header">
+            <div class="page-header-title">Мои поездки</div>
+            <div class="page-header-sub">3 завершённых · 1 предстоящая</div>
+          </div>
+          <div class="trips-body">
+            <!-- Upcoming -->
+            <div class="trips-section-label" style="margin-top:4px;">Предстоящие</div>
+            <div class="trip-card" style="border-color:rgba(108,99,255,0.4);background:rgba(108,99,255,0.1);">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+                <div class="trip-city">📍 Барселона</div>
+                <div style="background:rgba(108,99,255,0.3);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:600;color:#6C63FF;">Скоро</div>
+              </div>
+              <div class="trip-dates">15 – 20 июня 2026 · 5 ночей</div>
+              <div class="trip-details">✈️ Wizz Air · 🏨 Generator Barcelona</div>
+              <div class="trip-actions">
+                <div class="btn-trip-sm">Маршрут</div>
+                <div class="btn-trip-sm">Документы</div>
+                <div class="btn-trip-sm" style="background:rgba(255,179,71,0.15);border-color:rgba(255,179,71,0.35);color:#FFB347;">Заметки</div>
+              </div>
+            </div>
+
+            <!-- Past -->
+            <div class="trips-section-label" style="margin-top:12px;">Завершённые</div>
+            <div class="trip-card">
+              <div class="trip-city">📍 Дубай</div>
+              <div class="trip-dates">3 – 8 марта 2026 · 5 ночей</div>
+              <div class="trip-details">✈️ Emirates · 🏨 Atlantis The Palm</div>
+              <div class="trip-actions">
+                <div class="btn-trip-sm">Маршрут</div>
+                <div class="btn-trip-sm">Документы</div>
+              </div>
+            </div>
+            <div class="trip-card">
+              <div class="trip-city">📍 Стамбул</div>
+              <div class="trip-dates">10 – 14 янв 2026 · 4 ночи</div>
+              <div class="trip-details">✈️ Turkish Airlines · 🏨 Grand Hyatt</div>
+              <div class="trip-actions">
+                <div class="btn-trip-sm">Маршрут</div>
+                <div class="btn-trip-sm">Документы</div>
+              </div>
+            </div>
+          </div>
+          <!-- Tab bar -->
+          <div class="tab-bar">
+            <div class="tab-item">
+              <div class="tab-icon">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                  <path d="M3 11 L11 4 L19 11 V19 H14 V14 H8 V19 H3 Z" stroke="rgba(255,255,255,0.35)" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="tab-label">Чат</span>
+            </div>
+            <div class="tab-item active">
+              <div class="tab-icon">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                  <rect x="3" y="4" width="16" height="15" rx="2" stroke="#6C63FF" stroke-width="1.4"/>
+                  <line x1="7" y1="2" x2="7" y2="6" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/>
+                  <line x1="15" y1="2" x2="15" y2="6" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/>
+                  <line x1="3" y1="9" x2="19" y2="9" stroke="#6C63FF" stroke-width="1.2"/>
+                  <rect x="6" y="12" width="4" height="3" rx="0.5" fill="#6C63FF" opacity="0.7"/>
+                </svg>
+              </div>
+              <span class="tab-label" style="color:#6C63FF;">Поездки</span>
+            </div>
+            <div class="tab-item">
+              <div class="tab-icon">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                  <circle cx="11" cy="8" r="3.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.4"/>
+                  <path d="M4 19c0-4 3-6 7-6s7 2 7 6" stroke="rgba(255,255,255,0.35)" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="tab-label">Профиль</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SCREENSHOT 7 — Payment      ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="screenshot-wrap">
+    <div class="caption">
+      <h2>Платишь как удобно</h2>
+      <p>Карта, Мир, криптовалюта — выбирай любой способ.</p>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-inner">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="0.5"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm0-3.8c1.7 0 3.2.7 4.3 1.8l1.4-1.4A9 9 0 0 0 8 4a9 9 0 0 0-5.7 2.1l1.4 1.4A6.4 6.4 0 0 1 8 5.7zm0-3.9c2.7 0 5.1 1.1 6.9 2.9l1.4-1.4A12.5 12.5 0 0 0 8 0C5.3 0 2.8 1 .8 2.7l1.4 1.4A10.2 10.2 0 0 1 8 1.8z"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-width="1" fill="none" opacity="0.5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><path d="M22.5 4v4a2 2 0 0 0 0-4z" fill="white" opacity="0.5"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div class="payment-header">
+            <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
+              <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.2);display:flex;align-items:center;justify-content:center;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="#6C63FF" stroke-width="1.2"/><line x1="1" y1="6" x2="13" y2="6" stroke="#6C63FF" stroke-width="1.2"/><rect x="3" y="8.5" width="3" height="1.5" rx="0.5" fill="#6C63FF" opacity="0.6"/></svg>
+              </div>
+              <span class="payment-header-title">Способ оплаты</span>
+            </div>
+          </div>
+          <div class="payment-body">
+            <!-- Summary block -->
+            <div class="payment-summary">
+              <div class="payment-summary-left">
+                ✈️ WAW → BCN<br/>
+                🏨 Generator · 2 ночи
+              </div>
+              <div class="payment-summary-right">€123</div>
+            </div>
+
+            <div class="pay-section-title">Выбери способ</div>
+
+            <!-- Visa/Mastercard — selected -->
+            <div class="pay-method selected">
+              <div class="pay-method-icon">💳</div>
+              <div>
+                <div class="pay-method-name">Visa / Mastercard</div>
+                <div class="pay-method-desc">Международная карта</div>
+              </div>
+              <div class="pay-method-radio"></div>
+            </div>
+
+            <!-- Mir -->
+            <div class="pay-method">
+              <div class="pay-method-icon">🏦</div>
+              <div>
+                <div class="pay-method-name">Карта Мир</div>
+                <div class="pay-method-desc">Российская национальная карта</div>
+              </div>
+              <div class="pay-method-radio"></div>
+            </div>
+
+            <!-- Bitcoin -->
+            <div class="pay-method">
+              <div class="pay-method-icon">₿</div>
+              <div>
+                <div class="pay-method-name">Bitcoin / USDT</div>
+                <div class="pay-method-desc">Криптовалюта · мгновенно</div>
+              </div>
+              <div class="pay-method-radio"></div>
+            </div>
+
+            <!-- Crypto wallet -->
+            <div class="pay-method">
+              <div class="pay-method-icon" style="font-size:16px;">💜</div>
+              <div>
+                <div class="pay-method-name">Криптокошелёк</div>
+                <div class="pay-method-desc">MetaMask, Trust Wallet и др.</div>
+              </div>
+              <div class="pay-method-radio"></div>
+            </div>
+          </div>
+
+          <div class="payment-footer">
+            <div class="btn-book" style="border-radius:14px;padding:14px 0;font-size:15px;font-weight:700;">
+              Оплатить €123
+            </div>
+            <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.25);margin-top:8px;">
+              🔒 Защищённое соединение · PCI DSS Level 1
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /screenshots-grid -->
+
+<div style="text-align:center;margin-top:60px;padding-top:32px;border-top:1px solid #E2E4EE;">
+  <div style="font-size:13px;color:#94A3B8;margin-bottom:4px;">SVIT · AI Travel Assistant · App Store Screenshots</div>
+  <div style="font-size:11px;color:#CBD5E1;">iPhone 14 · 390×844pt · Dark Mode · v1.0</div>
+</div>
+
+</body>
+</html>

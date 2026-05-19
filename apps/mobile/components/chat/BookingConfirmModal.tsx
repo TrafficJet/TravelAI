@@ -9,11 +9,11 @@ import {
   Alert,
 } from 'react-native';
 import { router } from 'expo-router';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { sendBookingConfirmation } from '../../services/notifications.service';
 import { analytics, Events } from '../../src/analytics';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { BookingDraft, FlightDetails } from '../../types';
 
 interface Props {
@@ -27,6 +27,7 @@ interface Props {
 }
 
 function BookingDetails({ booking }: { booking: BookingDraft }) {
+  const { colors } = useTheme();
   // summary приходит с бэкенда как fallback, если детали не распознаны
   const summary = booking.summary;
 
@@ -41,38 +42,38 @@ function BookingDetails({ booking }: { booking: BookingDraft }) {
     const passengers = details?.passengers || details?.passengerCount || 1;
 
     return (
-      <View style={styles.detailsSection}>
-        <Text style={styles.detailTitle}>Авиабилет</Text>
+      <View style={[detailStyles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[detailStyles.title, { color: colors.primary }]}>Авиабилет</Text>
         {summary && (
-          <Text style={styles.detailValue}>{summary.title}</Text>
+          <Text style={[detailStyles.value, { color: colors.text }]}>{summary.title}</Text>
         )}
         {origin && destination ? (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Маршрут</Text>
-            <Text style={styles.detailValue}>{origin} → {destination}</Text>
+          <View style={detailStyles.row}>
+            <Text style={[detailStyles.label, { color: colors.textMuted }]}>Маршрут</Text>
+            <Text style={[detailStyles.value, { color: colors.text }]}>{origin} → {destination}</Text>
           </View>
         ) : null}
         {airline ? (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Авиакомпания</Text>
-            <Text style={styles.detailValue}>{airline}</Text>
+          <View style={detailStyles.row}>
+            <Text style={[detailStyles.label, { color: colors.textMuted }]}>Авиакомпания</Text>
+            <Text style={[detailStyles.value, { color: colors.text }]}>{airline}</Text>
           </View>
         ) : null}
         {flightNumber ? (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Рейс</Text>
-            <Text style={styles.detailValue}>{flightNumber}</Text>
+          <View style={detailStyles.row}>
+            <Text style={[detailStyles.label, { color: colors.textMuted }]}>Рейс</Text>
+            <Text style={[detailStyles.value, { color: colors.text }]}>{flightNumber}</Text>
           </View>
         ) : null}
         {departure ? (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Дата вылета</Text>
-            <Text style={styles.detailValue}>{new Date(departure).toLocaleDateString('ru-RU')}</Text>
+          <View style={detailStyles.row}>
+            <Text style={[detailStyles.label, { color: colors.textMuted }]}>Дата вылета</Text>
+            <Text style={[detailStyles.value, { color: colors.text }]}>{new Date(departure).toLocaleDateString('ru-RU')}</Text>
           </View>
         ) : null}
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Пассажиры</Text>
-          <Text style={styles.detailValue}>{passengers}</Text>
+        <View style={detailStyles.row}>
+          <Text style={[detailStyles.label, { color: colors.textMuted }]}>Пассажиры</Text>
+          <Text style={[detailStyles.value, { color: colors.text }]}>{passengers}</Text>
         </View>
       </View>
     );
@@ -87,37 +88,69 @@ function BookingDetails({ booking }: { booking: BookingDraft }) {
   const rooms = details?.rooms || 1;
 
   return (
-    <View style={styles.detailsSection}>
-      <Text style={styles.detailTitle}>Отель</Text>
-      <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>Название</Text>
-        <Text style={styles.detailValue}>{hotelName}</Text>
+    <View style={[detailStyles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <Text style={[detailStyles.title, { color: colors.primary }]}>Отель</Text>
+      <View style={detailStyles.row}>
+        <Text style={[detailStyles.label, { color: colors.textMuted }]}>Название</Text>
+        <Text style={[detailStyles.value, { color: colors.text }]}>{hotelName}</Text>
       </View>
       {address ? (
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Адрес</Text>
-          <Text style={styles.detailValue}>{address}</Text>
+        <View style={detailStyles.row}>
+          <Text style={[detailStyles.label, { color: colors.textMuted }]}>Адрес</Text>
+          <Text style={[detailStyles.value, { color: colors.text }]}>{address}</Text>
         </View>
       ) : null}
       {checkIn ? (
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Заезд</Text>
-          <Text style={styles.detailValue}>{new Date(checkIn).toLocaleDateString('ru-RU')}</Text>
+        <View style={detailStyles.row}>
+          <Text style={[detailStyles.label, { color: colors.textMuted }]}>Заезд</Text>
+          <Text style={[detailStyles.value, { color: colors.text }]}>{new Date(checkIn).toLocaleDateString('ru-RU')}</Text>
         </View>
       ) : null}
       {checkOut ? (
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Выезд</Text>
-          <Text style={styles.detailValue}>{new Date(checkOut).toLocaleDateString('ru-RU')}</Text>
+        <View style={detailStyles.row}>
+          <Text style={[detailStyles.label, { color: colors.textMuted }]}>Выезд</Text>
+          <Text style={[detailStyles.value, { color: colors.text }]}>{new Date(checkOut).toLocaleDateString('ru-RU')}</Text>
         </View>
       ) : null}
-      <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>Номеров</Text>
-        <Text style={styles.detailValue}>{rooms}</Text>
+      <View style={detailStyles.row}>
+        <Text style={[detailStyles.label, { color: colors.textMuted }]}>Номеров</Text>
+        <Text style={[detailStyles.value, { color: colors.text }]}>{rooms}</Text>
       </View>
     </View>
   );
 }
+
+const detailStyles = StyleSheet.create({
+  section: {
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 16,
+    borderWidth: 1,
+  },
+  title: {
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 1,
+    marginBottom: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  label: {
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.sm,
+  },
+  value: {
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.medium,
+    maxWidth: '60%',
+    textAlign: 'right',
+  },
+});
 
 export function BookingConfirmModal({
   visible,
@@ -128,6 +161,7 @@ export function BookingConfirmModal({
   onCancel,
   isWalletLoading,
 }: Props) {
+  const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const hasEnoughBalance = walletBalance >= booking.totalPrice;
 
@@ -178,28 +212,29 @@ export function BookingConfirmModal({
       animationType="slide"
       onRequestClose={onCancel}
     >
-      <View style={styles.overlay}>
-        <View style={styles.sheet}>
-          <View style={styles.handle} />
+      <View style={[staticStyles.overlay, { backgroundColor: 'rgba(0,0,0,0.6)' }]}>
+        <View style={[staticStyles.sheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={[staticStyles.handle, { backgroundColor: colors.border }]} />
 
-          <Text style={styles.title}>Подтверждение брони</Text>
-          <Text style={styles.provider}>Провайдер: {booking.provider}</Text>
+          <Text style={[staticStyles.title, { color: colors.text }]}>Подтверждение брони</Text>
+          <Text style={[staticStyles.provider, { color: colors.textMuted }]}>Провайдер: {booking.provider}</Text>
 
           <BookingDetails booking={booking} />
 
-          <View style={styles.priceSection}>
-            <View style={styles.priceRow}>
-              <Text style={styles.priceLabel}>Итого к оплате</Text>
-              <Text style={styles.priceValue}>
+          <View style={staticStyles.priceSection}>
+            <View style={staticStyles.priceRow}>
+              <Text style={[staticStyles.priceLabel, { color: colors.text }]}>Итого к оплате</Text>
+              <Text style={[staticStyles.priceValue, { color: colors.text }]}>
                 {booking.totalPrice.toLocaleString('ru-RU')} {booking.currency}
               </Text>
             </View>
-            <View style={styles.priceRow}>
-              <Text style={styles.balanceLabel}>Баланс кошелька</Text>
+            <View style={staticStyles.priceRow}>
+              <Text style={[staticStyles.balanceLabel, { color: colors.textMuted }]}>Баланс кошелька</Text>
               <Text
                 style={[
-                  styles.balanceValue,
-                  !hasEnoughBalance && styles.balanceInsufficient,
+                  staticStyles.balanceValue,
+                  { color: colors.success },
+                  !hasEnoughBalance && { color: colors.error },
                 ]}
               >
                 {walletBalance.toLocaleString('ru-RU')} {walletCurrency}
@@ -207,23 +242,24 @@ export function BookingConfirmModal({
             </View>
           </View>
 
-          <View style={styles.actions}>
+          <View style={staticStyles.actions}>
             <TouchableOpacity
-              style={styles.cancelBtn}
+              style={[staticStyles.cancelBtn, { borderColor: colors.border }]}
               onPress={onCancel}
               disabled={isLoading}
             >
-              <Text style={styles.cancelText}>Отмена</Text>
+              <Text style={[staticStyles.cancelText, { color: colors.textMuted }]}>Отмена</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
-                styles.confirmBtn,
-                !hasEnoughBalance && styles.confirmBtnDisabled,
+                staticStyles.confirmBtn,
+                { backgroundColor: colors.primary },
+                !hasEnoughBalance && staticStyles.confirmBtnDisabled,
               ]}
               onPress={() => {
                 if (!hasEnoughBalance) {
                   onCancel();
-                  router.push('/wallet/topup' as any);
+                  router.push('/wallet/topup' as never);
                   return;
                 }
                 analytics.track(Events.BOOKING_STARTED, {
@@ -238,7 +274,7 @@ export function BookingConfirmModal({
               {isLoading || isWalletLoading ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <Text style={styles.confirmText}>
+                <Text style={staticStyles.confirmText}>
                   {hasEnoughBalance ? 'Оплатить' : 'Пополнить кошелёк'}
                 </Text>
               )}
@@ -250,75 +286,35 @@ export function BookingConfirmModal({
   );
 }
 
-const styles = StyleSheet.create({
+const staticStyles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: Colors.overlay,
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: Colors.surface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
     paddingBottom: 40,
     borderTopWidth: 1,
-    borderColor: Colors.border,
   },
   handle: {
     width: 40,
     height: 4,
-    backgroundColor: Colors.border,
     borderRadius: 2,
     alignSelf: 'center',
     marginBottom: 20,
   },
   title: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     marginBottom: 4,
   },
   provider: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: 20,
-  },
-  detailsSection: {
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  detailTitle: {
-    color: Colors.primary,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: 1,
-    marginBottom: 10,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 4,
-  },
-  detailLabel: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-  },
-  detailValue: {
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.medium,
-    maxWidth: '60%',
-    textAlign: 'right',
   },
   priceSection: {
     marginBottom: 24,
@@ -329,30 +325,23 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   priceLabel: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
   priceValue: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
   balanceLabel: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   balanceValue: {
-    color: Colors.success,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
-  },
-  balanceInsufficient: {
-    color: Colors.error,
   },
   actions: {
     flexDirection: 'row',
@@ -364,17 +353,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: Radius.buttonSm,
     borderWidth: 1.5,
-    borderColor: Colors.border,
   },
   cancelText: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
   confirmBtn: {
     flex: 2,
-    backgroundColor: Colors.primary,
     paddingVertical: 14,
     alignItems: 'center',
     borderRadius: Radius.buttonSm,
@@ -383,7 +369,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   confirmText: {
-    color: Colors.textInverse,
+    color: '#0A0A14',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,

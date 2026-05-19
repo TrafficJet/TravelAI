@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
 import { Typography } from '../../constants/typography';
 import { Spacing } from '../../constants/spacing';
 import { Radius } from '../../constants/radius';
@@ -29,6 +29,7 @@ export interface AuthModalProps {
 }
 
 export default function AuthModal({ visible, onClose, reason }: AuthModalProps) {
+  const { colors } = useTheme();
   const { login, register } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState<Tab>('login');
@@ -109,53 +110,53 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
       onRequestClose={handleClose}
     >
       <KeyboardAvoidingView
-        style={styles.flex}
+        style={staticStyles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.container}>
+        <View style={[staticStyles.container, { backgroundColor: colors.background }]}>
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Войдите в аккаунт</Text>
+          <View style={staticStyles.header}>
+            <Text style={[staticStyles.headerTitle, { color: colors.text }]}>Войдите в аккаунт</Text>
             <TouchableOpacity
               onPress={handleClose}
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              style={styles.closeBtn}
+              style={staticStyles.closeBtn}
             >
-              <Ionicons name="close" size={22} color={Colors.textMuted} />
+              <Ionicons name="close" size={22} color={colors.textMuted} />
             </TouchableOpacity>
           </View>
 
           {/* Reason banner */}
           {reason === 'booking' && (
-            <View style={styles.reasonBanner}>
-              <Ionicons name="information-circle-outline" size={16} color={Colors.primary} style={{ marginRight: 6 }} />
-              <Text style={styles.reasonBannerText}>Для бронирования нужен аккаунт</Text>
+            <View style={[staticStyles.reasonBanner, { backgroundColor: `${colors.primary}26`, borderColor: colors.primary }]}>
+              <Ionicons name="information-circle-outline" size={16} color={colors.primary} style={{ marginRight: 6 }} />
+              <Text style={[staticStyles.reasonBannerText, { color: colors.primary }]}>Для бронирования нужен аккаунт</Text>
             </View>
           )}
 
           <ScrollView
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={staticStyles.scrollContent}
           >
             {/* Tabs */}
-            <View style={styles.tabRow}>
+            <View style={[staticStyles.tabRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'login' && styles.tabActive]}
+                style={[staticStyles.tab, activeTab === 'login' && { backgroundColor: colors.primary }]}
                 onPress={() => { setActiveTab('login'); setLoginError(''); setRegError(''); }}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.tabText, activeTab === 'login' && styles.tabTextActive]}>
+                <Text style={[staticStyles.tabText, { color: activeTab === 'login' ? '#0A0A14' : colors.textMuted }]}>
                   Войти
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'register' && styles.tabActive]}
+                style={[staticStyles.tab, activeTab === 'register' && { backgroundColor: colors.primary }]}
                 onPress={() => { setActiveTab('register'); setLoginError(''); setRegError(''); }}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.tabText, activeTab === 'register' && styles.tabTextActive]}>
+                <Text style={[staticStyles.tabText, { color: activeTab === 'register' ? '#0A0A14' : colors.textMuted }]}>
                   Регистрация
                 </Text>
               </TouchableOpacity>
@@ -163,14 +164,14 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
 
             {/* Login form */}
             {activeTab === 'login' && (
-              <View style={styles.form}>
-                <Text style={styles.inputLabel}>Email</Text>
+              <View style={staticStyles.form}>
+                <Text style={[staticStyles.inputLabel, { color: colors.textMuted }]}>Email</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[staticStyles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
                   value={loginEmail}
                   onChangeText={setLoginEmail}
                   placeholder="you@example.com"
-                  placeholderTextColor={Colors.textMuted}
+                  placeholderTextColor={colors.textMuted}
                   autoCapitalize="none"
                   keyboardType="email-address"
                   returnKeyType="next"
@@ -178,40 +179,40 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
                   editable={!isLoading}
                 />
 
-                <Text style={[styles.inputLabel, styles.mt14]}>Пароль</Text>
+                <Text style={[staticStyles.inputLabel, staticStyles.mt14, { color: colors.textMuted }]}>Пароль</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[staticStyles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
                   value={loginPassword}
                   onChangeText={setLoginPassword}
                   placeholder="••••••••"
-                  placeholderTextColor={Colors.textMuted}
+                  placeholderTextColor={colors.textMuted}
                   secureTextEntry
                   returnKeyType="done"
                   onSubmitEditing={handleLogin}
                   editable={!isLoading}
                 />
 
-                {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null}
+                {loginError ? <Text style={[staticStyles.errorText, { color: colors.error }]}>{loginError}</Text> : null}
 
                 <TouchableOpacity
-                  style={[styles.primaryBtn, loginLoading && styles.primaryBtnDisabled]}
+                  style={[staticStyles.primaryBtn, { backgroundColor: colors.primary }, loginLoading && staticStyles.primaryBtnDisabled]}
                   onPress={handleLogin}
                   disabled={loginLoading}
                   activeOpacity={0.85}
                 >
                   {loginLoading ? (
-                    <ActivityIndicator color={Colors.textInverse} size="small" />
+                    <ActivityIndicator color="#0A0A14" size="small" />
                   ) : (
-                    <Text style={styles.primaryBtnText}>Войти</Text>
+                    <Text style={staticStyles.primaryBtnText}>Войти</Text>
                   )}
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={handleForgotPassword}
                   activeOpacity={0.7}
-                  style={styles.forgotWrap}
+                  style={staticStyles.forgotWrap}
                 >
-                  <Text style={styles.forgotText}>Забыли пароль?</Text>
+                  <Text style={[staticStyles.forgotText, { color: colors.primary }]}>Забыли пароль?</Text>
                 </TouchableOpacity>
 
                 <SocialAuthButtons mode="login" />
@@ -220,26 +221,26 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
 
             {/* Register form */}
             {activeTab === 'register' && (
-              <View style={styles.form}>
-                <Text style={styles.inputLabel}>Имя</Text>
+              <View style={staticStyles.form}>
+                <Text style={[staticStyles.inputLabel, { color: colors.textMuted }]}>Имя</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[staticStyles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
                   value={regName}
                   onChangeText={setRegName}
                   placeholder="Иван Петров"
-                  placeholderTextColor={Colors.textMuted}
+                  placeholderTextColor={colors.textMuted}
                   autoCapitalize="words"
                   returnKeyType="next"
                   editable={!isLoading}
                 />
 
-                <Text style={[styles.inputLabel, styles.mt14]}>Email</Text>
+                <Text style={[staticStyles.inputLabel, staticStyles.mt14, { color: colors.textMuted }]}>Email</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[staticStyles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
                   value={regEmail}
                   onChangeText={setRegEmail}
                   placeholder="you@example.com"
-                  placeholderTextColor={Colors.textMuted}
+                  placeholderTextColor={colors.textMuted}
                   autoCapitalize="none"
                   keyboardType="email-address"
                   returnKeyType="next"
@@ -247,31 +248,31 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
                   editable={!isLoading}
                 />
 
-                <Text style={[styles.inputLabel, styles.mt14]}>Пароль</Text>
+                <Text style={[staticStyles.inputLabel, staticStyles.mt14, { color: colors.textMuted }]}>Пароль</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[staticStyles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
                   value={regPassword}
                   onChangeText={setRegPassword}
                   placeholder="••••••••"
-                  placeholderTextColor={Colors.textMuted}
+                  placeholderTextColor={colors.textMuted}
                   secureTextEntry
                   returnKeyType="done"
                   onSubmitEditing={handleRegister}
                   editable={!isLoading}
                 />
 
-                {regError ? <Text style={styles.errorText}>{regError}</Text> : null}
+                {regError ? <Text style={[staticStyles.errorText, { color: colors.error }]}>{regError}</Text> : null}
 
                 <TouchableOpacity
-                  style={[styles.primaryBtn, regLoading && styles.primaryBtnDisabled]}
+                  style={[staticStyles.primaryBtn, { backgroundColor: colors.primary }, regLoading && staticStyles.primaryBtnDisabled]}
                   onPress={handleRegister}
                   disabled={regLoading}
                   activeOpacity={0.85}
                 >
                   {regLoading ? (
-                    <ActivityIndicator color={Colors.textInverse} size="small" />
+                    <ActivityIndicator color="#0A0A14" size="small" />
                   ) : (
-                    <Text style={styles.primaryBtnText}>Создать аккаунт</Text>
+                    <Text style={staticStyles.primaryBtnText}>Создать аккаунт</Text>
                   )}
                 </TouchableOpacity>
 
@@ -281,11 +282,11 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
 
             {/* Continue without account */}
             <TouchableOpacity
-              style={styles.guestBtn}
+              style={[staticStyles.guestBtn, { borderColor: colors.border }]}
               onPress={handleClose}
               activeOpacity={0.75}
             >
-              <Text style={styles.guestBtnText}>Продолжить без аккаунта</Text>
+              <Text style={[staticStyles.guestBtnText, { color: colors.textMuted }]}>Продолжить без аккаунта</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -294,11 +295,10 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
   );
 }
 
-const styles = StyleSheet.create({
+const staticStyles = StyleSheet.create({
   flex: { flex: 1 },
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
     paddingBottom: 40,
@@ -310,7 +310,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   headerTitle: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
@@ -323,16 +322,13 @@ const styles = StyleSheet.create({
   reasonBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.primaryMuted,
     borderWidth: 1,
-    borderColor: Colors.primary,
     borderRadius: Radius.card,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     marginBottom: Spacing.md,
   },
   reasonBannerText: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
@@ -342,10 +338,8 @@ const styles = StyleSheet.create({
   // Tabs
   tabRow: {
     flexDirection: 'row',
-    backgroundColor: Colors.card,
     borderRadius: Radius.button,
     borderWidth: 1,
-    borderColor: Colors.border,
     marginBottom: Spacing.lg,
     overflow: 'hidden',
   },
@@ -354,17 +348,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
   },
-  tabActive: {
-    backgroundColor: Colors.primary,
-  },
   tabText: {
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
-    color: Colors.textMuted,
-  },
-  tabTextActive: {
-    color: Colors.textInverse,
   },
 
   // Scroll content
@@ -377,7 +364,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   inputLabel: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
@@ -387,20 +373,16 @@ const styles = StyleSheet.create({
   },
   mt14: { marginTop: 14 },
   input: {
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: Radius.input,
     paddingHorizontal: Spacing.md,
     paddingVertical: 14,
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
   },
 
   // Error
   errorText: {
-    color: Colors.error,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginTop: Spacing.sm,
@@ -408,7 +390,6 @@ const styles = StyleSheet.create({
 
   // Primary button
   primaryBtn: {
-    backgroundColor: Colors.primary,
     paddingVertical: Spacing.md,
     borderRadius: Radius.button,
     alignItems: 'center',
@@ -418,7 +399,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   primaryBtnText: {
-    color: Colors.textInverse,
+    color: '#0A0A14',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
@@ -431,7 +412,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   forgotText: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
@@ -442,12 +422,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: Radius.button,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
     marginTop: Spacing.sm,
   },
   guestBtnText: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,

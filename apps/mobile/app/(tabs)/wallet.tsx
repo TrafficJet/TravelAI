@@ -18,12 +18,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useWalletStore } from '../../stores/walletStore';
 import { SkeletonWalletCard, Skeleton } from '../../components/ui/Skeleton';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
 import { toast } from '../../lib/toast';
 import { sendPaymentConfirmation } from '../../services/notifications.service';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { WalletTransaction, TransactionType } from '../../types';
 
 // ── Transaction filter tabs ───────────────────────────────────────────────────
@@ -67,8 +67,9 @@ interface TransactionItemProps {
 }
 
 function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
+  const { colors } = useTheme();
   const isIncoming = transaction.type === 'TOPUP';
-  const amountColor = isIncoming ? Colors.success : Colors.error;
+  const amountColor = isIncoming ? colors.success : colors.error;
   const amountPrefix = isIncoming ? '+' : '-';
   const currencySymbol = CURRENCY_SYMBOLS[transaction.currency] ?? transaction.currency;
 
@@ -82,13 +83,20 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
   }
 
   return (
-    <View style={txStyles.row}>
-      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: isIncoming ? Colors.successLight : Colors.errorLight, alignItems: 'center', justifyContent: 'center' }}>
-        <Ionicons name={getTransactionIconName(transaction.type, transaction.description)} size={18} color={isIncoming ? Colors.success : Colors.error} />
+    <View style={[txStyles.row, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={{
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: isIncoming ? `${colors.success}20` : `${colors.error}15`,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <Ionicons name={getTransactionIconName(transaction.type, transaction.description)} size={18} color={isIncoming ? colors.success : colors.error} />
       </View>
       <View style={txStyles.info}>
-        <Text style={txStyles.label} numberOfLines={1}>{transaction.description}</Text>
-        <Text style={txStyles.date}>{formatDate(transaction.createdAt)}</Text>
+        <Text style={[txStyles.label, { color: colors.text }]} numberOfLines={1}>{transaction.description}</Text>
+        <Text style={[txStyles.date, { color: colors.textMuted }]}>{formatDate(transaction.createdAt)}</Text>
       </View>
       <Text style={[txStyles.amount, { color: amountColor }]}>
         {amountPrefix}
@@ -109,40 +117,20 @@ const txStyles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.sm,
-    backgroundColor: Colors.card,
     borderRadius: Radius.card,
     borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  iconEmoji: {
-    fontSize: 20,
-  },
-  signText: {
-    fontFamily: 'Inter',
-    fontSize: 22,
-    fontWeight: Typography.weights.bold,
-    lineHeight: 26,
   },
   info: {
     flex: 1,
     marginRight: Spacing.sm,
+    marginLeft: 10,
   },
   label: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
   },
   date: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginTop: 2,
@@ -164,6 +152,7 @@ interface TopUpModalProps {
 }
 
 function TopUpModal({ visible, onClose }: TopUpModalProps) {
+  const { colors } = useTheme();
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { topup, load } = useWalletStore();
@@ -223,22 +212,22 @@ function TopUpModal({ visible, onClose }: TopUpModalProps) {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <TouchableOpacity style={modalStyles.backdrop} activeOpacity={1} onPress={handleClose} />
-        <View style={modalStyles.sheet}>
+        <View style={[modalStyles.sheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           {/* Handle */}
-          <View style={modalStyles.handle} />
+          <View style={[modalStyles.handle, { backgroundColor: colors.border }]} />
 
-          <Text style={modalStyles.title}>Пополнение кошелька</Text>
+          <Text style={[modalStyles.title, { color: colors.text }]}>Пополнение кошелька</Text>
 
           {/* Amount input */}
-          <Text style={modalStyles.label}>Сумма</Text>
-          <View style={modalStyles.inputWrapper}>
-            <Text style={modalStyles.currencyPrefix}>$</Text>
+          <Text style={[modalStyles.label, { color: colors.textMuted }]}>Сумма</Text>
+          <View style={[modalStyles.inputWrapper, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[modalStyles.currencyPrefix, { color: colors.textMuted }]}>$</Text>
             <TextInput
               value={amount}
               onChangeText={(v) => setAmount(v.replace(/[^0-9.]/g, ''))}
               placeholder="0.00"
-              placeholderTextColor={Colors.textMuted}
-              style={modalStyles.input}
+              placeholderTextColor={colors.textMuted}
+              style={[modalStyles.input, { color: colors.text }]}
               keyboardType="decimal-pad"
               maxLength={10}
               autoFocus
@@ -252,7 +241,8 @@ function TopUpModal({ visible, onClose }: TopUpModalProps) {
                 key={preset}
                 style={[
                   modalStyles.presetBtn,
-                  Number(amount) === preset && modalStyles.presetBtnActive,
+                  { backgroundColor: colors.card, borderColor: colors.border },
+                  Number(amount) === preset && { backgroundColor: `${colors.primary}20`, borderColor: colors.primary },
                 ]}
                 onPress={() => handlePreset(preset)}
                 activeOpacity={0.7}
@@ -260,7 +250,8 @@ function TopUpModal({ visible, onClose }: TopUpModalProps) {
                 <Text
                   style={[
                     modalStyles.presetText,
-                    Number(amount) === preset && modalStyles.presetTextActive,
+                    { color: colors.text },
+                    Number(amount) === preset && { color: colors.primary },
                   ]}
                 >
                   ${preset}
@@ -271,7 +262,11 @@ function TopUpModal({ visible, onClose }: TopUpModalProps) {
 
           {/* Confirm button */}
           <TouchableOpacity
-            style={[modalStyles.confirmBtn, isLoading && modalStyles.confirmBtnDisabled]}
+            style={[
+              modalStyles.confirmBtn,
+              { backgroundColor: colors.primary },
+              isLoading && modalStyles.confirmBtnDisabled,
+            ]}
             onPress={handleTopUp}
             activeOpacity={0.8}
             disabled={isLoading}
@@ -296,32 +291,27 @@ const modalStyles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   sheet: {
-    backgroundColor: Colors.surface,
     borderTopLeftRadius: Radius.modal,
     borderTopRightRadius: Radius.modal,
     paddingHorizontal: Spacing.lg,
     paddingTop: 12,
     paddingBottom: 40,
     borderTopWidth: 1,
-    borderColor: Colors.border,
   },
   handle: {
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.border,
     alignSelf: 'center',
     marginBottom: 20,
   },
   title: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     marginBottom: Spacing.lg,
   },
   label: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
@@ -331,15 +321,12 @@ const modalStyles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
     borderRadius: Radius.input,
     borderWidth: 1.5,
-    borderColor: Colors.border,
     paddingHorizontal: Spacing.md,
     marginBottom: Spacing.md,
   },
   currencyPrefix: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.medium,
@@ -347,7 +334,6 @@ const modalStyles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.bold,
@@ -361,27 +347,16 @@ const modalStyles = StyleSheet.create({
   presetBtn: {
     flex: 1,
     paddingVertical: 10,
-    backgroundColor: Colors.card,
     borderRadius: Radius.sm,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
   },
-  presetBtnActive: {
-    backgroundColor: `${Colors.primary}20`,
-    borderColor: Colors.primary,
-  },
   presetText: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
-  presetTextActive: {
-    color: Colors.primary,
-  },
   confirmBtn: {
-    backgroundColor: Colors.primary,
     paddingVertical: 16,
     borderRadius: Radius.button,
     alignItems: 'center',
@@ -390,7 +365,7 @@ const modalStyles = StyleSheet.create({
     opacity: 0.6,
   },
   confirmBtnText: {
-    color: Colors.textInverse,
+    color: '#fff',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
@@ -406,6 +381,7 @@ interface HeroCardProps {
 }
 
 function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
+  const { colors } = useTheme();
   const symbol = CURRENCY_SYMBOLS[currency] ?? currency;
 
   const formatted = balance.toLocaleString('en-US', {
@@ -415,27 +391,30 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
 
   return (
     <LinearGradient
-      colors={['#1C1C0A', '#2D1A0A']}
+      colors={[colors.card, colors.elevated]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={heroStyles.card}
+      style={[heroStyles.card, { borderColor: `${colors.primary}40` }]}
     >
       {/* Wallet icon — top right */}
-      <View style={heroStyles.walletIconWrap}>
-        <Ionicons name="wallet-outline" size={22} color={Colors.primary} />
+      <View style={[heroStyles.walletIconWrap, {
+        backgroundColor: `${colors.primary}20`,
+        borderColor: `${colors.primary}40`,
+      }]}>
+        <Ionicons name="wallet-outline" size={22} color={colors.primary} />
       </View>
 
       {/* Balance */}
-      <Text style={heroStyles.amount}>
-        <Text style={heroStyles.currencySymbol}>{symbol}</Text>
+      <Text style={[heroStyles.amount, { color: colors.primary }]}>
+        <Text style={[heroStyles.currencySymbol, { color: colors.primary }]}>{symbol}</Text>
         {formatted}
       </Text>
-      <Text style={heroStyles.availableLabel}>Доступный баланс</Text>
+      <Text style={[heroStyles.availableLabel, { color: colors.textMuted }]}>Доступный баланс</Text>
 
       {/* Action buttons */}
       <View style={heroStyles.actionsRow}>
         <TouchableOpacity
-          style={[heroStyles.topUpBtn, { flex: 1 }]}
+          style={[heroStyles.topUpBtn, { flex: 1, backgroundColor: colors.primary }]}
           onPress={onTopUp}
           activeOpacity={0.8}
         >
@@ -455,7 +434,6 @@ const heroStyles = StyleSheet.create({
     padding: Spacing.lg,
     paddingTop: 20,
     borderWidth: 1,
-    borderColor: `${Colors.primary}40`,
   },
   walletIconWrap: {
     position: 'absolute',
@@ -464,18 +442,12 @@ const heroStyles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: `${Colors.primary}20`,
     borderWidth: 1,
-    borderColor: `${Colors.primary}40`,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  walletIcon: {
-    fontSize: 22,
-  },
   amount: {
     fontFamily: 'Sora',
-    color: Colors.primary,
     fontSize: 42,
     fontWeight: Typography.weights.bold,
     letterSpacing: -1,
@@ -485,11 +457,9 @@ const heroStyles = StyleSheet.create({
   currencySymbol: {
     fontSize: 42,
     fontWeight: Typography.weights.bold,
-    color: Colors.primary,
     lineHeight: 52,
   },
   availableLabel: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: Spacing.lg,
@@ -500,36 +470,23 @@ const heroStyles = StyleSheet.create({
   },
   topUpBtn: {
     flex: 1,
-    backgroundColor: Colors.primary,
     paddingVertical: 12,
     borderRadius: 24,
     alignItems: 'center',
   },
   topUpBtnText: {
-    color: Colors.textInverse,
+    // Тёмный текст на янтарной кнопке — обеспечивает контраст в обеих темах
+    color: '#0A0A14',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
-  },
-  historyBtn: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 24,
-    borderWidth: 1.5,
-    borderColor: `${Colors.text}50`,
-    alignItems: 'center',
-  },
-  historyBtnText: {
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.semibold,
   },
 });
 
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function WalletScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { balance, currency, transactions, isLoading, load } = useWalletStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -562,12 +519,12 @@ export default function WalletScreen() {
 
   if (isLoading && (transactions ?? []).length === 0) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <SkeletonWalletCard />
         <Skeleton width="40%" height={44} borderRadius={12} style={styles.skeletonBtn} />
         <Skeleton width="60%" height={12} borderRadius={6} style={styles.skeletonLabel} />
         {Array.from({ length: 4 }).map((_, i) => (
-          <View key={i} style={styles.skeletonRow}>
+          <View key={i} style={[styles.skeletonRow, { borderBottomColor: colors.border }]}>
             <Skeleton width={44} height={44} borderRadius={22} />
             <View style={styles.skeletonRowContent}>
               <Skeleton width="55%" height={13} borderRadius={6} />
@@ -581,7 +538,7 @@ export default function WalletScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       <FlatList
         data={filteredTransactions}
         keyExtractor={(item) => item.id}
@@ -590,7 +547,7 @@ export default function WalletScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={Colors.primary}
+            tintColor={colors.primary}
           />
         }
         ListHeaderComponent={
@@ -603,13 +560,14 @@ export default function WalletScreen() {
             />
 
             {/* Filter tabs */}
-            <View style={styles.tabsContainer}>
+            <View style={[styles.tabsContainer, { backgroundColor: colors.card }]}>
               {FILTER_TABS.map((tab) => (
                 <TouchableOpacity
                   key={tab.key}
                   style={[
                     styles.tabBtn,
                     activeFilter === tab.key && styles.tabBtnActive,
+                    activeFilter === tab.key && { backgroundColor: colors.surface },
                   ]}
                   onPress={() => setActiveFilter(tab.key)}
                   activeOpacity={0.7}
@@ -617,7 +575,8 @@ export default function WalletScreen() {
                   <Text
                     style={[
                       styles.tabText,
-                      activeFilter === tab.key && styles.tabTextActive,
+                      { color: colors.textMuted },
+                      activeFilter === tab.key && { color: colors.primary, fontWeight: Typography.weights.semibold },
                     ]}
                   >
                     {tab.label}
@@ -627,15 +586,15 @@ export default function WalletScreen() {
             </View>
 
             {filteredTransactions.length > 0 && (
-              <Text style={styles.sectionTitle}>История транзакций</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>История транзакций</Text>
             )}
           </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyTransactions}>
-            <Ionicons name="card-outline" size={64} color={Colors.textMuted} />
-            <Text style={styles.emptyText}>Транзакций пока нет</Text>
-            <Text style={styles.emptySubtext}>
+            <Ionicons name="card-outline" size={64} color={colors.textMuted} />
+            <Text style={[styles.emptyText, { color: colors.text }]}>Транзакций пока нет</Text>
+            <Text style={[styles.emptySubtext, { color: colors.textMuted }]}>
               Пополните кошелёк, чтобы начать бронировать
             </Text>
           </View>
@@ -653,13 +612,11 @@ export default function WalletScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   tabsContainer: {
     flexDirection: 'row',
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.sm,
-    backgroundColor: Colors.card,
     borderRadius: Radius.md,
     padding: 4,
   },
@@ -670,7 +627,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
   },
   tabBtnActive: {
-    backgroundColor: Colors.surface,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
@@ -678,18 +634,11 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   tabText: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
   },
-  tabTextActive: {
-    color: Colors.primary,
-    fontFamily: 'Inter',
-    fontWeight: Typography.weights.semibold,
-  },
   sectionTitle: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
@@ -705,14 +654,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   emptyText: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
     marginBottom: 6,
   },
   emptySubtext: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     textAlign: 'center',
@@ -732,7 +679,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   skeletonRowContent: {
     flex: 1,

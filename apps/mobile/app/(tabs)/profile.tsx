@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeStorage as AsyncStorage } from '../../utils/safeStorage';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -32,7 +32,6 @@ async function getImagePicker(): Promise<ImagePickerModule | null> {
 }
 import { useAuthStore } from '../../stores/authStore';
 import AuthModal from '../../components/auth/AuthModal';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
@@ -103,6 +102,7 @@ function formatDate(dateStr?: string): string {
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
 function Avatar({ name, size = 90 }: { name?: string; size?: number }) {
+  const { colors } = useTheme();
   const safeName = name ?? '';
   const initials =
     safeName
@@ -112,6 +112,19 @@ function Avatar({ name, size = 90 }: { name?: string; size?: number }) {
       .join('')
       .toUpperCase()
       .slice(0, 2) || '?';
+
+  const avatarStyles = StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: Spacing.sm,
+    },
+    initials: {
+      color: colors.textInverse,
+      fontFamily: 'Sora',
+      fontWeight: Typography.weights.bold,
+    },
+  });
 
   return (
     <LinearGradient
@@ -132,19 +145,6 @@ function Avatar({ name, size = 90 }: { name?: string; size?: number }) {
   );
 }
 
-const avatarStyles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.sm,
-  },
-  initials: {
-    color: Colors.textInverse,
-    fontFamily: 'Sora',
-    fontWeight: Typography.weights.bold,
-  },
-});
-
 // ── Edit profile modal ────────────────────────────────────────────────────────
 
 interface EditProfileModalProps {
@@ -162,6 +162,7 @@ function EditProfileModal({
   onClose,
   onSaved,
 }: EditProfileModalProps) {
+  const { colors } = useTheme();
   const [name, setName] = useState(initialName);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -186,6 +187,85 @@ function EditProfileModal({
       setIsSaving(false);
     }
   }
+
+  const modalStyles = StyleSheet.create({
+    flex: { flex: 1 },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.md,
+      paddingBottom: 40,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: Spacing.xl,
+    },
+    cancelBtn: {
+      color: colors.primary,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+    },
+    title: {
+      color: colors.text,
+      fontFamily: 'Sora',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.bold,
+    },
+    headerPlaceholder: {
+      width: 60,
+    },
+    body: {
+      flex: 1,
+    },
+    label: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      fontWeight: Typography.weights.bold,
+      letterSpacing: Typography.letterSpacing.wider,
+      textTransform: 'uppercase',
+      marginBottom: Spacing.sm,
+    },
+    mt20: { marginTop: Spacing.md },
+    input: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: Radius.input,
+      paddingHorizontal: Spacing.md,
+      paddingVertical: 14,
+      color: colors.text,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+    },
+    inputDisabled: {
+      opacity: 0.5,
+    },
+    hint: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      marginTop: Spacing.xs,
+    },
+    saveBtn: {
+      backgroundColor: colors.primary,
+      paddingVertical: Spacing.md,
+      borderRadius: Radius.button,
+      alignItems: 'center',
+    },
+    saveBtnDisabled: {
+      opacity: 0.6,
+    },
+    saveBtnText: {
+      color: colors.textInverse,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.bold,
+    },
+  });
 
   return (
     <Modal
@@ -214,7 +294,7 @@ function EditProfileModal({
               value={name}
               onChangeText={setName}
               placeholder="Ваше имя"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               autoFocus
               returnKeyType="done"
               onSubmitEditing={handleSave}
@@ -248,85 +328,6 @@ function EditProfileModal({
   );
 }
 
-const modalStyles = StyleSheet.create({
-  flex: { flex: 1 },
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: 40,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.xl,
-  },
-  cancelBtn: {
-    color: Colors.primary,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-  },
-  title: {
-    color: Colors.text,
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
-  },
-  headerPlaceholder: {
-    width: 60,
-  },
-  body: {
-    flex: 1,
-  },
-  label: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: Typography.letterSpacing.wider,
-    textTransform: 'uppercase',
-    marginBottom: Spacing.sm,
-  },
-  mt20: { marginTop: Spacing.md },
-  input: {
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: Radius.input,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 14,
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-  },
-  inputDisabled: {
-    opacity: 0.5,
-  },
-  hint: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    marginTop: Spacing.xs,
-  },
-  saveBtn: {
-    backgroundColor: Colors.primary,
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.button,
-    alignItems: 'center',
-  },
-  saveBtnDisabled: {
-    opacity: 0.6,
-  },
-  saveBtnText: {
-    color: Colors.textInverse,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
-  },
-});
-
 // ── BookingData modal ─────────────────────────────────────────────────────────
 
 interface BookingDataModalProps {
@@ -337,6 +338,7 @@ interface BookingDataModalProps {
 }
 
 function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataModalProps) {
+  const { colors } = useTheme();
   const [form, setForm] = useState<BookingData>(initial);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -370,6 +372,119 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
       setIsSaving(false);
     }
   }
+
+  const bmStyles = StyleSheet.create({
+    flex: { flex: 1 },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.md,
+      paddingBottom: Spacing.xl,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: Spacing.lg,
+    },
+    cancelBtn: {
+      color: colors.primary,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+    },
+    title: {
+      color: colors.text,
+      fontFamily: 'Sora',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.bold,
+    },
+    headerPlaceholder: { width: 60 },
+    scroll: { flex: 1 },
+    sectionLabel: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      fontWeight: Typography.weights.bold,
+      letterSpacing: Typography.letterSpacing.wider,
+      textTransform: 'uppercase',
+      marginBottom: Spacing.md,
+    },
+    label: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      fontWeight: Typography.weights.semibold,
+      letterSpacing: Typography.letterSpacing.wide,
+      textTransform: 'uppercase',
+      marginBottom: 6,
+    },
+    mt14: { marginTop: 14 },
+    input: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: Radius.input,
+      paddingHorizontal: Spacing.md,
+      paddingVertical: 14,
+      color: colors.text,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+    },
+    dividerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginVertical: 24,
+      gap: 10,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    dividerText: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      fontWeight: Typography.weights.semibold,
+      letterSpacing: Typography.letterSpacing.wide,
+      textTransform: 'uppercase',
+    },
+    bottomPad: { height: 16 },
+    btnRow: {
+      flexDirection: 'row',
+      gap: 12,
+      marginTop: 16,
+    },
+    cancelPill: {
+      flex: 1,
+      paddingVertical: 14,
+      borderRadius: Radius.button,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+    },
+    cancelPillText: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.semibold,
+    },
+    savePill: {
+      flex: 2,
+      paddingVertical: 14,
+      borderRadius: Radius.button,
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+    },
+    savePillDisabled: { opacity: 0.6 },
+    savePillText: {
+      color: colors.textInverse,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.bold,
+    },
+  });
 
   return (
     <Modal
@@ -406,7 +521,7 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
               value={form.phone}
               onChangeText={field('phone')}
               placeholder="+48 123 456 789"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               keyboardType="phone-pad"
               returnKeyType="next"
             />
@@ -417,7 +532,7 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
               value={form.dateOfBirth}
               onChangeText={field('dateOfBirth')}
               placeholder="ДД.ММ.ГГГГ"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               returnKeyType="next"
             />
 
@@ -427,7 +542,7 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
               value={form.nationality}
               onChangeText={field('nationality')}
               placeholder="Польша / Украина / Россия"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               returnKeyType="next"
             />
 
@@ -437,7 +552,7 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
               value={form.passportNumber}
               onChangeText={field('passportNumber')}
               placeholder="AB 1234567"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               autoCapitalize="characters"
               returnKeyType="next"
             />
@@ -448,7 +563,7 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
               value={form.passportExpiry}
               onChangeText={field('passportExpiry')}
               placeholder="ДД.ММ.ГГГГ"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               returnKeyType="next"
             />
 
@@ -465,7 +580,7 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
               value={form.emergencyName}
               onChangeText={field('emergencyName')}
               placeholder="Иван Петров"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               returnKeyType="next"
             />
 
@@ -475,7 +590,7 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
               value={form.emergencyPhone}
               onChangeText={field('emergencyPhone')}
               placeholder="+48 987 654 321"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               keyboardType="phone-pad"
               returnKeyType="done"
             />
@@ -500,7 +615,7 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
               activeOpacity={0.8}
             >
               {isSaving ? (
-                <ActivityIndicator color={Colors.textInverse} size="small" />
+                <ActivityIndicator color={colors.textInverse} size="small" />
               ) : (
                 <Text style={bmStyles.savePillText}>Сохранить</Text>
               )}
@@ -512,125 +627,12 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
   );
 }
 
-const bmStyles = StyleSheet.create({
-  flex: { flex: 1 },
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.lg,
-  },
-  cancelBtn: {
-    color: Colors.primary,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-  },
-  title: {
-    color: Colors.text,
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
-  },
-  headerPlaceholder: { width: 60 },
-  scroll: { flex: 1 },
-  sectionLabel: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: Typography.letterSpacing.wider,
-    textTransform: 'uppercase',
-    marginBottom: Spacing.md,
-  },
-  label: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
-    letterSpacing: Typography.letterSpacing.wide,
-    textTransform: 'uppercase',
-    marginBottom: 6,
-  },
-  mt14: { marginTop: 14 },
-  input: {
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: Radius.input,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 14,
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 24,
-    gap: 10,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.border,
-  },
-  dividerText: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
-    letterSpacing: Typography.letterSpacing.wide,
-    textTransform: 'uppercase',
-  },
-  bottomPad: { height: 16 },
-  btnRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-  },
-  cancelPill: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: Radius.button,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    alignItems: 'center',
-  },
-  cancelPillText: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.semibold,
-  },
-  savePill: {
-    flex: 2,
-    paddingVertical: 14,
-    borderRadius: Radius.button,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-  },
-  savePillDisabled: { opacity: 0.6 },
-  savePillText: {
-    color: Colors.textInverse,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
-  },
-});
-
 // ── Plan labels ───────────────────────────────────────────────────────────────
 
 const PLAN_LABELS: Record<string, string> = {
   FREE: 'Бесплатный',
   PRO: 'Про',
-  PREMIUM: 'Премиум',
+  PREMIUM: 'Premium',
 };
 
 const SUBSCRIPTION_PRICE = 9.99;
@@ -654,6 +656,704 @@ export default function ProfileScreen() {
 
   // Theme / language
   const [language, setLanguageState] = useState<'ru' | 'en'>('ru');
+
+  // ── Dynamic styles ──────────────────────────────────────────────────────────
+  const styles = useMemo(() => StyleSheet.create({
+    loadingScreen: {
+      flex: 1,
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+
+    // ── Guest screen ──────────────────────────────────────────────────────────
+    guestScreen: {
+      flex: 1,
+      backgroundColor: colors.background,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: Spacing.xl,
+    },
+    guestTitle: {
+      color: colors.text,
+      fontFamily: 'Sora',
+      fontSize: Typography.sizes.xl,
+      fontWeight: Typography.weights.bold,
+      textAlign: 'center',
+      marginBottom: Spacing.sm,
+    },
+    guestSubtitle: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      textAlign: 'center',
+      lineHeight: 22,
+      marginBottom: 32,
+    },
+    guestLoginBtn: {
+      backgroundColor: colors.primary,
+      paddingVertical: 14,
+      paddingHorizontal: 32,
+      borderRadius: Radius.button,
+      alignItems: 'center',
+      alignSelf: 'stretch',
+    },
+    guestLoginBtnText: {
+      color: colors.textInverse,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.bold,
+    },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      padding: 24,
+      paddingBottom: 48,
+    },
+
+    // ── Avatar section ────────────────────────────────────────────────────────
+    avatarSection: {
+      alignItems: 'center',
+      marginBottom: 32,
+    },
+    nameRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: Spacing.xs,
+    },
+    name: {
+      fontFamily: 'Sora',
+      color: colors.text,
+      fontSize: 22,
+      fontWeight: Typography.weights.bold,
+    },
+    email: {
+      fontFamily: 'Inter',
+      color: colors.textMuted,
+      fontSize: 14,
+      marginBottom: 14,
+      marginTop: 4,
+    },
+    subscriptionBadge: {
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 9999,
+      marginTop: 6,
+      borderWidth: 1,
+    },
+    subscriptionBadgePremium: {
+      backgroundColor: `${colors.primary}26`,
+      borderColor: colors.primary,
+    },
+    subscriptionBadgeFree: {
+      backgroundColor: `${colors.textMuted}18`,
+      borderColor: colors.border,
+    },
+    subscriptionBadgeText: {
+      fontFamily: 'Inter',
+      fontSize: 11,
+      fontWeight: '700' as const,
+      letterSpacing: 1,
+    },
+    subscriptionBadgeTextPremium: {
+      color: colors.primary,
+    },
+    subscriptionBadgeTextFree: {
+      color: colors.textMuted,
+    },
+    quickLinksRow: {
+      alignSelf: 'stretch',
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      marginTop: 16,
+      overflow: 'hidden',
+    },
+    quickLinkItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      gap: 12,
+    },
+    quickLinkIconWrap: {
+      position: 'relative',
+      width: 24,
+      alignItems: 'center',
+    },
+    quickLinkBadge: {
+      position: 'absolute',
+      top: -4,
+      right: -6,
+      minWidth: 14,
+      height: 14,
+      borderRadius: 7,
+      backgroundColor: colors.error,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 2,
+    },
+    quickLinkBadgeText: {
+      color: '#fff',
+      fontSize: 9,
+      fontWeight: '700' as const,
+      lineHeight: 10,
+    },
+    quickLinkText: {
+      flex: 1,
+      color: colors.text,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      fontWeight: '500' as const,
+    },
+    quickLinkDivider: {
+      height: 1,
+      backgroundColor: colors.border,
+      marginLeft: 52,
+    },
+
+    // ── Section ───────────────────────────────────────────────────────────────
+    section: {
+      marginBottom: Spacing.lg,
+    },
+    sectionTitle: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      fontWeight: Typography.weights.bold,
+      letterSpacing: Typography.letterSpacing.wider,
+      textTransform: 'uppercase',
+      marginBottom: Spacing.sm,
+      textAlign: 'center',
+    },
+    sectionHeaderRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+      marginBottom: Spacing.sm,
+      gap: 8,
+    },
+    sectionHeaderLeft: {
+      flex: 1,
+    },
+    sectionTitleWithIcon: {
+      color: colors.text,
+      fontFamily: 'Sora',
+      fontSize: Typography.sizes.base,
+      fontWeight: Typography.weights.semibold,
+      marginBottom: 2,
+    },
+    sectionSubtitle: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      lineHeight: 16,
+    },
+    editSectionBtn: {
+      color: colors.primary,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.sm,
+      fontWeight: Typography.weights.semibold,
+      paddingTop: 2,
+    },
+
+    // ── Card ──────────────────────────────────────────────────────────────────
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: Radius.card,
+      padding: Spacing.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    cardPremium: {
+      backgroundColor: 'rgba(16,185,129,0.15)',
+      borderColor: colors.success,
+    },
+
+    // ── Subscription ──────────────────────────────────────────────────────────
+    subscriptionRow: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 12,
+    },
+    planNamePremium: {
+      color: colors.success,
+      fontFamily: 'Sora',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.semibold,
+    },
+    planNameFree: {
+      color: colors.text,
+      fontFamily: 'Sora',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.semibold,
+    },
+    planFreeSub: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.sm,
+      marginTop: 2,
+    },
+    planExpiry: {
+      color: colors.success,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.sm,
+      marginTop: 2,
+    },
+    planBadgePremium: {
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: Spacing.xs,
+      borderRadius: Radius.chip,
+      backgroundColor: 'rgba(16,185,129,0.15)',
+      borderWidth: 1,
+      borderColor: colors.success,
+    },
+    planBadgeTextPremium: {
+      color: colors.success,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      fontWeight: Typography.weights.bold,
+      letterSpacing: Typography.letterSpacing.wide,
+    },
+    planBadgeFree: {
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: Spacing.xs,
+      borderRadius: Radius.chip,
+      backgroundColor: `${colors.textMuted}20`,
+    },
+    planBadgeTextFree: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      fontWeight: Typography.weights.bold,
+      letterSpacing: Typography.letterSpacing.wide,
+    },
+    upgradeBtn: {
+      backgroundColor: colors.primary,
+      paddingVertical: Spacing.sm,
+      borderRadius: Radius.button,
+      alignItems: 'center',
+    },
+    upgradeBtnText: {
+      color: colors.textInverse,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      fontWeight: Typography.weights.semibold,
+    },
+
+    // ── Info rows ─────────────────────────────────────────────────────────────
+    infoRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: Spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    infoRowLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      flex: 1,
+    },
+    infoRowIcon: {
+      fontSize: 14,
+    },
+    infoRowNoBorder: {
+      borderBottomWidth: 0,
+    },
+    infoLabel: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+    },
+    infoValue: {
+      color: colors.text,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      fontWeight: Typography.weights.medium,
+      maxWidth: '55%',
+      textAlign: 'right',
+    },
+    infoValueMuted: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      fontStyle: 'italic',
+      maxWidth: '55%',
+      textAlign: 'right',
+    },
+
+    // ── Switch rows ───────────────────────────────────────────────────────────
+    switchRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: Spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    switchRowNoBorder: {
+      borderBottomWidth: 0,
+    },
+    switchLabel: {
+      flex: 1,
+      marginRight: Spacing.sm,
+    },
+    switchTitle: {
+      color: colors.text,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      fontWeight: Typography.weights.medium,
+    },
+    switchSubtitle: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.sm,
+      marginTop: 2,
+    },
+
+    // ── Logout ────────────────────────────────────────────────────────────────
+    logoutBtn: {
+      marginTop: Spacing.sm,
+      marginBottom: Spacing.xl,
+      paddingVertical: 14,
+      borderRadius: Radius.input,
+      borderWidth: 1.5,
+      borderColor: colors.error,
+      alignItems: 'center',
+    },
+    logoutBtnDisabled: {
+      opacity: 0.5,
+    },
+    logoutText: {
+      color: colors.error,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.semibold,
+    },
+
+    // ── Language toggle ───────────────────────────────────────────────────────
+    langToggle: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderRadius: Radius.sm,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: Spacing.xs,
+      gap: Spacing.xs,
+    },
+    langOption: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.sm,
+      fontWeight: Typography.weights.semibold,
+    },
+    langOptionActive: {
+      color: colors.primary,
+    },
+    langDivider: {
+      color: colors.border,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.sm,
+    },
+
+    // ── Legal / Info rows ────────────────────────────────────────────────────
+    legalRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 13,
+      paddingHorizontal: Spacing.md,
+    },
+    legalRowNoPress: {
+      // static row, no press feedback needed
+    },
+    legalRowText: {
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      color: colors.text,
+      fontWeight: Typography.weights.medium,
+    },
+    legalRowValue: {
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.sm,
+      color: colors.textMuted,
+      fontWeight: Typography.weights.medium,
+    },
+    legalDivider: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: colors.border,
+      marginHorizontal: Spacing.md,
+    },
+
+    // ── About section ─────────────────────────────────────────────────────────
+    aboutSection: {
+      alignItems: 'center',
+      marginTop: Spacing.xl,
+      paddingBottom: Spacing.md,
+      gap: 4,
+    },
+    aboutName: {
+      fontFamily: 'Sora',
+      color: colors.textMuted,
+      fontSize: Typography.sizes.base,
+      fontWeight: Typography.weights.semibold,
+    },
+    aboutVersion: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+    },
+    aboutCopy: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      textAlign: 'center',
+      marginTop: 2,
+    },
+
+    // ── Scan document card ────────────────────────────────────────────────────
+    scanDocumentCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: `${colors.primary}26`,
+      borderWidth: 1.5,
+      borderColor: colors.primary,
+      borderRadius: 14,
+      padding: 14,
+      marginBottom: 16,
+      gap: 14,
+    },
+    scanBtnDisabled: {
+      opacity: 0.6,
+    },
+    // Passport mini illustration
+    passportMini: {
+      width: 54,
+      height: 74,
+      backgroundColor: '#1D4ED8',
+      borderRadius: 6,
+      padding: 6,
+      justifyContent: 'space-between',
+      flexShrink: 0,
+    },
+    passportMiniTop: {
+      height: 4,
+      backgroundColor: 'rgba(255,255,255,0.35)',
+      borderRadius: 2,
+    },
+    passportMiniBody: {
+      flexDirection: 'row',
+      gap: 5,
+      flex: 1,
+      marginTop: 6,
+    },
+    passportMiniPhoto: {
+      width: 16,
+      height: 22,
+      backgroundColor: 'rgba(255,255,255,0.35)',
+      borderRadius: 2,
+      flexShrink: 0,
+    },
+    passportMiniLines: {
+      flex: 1,
+      justifyContent: 'center',
+      gap: 4,
+    },
+    passportMiniLine: {
+      height: 3,
+      backgroundColor: 'rgba(255,255,255,0.35)',
+      borderRadius: 1.5,
+      width: '100%',
+    },
+    passportMiniMRZ: {
+      marginTop: 4,
+    },
+    // Scan card text content
+    scanCardContent: {
+      flex: 1,
+    },
+    scanCardTitle: {
+      color: colors.primary,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      fontWeight: Typography.weights.semibold,
+    },
+    scanCardSub: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      marginTop: 2,
+    },
+    scanCardHint: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      marginTop: 4,
+      fontStyle: 'italic',
+    },
+
+    // ── Price Alerts button ───────────────────────────────────────────────────
+    priceAlertsBtn: {
+      marginTop: Spacing.sm,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: colors.card,
+      borderRadius: Radius.card,
+      padding: Spacing.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    priceAlertsBtnLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      flex: 1,
+    },
+    priceAlertsBtnTitle: {
+      color: colors.text,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      fontWeight: Typography.weights.semibold,
+      marginBottom: 2,
+    },
+    priceAlertsBtnSub: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+    },
+    priceAlertsBtnChevron: {
+      color: colors.primary,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xl,
+      fontWeight: Typography.weights.bold,
+      lineHeight: 24,
+    },
+  }), [colors]);
+
+  const scanModalStyles = useMemo(() => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.md,
+      paddingBottom: 40,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: Spacing.md,
+    },
+    cancelBtn: {
+      color: colors.primary,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+    },
+    title: {
+      color: colors.text,
+      fontFamily: 'Sora',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.bold,
+    },
+    headerPlaceholder: {
+      width: 60,
+    },
+    subtitle: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.sm,
+      marginBottom: Spacing.md,
+      lineHeight: 20,
+    },
+    dataCard: {
+      backgroundColor: colors.card,
+      borderRadius: Radius.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: Spacing.md,
+      marginBottom: Spacing.sm,
+    },
+    dataRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 13,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      gap: 8,
+    },
+    dataRowLast: {
+      borderBottomWidth: 0,
+    },
+    dataRowLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      flex: 1,
+    },
+    dataLabel: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+    },
+    dataValue: {
+      color: colors.text,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      fontWeight: Typography.weights.medium,
+      maxWidth: '55%',
+      textAlign: 'right',
+    },
+    hint: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      lineHeight: 18,
+      marginBottom: Spacing.xl,
+    },
+    btnRow: {
+      flexDirection: 'row',
+      gap: 12,
+      marginTop: 16,
+    },
+    cancelPill: {
+      flex: 1,
+      paddingVertical: 14,
+      borderRadius: Radius.button,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+    },
+    cancelPillText: {
+      color: colors.textMuted,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.semibold,
+    },
+    applyPill: {
+      flex: 2,
+      paddingVertical: 14,
+      borderRadius: Radius.button,
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+    },
+    applyPillText: {
+      color: colors.textInverse,
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.bold,
+    },
+  }), [colors]);
 
   // Booking data (read-only display; editing is done via modal)
   const [bookingData, setBookingData] = useState<BookingData>({
@@ -905,7 +1605,7 @@ export default function ProfileScreen() {
   if (authLoading) {
     return (
       <View style={styles.loadingScreen}>
-        <ActivityIndicator color={Colors.primary} />
+        <ActivityIndicator color={colors.primary} />
       </View>
     );
   }
@@ -915,7 +1615,7 @@ export default function ProfileScreen() {
     return (
       <>
         <View style={[styles.guestScreen, { paddingTop: insets.top + 24 }]}>
-          <Ionicons name="person-circle-outline" size={80} color={Colors.textMuted} style={{ opacity: 0.4, marginBottom: 24 }} />
+          <Ionicons name="person-circle-outline" size={80} color={colors.textMuted} style={{ opacity: 0.4, marginBottom: 24 }} />
           <Text style={styles.guestTitle}>Войдите в аккаунт</Text>
           <Text style={styles.guestSubtitle}>
             Чтобы видеть брони, кошелёк,{'\n'}историю поисков и сохранять маршруты
@@ -955,7 +1655,7 @@ export default function ProfileScreen() {
     return (
       <View style={[styles.infoRow, isLast && styles.infoRowNoBorder]} key={label}>
         <View style={styles.infoRowLeft}>
-          <Ionicons name={ionName as any} size={16} color={Colors.primary} style={{ marginRight: 6 }} />
+          <Ionicons name={ionName as any} size={16} color={colors.primary} style={{ marginRight: 6 }} />
           <Text style={styles.infoLabel}>{label}</Text>
         </View>
         <Text style={value ? styles.infoValue : styles.infoValueMuted}>
@@ -968,45 +1668,17 @@ export default function ProfileScreen() {
   return (
     <>
       <ScrollView
-        style={[styles.container, { backgroundColor: Colors.background }]}
+        style={[styles.container, { backgroundColor: colors.background }]}
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 24 }]}
       >
         {/* ── Profile header ──────────────────────────────────────────── */}
         <View style={styles.avatarSection}>
           <Avatar name={user.name} size={90} />
 
-          {/* Name + pencil */}
+          {/* Name */}
           <View style={styles.nameRow}>
             <Text style={[styles.name, { color: colors.text }]}>{user.name}</Text>
-            <TouchableOpacity
-              style={{ backgroundColor: Colors.primaryMuted, borderRadius: 12, padding: 4, borderWidth: 1, borderColor: Colors.border }}
-              onPress={() => setIsEditModalVisible(true)}
-              activeOpacity={0.7}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Ionicons name="pencil-outline" size={18} color={Colors.primary} />
-            </TouchableOpacity>
           </View>
-
-          {/* Subscription badge */}
-          <View
-            style={[
-              styles.subscriptionBadge,
-              isPremium ? styles.subscriptionBadgePremium : styles.subscriptionBadgeFree,
-            ]}
-          >
-            <Text
-              style={[
-                styles.subscriptionBadgeText,
-                isPremium ? styles.subscriptionBadgeTextPremium : styles.subscriptionBadgeTextFree,
-              ]}
-            >
-              {isPremium ? 'PREMIUM' : 'FREE'}
-            </Text>
-          </View>
-
-          {/* Email */}
-          <Text style={[styles.email, { color: colors.textSecondary }]}>{user.email}</Text>
 
           {/* Quick links: Notifications + Settings */}
           <View style={styles.quickLinksRow}>
@@ -1016,7 +1688,7 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.quickLinkIconWrap}>
-                <Ionicons name="notifications-outline" size={20} color={Colors.primary} />
+                <Ionicons name="notifications-outline" size={20} color={colors.primary} />
                 {unreadCount > 0 && (
                   <View style={styles.quickLinkBadge}>
                     <Text style={styles.quickLinkBadgeText}>{unreadCount > 9 ? '9+' : String(unreadCount)}</Text>
@@ -1024,7 +1696,7 @@ export default function ProfileScreen() {
                 )}
               </View>
               <Text style={styles.quickLinkText}>Уведомления</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
             <View style={styles.quickLinkDivider} />
@@ -1035,10 +1707,10 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.quickLinkIconWrap}>
-                <Ionicons name="settings-outline" size={20} color={Colors.primary} />
+                <Ionicons name="settings-outline" size={20} color={colors.primary} />
               </View>
               <Text style={styles.quickLinkText}>Настройки</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
             </TouchableOpacity>
           </View>
         </View>
@@ -1047,30 +1719,35 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Подписка</Text>
           {isPremium ? (
-            <View style={[styles.card, styles.cardPremium]}>
-              <View style={styles.subscriptionRow}>
-                <View>
-                  <Text style={styles.planNamePremium}>
-                    {PLAN_LABELS['PREMIUM']}
-                  </Text>
-                  {user.subscription?.expiresAt && (
-                    <Text style={styles.planExpiry}>
-                      до {formatDate(user.subscription.expiresAt)}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => router.push('/subscription/plans' as any)}
+            >
+              <View style={[styles.card, styles.cardPremium, { justifyContent: 'center', minHeight: 64 }]}>
+                <View style={styles.subscriptionRow}>
+                  <View>
+                    <Text style={styles.planNamePremium}>
+                      Активна
                     </Text>
-                  )}
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Text style={{ color: Colors.success, fontFamily: 'Inter', fontSize: 13, fontWeight: '600' }}>
-                    ${`${SUBSCRIPTION_PRICE}`}/мес
-                  </Text>
-                  <View style={styles.planBadgePremium}>
-                    <Text style={styles.planBadgeTextPremium}>PREMIUM</Text>
+                    {user.subscription?.expiresAt && (
+                      <Text style={styles.planExpiry}>
+                        до {formatDate(user.subscription.expiresAt)}
+                      </Text>
+                    )}
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Text style={{ color: colors.success, fontFamily: 'Inter', fontSize: 13, fontWeight: '600' }}>
+                      ${`${SUBSCRIPTION_PRICE}`}/мес
+                    </Text>
+                    <View style={styles.planBadgePremium}>
+                      <Text style={styles.planBadgeTextPremium}>PREMIUM</Text>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           ) : (
-            <View style={[styles.card, { backgroundColor: Colors.card, borderColor: Colors.border }]}>
+            <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <View style={styles.subscriptionRow}>
                 <View>
                   <Text style={styles.planNameFree}>{PLAN_LABELS['FREE']}</Text>
@@ -1099,7 +1776,16 @@ export default function ProfileScreen() {
 
         {/* ── Account info block ──────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Данные аккаунта</Text>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Данные аккаунта</Text>
+            <TouchableOpacity
+              onPress={() => setIsEditModalVisible(true)}
+              activeOpacity={0.7}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            >
+              <Text style={styles.editSectionBtn}>Редактировать</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.card}>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Имя</Text>
@@ -1144,6 +1830,25 @@ export default function ProfileScreen() {
             disabled={isScanning}
             activeOpacity={0.75}
           >
+            {/* Text block */}
+            <View style={styles.scanCardContent}>
+              {isScanning ? (
+                <>
+                  <ActivityIndicator color={colors.primary} size="small" style={{ marginBottom: 4 }} />
+                  <Text style={styles.scanCardTitle}>Распознаём документ...</Text>
+                </>
+              ) : (
+                <>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                    <Ionicons name="scan-outline" size={16} color={colors.primary} />
+                    <Text style={styles.scanCardTitle}>Сканировать документ</Text>
+                  </View>
+                  <Text style={styles.scanCardSub}>Паспорт · Загранпаспорт · Права</Text>
+                  <Text style={styles.scanCardHint}>Данные заполнятся автоматически</Text>
+                </>
+              )}
+            </View>
+
             {/* Mini passport illustration */}
             <View style={styles.passportMini}>
               <View style={styles.passportMiniTop} />
@@ -1160,25 +1865,6 @@ export default function ProfileScreen() {
                 <View style={[styles.passportMiniLine, { width: '100%', marginTop: 3 }]} />
               </View>
             </View>
-
-            {/* Text block */}
-            <View style={styles.scanCardContent}>
-              {isScanning ? (
-                <>
-                  <ActivityIndicator color={Colors.primary} size="small" style={{ marginBottom: 4 }} />
-                  <Text style={styles.scanCardTitle}>Распознаём документ...</Text>
-                </>
-              ) : (
-                <>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                    <Ionicons name="scan-outline" size={16} color={Colors.primary} />
-                    <Text style={styles.scanCardTitle}>Сканировать документ</Text>
-                  </View>
-                  <Text style={styles.scanCardSub}>Паспорт · Загранпаспорт · Права</Text>
-                  <Text style={styles.scanCardHint}>Данные заполнятся автоматически</Text>
-                </>
-              )}
-            </View>
           </TouchableOpacity>
 
           <View style={styles.card}>
@@ -1191,28 +1877,6 @@ export default function ProfileScreen() {
               bookingData.passportNumber ? maskPassport(bookingData.passportNumber) : '',
             )}
             {renderInfoRow('📅', 'Срок действия паспорта', bookingData.passportExpiry, true)}
-          </View>
-        </View>
-
-        {/* ── Emergency contact section ────────────────────────────────── */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <View style={styles.sectionHeaderLeft}>
-              <Text style={styles.sectionTitleWithIcon}>Экстренный контакт</Text>
-              <Text style={styles.sectionSubtitle}>На случай непредвиденных ситуаций</Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => setIsBookingModalVisible(true)}
-              activeOpacity={0.7}
-              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-            >
-              <Text style={styles.editSectionBtn}>Редактировать</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.card}>
-            {renderInfoRow('👤', 'Имя контакта', bookingData.emergencyName)}
-            {renderInfoRow('📞', 'Телефон контакта', bookingData.emergencyPhone, true)}
           </View>
         </View>
 
@@ -1230,8 +1894,8 @@ export default function ProfileScreen() {
               <Switch
                 value={isDark}
                 onValueChange={handleDarkModeChange}
-                trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
-                thumbColor={isDark ? Colors.primary : Colors.textMuted}
+                trackColor={{ false: colors.border, true: `${colors.primary}80` }}
+                thumbColor={isDark ? colors.primary : colors.textMuted}
                 style={{ transform: [{ scale: 0.82 }] }}
               />
             </View>
@@ -1273,7 +1937,7 @@ export default function ProfileScreen() {
                 <Text style={styles.switchTitle}>Настройки уведомлений</Text>
                 <Text style={styles.switchSubtitle}>Управление бронированиями и ценовыми алертами</Text>
               </View>
-              <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+              <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
             </View>
           </TouchableOpacity>
         </View>
@@ -1288,18 +1952,18 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
             >
               <Text style={styles.legalRowText}>Политика конфиденциальности</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
             <View style={styles.legalDivider} />
 
             <TouchableOpacity
               style={styles.legalRow}
-              onPress={() => void Linking.openURL('https://travelai.app/terms')}
+              onPress={() => router.push('/terms-of-service')}
               activeOpacity={0.7}
             >
               <Text style={styles.legalRowText}>Условия использования</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
             <View style={styles.legalDivider} />
@@ -1313,7 +1977,7 @@ export default function ProfileScreen() {
 
         {/* ── About app ───────────────────────────────────────────────── */}
         <View style={styles.aboutSection}>
-          <Ionicons name="airplane" size={32} color={Colors.primary} />
+          <Ionicons name="airplane" size={32} color={colors.primary} />
           <Text style={styles.aboutName}>TravelAI</Text>
           <Text style={styles.aboutVersion}>Версия 1.0.0</Text>
           <Text style={styles.aboutCopy}>Ваш AI-ассистент для путешествий</Text>
@@ -1373,7 +2037,7 @@ export default function ProfileScreen() {
             {scannedData?.firstName || scannedData?.lastName ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="person-outline" size={16} color={Colors.primary} />
+                  <Ionicons name="person-outline" size={16} color={colors.primary} />
                   <Text style={scanModalStyles.dataLabel}>ФИО</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>
@@ -1385,7 +2049,7 @@ export default function ProfileScreen() {
             {scannedData?.dateOfBirth ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="calendar-outline" size={16} color={Colors.primary} />
+                  <Ionicons name="calendar-outline" size={16} color={colors.primary} />
                   <Text style={scanModalStyles.dataLabel}>Дата рождения</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.dateOfBirth}</Text>
@@ -1395,7 +2059,7 @@ export default function ProfileScreen() {
             {scannedData?.nationality ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="earth-outline" size={16} color={Colors.primary} />
+                  <Ionicons name="earth-outline" size={16} color={colors.primary} />
                   <Text style={scanModalStyles.dataLabel}>Гражданство</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.nationality}</Text>
@@ -1405,7 +2069,7 @@ export default function ProfileScreen() {
             {scannedData?.documentNumber ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="card-outline" size={16} color={Colors.primary} />
+                  <Ionicons name="card-outline" size={16} color={colors.primary} />
                   <Text style={scanModalStyles.dataLabel}>Номер документа</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.documentNumber}</Text>
@@ -1415,7 +2079,7 @@ export default function ProfileScreen() {
             {scannedData?.expiryDate ? (
               <View style={[scanModalStyles.dataRow, scanModalStyles.dataRowLast]}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="today-outline" size={16} color={Colors.primary} />
+                  <Ionicons name="today-outline" size={16} color={colors.primary} />
                   <Text style={scanModalStyles.dataLabel}>Срок действия</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.expiryDate}</Text>
@@ -1450,702 +2114,3 @@ export default function ProfileScreen() {
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  loadingScreen: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  // ── Guest screen ──────────────────────────────────────────────────────────
-  guestScreen: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xl,
-  },
-  guestTitle: {
-    color: Colors.text,
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.xl,
-    fontWeight: Typography.weights.bold,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-  },
-  guestSubtitle: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 32,
-  },
-  guestLoginBtn: {
-    backgroundColor: Colors.primary,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: Radius.button,
-    alignItems: 'center',
-    alignSelf: 'stretch',
-  },
-  guestLoginBtnText: {
-    color: Colors.textInverse,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    padding: 24,
-    paddingBottom: 48,
-  },
-
-  // ── Avatar section ────────────────────────────────────────────────────────
-  avatarSection: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: Spacing.xs,
-  },
-  name: {
-    fontFamily: 'Sora',
-    color: Colors.text,
-    fontSize: 22,
-    fontWeight: Typography.weights.bold,
-  },
-  email: {
-    fontFamily: 'Inter',
-    color: Colors.textMuted,
-    fontSize: 14,
-    marginBottom: 14,
-    marginTop: 4,
-  },
-  subscriptionBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 9999,
-    marginTop: 6,
-    borderWidth: 1,
-  },
-  subscriptionBadgePremium: {
-    backgroundColor: Colors.primaryMuted,
-    borderColor: Colors.primary,
-  },
-  subscriptionBadgeFree: {
-    backgroundColor: `${Colors.textMuted}18`,
-    borderColor: Colors.border,
-  },
-  subscriptionBadgeText: {
-    fontFamily: 'Inter',
-    fontSize: 11,
-    fontWeight: '700' as const,
-    letterSpacing: 1,
-  },
-  subscriptionBadgeTextPremium: {
-    color: Colors.primary,
-  },
-  subscriptionBadgeTextFree: {
-    color: Colors.textMuted,
-  },
-  quickLinksRow: {
-    alignSelf: 'stretch',
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    marginTop: 16,
-    overflow: 'hidden',
-  },
-  quickLinkItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 12,
-  },
-  quickLinkIconWrap: {
-    position: 'relative',
-    width: 24,
-    alignItems: 'center',
-  },
-  quickLinkBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -6,
-    minWidth: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: Colors.error,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 2,
-  },
-  quickLinkBadgeText: {
-    color: '#fff',
-    fontSize: 9,
-    fontWeight: '700' as const,
-    lineHeight: 10,
-  },
-  quickLinkText: {
-    flex: 1,
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: '500' as const,
-  },
-  quickLinkDivider: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginLeft: 52,
-  },
-
-  // ── Section ───────────────────────────────────────────────────────────────
-  section: {
-    marginBottom: Spacing.lg,
-  },
-  sectionTitle: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: Typography.letterSpacing.wider,
-    textTransform: 'uppercase',
-    marginBottom: Spacing.sm,
-  },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.sm,
-    gap: 8,
-  },
-  sectionHeaderLeft: {
-    flex: 1,
-  },
-  sectionTitleWithIcon: {
-    color: Colors.text,
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.semibold,
-    marginBottom: 2,
-  },
-  sectionSubtitle: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    lineHeight: 16,
-  },
-  editSectionBtn: {
-    color: Colors.primary,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.semibold,
-    paddingTop: 2,
-  },
-
-  // ── Card ──────────────────────────────────────────────────────────────────
-  card: {
-    backgroundColor: Colors.card,
-    borderRadius: Radius.card,
-    padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  cardPremium: {
-    backgroundColor: Colors.successLight,
-    borderColor: Colors.success,
-  },
-
-  // ── Subscription ──────────────────────────────────────────────────────────
-  subscriptionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  planNamePremium: {
-    color: Colors.success,
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.semibold,
-  },
-  planNameFree: {
-    color: Colors.text,
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.semibold,
-  },
-  planFreeSub: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    marginTop: 2,
-  },
-  planExpiry: {
-    color: Colors.success,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    marginTop: 2,
-  },
-  planBadgePremium: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.chip,
-    backgroundColor: Colors.successLight,
-    borderWidth: 1,
-    borderColor: Colors.success,
-  },
-  planBadgeTextPremium: {
-    color: Colors.success,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: Typography.letterSpacing.wide,
-  },
-  planBadgeFree: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.chip,
-    backgroundColor: `${Colors.textMuted}20`,
-  },
-  planBadgeTextFree: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: Typography.letterSpacing.wide,
-  },
-  upgradeBtn: {
-    backgroundColor: Colors.primary,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.button,
-    alignItems: 'center',
-  },
-  upgradeBtnText: {
-    color: Colors.textInverse,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.semibold,
-  },
-
-  // ── Info rows ─────────────────────────────────────────────────────────────
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  infoRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    flex: 1,
-  },
-  infoRowIcon: {
-    fontSize: 14,
-  },
-  infoRowNoBorder: {
-    borderBottomWidth: 0,
-  },
-  infoLabel: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-  },
-  infoValue: {
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.medium,
-    maxWidth: '55%',
-    textAlign: 'right',
-  },
-  infoValueMuted: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontStyle: 'italic',
-    maxWidth: '55%',
-    textAlign: 'right',
-  },
-
-  // ── Switch rows ───────────────────────────────────────────────────────────
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  switchRowNoBorder: {
-    borderBottomWidth: 0,
-  },
-  switchLabel: {
-    flex: 1,
-    marginRight: Spacing.sm,
-  },
-  switchTitle: {
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.medium,
-  },
-  switchSubtitle: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    marginTop: 2,
-  },
-
-  // ── Logout ────────────────────────────────────────────────────────────────
-  logoutBtn: {
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.xl,
-    paddingVertical: 14,
-    borderRadius: Radius.input,
-    borderWidth: 1.5,
-    borderColor: Colors.error,
-    alignItems: 'center',
-  },
-  logoutBtnDisabled: {
-    opacity: 0.5,
-  },
-  logoutText: {
-    color: Colors.error,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.semibold,
-  },
-
-  // ── Language toggle ───────────────────────────────────────────────────────
-  langToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.sm,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    gap: Spacing.xs,
-  },
-  langOption: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.semibold,
-  },
-  langOptionActive: {
-    color: Colors.primary,
-  },
-  langDivider: {
-    color: Colors.border,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-  },
-
-  // ── Legal / Info rows ────────────────────────────────────────────────────
-  legalRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 13,
-    paddingHorizontal: Spacing.md,
-  },
-  legalRowNoPress: {
-    // static row, no press feedback needed
-  },
-  legalRowText: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    color: Colors.text,
-    fontWeight: Typography.weights.medium,
-  },
-  legalRowValue: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    color: Colors.textMuted,
-    fontWeight: Typography.weights.medium,
-  },
-  legalDivider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.border,
-    marginHorizontal: Spacing.md,
-  },
-
-  // ── About section ─────────────────────────────────────────────────────────
-  aboutSection: {
-    alignItems: 'center',
-    marginTop: Spacing.xl,
-    paddingBottom: Spacing.md,
-    gap: 4,
-  },
-  aboutName: {
-    fontFamily: 'Sora',
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.semibold,
-  },
-  aboutVersion: {
-    color: Colors.textDisabled,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-  },
-  aboutCopy: {
-    color: Colors.textDisabled,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    textAlign: 'center',
-    marginTop: 2,
-  },
-
-  // ── Scan document card ────────────────────────────────────────────────────
-  scanDocumentCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.primaryMuted,
-    borderWidth: 1.5,
-    borderColor: Colors.primary,
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 16,
-    gap: 14,
-  },
-  scanBtnDisabled: {
-    opacity: 0.6,
-  },
-  // Passport mini illustration
-  passportMini: {
-    width: 54,
-    height: 74,
-    backgroundColor: '#1D4ED8',
-    borderRadius: 6,
-    padding: 6,
-    justifyContent: 'space-between',
-    flexShrink: 0,
-  },
-  passportMiniTop: {
-    height: 4,
-    backgroundColor: 'rgba(255,255,255,0.35)',
-    borderRadius: 2,
-  },
-  passportMiniBody: {
-    flexDirection: 'row',
-    gap: 5,
-    flex: 1,
-    marginTop: 6,
-  },
-  passportMiniPhoto: {
-    width: 16,
-    height: 22,
-    backgroundColor: 'rgba(255,255,255,0.35)',
-    borderRadius: 2,
-    flexShrink: 0,
-  },
-  passportMiniLines: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 4,
-  },
-  passportMiniLine: {
-    height: 3,
-    backgroundColor: 'rgba(255,255,255,0.35)',
-    borderRadius: 1.5,
-    width: '100%',
-  },
-  passportMiniMRZ: {
-    marginTop: 4,
-  },
-  // Scan card text content
-  scanCardContent: {
-    flex: 1,
-  },
-  scanCardTitle: {
-    color: Colors.primary,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.semibold,
-  },
-  scanCardSub: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    marginTop: 2,
-  },
-  scanCardHint: {
-    color: Colors.textDisabled,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    marginTop: 4,
-    fontStyle: 'italic',
-  },
-
-  // ── Price Alerts button ───────────────────────────────────────────────────
-  priceAlertsBtn: {
-    marginTop: Spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: Colors.card,
-    borderRadius: Radius.card,
-    padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  priceAlertsBtnLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flex: 1,
-  },
-  priceAlertsBtnTitle: {
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.semibold,
-    marginBottom: 2,
-  },
-  priceAlertsBtnSub: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-  },
-  priceAlertsBtnChevron: {
-    color: Colors.primary,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xl,
-    fontWeight: Typography.weights.bold,
-    lineHeight: 24,
-  },
-});
-
-// ── Scan confirm modal styles ─────────────────────────────────────────────────
-
-const scanModalStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: 40,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.md,
-  },
-  cancelBtn: {
-    color: Colors.primary,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-  },
-  title: {
-    color: Colors.text,
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
-  },
-  headerPlaceholder: {
-    width: 60,
-  },
-  subtitle: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    marginBottom: Spacing.md,
-    lineHeight: 20,
-  },
-  dataCard: {
-    backgroundColor: Colors.card,
-    borderRadius: Radius.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.sm,
-  },
-  dataRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 13,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    gap: 8,
-  },
-  dataRowLast: {
-    borderBottomWidth: 0,
-  },
-  dataRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    flex: 1,
-  },
-  dataLabel: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-  },
-  dataValue: {
-    color: Colors.text,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.medium,
-    maxWidth: '55%',
-    textAlign: 'right',
-  },
-  hint: {
-    color: Colors.textDisabled,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    lineHeight: 18,
-    marginBottom: Spacing.xl,
-  },
-  btnRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-  },
-  cancelPill: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: Radius.button,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    alignItems: 'center',
-  },
-  cancelPillText: {
-    color: Colors.textMuted,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.semibold,
-  },
-  applyPill: {
-    flex: 2,
-    paddingVertical: 14,
-    borderRadius: Radius.button,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-  },
-  applyPillText: {
-    color: Colors.textInverse,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
-  },
-});

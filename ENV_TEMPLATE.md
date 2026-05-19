@@ -69,18 +69,19 @@ AVIASALES_MARKER=your_marker
 # Базовый URL API
 AVIASALES_BASE_URL=https://api.travelpayouts.com
 
-# ─── Booking.com Partner API ──────────────────────────────────────────────────
+# ─── Amadeus Hotel + Flight API ──────────────────────────────────────────────
 
-# Username и пароль для Booking.com Affiliate Partner API
-# Получить через https://partnerhelp.booking.com
-BOOKING_USERNAME=your_booking_username
-BOOKING_PASSWORD=your_booking_password
+# Amadeus Self-Service API (бесплатный sandbox — до 2000 запросов/месяц)
+# 1. Зарегистрируйтесь на https://developers.amadeus.com
+# 2. Создайте приложение в разделе "My Self-Service Workspace"
+# 3. Скопируйте Client ID и Client Secret из страницы приложения
+# 4. Sandbox работает сразу; для production замените BASE_URL на https://api.amadeus.com
+#    и переведите приложение в production-режим в дашборде Amadeus
+AMADEUS_CLIENT_ID=
+AMADEUS_CLIENT_SECRET=
 
-# Базовый URL Booking.com API
-BOOKING_BASE_URL=https://distribution-xml.booking.com/2.0
-
-# Affiliate ID для Booking.com
-BOOKING_AFFILIATE_ID=your_affiliate_id
+# Базовый URL Amadeus API (sandbox по умолчанию)
+AMADEUS_BASE_URL=https://test.api.amadeus.com
 
 # ─── Платёжный шлюз (заглушка в MVP) ─────────────────────────────────────────
 

@@ -6,8 +6,8 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 interface Props {
   suggestions: string[];
@@ -15,6 +15,35 @@ interface Props {
 }
 
 export function ChatSuggestions({ suggestions, onSelect }: Props) {
+  const { colors } = useTheme();
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    wrapper: {
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+    content: {
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      gap: 8,
+      flexDirection: 'row',
+    },
+    chip: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 7,
+    },
+    chipText: {
+      color: colors.textMuted,
+      fontSize: Typography.sizes.sm,
+      fontWeight: Typography.weights.medium,
+    },
+  }), [colors]);
+
   if (suggestions.length === 0) return null;
 
   return (
@@ -39,30 +68,3 @@ export function ChatSuggestions({ suggestions, onSelect }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    backgroundColor: Colors.surface,
-  },
-  content: {
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-    flexDirection: 'row',
-  },
-  chip: {
-    backgroundColor: Colors.elevated,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-  },
-  chipText: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.medium,
-  },
-});

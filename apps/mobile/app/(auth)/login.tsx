@@ -14,14 +14,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../stores/authStore';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
 import { Typography, TextPresets } from '../../constants/typography';
 import { Spacing } from '../../constants/spacing';
-import { Radius } from '../../constants/radius';
 import { analytics, Events } from '../../src/analytics';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 
 export default function LoginScreen() {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +36,6 @@ export default function LoginScreen() {
     const loginPassword = overridePassword ?? password;
 
     if (!overrideEmail) {
-      // Only validate form when not using demo credentials
       const newErrors: { email?: string; password?: string } = {};
       if (!loginEmail.trim()) newErrors.email = 'Введите email';
       else if (!/\S+@\S+\.\S+/.test(loginEmail)) newErrors.email = 'Некорректный email';
@@ -75,7 +76,7 @@ export default function LoginScreen() {
       >
         <View style={styles.header}>
           <View style={styles.logoWrap}>
-            <Ionicons name="airplane" size={48} color={Colors.primary} />
+            <Ionicons name="airplane" size={48} color={colors.primary} />
           </View>
           <Text style={styles.title}>TravelAI</Text>
           <Text style={styles.subtitle}>AI-ассистент для путешествий</Text>
@@ -151,118 +152,120 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: Spacing.lg,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: Spacing.xl,
-    paddingTop: Spacing.lg,
-  },
-  logoWrap: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#F59E0B',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.md,
-    shadowColor: '#F59E0B',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 24,
-    elevation: 12,
-  },
-  title: {
-    fontFamily: 'Sora',
-    fontSize: 34,
-    fontWeight: Typography.weights.bold,
-    color: Colors.text,
-    marginBottom: Spacing.xs,
-    letterSpacing: -0.5,
-  },
-  subtitle: {
-    ...TextPresets.body,
-    color: Colors.textMuted,
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: Spacing.sm,
-    gap: Spacing.sm,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.border,
-  },
-  dividerText: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.medium,
-    letterSpacing: Typography.letterSpacing.wide,
-  },
-  form: {
-    width: '100%',
-  },
-  demoBtn: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: '#14B8A6',
-    borderRadius: 28,
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
-    alignItems: 'center',
-    height: 56,
-    justifyContent: 'center',
-  },
-  demoBtnDisabled: {
-    opacity: 0.5,
-  },
-  demoBtnTitle: {
-    ...TextPresets.button,
-    color: '#14B8A6',
-  },
-  demoBtnHint: {
-    ...TextPresets.caption,
-    color: '#14B8A6',
-    opacity: 0.75,
-    marginTop: 2,
-  },
-  loginBtn: {
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.sm,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#F59E0B',
-  },
-  forgotLink: {
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  forgotText: {
-    ...TextPresets.body,
-  },
-  forgotTextAccent: {
-    color: Colors.primary,
-    fontWeight: Typography.weights.medium,
-  },
-  registerLink: {
-    alignItems: 'center',
-  },
-  registerText: {
-    ...TextPresets.body,
-    color: Colors.textMuted,
-  },
-  registerTextAccent: {
-    color: Colors.primary,
-    fontWeight: Typography.weights.semibold,
-  },
-});
+function getStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    flex: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    container: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      padding: Spacing.lg,
+    },
+    header: {
+      alignItems: 'center',
+      marginBottom: Spacing.xl,
+      paddingTop: Spacing.lg,
+    },
+    logoWrap: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: '#F59E0B',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: Spacing.md,
+      shadowColor: '#F59E0B',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 24,
+      elevation: 12,
+    },
+    title: {
+      fontFamily: 'Sora',
+      fontSize: 34,
+      fontWeight: Typography.weights.bold,
+      color: colors.text,
+      marginBottom: Spacing.xs,
+      letterSpacing: -0.5,
+    },
+    subtitle: {
+      ...TextPresets.body,
+      color: colors.textMuted,
+    },
+    dividerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginVertical: Spacing.sm,
+      gap: Spacing.sm,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    dividerText: {
+      color: colors.textMuted,
+      fontSize: Typography.sizes.xs,
+      fontWeight: Typography.weights.medium,
+      letterSpacing: Typography.letterSpacing.wide,
+    },
+    form: {
+      width: '100%',
+    },
+    demoBtn: {
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      borderColor: '#14B8A6',
+      borderRadius: 28,
+      paddingHorizontal: Spacing.md,
+      marginBottom: Spacing.md,
+      alignItems: 'center',
+      height: 56,
+      justifyContent: 'center',
+    },
+    demoBtnDisabled: {
+      opacity: 0.5,
+    },
+    demoBtnTitle: {
+      ...TextPresets.button,
+      color: '#14B8A6',
+    },
+    demoBtnHint: {
+      ...TextPresets.caption,
+      color: '#14B8A6',
+      opacity: 0.75,
+      marginTop: 2,
+    },
+    loginBtn: {
+      marginTop: Spacing.sm,
+      marginBottom: Spacing.sm,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: '#F59E0B',
+    },
+    forgotLink: {
+      alignItems: 'center',
+      marginBottom: Spacing.md,
+    },
+    forgotText: {
+      ...TextPresets.body,
+    },
+    forgotTextAccent: {
+      color: colors.primary,
+      fontWeight: Typography.weights.medium,
+    },
+    registerLink: {
+      alignItems: 'center',
+    },
+    registerText: {
+      ...TextPresets.body,
+      color: colors.textMuted,
+    },
+    registerTextAccent: {
+      color: colors.primary,
+      fontWeight: Typography.weights.semibold,
+    },
+  });
+}

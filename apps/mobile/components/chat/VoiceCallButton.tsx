@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 // ── VoiceCallButton ───────────────────────────────────────────────────────────
 // Round 56 px button that reveals a "coming soon" Alert for AI voice calls.
@@ -13,6 +13,8 @@ interface VoiceCallButtonProps {
 }
 
 export function VoiceCallButton({ size = 56 }: VoiceCallButtonProps) {
+  const { colors } = useTheme();
+
   function handlePress() {
     Alert.alert(
       'AI Голосовой ассистент',
@@ -40,6 +42,8 @@ export function VoiceCallButton({ size = 56 }: VoiceCallButtonProps) {
           width: size,
           height: size,
           borderRadius: size / 2,
+          backgroundColor: colors.card,
+          borderColor: colors.border,
         },
       ]}
       onPress={handlePress}
@@ -48,16 +52,14 @@ export function VoiceCallButton({ size = 56 }: VoiceCallButtonProps) {
       accessibilityLabel="AI Голосовой ассистент"
       accessibilityRole="button"
     >
-      <Ionicons name="call-outline" size={22} color={Colors.primary} />
+      <Ionicons name="call-outline" size={22} color={colors.primary} />
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,

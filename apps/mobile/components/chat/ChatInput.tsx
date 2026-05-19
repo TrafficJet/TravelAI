@@ -17,10 +17,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Ionicons } from '@expo/vector-icons';
 import { ChatSuggestions } from './ChatSuggestions';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 export interface ChatInputHandle {
   /** Programmatically set input text without sending */
@@ -50,6 +50,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
   { onSend, disabled = false, initialMessage, suggestions = [], onSuggestionSelect, replyTo, onCancelReply },
   ref,
 ) {
+  const { colors } = useTheme();
   const [text, setText] = useState(initialMessage ?? '');
 
   // Scale animation for send button
@@ -156,14 +157,14 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
     <View>
       {/* Reply-to preview */}
       {replyTo && (
-        <View style={replyStyles.container}>
-          <View style={replyStyles.bar} />
+        <View style={[replyStyles.container, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+          <View style={[replyStyles.bar, { backgroundColor: colors.primary }]} />
           <View style={{ flex: 1 }}>
-            <Text style={replyStyles.label}>{replyTo.role === 'user' ? 'Вы' : 'TravelAI'}</Text>
-            <Text style={replyStyles.text} numberOfLines={2}>{replyTo.content}</Text>
+            <Text style={[replyStyles.label, { color: colors.primary }]}>{replyTo.role === 'user' ? 'Вы' : 'TravelAI'}</Text>
+            <Text style={[replyStyles.text, { color: colors.textMuted }]} numberOfLines={2}>{replyTo.content}</Text>
           </View>
           <TouchableOpacity onPress={onCancelReply} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons name="close" size={18} color={Colors.textMuted} />
+            <Ionicons name="close" size={18} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
       )}
@@ -177,10 +178,14 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
       )}
 
       {/* Input row */}
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
         {/* Attach button */}
-        <TouchableOpacity style={styles.attachBtn} onPress={handleAttach} activeOpacity={0.7}>
-          <Ionicons name="add" size={22} color={Colors.primary} />
+        <TouchableOpacity
+          style={[styles.attachBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+          onPress={handleAttach}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="add" size={22} color={colors.primary} />
         </TouchableOpacity>
 
         {/* Text input — pill shape */}
@@ -188,8 +193,8 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           value={text}
           onChangeText={setText}
           placeholder="Куда хотите полететь?..."
-          placeholderTextColor={Colors.textMuted}
-          style={styles.input}
+          placeholderTextColor={colors.textMuted}
+          style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
           multiline
           maxLength={2000}
           editable={!disabled}
@@ -204,17 +209,18 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
             disabled={disabled && hasText}
             style={[
               styles.sendButton,
-              disabled && hasText && styles.sendButtonDisabled,
+              { backgroundColor: colors.primary, shadowColor: colors.primary },
+              disabled && hasText && [styles.sendButtonDisabled, { backgroundColor: colors.primaryDark }],
             ]}
             activeOpacity={0.8}
           >
             {disabled && hasText ? (
-              <ActivityIndicator size="small" color={Colors.textInverse} />
+              <ActivityIndicator size="small" color={colors.textInverse} />
             ) : (
               <Ionicons
                 name={hasText ? 'arrow-up' : 'mic'}
                 size={18}
-                color={Colors.textInverse}
+                color={colors.textInverse}
               />
             )}
           </TouchableOpacity>
@@ -231,26 +237,21 @@ const replyStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: Colors.surface,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
     gap: 10,
   },
   bar: {
     width: 3,
     height: 36,
     borderRadius: 2,
-    backgroundColor: Colors.primary,
   },
   label: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: 12,
     fontWeight: '600',
     marginBottom: 2,
   },
   text: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: 12,
     lineHeight: 16,
@@ -264,9 +265,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     paddingTop: 10,
-    backgroundColor: Colors.surface,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
     gap: 10,
     ...Platform.select({
       ios: {
@@ -276,34 +275,28 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: Colors.surface,
     borderRadius: 28,
     paddingHorizontal: 16,
     paddingVertical: 10,
     paddingTop: 10,
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     maxHeight: 120,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   sendButton: {
-    backgroundColor: Colors.primary,
     width: 40,
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.4,
     shadowRadius: 6,
     elevation: 4,
   },
   sendButtonDisabled: {
-    backgroundColor: Colors.primaryDark,
     opacity: 0.65,
     shadowOpacity: 0,
     elevation: 0,
@@ -312,9 +305,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,

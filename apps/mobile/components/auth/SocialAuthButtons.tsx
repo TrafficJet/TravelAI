@@ -13,7 +13,6 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import { useAuthStore } from '../../stores/authStore';
 import { toast } from '../../lib/toast';
 import { useTheme } from '../../src/theme/useTheme';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -186,12 +185,12 @@ export function SocialAuthButtons({ mode }: SocialAuthButtonsProps) {
         ) : (
           // Web stub
           <TouchableOpacity
-            style={[styles.appleButtonStub, { opacity: 0.6 }]}
+            style={[styles.appleButtonStub, { backgroundColor: colors.background, opacity: 0.6 }]}
             onPress={() => toast.info('Вход через Apple доступен только в iOS-приложении.')}
             activeOpacity={0.8}
           >
-            <Text style={styles.appleStubIcon}></Text>
-            <Text style={styles.appleStubText}>{actionLabel} через Apple</Text>
+            <Text style={[styles.appleStubIcon, { color: '#0A0A14' }]}></Text>
+            <Text style={[styles.appleStubText, { color: '#0A0A14' }]}>{actionLabel} через Apple</Text>
           </TouchableOpacity>
         )
       )}
@@ -254,17 +253,14 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 12,
-    backgroundColor: Colors.background,
     minHeight: 50,
     gap: 10,
   },
   appleStubIcon: {
     fontSize: 18,
-    color: Colors.textInverse,
   },
   appleStubText: {
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
-    color: Colors.textInverse,
   },
 });

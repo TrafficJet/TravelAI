@@ -12,15 +12,15 @@ import { ToastContainer } from '../components/ui/Toast';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Notifications from 'expo-notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeStorage } from '../utils/safeStorage';
 import type { EventSubscription } from 'expo-modules-core';
 import { useAuthStore } from '../stores/authStore';
 import { useWalletStore } from '../stores/walletStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
-import { Colors } from '../constants/colors';
 import { setupNotificationHandlers, registerForPushNotifications } from '../services/notifications.service';
+import { darkColors } from '../src/theme/colors';
 import api from '../services/api';
-import { ThemeProvider } from '../src/theme/ThemeContext';
+import { ThemeProvider, useTheme } from '../src/theme/ThemeContext';
 import { NotificationsProvider } from '../context/NotificationsContext';
 import { initSentry } from '../lib/sentry';
 import { toast } from '../lib/toast';
@@ -83,7 +83,7 @@ function BrandSplash({ onFinish }: { onFinish: () => void }) {
 const splashStyles = StyleSheet.create({
   root: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0A0A14',
+    backgroundColor: darkColors.background,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 999,
@@ -93,14 +93,14 @@ const splashStyles = StyleSheet.create({
   },
   plane: {
     fontSize: 80,
-    color: '#F59E0B',
+    color: darkColors.primary,
     marginBottom: 20,
   },
   brand: {
     fontFamily: 'Sora_Bold',
     fontSize: 36,
     fontWeight: '700',
-    color: '#F4F4F8',
+    color: darkColors.text,
     letterSpacing: -0.5,
     marginBottom: 10,
   },
@@ -108,10 +108,99 @@ const splashStyles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 15,
     fontWeight: '400',
-    color: '#8B8BA7',
+    color: darkColors.textMuted,
     letterSpacing: 0.2,
   },
 });
+
+// ─── Themed stack (needs to be inside ThemeProvider) ─────────────────────────
+
+interface ThemedStackProps {
+  fontsLoaded: boolean;
+  showBrandSplash: boolean;
+  onBrandSplashFinish: () => void;
+}
+
+function ThemedStack({ fontsLoaded, showBrandSplash, onBrandSplashFinish }: ThemedStackProps) {
+  const { colors, isDark } = useTheme();
+  return (
+    <View style={{ flex: 1 }}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
+          headerTitleStyle: { fontWeight: '600', color: colors.text },
+          contentStyle: { backgroundColor: colors.background },
+          headerShadowVisible: false,
+        }}
+      >
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="chat/[sessionId]"
+          options={{ title: 'Чат', headerBackTitle: 'Назад' }}
+        />
+        <Stack.Screen
+          name="bookings/[bookingId]"
+          options={{ title: 'Детали брони', headerBackTitle: 'Назад' }}
+        />
+        <Stack.Screen
+          name="subscription/plans"
+          options={{ title: 'Подписка', headerBackTitle: 'Назад' }}
+        />
+        <Stack.Screen
+          name="wallet/topup"
+          options={{ title: 'Пополнение', headerBackTitle: 'Назад' }}
+        />
+        <Stack.Screen
+          name="flight-detail"
+          options={{ title: 'Детали рейса', headerShown: false }}
+        />
+        <Stack.Screen
+          name="hotel-detail"
+          options={{ title: 'Детали отеля', headerShown: false }}
+        />
+        <Stack.Screen
+          name="booking-success"
+          options={{ title: 'Бронирование', headerShown: false, gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="settings"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="notifications"
+          options={{ title: 'Уведомления', headerBackTitle: 'Назад' }}
+        />
+        <Stack.Screen
+          name="price-alerts"
+          options={{ title: 'Ценовые оповещения', headerBackTitle: 'Назад' }}
+        />
+        <Stack.Screen
+          name="hotels-map"
+          options={{ title: 'Отели на карте', headerShown: false }}
+        />
+        <Stack.Screen
+          name="privacy-policy"
+          options={{ title: 'Политика конфиденциальности', headerBackTitle: 'Назад' }}
+        />
+        <Stack.Screen
+          name="terms-of-service"
+          options={{ title: 'Условия использования', headerBackTitle: 'Назад' }}
+        />
+        <Stack.Screen name="+not-found" options={{ title: 'Не найдено' }} />
+      </Stack>
+      <ToastContainer />
+
+      {/* Brand splash overlays everything until animation completes */}
+      {fontsLoaded && showBrandSplash && (
+        <BrandSplash onFinish={onBrandSplashFinish} />
+      )}
+    </View>
+  );
+}
 
 // ─── Root layout ──────────────────────────────────────────────────────────────
 
@@ -222,7 +311,7 @@ export default function RootLayout() {
     async function navigate() {
       // Restore saved language before navigating so the first screen is localised
       try {
-        const savedLang = await AsyncStorage.getItem('app_language');
+        const savedLang = await safeStorage.getItem('app_language');
         if (savedLang && (savedLang === 'ru' || savedLang === 'en')) {
           await i18n.changeLanguage(savedLang);
         }
@@ -231,7 +320,7 @@ export default function RootLayout() {
       }
 
       try {
-        const onboardingDone = await AsyncStorage.getItem(ONBOARDING_KEY);
+        const onboardingDone = await safeStorage.getItem(ONBOARDING_KEY);
         if (!onboardingDone) {
           setTimeout(() => router.replace('/onboarding'), 0);
           // Handle cold-start deep link after navigation
@@ -272,77 +361,11 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ThemeProvider>
         <NotificationsProvider>
-          <StatusBar style="light" />
-          <View style={{ flex: 1 }}>
-            <Stack
-              screenOptions={{
-                headerStyle: { backgroundColor: Colors.background },
-                headerTintColor: Colors.text,
-                headerTitleStyle: { fontWeight: '600' },
-                contentStyle: { backgroundColor: Colors.background },
-                headerShadowVisible: false,
-              }}
-            >
-              <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="chat/[sessionId]"
-                options={{ title: 'Чат', headerBackTitle: 'Назад' }}
-              />
-              <Stack.Screen
-                name="bookings/[bookingId]"
-                options={{ title: 'Детали брони', headerBackTitle: 'Назад' }}
-              />
-              <Stack.Screen
-                name="subscription/plans"
-                options={{ title: 'Подписка', headerBackTitle: 'Назад' }}
-              />
-              <Stack.Screen
-                name="wallet/topup"
-                options={{ title: 'Пополнение', headerBackTitle: 'Назад' }}
-              />
-              <Stack.Screen
-                name="flight-detail"
-                options={{ title: 'Детали рейса', headerShown: false }}
-              />
-              <Stack.Screen
-                name="hotel-detail"
-                options={{ title: 'Детали отеля', headerShown: false }}
-              />
-              <Stack.Screen
-                name="booking-success"
-                options={{ title: 'Бронирование', headerShown: false, gestureEnabled: false }}
-              />
-              <Stack.Screen
-                name="settings"
-                options={{ title: 'Настройки', headerBackTitle: 'Назад' }}
-              />
-              <Stack.Screen
-                name="notifications"
-                options={{ title: 'Уведомления', headerBackTitle: 'Назад' }}
-              />
-              <Stack.Screen
-                name="price-alerts"
-                options={{ title: 'Ценовые оповещения', headerBackTitle: 'Назад' }}
-              />
-              <Stack.Screen
-                name="hotels-map"
-                options={{ title: 'Отели на карте', headerShown: false }}
-              />
-              <Stack.Screen
-                name="privacy-policy"
-                options={{ title: 'Политика конфиденциальности', headerBackTitle: 'Назад' }}
-              />
-              <Stack.Screen name="+not-found" options={{ title: 'Не найдено' }} />
-            </Stack>
-            <ToastContainer />
-
-            {/* Brand splash overlays everything until animation completes */}
-            {fontsLoaded && showBrandSplash && (
-              <BrandSplash onFinish={() => setShowBrandSplash(false)} />
-            )}
-          </View>
+          <ThemedStack
+            fontsLoaded={fontsLoaded}
+            showBrandSplash={showBrandSplash}
+            onBrandSplashFinish={() => setShowBrandSplash(false)}
+          />
         </NotificationsProvider>
       </ThemeProvider>
     </SafeAreaProvider>

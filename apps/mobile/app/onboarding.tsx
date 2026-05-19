@@ -11,12 +11,13 @@ import {
   ListRenderItemInfo,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeStorage as AsyncStorage } from '../utils/safeStorage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../stores/authStore';
-import { Colors, TextPresets, Spacing, Radius } from '../constants';
+import { TextPresets, Spacing, Radius } from '../constants';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../src/theme/ThemeContext';
 
 export const ONBOARDING_KEY = 'onboarding_done';
 
@@ -72,6 +73,7 @@ const TOTAL = SLIDES.length;
 // ─── Animated emoji illustration ─────────────────────────────────────────────
 
 function AnimatedEmoji({ emoji, active }: { emoji: string; active: boolean; }) {
+  const { colors } = useTheme();
   const scale = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const glowOpacity = useRef(new Animated.Value(0.5)).current;
@@ -131,10 +133,13 @@ function AnimatedEmoji({ emoji, active }: { emoji: string; active: boolean; }) {
   return (
     <Animated.View style={[slideStyles.iconOuter, { opacity }]}>
       {/* Glow ring */}
-      <Animated.View style={[slideStyles.glowRing, { opacity: glowOpacity }]} />
+      <Animated.View style={[
+        slideStyles.glowRing,
+        { shadowColor: colors.primary, opacity: glowOpacity },
+      ]} />
       {/* Inner circle */}
-      <Animated.View style={[slideStyles.iconWrap, { transform: [{ scale }] }]}>
-        <Ionicons name={emoji as any} size={64} color={Colors.primary} />
+      <Animated.View style={[slideStyles.iconWrap, { shadowColor: colors.primary, transform: [{ scale }] }]}>
+        <Ionicons name={emoji as any} size={64} color={colors.primary} />
       </Animated.View>
     </Animated.View>
   );
@@ -143,11 +148,12 @@ function AnimatedEmoji({ emoji, active }: { emoji: string; active: boolean; }) {
 // ─── Single slide component ───────────────────────────────────────────────────
 
 function SlideItem({ item, active }: { item: Slide; active: boolean }) {
+  const { colors } = useTheme();
   return (
     <View style={[slideStyles.container, { width: SCREEN_WIDTH }]}>
       <AnimatedEmoji emoji={item.iconName} active={active} />
-      <Text style={slideStyles.title}>{item.title}</Text>
-      <Text style={slideStyles.description}>{item.description}</Text>
+      <Text style={[slideStyles.title, { color: colors.text }]}>{item.title}</Text>
+      <Text style={[slideStyles.description, { color: colors.textMuted }]}>{item.description}</Text>
     </View>
   );
 }
@@ -174,7 +180,6 @@ const slideStyles = StyleSheet.create({
     backgroundColor: 'rgba(245,158,11,0.08)',
     borderWidth: 1.5,
     borderColor: 'rgba(245,158,11,0.18)',
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 32,
@@ -189,7 +194,6 @@ const slideStyles = StyleSheet.create({
     borderColor: 'rgba(245,158,11,0.28)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
@@ -200,14 +204,12 @@ const slideStyles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '700',
     lineHeight: 34,
-    color: Colors.text,
     textAlign: 'center',
     marginBottom: 18,
     letterSpacing: -0.3,
   },
   description: {
     ...TextPresets.body,
-    color: Colors.textMuted,
     textAlign: 'center',
     lineHeight: 26,
   },
@@ -216,6 +218,7 @@ const slideStyles = StyleSheet.create({
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function OnboardingScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { isAuthenticated } = useAuthStore();
 
@@ -262,12 +265,12 @@ export default function OnboardingScreen() {
   const isLast = currentIndex === TOTAL - 1;
 
   return (
-    <View style={styles.root}>
-      <StatusBar barStyle="light-content" backgroundColor={Colors.background} />
+    <View style={[styles.root, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.background} />
 
       {/* Animated background gradient — reacts to current slide */}
       <LinearGradient
-        colors={[Colors.background, SLIDES[currentIndex]?.gradientEnd ?? Colors.background]}
+        colors={[colors.background, SLIDES[currentIndex]?.gradientEnd ?? colors.background]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.6, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -282,7 +285,7 @@ export default function OnboardingScreen() {
             hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
             style={styles.skipBtn}
           >
-            <Text style={styles.skipText}>Пропустить</Text>
+            <Text style={[styles.skipText, { color: colors.textMuted }]}>Пропустить</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.skipBtn} />
@@ -324,7 +327,9 @@ export default function OnboardingScreen() {
               key={i}
               style={[
                 styles.dot,
-                isActive ? styles.dotActive : styles.dotInactive,
+                isActive
+                  ? [styles.dotActive, { backgroundColor: colors.primary }]
+                  : [styles.dotInactive, { backgroundColor: colors.border }],
               ]}
             />
           );
@@ -339,7 +344,7 @@ export default function OnboardingScreen() {
         ]}
       >
         <TouchableOpacity
-          style={styles.nextBtn}
+          style={[styles.nextBtn, { backgroundColor: colors.primary, shadowColor: colors.primary }]}
           onPress={goNext}
           activeOpacity={0.85}
         >
@@ -348,11 +353,11 @@ export default function OnboardingScreen() {
 
         {isLast && (
           <TouchableOpacity
-            style={styles.loginBtn}
+            style={[styles.loginBtn, { borderColor: colors.border }]}
             onPress={() => router.replace('/(auth)/login')}
             activeOpacity={0.7}
           >
-            <Text style={styles.loginBtnText}>У меня уже есть аккаунт</Text>
+            <Text style={[styles.loginBtnText, { color: colors.textMuted }]}>У меня уже есть аккаунт</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -365,7 +370,6 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     alignItems: 'flex-end',
@@ -378,7 +382,6 @@ const styles = StyleSheet.create({
   },
   skipText: {
     ...TextPresets.bodyMedium,
-    color: Colors.textMuted,
   },
   flatList: {
     flex: 1,
@@ -398,11 +401,9 @@ const styles = StyleSheet.create({
   },
   dotInactive: {
     width: 8,
-    backgroundColor: Colors.border,
   },
   dotActive: {
     width: 28,
-    backgroundColor: Colors.primary,
   },
   footer: {
     paddingHorizontal: Spacing.screenPaddingH,
@@ -410,12 +411,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   nextBtn: {
-    backgroundColor: Colors.primary,
     paddingVertical: 16,
     borderRadius: Radius.button,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 14,
@@ -425,7 +424,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 17,
     fontWeight: '700',
-    color: Colors.textInverse,
+    color: '#fff',
     letterSpacing: 0.2,
   },
   loginBtn: {
@@ -434,13 +433,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: Colors.border,
   },
   loginBtnText: {
     fontFamily: 'Inter',
     fontSize: 15,
     fontWeight: '600',
-    color: Colors.textMuted,
     letterSpacing: 0.1,
   },
 });

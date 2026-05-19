@@ -12,7 +12,7 @@ import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../constants/colors';
+import { useTheme } from '../src/theme/ThemeContext';
 import { Typography } from '../constants/typography';
 import { toast } from '../lib/toast';
 import { FavoriteButton } from '../components/ui/FavoriteButton';
@@ -39,10 +39,11 @@ function formatDuration(minutes: number): string {
 // ── StopsBadge ────────────────────────────────────────────────────────────────
 
 function StopsBadge({ stops }: { stops: number }) {
+  const { colors } = useTheme();
   const label =
     stops === 0 ? 'Прямой' : stops === 1 ? '1 пересадка' : `${stops} пересадки`;
   const color =
-    stops === 0 ? Colors.success : stops === 1 ? Colors.warning : Colors.error;
+    stops === 0 ? colors.success : stops === 1 ? colors.warning : colors.error;
   return (
     <View style={[badge.wrap, { backgroundColor: `${color}22` }]}>
       <View style={[badge.dot, { backgroundColor: color }]} />
@@ -84,23 +85,24 @@ function InfoCard({
   title: string;
   rows: { label: string; value: string; valueColor?: string; valueLarge?: boolean }[];
 }) {
+  const { colors } = useTheme();
   return (
-    <View style={card.wrap}>
+    <View style={[card.wrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={card.header}>
         <Text style={card.icon}>{icon}</Text>
-        <Text style={card.title}>{title}</Text>
+        <Text style={[card.title, { color: colors.textMuted }]}>{title}</Text>
       </View>
       {rows.map((r, i) => (
         <View
           key={i}
-          style={[card.row, i < rows.length - 1 && card.rowDivider]}
+          style={[card.row, i < rows.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}
         >
-          <Text style={card.label}>{r.label}</Text>
+          <Text style={[card.label, { color: colors.textMuted }]}>{r.label}</Text>
           <Text
             style={[
               card.value,
-              r.valueColor ? { color: r.valueColor } : undefined,
-              r.valueLarge ? card.valueLarge : undefined,
+              { color: r.valueColor ?? colors.text },
+              r.valueLarge ? { fontFamily: 'Sora', fontSize: Typography.sizes.xl, fontWeight: Typography.weights.extrabold, color: r.valueColor ?? colors.primary } : undefined,
             ]}
           >
             {r.value}
@@ -113,11 +115,9 @@ function InfoCard({
 
 const card = StyleSheet.create({
   wrap: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
     gap: 0,
   },
   header: {
@@ -130,7 +130,6 @@ const card = StyleSheet.create({
     fontSize: 18,
   },
   title: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
@@ -143,32 +142,21 @@ const card = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
   },
-  rowDivider: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
-  },
   label: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   value: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
-  },
-  valueLarge: {
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.xl,
-    fontWeight: Typography.weights.extrabold,
-    color: Colors.primary,
   },
 });
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function FlightDetailScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const raw = useLocalSearchParams();
 
@@ -244,11 +232,11 @@ export default function FlightDetailScreen() {
   }, [origin, destination, departureDate, formattedPrice]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* ── Hero Section ─────────────────────────────────────────────────────── */}
       <View style={styles.heroWrapper}>
         <LinearGradient
-          colors={['#0A0A14', '#1A1008', `${Colors.primary}28`]}
+          colors={[colors.background, colors.surface, `${colors.primary}28`]}
           locations={[0, 0.45, 1]}
           style={[styles.heroGradient, { paddingTop: insets.top }]}
         >
@@ -259,9 +247,9 @@ export default function FlightDetailScreen() {
               onPress={() => router.back()}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Ionicons name="chevron-back" size={24} color={Colors.text} />
+              <Ionicons name="chevron-back" size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Детали рейса</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Детали рейса</Text>
             <View style={styles.headerRight}>
               <FavoriteButton type="flight" item={flightForFavorite} size={22} />
               <TouchableOpacity
@@ -269,18 +257,18 @@ export default function FlightDetailScreen() {
                 onPress={handleShare}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Ionicons name="share-outline" size={22} color={Colors.text} />
+                <Ionicons name="share-outline" size={22} color={colors.text} />
               </TouchableOpacity>
             </View>
           </Animated.View>
 
           {/* Route hero title */}
           <Animated.View entering={FadeIn.duration(500)} style={styles.heroContent}>
-            <Text style={styles.heroRoute}>
+            <Text style={[styles.heroRoute, { color: colors.text }]}>
               {origin || '???'} → {destination || '???'}
             </Text>
             {(airline || flightNumber) ? (
-              <Text style={styles.heroSub}>
+              <Text style={[styles.heroSub, { color: colors.textMuted }]}>
                 {[airline, flightNumber].filter(Boolean).join(' · ')}
               </Text>
             ) : null}
@@ -297,47 +285,47 @@ export default function FlightDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* ── Flight timeline card ──────────────────────────────────────────── */}
-        <Animated.View entering={FadeInUp.delay(60).springify()} style={styles.timelineCard}>
+        <Animated.View entering={FadeInUp.delay(60).springify()} style={[styles.timelineCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
           {/* Times row */}
           <View style={styles.timeRow}>
             <View style={styles.timeBlock}>
-              <Text style={styles.timeValue}>{departureTime ?? '--:--'}</Text>
-              <Text style={styles.timeAirport}>{origin || '???'}</Text>
+              <Text style={[styles.timeValue, { color: colors.text }]}>{departureTime ?? '--:--'}</Text>
+              <Text style={[styles.timeAirport, { color: colors.textMuted }]}>{origin || '???'}</Text>
             </View>
 
             <View style={styles.timeCenter}>
               {durationNum !== undefined && (
-                <Text style={styles.durationLabel}>{formatDuration(durationNum)}</Text>
+                <Text style={[styles.durationLabel, { color: colors.textMuted }]}>{formatDuration(durationNum)}</Text>
               )}
               {/* Line with plane */}
               <View style={styles.flightLine}>
-                <View style={styles.flightLineDash} />
+                <View style={[styles.flightLineDash, { backgroundColor: colors.border }]} />
                 <Text style={styles.planeIcon}>✈</Text>
-                <View style={styles.flightLineDash} />
+                <View style={[styles.flightLineDash, { backgroundColor: colors.border }]} />
               </View>
               <StopsBadge stops={stopsNum} />
             </View>
 
             <View style={[styles.timeBlock, styles.timeBlockRight]}>
-              <Text style={styles.timeValue}>{arrivalTime ?? '--:--'}</Text>
-              <Text style={styles.timeAirport}>{destination || '???'}</Text>
+              <Text style={[styles.timeValue, { color: colors.text }]}>{arrivalTime ?? '--:--'}</Text>
+              <Text style={[styles.timeAirport, { color: colors.textMuted }]}>{destination || '???'}</Text>
             </View>
           </View>
 
           {/* City names row */}
-          <View style={styles.cityRow}>
-            <Text style={styles.cityName} numberOfLines={1}>
+          <View style={[styles.cityRow, { borderTopColor: colors.border }]}>
+            <Text style={[styles.cityName, { color: colors.textMuted }]} numberOfLines={1}>
               {origin}
             </Text>
-            <Text style={[styles.cityName, styles.cityNameRight]} numberOfLines={1}>
+            <Text style={[styles.cityName, styles.cityNameRight, { color: colors.textMuted }]} numberOfLines={1}>
               {destination}
             </Text>
           </View>
 
           {departureDate ? (
             <View style={styles.dateRow}>
-              <Ionicons name="calendar-outline" size={13} color={Colors.textMuted} />
-              <Text style={styles.dateText}>{formatDate(departureDate)}</Text>
+              <Ionicons name="calendar-outline" size={13} color={colors.textMuted} />
+              <Text style={[styles.dateText, { color: colors.textMuted }]}>{formatDate(departureDate)}</Text>
             </View>
           ) : null}
         </Animated.View>
@@ -372,63 +360,55 @@ export default function FlightDetailScreen() {
         </Animated.View>
 
         {/* ── Included services card ───────────────────────────────────────── */}
-        <Animated.View entering={FadeInUp.delay(240).springify()} style={includedCard.wrap}>
-          <Text style={includedCard.title}>ВКЛЮЧЕНО В РЕЙС</Text>
+        <Animated.View entering={FadeInUp.delay(240).springify()} style={[includedCard.wrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[includedCard.title, { color: colors.textMuted }]}>ВКЛЮЧЕНО В РЕЙС</Text>
           <View style={includedCard.grid}>
             <View style={includedCard.item}>
-              <View style={includedCard.iconCircle}>
+              <View style={[includedCard.iconCircle, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
                 <Text style={includedCard.iconEmoji}>🎒</Text>
               </View>
-              <Text style={includedCard.itemLabel}>Ручная{'\n'}кладь</Text>
-              <Text style={includedCard.itemValue}>1 × 10 кг</Text>
+              <Text style={[includedCard.itemLabel, { color: colors.textMuted }]}>Ручная{'\n'}кладь</Text>
+              <Text style={[includedCard.itemValue, { color: colors.text }]}>1 × 10 кг</Text>
             </View>
             <View style={includedCard.item}>
-              <View style={includedCard.iconCircle}>
+              <View style={[includedCard.iconCircle, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
                 <Text style={includedCard.iconEmoji}>🧳</Text>
               </View>
-              <Text style={includedCard.itemLabel}>Багаж{'\n'}в салон</Text>
-              <Text style={includedCard.itemValue}>{cabinLabel === 'Эконом' ? '1 × 23 кг' : '2 × 32 кг'}</Text>
+              <Text style={[includedCard.itemLabel, { color: colors.textMuted }]}>Багаж{'\n'}в салон</Text>
+              <Text style={[includedCard.itemValue, { color: colors.text }]}>{cabinLabel === 'Эконом' ? '1 × 23 кг' : '2 × 32 кг'}</Text>
             </View>
             <View style={includedCard.item}>
-              <View style={includedCard.iconCircle}>
+              <View style={[includedCard.iconCircle, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
                 <Text style={includedCard.iconEmoji}>🍽️</Text>
               </View>
-              <Text style={includedCard.itemLabel}>Питание{'\n'}на борту</Text>
-              <Text style={includedCard.itemValue}>{cabinLabel === 'Эконом' ? 'Снеки' : 'Меню'}</Text>
+              <Text style={[includedCard.itemLabel, { color: colors.textMuted }]}>Питание{'\n'}на борту</Text>
+              <Text style={[includedCard.itemValue, { color: colors.text }]}>{cabinLabel === 'Эконом' ? 'Снеки' : 'Меню'}</Text>
             </View>
             <View style={includedCard.item}>
-              <View style={includedCard.iconCircle}>
+              <View style={[includedCard.iconCircle, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
                 <Text style={includedCard.iconEmoji}>💺</Text>
               </View>
-              <Text style={includedCard.itemLabel}>Выбор{'\n'}места</Text>
-              <Text style={includedCard.itemValue}>{cabinLabel === 'Эконом' ? 'Платно' : 'Бесплатно'}</Text>
+              <Text style={[includedCard.itemLabel, { color: colors.textMuted }]}>Выбор{'\n'}места</Text>
+              <Text style={[includedCard.itemValue, { color: colors.text }]}>{cabinLabel === 'Эконом' ? 'Платно' : 'Бесплатно'}</Text>
             </View>
           </View>
         </Animated.View>
 
         {/* ── Airline card ─────────────────────────────────────────────────── */}
         {airline ? (
-          <Animated.View entering={FadeInUp.delay(270).springify()} style={airlineCard.wrap}>
-            <Text style={airlineCard.sectionTitle}>АВИАКОМПАНИЯ</Text>
+          <Animated.View entering={FadeInUp.delay(270).springify()} style={[airlineCard.wrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[airlineCard.sectionTitle, { color: colors.textMuted }]}>АВИАКОМПАНИЯ</Text>
             <View style={airlineCard.row}>
-              <View style={airlineCard.logoWrap}>
+              <View style={[airlineCard.logoWrap, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
                 <Text style={airlineCard.logoEmoji}>✈️</Text>
               </View>
               <View style={airlineCard.info}>
-                <Text style={airlineCard.name}>{airline}</Text>
+                <Text style={[airlineCard.name, { color: colors.text }]}>{airline}</Text>
                 {flightNumber ? (
-                  <Text style={airlineCard.flightNum}>Рейс {flightNumber}</Text>
+                  <Text style={[airlineCard.flightNum, { color: colors.textMuted }]}>Рейс {flightNumber}</Text>
                 ) : null}
               </View>
-              <View style={airlineCard.ratingWrap}>
-                <Text style={airlineCard.ratingVal}>8.4</Text>
-                <Text style={airlineCard.ratingLabel}>/ 10</Text>
-                <View style={airlineCard.starsRow}>
-                  {['★','★','★','★','☆'].map((s, i) => (
-                    <Text key={i} style={[airlineCard.star, i < 4 && airlineCard.starActive]}>{s}</Text>
-                  ))}
-                </View>
-              </View>
+                      {/* Rating block hidden: no rating param passed via navigation */}
             </View>
           </Animated.View>
         ) : null}
@@ -442,7 +422,7 @@ export default function FlightDetailScreen() {
               {
                 label: 'Цена за перелёт',
                 value: formattedPrice,
-                valueColor: Colors.primary,
+                valueColor: colors.primary,
                 valueLarge: true,
               },
             ]}
@@ -453,10 +433,10 @@ export default function FlightDetailScreen() {
       {/* ── Fixed bottom book button ──────────────────────────────────────── */}
       <Animated.View
         entering={FadeInUp.delay(200).springify()}
-        style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}
+        style={[styles.footer, { backgroundColor: colors.surface, borderTopColor: colors.border, paddingBottom: insets.bottom + 16 }]}
       >
         <TouchableOpacity
-          style={styles.bookBtn}
+          style={[styles.bookBtn, { backgroundColor: colors.primary, shadowColor: colors.primary }]}
           onPress={handleBook}
           activeOpacity={0.85}
         >
@@ -473,14 +453,11 @@ export default function FlightDetailScreen() {
 
 const includedCard = StyleSheet.create({
   wrap: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   title: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
@@ -501,9 +478,7 @@ const includedCard = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: Colors.primaryMuted,
     borderWidth: 1,
-    borderColor: `${Colors.primary}30`,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -511,14 +486,12 @@ const includedCard = StyleSheet.create({
     fontSize: 22,
   },
   itemLabel: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
     lineHeight: 16,
   },
   itemValue: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
@@ -530,14 +503,11 @@ const includedCard = StyleSheet.create({
 
 const airlineCard = StyleSheet.create({
   wrap: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   sectionTitle: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
@@ -554,9 +524,7 @@ const airlineCard = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 14,
-    backgroundColor: Colors.primaryMuted,
     borderWidth: 1,
-    borderColor: `${Colors.primary}30`,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -568,13 +536,11 @@ const airlineCard = StyleSheet.create({
     gap: 4,
   },
   name: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
   },
   flightNum: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
@@ -583,14 +549,12 @@ const airlineCard = StyleSheet.create({
     gap: 2,
   },
   ratingVal: {
-    color: Colors.success,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
     lineHeight: 28,
   },
   ratingLabel: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     position: 'absolute',
@@ -604,10 +568,6 @@ const airlineCard = StyleSheet.create({
   star: {
     fontFamily: 'Inter',
     fontSize: 12,
-    color: Colors.border,
-  },
-  starActive: {
-    color: Colors.primary,
   },
 });
 
@@ -616,7 +576,6 @@ const airlineCard = StyleSheet.create({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
 
   // Hero
@@ -637,7 +596,6 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   headerTitle: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
@@ -656,7 +614,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   heroRoute: {
-    color: Colors.text,
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.extrabold,
     fontFamily: 'Sora',
@@ -664,7 +621,6 @@ const styles = StyleSheet.create({
     lineHeight: 40,
   },
   heroSub: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
@@ -681,11 +637,9 @@ const styles = StyleSheet.create({
 
   // Timeline card
   timelineCard: {
-    backgroundColor: Colors.card,
     borderRadius: 20,
     padding: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
     gap: 12,
   },
   timeRow: {
@@ -701,14 +655,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   timeValue: {
-    color: Colors.text,
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
     fontFamily: 'Sora',
     letterSpacing: -0.5,
   },
   timeAirport: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
@@ -720,7 +672,6 @@ const styles = StyleSheet.create({
     flex: 1.2,
   },
   durationLabel: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium,
@@ -735,7 +686,6 @@ const styles = StyleSheet.create({
   flightLineDash: {
     flex: 1,
     height: 1.5,
-    backgroundColor: Colors.border,
     borderRadius: 1,
   },
   planeIcon: {
@@ -746,10 +696,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 4,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.border,
   },
   cityName: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     flex: 1,
@@ -763,33 +711,27 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   dateText: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
 
-  // Included & Airline (inline styles below)
   // Footer
   footer: {
-    backgroundColor: Colors.surface,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
     paddingHorizontal: 20,
     paddingTop: 16,
   },
   bookBtn: {
-    backgroundColor: Colors.primary,
     borderRadius: 100,
     paddingVertical: 17,
     alignItems: 'center',
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.45,
     shadowRadius: 12,
     elevation: 8,
   },
   bookBtnText: {
-    color: Colors.textInverse,
+    color: '#fff',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,

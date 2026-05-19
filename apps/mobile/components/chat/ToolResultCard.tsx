@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { FlightCard } from './FlightCard';
 import { HotelCard } from './HotelCard';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { FlightDetails, HotelDetails, FlightOffer, Hotel } from '../../types';
 
 // ── Search result summary cards (shown when AI returns search results) ─────────
@@ -18,23 +18,24 @@ interface FlightSearchSummaryProps {
 }
 
 export function FlightSearchSummary({ count, minPrice, maxPrice, currency }: FlightSearchSummaryProps) {
+  const { colors } = useTheme();
   return (
-    <View style={summaryStyles.card}>
+    <View style={[summaryStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={summaryStyles.iconRow}>
-        <Ionicons name="airplane" size={20} color={Colors.primary} />
-        <Text style={summaryStyles.label}>Найдено рейсов</Text>
+        <Ionicons name="airplane" size={20} color={colors.primary} />
+        <Text style={[summaryStyles.label, { color: colors.textMuted }]}>Найдено рейсов</Text>
       </View>
-      <Text style={summaryStyles.count}>{count}</Text>
-      <View style={summaryStyles.divider} />
+      <Text style={[summaryStyles.count, { color: colors.text }]}>{count}</Text>
+      <View style={[summaryStyles.divider, { backgroundColor: colors.border }]} />
       <View style={summaryStyles.priceRow}>
-        <Text style={summaryStyles.priceLabel}>Цены от</Text>
-        <Text style={summaryStyles.priceValue}>
+        <Text style={[summaryStyles.priceLabel, { color: colors.textMuted }]}>Цены от</Text>
+        <Text style={[summaryStyles.priceValue, { color: colors.primary }]}>
           {minPrice.toLocaleString('ru-RU')} {currency}
         </Text>
         {maxPrice > minPrice && (
           <>
-            <Text style={summaryStyles.priceLabel}> до </Text>
-            <Text style={summaryStyles.priceValue}>
+            <Text style={[summaryStyles.priceLabel, { color: colors.textMuted }]}> до </Text>
+            <Text style={[summaryStyles.priceValue, { color: colors.primary }]}>
               {maxPrice.toLocaleString('ru-RU')} {currency}
             </Text>
           </>
@@ -52,23 +53,24 @@ interface HotelSearchSummaryProps {
 }
 
 export function HotelSearchSummary({ count, minPrice, maxPrice, currency }: HotelSearchSummaryProps) {
+  const { colors } = useTheme();
   return (
-    <View style={summaryStyles.card}>
+    <View style={[summaryStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={summaryStyles.iconRow}>
-        <Ionicons name="bed-outline" size={20} color={Colors.primary} />
-        <Text style={summaryStyles.label}>Найдено отелей</Text>
+        <Ionicons name="bed-outline" size={20} color={colors.primary} />
+        <Text style={[summaryStyles.label, { color: colors.textMuted }]}>Найдено отелей</Text>
       </View>
-      <Text style={summaryStyles.count}>{count}</Text>
-      <View style={summaryStyles.divider} />
+      <Text style={[summaryStyles.count, { color: colors.text }]}>{count}</Text>
+      <View style={[summaryStyles.divider, { backgroundColor: colors.border }]} />
       <View style={summaryStyles.priceRow}>
-        <Text style={summaryStyles.priceLabel}>от </Text>
-        <Text style={summaryStyles.priceValue}>
+        <Text style={[summaryStyles.priceLabel, { color: colors.textMuted }]}>от </Text>
+        <Text style={[summaryStyles.priceValue, { color: colors.primary }]}>
           {minPrice.toLocaleString('ru-RU')} {currency}/ночь
         </Text>
         {maxPrice > minPrice && (
           <>
-            <Text style={summaryStyles.priceLabel}> до </Text>
-            <Text style={summaryStyles.priceValue}>
+            <Text style={[summaryStyles.priceLabel, { color: colors.textMuted }]}> до </Text>
+            <Text style={[summaryStyles.priceValue, { color: colors.primary }]}>
               {maxPrice.toLocaleString('ru-RU')} {currency}/ночь
             </Text>
           </>
@@ -83,24 +85,25 @@ interface TransferSearchSummaryProps {
 }
 
 export function TransferSearchSummary({ options }: TransferSearchSummaryProps) {
+  const { colors } = useTheme();
   return (
-    <View style={summaryStyles.card}>
+    <View style={[summaryStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={summaryStyles.iconRow}>
         <Text style={summaryStyles.icon}>🚗</Text>
-        <Text style={summaryStyles.label}>Варианты трансфера</Text>
+        <Text style={[summaryStyles.label, { color: colors.textMuted }]}>Варианты трансфера</Text>
       </View>
-      <Text style={summaryStyles.count}>{options.length}</Text>
+      <Text style={[summaryStyles.count, { color: colors.text }]}>{options.length}</Text>
       {options.length > 0 && (
         <>
-          <View style={summaryStyles.divider} />
+          <View style={[summaryStyles.divider, { backgroundColor: colors.border }]} />
           {options.map((opt, i) => (
             <View key={i} style={summaryStyles.transferRow}>
-              <Text style={summaryStyles.transferType}>{opt.type}</Text>
+              <Text style={[summaryStyles.transferType, { color: colors.text }]}>{opt.type}</Text>
               <View style={summaryStyles.transferRight}>
                 {opt.duration ? (
-                  <Text style={summaryStyles.transferDuration}>{opt.duration}</Text>
+                  <Text style={[summaryStyles.transferDuration, { color: colors.textMuted }]}>{opt.duration}</Text>
                 ) : null}
-                <Text style={summaryStyles.priceValue}>
+                <Text style={[summaryStyles.priceValue, { color: colors.primary }]}>
                   {opt.price.toLocaleString('ru-RU')} {opt.currency}
                 </Text>
               </View>
@@ -114,13 +117,11 @@ export function TransferSearchSummary({ options }: TransferSearchSummaryProps) {
 
 const summaryStyles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 14,
     padding: 14,
     marginHorizontal: 16,
     marginVertical: 6,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   iconRow: {
     flexDirection: 'row',
@@ -132,21 +133,18 @@ const summaryStyles = StyleSheet.create({
     fontSize: 16,
   },
   label: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     fontWeight: '600',
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
   count: {
-    color: Colors.text,
     fontSize: 28,
     fontWeight: '700',
     lineHeight: 34,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.border,
     marginVertical: 10,
   },
   priceRow: {
@@ -155,11 +153,9 @@ const summaryStyles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   priceLabel: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
   },
   priceValue: {
-    color: Colors.primary,
     fontSize: Typography.sizes.base,
     fontWeight: '700',
   },
@@ -170,7 +166,6 @@ const summaryStyles = StyleSheet.create({
     paddingVertical: 4,
   },
   transferType: {
-    color: Colors.text,
     fontSize: Typography.sizes.sm,
     flex: 1,
   },
@@ -180,7 +175,6 @@ const summaryStyles = StyleSheet.create({
     gap: 8,
   },
   transferDuration: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
   },
 });
@@ -212,45 +206,48 @@ function formatDate(dateStr: string): string {
 }
 
 function StarRating({ stars }: { stars: number }) {
+  const { colors } = useTheme();
   return (
-    <Text style={legacyStyles.stars}>{'★'.repeat(stars)}{'☆'.repeat(5 - stars)}</Text>
+    <Text style={[legacyStyles.stars, { color: colors.warning }]}>{'★'.repeat(stars)}{'☆'.repeat(5 - stars)}</Text>
   );
 }
 
 export function ToolResultCard(props: ToolResultCardProps) {
+  const { colors } = useTheme();
+
   if (props.type === 'flight') {
     const { data, price, currency, onBook } = props;
     return (
-      <View style={legacyStyles.card}>
+      <View style={[legacyStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={legacyStyles.header}>
-          <Text style={legacyStyles.typeLabel}>РЕЙС</Text>
-          <Text style={legacyStyles.airline}>{data.airline}</Text>
+          <Text style={[legacyStyles.typeLabel, { color: colors.primary }]}>РЕЙС</Text>
+          <Text style={[legacyStyles.airline, { color: colors.textMuted }]}>{data.airline}</Text>
         </View>
         <View style={legacyStyles.routeRow}>
           <View style={legacyStyles.routePoint}>
-            <Text style={legacyStyles.city}>{data.origin}</Text>
-            <Text style={legacyStyles.date}>{formatDate(data.departureDate)}</Text>
+            <Text style={[legacyStyles.city, { color: colors.text }]}>{data.origin}</Text>
+            <Text style={[legacyStyles.date, { color: colors.textMuted }]}>{formatDate(data.departureDate)}</Text>
           </View>
           <View style={legacyStyles.arrowContainer}>
-            <Text style={legacyStyles.arrow}>→</Text>
-            <Text style={legacyStyles.flightNum}>{data.flightNumber}</Text>
+            <Text style={[legacyStyles.arrow, { color: colors.primary }]}>→</Text>
+            <Text style={[legacyStyles.flightNum, { color: colors.textMuted }]}>{data.flightNumber}</Text>
           </View>
           <View style={legacyStyles.routePoint}>
-            <Text style={legacyStyles.city}>{data.destination}</Text>
+            <Text style={[legacyStyles.city, { color: colors.text }]}>{data.destination}</Text>
             {data.returnDate && (
-              <Text style={legacyStyles.date}>обр. {formatDate(data.returnDate)}</Text>
+              <Text style={[legacyStyles.date, { color: colors.textMuted }]}>обр. {formatDate(data.returnDate)}</Text>
             )}
           </View>
         </View>
         <View style={legacyStyles.detailsRow}>
-          <Text style={legacyStyles.detail}>Класс: {data.cabin}</Text>
-          <Text style={legacyStyles.detail}>Пасс.: {data.passengers}</Text>
+          <Text style={[legacyStyles.detail, { color: colors.textMuted }]}>Класс: {data.cabin}</Text>
+          <Text style={[legacyStyles.detail, { color: colors.textMuted }]}>Пасс.: {data.passengers}</Text>
         </View>
-        <View style={legacyStyles.footer}>
-          <Text style={legacyStyles.price}>
+        <View style={[legacyStyles.footer, { borderTopColor: colors.border }]}>
+          <Text style={[legacyStyles.price, { color: colors.primary }]}>
             {price.toLocaleString('ru-RU')} {currency}
           </Text>
-          <TouchableOpacity style={legacyStyles.bookBtn} onPress={onBook}>
+          <TouchableOpacity style={[legacyStyles.bookBtn, { backgroundColor: colors.primary }]} onPress={onBook}>
             <Text style={legacyStyles.bookBtnText}>Забронировать</Text>
           </TouchableOpacity>
         </View>
@@ -278,26 +275,30 @@ export function ToolResultCard(props: ToolResultCardProps) {
   }
 
   return (
-    <TouchableOpacity style={legacyStyles.card} onPress={handleHotelPress} activeOpacity={0.85}>
+    <TouchableOpacity
+      style={[legacyStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+      onPress={handleHotelPress}
+      activeOpacity={0.85}
+    >
       <View style={legacyStyles.header}>
-        <Text style={legacyStyles.typeLabel}>ОТЕЛЬ</Text>
+        <Text style={[legacyStyles.typeLabel, { color: colors.primary }]}>ОТЕЛЬ</Text>
         <StarRating stars={data.stars} />
       </View>
-      <Text style={legacyStyles.hotelName}>{data.name}</Text>
-      <Text style={legacyStyles.address}>{data.address}</Text>
+      <Text style={[legacyStyles.hotelName, { color: colors.text }]}>{data.name}</Text>
+      <Text style={[legacyStyles.address, { color: colors.textMuted }]}>{data.address}</Text>
       <View style={legacyStyles.detailsRow}>
-        <Text style={legacyStyles.detail}>
+        <Text style={[legacyStyles.detail, { color: colors.textMuted }]}>
           {formatDate(data.checkIn)} — {formatDate(data.checkOut)}
         </Text>
-        <Text style={legacyStyles.detail}>
+        <Text style={[legacyStyles.detail, { color: colors.textMuted }]}>
           {data.rooms} ном., {data.guests} гост.
         </Text>
       </View>
-      <View style={legacyStyles.footer}>
-        <Text style={legacyStyles.price}>
+      <View style={[legacyStyles.footer, { borderTopColor: colors.border }]}>
+        <Text style={[legacyStyles.price, { color: colors.primary }]}>
           {data.pricePerNight.toLocaleString('ru-RU')} {currency}/ночь
         </Text>
-        <TouchableOpacity style={legacyStyles.bookBtn} onPress={onBook}>
+        <TouchableOpacity style={[legacyStyles.bookBtn, { backgroundColor: colors.primary }]} onPress={onBook}>
           <Text style={legacyStyles.bookBtnText}>Забронировать</Text>
         </TouchableOpacity>
       </View>
@@ -307,13 +308,11 @@ export function ToolResultCard(props: ToolResultCardProps) {
 
 const legacyStyles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 6,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -322,17 +321,14 @@ const legacyStyles = StyleSheet.create({
     marginBottom: 12,
   },
   typeLabel: {
-    color: Colors.primary,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 1,
   },
   airline: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
   },
   stars: {
-    color: Colors.warning,
     fontSize: Typography.sizes.sm,
   },
   routeRow: {
@@ -345,12 +341,10 @@ const legacyStyles = StyleSheet.create({
     alignItems: 'center',
   },
   city: {
-    color: Colors.text,
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   date: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },
@@ -358,11 +352,9 @@ const legacyStyles = StyleSheet.create({
     alignItems: 'center',
   },
   arrow: {
-    color: Colors.primary,
     fontSize: Typography.sizes.xl,
   },
   flightNum: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },
@@ -372,17 +364,14 @@ const legacyStyles = StyleSheet.create({
     marginBottom: 12,
   },
   detail: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
   },
   hotelName: {
-    color: Colors.text,
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     marginBottom: 4,
   },
   address: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     marginBottom: 10,
   },
@@ -392,21 +381,18 @@ const legacyStyles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   price: {
-    color: Colors.primary,
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   bookBtn: {
-    backgroundColor: Colors.primary,
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 32,
   },
   bookBtnText: {
-    color: Colors.textInverse,
+    color: '#0A0A14',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -467,6 +453,7 @@ interface TransferOptionCardProps {
 }
 
 function TransferOptionCard({ option, index }: TransferOptionCardProps) {
+  const { colors } = useTheme();
   const typeIcons: Record<string, string> = {
     taxi: '🚕',
     bus: '🚌',
@@ -487,15 +474,15 @@ function TransferOptionCard({ option, index }: TransferOptionCardProps) {
   const duration = typeof option['duration'] === 'string' ? option['duration'] : null;
 
   return (
-    <View style={transferCardStyles.card}>
+    <View style={[transferCardStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={transferCardStyles.left}>
         <Text style={transferCardStyles.icon}>{icon}</Text>
         <View>
-          <Text style={transferCardStyles.type}>{rawType}</Text>
-          {duration ? <Text style={transferCardStyles.duration}>{duration}</Text> : null}
+          <Text style={[transferCardStyles.type, { color: colors.text }]}>{rawType}</Text>
+          {duration ? <Text style={[transferCardStyles.duration, { color: colors.textMuted }]}>{duration}</Text> : null}
         </View>
       </View>
-      <Text style={transferCardStyles.price}>
+      <Text style={[transferCardStyles.price, { color: colors.primary }]}>
         {price} {currency}
       </Text>
     </View>
@@ -504,13 +491,11 @@ function TransferOptionCard({ option, index }: TransferOptionCardProps) {
 
 const transferCardStyles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 12,
     padding: 12,
     marginHorizontal: 16,
     marginVertical: 4,
     borderWidth: 1,
-    borderColor: Colors.border,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -524,18 +509,15 @@ const transferCardStyles = StyleSheet.create({
     fontSize: 22,
   },
   type: {
-    color: Colors.text,
     fontSize: Typography.sizes.sm,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
   duration: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },
   price: {
-    color: Colors.primary,
     fontSize: Typography.sizes.base,
     fontWeight: '700',
   },
@@ -549,6 +531,7 @@ interface ActivityCardProps {
 }
 
 function ActivityCard({ activity, index }: ActivityCardProps) {
+  const { colors } = useTheme();
   const name =
     typeof activity['name'] === 'string'
       ? activity['name']
@@ -567,23 +550,23 @@ function ActivityCard({ activity, index }: ActivityCardProps) {
   const duration = typeof activity['duration'] === 'string' ? activity['duration'] : null;
 
   return (
-    <View style={activityCardStyles.card}>
+    <View style={[activityCardStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={activityCardStyles.header}>
         <Text style={activityCardStyles.icon}>🎯</Text>
         <View style={{ flex: 1 }}>
-          <Text style={activityCardStyles.name} numberOfLines={2}>
+          <Text style={[activityCardStyles.name, { color: colors.text }]} numberOfLines={2}>
             {name}
           </Text>
-          {duration ? <Text style={activityCardStyles.meta}>{duration}</Text> : null}
+          {duration ? <Text style={[activityCardStyles.meta, { color: colors.textMuted }]}>{duration}</Text> : null}
         </View>
         {price ? (
-          <Text style={activityCardStyles.price}>
+          <Text style={[activityCardStyles.price, { color: colors.primary }]}>
             {price} {currency}
           </Text>
         ) : null}
       </View>
       {description ? (
-        <Text style={activityCardStyles.description} numberOfLines={2}>
+        <Text style={[activityCardStyles.description, { color: colors.textMuted }]} numberOfLines={2}>
           {description}
         </Text>
       ) : null}
@@ -593,13 +576,11 @@ function ActivityCard({ activity, index }: ActivityCardProps) {
 
 const activityCardStyles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 12,
     padding: 12,
     marginHorizontal: 16,
     marginVertical: 4,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -611,24 +592,20 @@ const activityCardStyles = StyleSheet.create({
     marginTop: 1,
   },
   name: {
-    color: Colors.text,
     fontSize: Typography.sizes.sm,
     fontWeight: '600',
     flex: 1,
   },
   meta: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },
   price: {
-    color: Colors.primary,
     fontSize: Typography.sizes.sm,
     fontWeight: '700',
     flexShrink: 0,
   },
   description: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     marginTop: 6,
     lineHeight: 16,
@@ -647,23 +624,28 @@ interface JourneyTimingResult {
 }
 
 function JourneyTimingCard({ data }: { data: JourneyTimingResult }) {
+  const { colors } = useTheme();
   const isTight = data.isTight ?? false;
   return (
-    <View style={[timingStyles.card, isTight && timingStyles.cardWarning]}>
+    <View style={[
+      timingStyles.card,
+      { backgroundColor: colors.card, borderColor: colors.border },
+      isTight && timingStyles.cardWarning,
+    ]}>
       <View style={timingStyles.row}>
-        <Ionicons name={isTight ? 'warning-outline' : 'information-circle-outline'} size={14} color={isTight ? Colors.warning : Colors.textMuted} />
-        <Text style={[timingStyles.title, isTight && timingStyles.titleWarning]}>
+        <Ionicons name={isTight ? 'warning-outline' : 'information-circle-outline'} size={14} color={isTight ? colors.warning : colors.textMuted} />
+        <Text style={[timingStyles.title, { color: colors.text }, isTight && { color: colors.primary }]}>
           {isTight ? 'Стыковка под угрозой' : 'Время в пути'}
         </Text>
       </View>
       {data.connectionTime ? (
-        <Text style={timingStyles.meta}>Время стыковки: {data.connectionTime}</Text>
+        <Text style={[timingStyles.meta, { color: colors.textMuted }]}>Время стыковки: {data.connectionTime}</Text>
       ) : null}
       {data.warning ? (
-        <Text style={timingStyles.warning}>{data.warning}</Text>
+        <Text style={[timingStyles.warning, { color: colors.primary }]}>{data.warning}</Text>
       ) : null}
       {data.recommendation ? (
-        <Text style={timingStyles.recommendation}>{data.recommendation}</Text>
+        <Text style={[timingStyles.recommendation, { color: colors.text }]}>{data.recommendation}</Text>
       ) : null}
     </View>
   );
@@ -671,13 +653,11 @@ function JourneyTimingCard({ data }: { data: JourneyTimingResult }) {
 
 const timingStyles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 12,
     padding: 14,
     marginHorizontal: 16,
     marginVertical: 4,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   cardWarning: {
     borderColor: '#F59E0B66',
@@ -690,25 +670,18 @@ const timingStyles = StyleSheet.create({
     marginBottom: 6,
   },
   title: {
-    color: Colors.text,
     fontSize: Typography.sizes.sm,
     fontWeight: '700',
   },
-  titleWarning: {
-    color: Colors.primary,
-  },
   meta: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     marginBottom: 4,
   },
   warning: {
-    color: Colors.primary,
     fontSize: Typography.sizes.sm,
     lineHeight: 18,
   },
   recommendation: {
-    color: Colors.text,
     fontSize: Typography.sizes.xs,
     marginTop: 6,
     lineHeight: 16,
@@ -751,6 +724,7 @@ function isJourneyTimingResult(data: unknown): data is JourneyTimingResult {
 }
 
 export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
+  const { colors } = useTheme();
   const lower = toolName.toLowerCase();
   const isFlight = lower.includes('flight');
   const isHotel = lower.includes('hotel');
@@ -769,7 +743,7 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
           <FlightCard key={flight.id ?? i} flight={flight} badge={FLIGHT_BADGES[i]} />
         ))}
         {offers.length > 3 && (
-          <Text style={chatResultStyles.moreText}>+ ещё {offers.length - 3} рейсов</Text>
+          <Text style={[chatResultStyles.moreText, { color: colors.textMuted }]}>+ ещё {offers.length - 3} рейсов</Text>
         )}
       </View>
     );
@@ -783,7 +757,7 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
           <HotelCard key={hotel.id ?? i} hotel={hotel} />
         ))}
         {offers.length > 3 && (
-          <Text style={chatResultStyles.moreText}>+ ещё {offers.length - 3} отелей</Text>
+          <Text style={[chatResultStyles.moreText, { color: colors.textMuted }]}>+ ещё {offers.length - 3} отелей</Text>
         )}
       </View>
     );
@@ -796,13 +770,13 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
       <View style={chatResultStyles.wrap}>
         <View style={chatResultStyles.sectionHeader}>
           <Text style={chatResultStyles.sectionIcon}>🚗</Text>
-          <Text style={chatResultStyles.sectionTitle}>Варианты трансфера</Text>
+          <Text style={[chatResultStyles.sectionTitle, { color: colors.textMuted }]}>Варианты трансфера</Text>
         </View>
         {items.slice(0, 4).map((opt, i) => (
           <TransferOptionCard key={i} option={opt} index={i} />
         ))}
         {items.length > 4 && (
-          <Text style={chatResultStyles.moreText}>+ ещё {items.length - 4} вариантов</Text>
+          <Text style={[chatResultStyles.moreText, { color: colors.textMuted }]}>+ ещё {items.length - 4} вариантов</Text>
         )}
       </View>
     );
@@ -824,13 +798,13 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
       <View style={chatResultStyles.wrap}>
         <View style={chatResultStyles.sectionHeader}>
           <Text style={chatResultStyles.sectionIcon}>🎯</Text>
-          <Text style={chatResultStyles.sectionTitle}>Активности</Text>
+          <Text style={[chatResultStyles.sectionTitle, { color: colors.textMuted }]}>Активности</Text>
         </View>
         {items.slice(0, 3).map((act, i) => (
           <ActivityCard key={i} activity={act} index={i} />
         ))}
         {items.length > 3 && (
-          <Text style={chatResultStyles.moreText}>+ ещё {items.length - 3} активностей</Text>
+          <Text style={[chatResultStyles.moreText, { color: colors.textMuted }]}>+ ещё {items.length - 3} активностей</Text>
         )}
       </View>
     );
@@ -839,18 +813,18 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
   // ── Empty results ──
   if (isFlight && offers !== null && offers.length === 0) {
     return (
-      <View style={chatResultStyles.fallback}>
-        <Ionicons name="airplane" size={20} color={Colors.primary} />
-        <Text style={chatResultStyles.fallbackText}>Рейсов не найдено по вашему запросу</Text>
+      <View style={[chatResultStyles.fallback, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Ionicons name="airplane" size={20} color={colors.primary} />
+        <Text style={[chatResultStyles.fallbackText, { color: colors.textMuted }]}>Рейсов не найдено по вашему запросу</Text>
       </View>
     );
   }
 
   if (isHotel && offers !== null && offers.length === 0) {
     return (
-      <View style={chatResultStyles.fallback}>
-        <Ionicons name="bed-outline" size={20} color={Colors.primary} />
-        <Text style={chatResultStyles.fallbackText}>Отелей не найдено по вашему запросу</Text>
+      <View style={[chatResultStyles.fallback, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Ionicons name="bed-outline" size={20} color={colors.primary} />
+        <Text style={[chatResultStyles.fallbackText, { color: colors.textMuted }]}>Отелей не найдено по вашему запросу</Text>
       </View>
     );
   }
@@ -875,9 +849,9 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
     ? 'flag-outline'
     : 'search-outline';
   return (
-    <View style={chatResultStyles.fallback}>
-      <Ionicons name={fallbackIconName} size={20} color={Colors.primary} />
-      <Text style={chatResultStyles.fallbackText}>{fallbackText}</Text>
+    <View style={[chatResultStyles.fallback, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <Ionicons name={fallbackIconName} size={20} color={colors.primary} />
+      <Text style={[chatResultStyles.fallbackText, { color: colors.textMuted }]}>{fallbackText}</Text>
     </View>
   );
 }
@@ -899,14 +873,12 @@ const chatResultStyles = StyleSheet.create({
     fontSize: 14,
   },
   sectionTitle: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     fontWeight: '600' as const,
     letterSpacing: 0.5,
     textTransform: 'uppercase' as const,
   },
   moreText: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
     paddingVertical: 6,
@@ -916,9 +888,7 @@ const chatResultStyles = StyleSheet.create({
     alignSelf: 'flex-start',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -929,7 +899,6 @@ const chatResultStyles = StyleSheet.create({
     fontSize: 13,
   },
   chipText: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium,
   },
@@ -938,9 +907,7 @@ const chatResultStyles = StyleSheet.create({
     alignSelf: 'flex-start' as const,
     alignItems: 'center' as const,
     gap: 6,
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -948,7 +915,6 @@ const chatResultStyles = StyleSheet.create({
     marginVertical: 4,
   },
   fallbackText: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium as '500',
   },

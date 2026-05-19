@@ -12,7 +12,8 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { Colors, Spacing, Radius, TextPresets } from '../../constants';
+import { Spacing, Radius, TextPresets } from '../../constants';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive';
 
@@ -38,6 +39,7 @@ export function Button({
   onPressOut,
   ...rest
 }: ButtonProps) {
+  const { colors } = useTheme();
   const isDisabled = disabled || loading;
   const scale = useSharedValue(1);
 
@@ -57,7 +59,59 @@ export function Button({
   }
 
   const activityIndicatorColor =
-    variant === 'primary' || variant === 'destructive' ? Colors.textInverse : Colors.primary;
+    variant === 'primary' || variant === 'destructive' ? '#0A0A14' : colors.primary;
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    base: {
+      paddingVertical: 14,
+      paddingHorizontal: 24,
+      borderRadius: Radius.button,
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: Spacing.buttonHeight,
+    },
+    fullWidth: {
+      width: '100%',
+    },
+    primary: {
+      backgroundColor: colors.primary,
+      shadowColor: '#F59E0B',
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 16,
+      shadowOpacity: 0.25,
+      elevation: 8,
+    },
+    secondary: {
+      backgroundColor: colors.surface,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+    },
+    destructive: {
+      backgroundColor: colors.error,
+    },
+    disabled: {
+      opacity: 0.4,
+    },
+    text: {
+      ...TextPresets.button,
+      color: '#0A0A14',
+    },
+    textPrimary: {
+      color: '#0A0A14',
+    },
+    textSecondary: {
+      color: colors.primary,
+    },
+    textGhost: {
+      color: colors.primary,
+    },
+    textDestructive: {
+      color: '#0A0A14',
+    },
+  }), [colors]);
 
   return (
     <AnimatedPressable
@@ -96,55 +150,3 @@ export function Button({
     </AnimatedPressable>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: Radius.button,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: Spacing.buttonHeight,
-  },
-  fullWidth: {
-    width: '100%',
-  },
-  primary: {
-    backgroundColor: Colors.primary,
-    shadowColor: '#F59E0B',
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 16,
-    shadowOpacity: 0.25,
-    elevation: 8,
-  },
-  secondary: {
-    backgroundColor: Colors.surface,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-  },
-  destructive: {
-    backgroundColor: Colors.error,
-  },
-  disabled: {
-    opacity: 0.4,
-  },
-  text: {
-    ...TextPresets.button,
-    color: Colors.textInverse,
-  },
-  textPrimary: {
-    color: Colors.textInverse,
-  },
-  textSecondary: {
-    color: Colors.primary,
-  },
-  textGhost: {
-    color: Colors.primary,
-  },
-  textDestructive: {
-    color: Colors.textInverse,
-  },
-});

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { FavoriteButton } from '../ui/FavoriteButton';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { FlightOffer, FlightProvider } from '../../types';
 
 type BadgeType = 'budget' | 'value' | 'premium';
@@ -161,16 +161,17 @@ function cabinLabel(cabin: string): string {
 // ── DashedRoute ───────────────────────────────────────────────────────────────
 
 function DashedRoute() {
+  const { colors } = useTheme();
   const DASH_COUNT = 8;
   return (
     <View style={arrowStyles.wrap}>
-      <View style={arrowStyles.dot} />
+      <View style={[arrowStyles.dot, { borderColor: colors.primary, backgroundColor: colors.card }]} />
       <View style={arrowStyles.dashRow}>
         {Array.from({ length: DASH_COUNT }).map((_, i) => (
-          <View key={i} style={arrowStyles.dash} />
+          <View key={i} style={[arrowStyles.dash, { backgroundColor: `${colors.primary}60` }]} />
         ))}
       </View>
-      <View style={arrowStyles.arrowHead} />
+      <View style={[arrowStyles.arrowHead, { borderLeftColor: colors.primary }]} />
     </View>
   );
 }
@@ -187,8 +188,6 @@ const arrowStyles = StyleSheet.create({
     height: 7,
     borderRadius: 4,
     borderWidth: 1.5,
-    borderColor: Colors.primary,
-    backgroundColor: Colors.background,
     flexShrink: 0,
   },
   dashRow: {
@@ -202,7 +201,6 @@ const arrowStyles = StyleSheet.create({
   dash: {
     flex: 1,
     height: 1.5,
-    backgroundColor: `${Colors.primary}60`,
     marginHorizontal: 1,
     borderRadius: 1,
   },
@@ -214,7 +212,6 @@ const arrowStyles = StyleSheet.create({
     borderLeftWidth: 6,
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
-    borderLeftColor: Colors.primary,
     marginLeft: -1,
     flexShrink: 0,
   },
@@ -223,6 +220,7 @@ const arrowStyles = StyleSheet.create({
 // ── FlightCard ────────────────────────────────────────────────────────────────
 
 export function FlightCard({ flight, onBook, badge, provider }: Props) {
+  const { colors } = useTheme();
   const currencySymbol = formatCurrency(flight.currency);
   // Resolve provider: explicit prop overrides field from flight object
   const resolvedProvider: FlightProvider | undefined =
@@ -247,7 +245,7 @@ export function FlightCard({ flight, onBook, badge, provider }: Props) {
   }
 
   return (
-    <TouchableOpacity onPress={handlePress} activeOpacity={0.82} style={styles.card}>
+    <TouchableOpacity onPress={handlePress} activeOpacity={0.82} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
 
       {/* Badge — absolute top-left */}
       {badge && (
@@ -276,9 +274,9 @@ export function FlightCard({ flight, onBook, badge, provider }: Props) {
       <View style={[styles.airlineRow, badge && styles.airlineRowWithBadge]}>
         <AirlineLogo name={flight.airline} />
         <View style={styles.airlineTextBlock}>
-          <Text style={styles.airlineName}>{flight.airline}</Text>
+          <Text style={[styles.airlineName, { color: colors.textMuted }]}>{flight.airline}</Text>
           <View style={styles.flightNumberRow}>
-            <Text style={styles.flightNumber}>{flight.flightNumber}</Text>
+            <Text style={[styles.flightNumber, { color: colors.textDisabled }]}>{flight.flightNumber}</Text>
             {resolvedProvider && (
               <View
                 style={[
@@ -301,54 +299,54 @@ export function FlightCard({ flight, onBook, badge, provider }: Props) {
       </View>
 
       {/* ── Divider ── */}
-      <View style={styles.divider} />
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
       {/* ── 2. Big route row: WAW → BCN with times ── */}
       <View style={styles.routeRow}>
         {/* Origin */}
         <View style={styles.routePoint}>
-          <Text style={styles.iataCode}>{flight.origin}</Text>
+          <Text style={[styles.iataCode, { color: colors.text }]}>{flight.origin}</Text>
           {flight.departureTime ? (
-            <Text style={styles.routeTime}>{flight.departureTime}</Text>
+            <Text style={[styles.routeTime, { color: colors.text }]}>{flight.departureTime}</Text>
           ) : null}
         </View>
 
         {/* Center: duration + dashed line */}
         <View style={styles.routeCenter}>
           {flight.durationMin !== undefined && (
-            <Text style={styles.duration}>{formatDuration(flight.durationMin)}</Text>
+            <Text style={[styles.duration, { color: colors.textMuted }]}>{formatDuration(flight.durationMin)}</Text>
           )}
           <DashedRoute />
         </View>
 
         {/* Destination */}
         <View style={[styles.routePoint, styles.routePointRight]}>
-          <Text style={styles.iataCode}>{flight.destination}</Text>
+          <Text style={[styles.iataCode, { color: colors.text }]}>{flight.destination}</Text>
           {flight.arrivalTime ? (
-            <Text style={styles.routeTime}>{flight.arrivalTime}</Text>
+            <Text style={[styles.routeTime, { color: colors.text }]}>{flight.arrivalTime}</Text>
           ) : null}
         </View>
       </View>
 
       {/* ── 4. Bottom: price + cabin + select button ── */}
-      <View style={styles.bottomDivider} />
+      <View style={[styles.bottomDivider, { backgroundColor: colors.border }]} />
       <View style={styles.bottomRow}>
         {/* Price + cabin class */}
         <View style={styles.priceBlock}>
-          <Text style={styles.price}>
+          <Text style={[styles.price, { color: colors.primary }]}>
             {currencySymbol}{flight.price.toLocaleString('ru-RU')}
           </Text>
-          <Text style={styles.cabinText}>{cabinLabel(flight.cabin)}</Text>
+          <Text style={[styles.cabinText, { color: colors.textMuted }]}>{cabinLabel(flight.cabin)}</Text>
         </View>
 
         {/* Select button */}
         <TouchableOpacity
-          style={styles.selectBtn}
+          style={[styles.selectBtn, { backgroundColor: colors.primary }]}
           onPress={onBook ?? handlePress}
           activeOpacity={0.8}
           hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
         >
-          <Text style={styles.selectBtnText}>Выбрать →</Text>
+          <Text style={[styles.selectBtnText, { color: colors.textInverse }]}>Выбрать →</Text>
         </TouchableOpacity>
       </View>
 
@@ -358,7 +356,6 @@ export function FlightCard({ flight, onBook, badge, provider }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingTop: 14,
@@ -366,7 +363,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
     marginVertical: 4,
     borderWidth: 1,
-    borderColor: Colors.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -433,13 +429,11 @@ const styles = StyleSheet.create({
     gap: 1,
   },
   airlineName: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium,
   },
   flightNumber: {
-    color: Colors.textDisabled,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
@@ -447,7 +441,6 @@ const styles = StyleSheet.create({
   // Divider
   divider: {
     height: 1,
-    backgroundColor: Colors.border,
     marginBottom: 12,
   },
 
@@ -465,14 +458,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   iataCode: {
-    color: Colors.text,
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
     fontFamily: 'Sora',
     lineHeight: 28,
   },
   routeTime: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
@@ -487,7 +478,6 @@ const styles = StyleSheet.create({
 
   // 3. Duration
   duration: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
@@ -496,7 +486,6 @@ const styles = StyleSheet.create({
   // 4. Bottom row
   bottomDivider: {
     height: 1,
-    backgroundColor: Colors.border,
     marginTop: 14,
     marginBottom: 12,
   },
@@ -509,25 +498,21 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   price: {
-    color: Colors.primary,
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
     fontFamily: 'Sora',
     lineHeight: 28,
   },
   cabinText: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   selectBtn: {
-    backgroundColor: Colors.primary,
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 22,
   },
   selectBtnText: {
-    color: Colors.textInverse,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,

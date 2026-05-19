@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, type ViewStyle } from 'react-native';
-import { Colors, Radius, Spacing, TextPresets } from '../../constants';
+import { Radius, Spacing, TextPresets } from '../../constants';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 type ChipVariant = 'outline' | 'filled' | 'ghost';
 
@@ -19,6 +20,48 @@ export function Chip({
   onPress,
   variant = 'outline',
 }: ChipProps) {
+  const { colors } = useTheme();
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    base: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      paddingHorizontal: 14,
+      height: Spacing.chipHeight,
+      borderRadius: Radius.chip,
+      borderWidth: 1,
+    },
+    outlineContainer: {
+      backgroundColor: 'transparent',
+      borderColor: colors.border,
+    },
+    filledContainer: {
+      backgroundColor: colors.card,
+      borderColor: colors.border,
+    },
+    ghostContainer: {
+      backgroundColor: 'transparent',
+      borderColor: 'transparent',
+    },
+    selectedContainer: {
+      backgroundColor: `${colors.primary}26`,
+      borderColor: colors.primary,
+    },
+    label: {
+      ...TextPresets.buttonSm,
+    },
+    defaultText: {
+      color: colors.textMuted,
+    },
+    selectedText: {
+      color: colors.primary,
+    },
+    icon: {
+      fontSize: 14,
+    },
+  }), [colors]);
+
   const containerStyle: ViewStyle[] = [styles.base];
 
   if (selected) {
@@ -44,43 +87,3 @@ export function Chip({
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 14,
-    height: Spacing.chipHeight,
-    borderRadius: Radius.chip,
-    borderWidth: 1,
-  },
-  outlineContainer: {
-    backgroundColor: 'transparent',
-    borderColor: Colors.border,
-  },
-  filledContainer: {
-    backgroundColor: Colors.card,
-    borderColor: Colors.border,
-  },
-  ghostContainer: {
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
-  },
-  selectedContainer: {
-    backgroundColor: Colors.primaryMuted,
-    borderColor: Colors.primary,
-  },
-  label: {
-    ...TextPresets.buttonSm,
-  },
-  defaultText: {
-    color: Colors.textMuted,
-  },
-  selectedText: {
-    color: Colors.primary,
-  },
-  icon: {
-    fontSize: 14,
-  },
-});

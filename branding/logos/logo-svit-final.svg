@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 140" width="400" height="140">
+  <defs>
+    <style>
+      .svit-wordmark {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+        font-size: 48px;
+        letter-spacing: 0.15em;
+        fill: #1A1A2E;
+      }
+      .svit-tagline {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 300;
+        font-size: 14px;
+        letter-spacing: 0.3em;
+        fill: #1A1A2E;
+        opacity: 0.55;
+      }
+    </style>
+  </defs>
+
+  <!-- Light background -->
+  <rect width="400" height="140" fill="#FFFFFF"/>
+
+  <!--
+    COMPASS + S SYMBOL
+    Bounding box: 70x70, centered at (70, 70)
+    Outer circle: compass frame, r=52, stroke only
+    Inner S: two Bezier curves meeting at vertical center
+    Monochrome: #1A1A2E on white
+  -->
+
+  <!-- Compass outer ring — thin stroke, no fill -->
+  <circle
+    cx="70" cy="70"
+    r="52"
+    fill="none"
+    stroke="#1A1A2E"
+    stroke-width="2"
+  />
+
+  <!-- Compass tick marks — N/S/E/W cardinal points, very subtle -->
+  <!-- North -->
+  <line x1="70" y1="18" x2="70" y2="26" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+  <!-- South -->
+  <line x1="70" y1="114" x2="70" y2="122" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+  <!-- East -->
+  <line x1="118" y1="70" x2="122" y2="70" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+  <!-- West -->
+  <line x1="18" y1="70" x2="22" y2="70" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+
+  <!--
+    S CURVE — pure Bezier geometry
+    The S is built from two half-arcs meeting at (70, 70).
+    Top half: from (70,70) sweeps UP-RIGHT then bends to top-left terminal
+    Bottom half: from (70,70) sweeps DOWN-LEFT then bends to bottom-right terminal
+
+    Vertical extent: y=32 to y=108  (height=76)
+    Horizontal spread: x=46 to x=94 (width=48)
+    Center crossover: (70, 70)
+  -->
+
+  <!-- Top half of S — sweeps right, terminals at top-left -->
+  <path
+    d="M 70 70
+       C 92 70, 94 56, 94 50
+       C 94 38, 86 32, 70 32
+       C 58 32, 50 37, 46 44"
+    fill="none"
+    stroke="#1A1A2E"
+    stroke-width="5.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Bottom half of S — sweeps left, terminals at bottom-right -->
+  <path
+    d="M 70 70
+       C 48 70, 46 84, 46 90
+       C 46 102, 54 108, 70 108
+       C 82 108, 90 103, 94 96"
+    fill="none"
+    stroke="#1A1A2E"
+    stroke-width="5.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Center intersection dot — the compass needle pivot / route waypoint -->
+  <circle cx="70" cy="70" r="4" fill="#1A1A2E"/>
+
+  <!-- Vertical separator between symbol and wordmark -->
+  <line x1="143" y1="35" x2="143" y2="105" stroke="#1A1A2E" stroke-width="1" opacity="0.18"/>
+
+  <!-- SVIT wordmark -->
+  <text x="163" y="92" class="svit-wordmark">SVIT</text>
+
+  <!-- AI TRAVEL tagline -->
+  <text x="166" y="113" class="svit-tagline">AI TRAVEL</text>
+
+</svg>

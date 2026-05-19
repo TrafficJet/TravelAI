@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
 import { Typography } from '../../constants/typography';
 
 interface Props {
@@ -17,14 +17,15 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
 };
 
 export function BalanceDisplay({ balance, currency }: Props) {
+  const { colors } = useTheme();
   const symbol = CURRENCY_SYMBOLS[currency] ?? currency;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Баланс кошелька</Text>
+      <Text style={[styles.label, { color: colors.textMuted }]}>Баланс кошелька</Text>
       <View style={styles.amountRow}>
-        <Text style={styles.amount}>{balance.toLocaleString('ru-RU')}</Text>
-        <Text style={styles.currency}>{symbol}</Text>
+        <Text style={[styles.amount, { color: colors.text }]}>{balance.toLocaleString('ru-RU')}</Text>
+        <Text style={[styles.currency, { color: colors.textMuted }]}>{symbol}</Text>
       </View>
     </View>
   );
@@ -36,7 +37,6 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
   },
   label: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: 8,
@@ -48,14 +48,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   amount: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: 48,
     fontWeight: Typography.weights.bold,
     letterSpacing: -1,
   },
   currency: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.medium,

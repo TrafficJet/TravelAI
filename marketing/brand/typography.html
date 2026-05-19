@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SVIT — Typography System</title>
+
+  <!-- Geist — primary display font (Vercel, 2024) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <!-- Fallback from Google Fonts: DM Sans as geometric alternative -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* SVIT Color System */
+      --bg:           #0E0C1C;
+      --surface:      #14121E;
+      --card:         #1E1C2C;
+      --elevated:     #28263A;
+      --border:       #2E2B42;
+
+      --gold:         #E8A020;
+      --gold-light:   #F2B84B;
+      --plum:         #7C5CFC;
+      --plum-light:   #A98EFD;
+
+      --text:         #EEEEF4;
+      --text-muted:   #8888A8;
+      --text-dim:     #4E4E68;
+
+      /* Typography */
+      --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      --font-body:    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+      --font-mono:    'DM Mono', 'SF Mono', 'Fira Code', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      padding: 64px 48px 96px;
+      line-height: 1.5;
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      margin-bottom: 80px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 40px;
+    }
+    .page-meta {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.0;
+      color: var(--text);
+    }
+    .page-title span { color: var(--gold); }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 72px;
+    }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Type specimen ── */
+    .specimen {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 40px 44px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 48px;
+    }
+    .specimen-meta {
+      min-width: 160px;
+      flex-shrink: 0;
+    }
+    .spec-style {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    .spec-detail {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+    .specimen-sample {
+      flex: 1;
+      color: var(--text);
+    }
+
+    /* Display sizes */
+    .t-display  { font-family: var(--font-display); font-size: 48px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.0; }
+    .t-h1       { font-family: var(--font-display); font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+    .t-h2       { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+    .t-h3       { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+    .t-body     { font-family: var(--font-body);    font-size: 16px; font-weight: 400; line-height: 1.6; }
+    .t-body-med { font-family: var(--font-body);    font-size: 16px; font-weight: 500; line-height: 1.6; }
+    .t-small    { font-family: var(--font-body);    font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--text-muted); }
+    .t-caption  { font-family: var(--font-body);    font-size: 12px; font-weight: 400; line-height: 1.4; color: var(--text-muted); }
+    .t-overline { font-family: var(--font-body);    font-size: 10px; font-weight: 600; line-height: 1.4; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
+    .t-mono     { font-family: var(--font-mono);    font-size: 14px; font-weight: 400; line-height: 1.6; }
+
+    /* ── Wordmark previews ── */
+    .wordmark-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .wordmark-cell {
+      border-radius: 14px;
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      border: 1px solid var(--border);
+      min-height: 180px;
+    }
+    .wordmark-cell.light { background: #F2F2F6; }
+    .wordmark-cell.dark  { background: var(--card); }
+    .cell-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      align-self: flex-start;
+      margin-bottom: 8px;
+    }
+    .cell-tag.dark-tag { color: rgba(0,0,0,0.35); }
+
+    /* Wordmark variant A — clean title case feel */
+    .wm-a {
+      font-family: var(--font-display);
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: #1A1A1A;
+      line-height: 1;
+    }
+    .wm-a-sub {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #888;
+    }
+    /* Wordmark variant A dark -->*/
+    .wm-a-dark       { color: #EEEEF4; }
+    .wm-a-dark-sub   { color: rgba(255,255,255,0.38); }
+
+    /* Wordmark variant B — tight monospaced, more techy -->*/
+    .wm-b {
+      font-family: var(--font-mono);
+      font-size: 50px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: #1A1A1A;
+      line-height: 1;
+    }
+    .wm-b .accent { color: #B87518; }
+    .wm-b-dark { color: #EEEEF4; }
+    .wm-b-dark .accent { color: var(--gold); }
+
+    /* ── Palette strip inside typography page ── -->*/
+    .palette-strip {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+    .swatch-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+    }
+    .swatch-code {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .swatch-name {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-align: center;
+      max-width: 56px;
+    }
+
+    /* ── Font stack note ── */
+    .note-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-top: 16px;
+    }
+    .note-card h4 {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+    .note-card p, .note-card li {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .note-card ul {
+      padding-left: 20px;
+      margin-top: 8px;
+    }
+    .note-card code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--elevated);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--gold-light);
+    }
+
+    .gold { color: var(--gold); }
+    .plum { color: var(--plum-light); }
+    .muted { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- ── Page Header ── -->
+<header class="page-header">
+  <div class="page-meta">SVIT · Brand Identity · Typography · v1.0 · May 2026</div>
+  <div class="page-title">Typography <span>System</span></div>
+</header>
+
+
+<!-- ── Section 1: Primary Display Font ── -->
+<section class="section">
+  <div class="section-label">Primary — DM Sans (Display / Headings)</div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">Display</div>
+      <div class="spec-detail">48px / 48px<br>Weight 700<br>−0.04em</div>
+    </div>
+    <div class="specimen-sample t-display">Discover the world.</div>
+  </div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">H1</div>
+      <div class="spec-detail">34px / 40px<br>Weight 700<br>−0.03em</div>
+    </div>
+    <div class="specimen-sample t-h1">Куда летим сегодня?</div>
+  </div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">H2</div>
+      <div class="spec-detail">26px / 32px<br>Weight 600<br>−0.02em</div>
+    </div>
+    <div class="specimen-sample t-h2">Рейсы Киев — Барселона</div>
+  </div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">H3</div>
+      <div class="spec-detail">20px / 26px<br>Weight 600<br>−0.01em</div>
+    </div>
+    <div class="specimen-sample t-h3">Hotel Arts Barcelona ★★★★★</div>
+  </div>
+
+  <div class="note-card">
+    <h4>Почему DM Sans, не Inter</h4>
+    <p>DM Sans — геометрический гротеск с бОльшим x-height и мягкими окончаниями чем Inter. Выглядит свежо в 2026 — Inter уже везде. Оптимально для крупных кеглей и тёмного фона. Доступен через Google Fonts: <code>family=DM+Sans:wght@400;500;600;700</code></p>
+    <ul>
+      <li>Expo/RN: <code>@expo-google-fonts/dm-sans</code></li>
+      <li>Web: Google Fonts CDN или локальная загрузка</li>
+      <li>Fallback stack: <code>-apple-system, BlinkMacSystemFont, 'Helvetica Neue'</code></li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ── Section 2: Body / System Font ── -->
+<section class="section">
+  <div class="section-label">Secondary — System UI (Body / Interface)</div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">Body</div>
+      <div class="spec-detail">16px / 25px<br>Weight 400</div>
+    </div>
+    <div class="specimen-sample t-body">
+      Нашёл 3 рейса Киев — Барселона на ваши даты. Лучший вариант — Vueling, 14:20, €189. Включает ручную кладь до 10 кг.
+    </div>
+  </div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">Body Medium</div>
+      <div class="spec-detail">16px / 25px<br>Weight 500</div>
+    </div>
+    <div class="specimen-sample t-body-med">Бронирование подтверждено. Рейс VY8820, 14:20 → 17:05.</div>
+  </div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">Small</div>
+      <div class="spec-detail">14px / 21px<br>Weight 400</div>
+    </div>
+    <div class="specimen-sample t-small">Чек-ин онлайн доступен за 48 ч до вылета · Терминал D, выход 22</div>
+  </div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">Caption</div>
+      <div class="spec-detail">12px / 17px<br>Weight 400</div>
+    </div>
+    <div class="specimen-sample t-caption">Обновлено 2 мин назад · Борт прибыл, задержки нет</div>
+  </div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">Overline</div>
+      <div class="spec-detail">10px / 14px<br>Weight 600<br>+0.15em ALLCAPS</div>
+    </div>
+    <div class="specimen-sample t-overline">Лучшая цена · Прямой рейс · Бесплатная отмена</div>
+  </div>
+
+  <div class="note-card">
+    <h4>Системный шрифт — почему это правильно</h4>
+    <p>Для тела текста используем системный стек (<code>-apple-system</code> / <code>BlinkMacSystemFont</code>). На iOS это SF Pro Text — идеально откалиброванный для малых кеглей. Нулевое время загрузки, нативные лигатуры, автоматическая поддержка bold variants. В RN это стандартный <code>fontFamily: undefined</code> (системный по умолчанию).</p>
+  </div>
+</section>
+
+
+<!-- ── Section 3: Mono (prices, codes) ── -->
+<section class="section">
+  <div class="section-label">Tertiary — DM Mono (Codes / Prices / Data)</div>
+
+  <div class="specimen">
+    <div class="specimen-meta">
+      <div class="spec-style">Mono Regular</div>
+      <div class="spec-detail">14px / 22px<br>Weight 400</div>
+    </div>
+    <div class="specimen-sample t-mono">
+      KBP → BCN &nbsp;·&nbsp; VY8820 &nbsp;·&nbsp; <span class="gold">€ 189.00</span><br/>
+      Check-in: 2026-06-14 14:20 UTC+3
+    </div>
+  </div>
+
+  <div class="note-card">
+    <h4>Применение DM Mono</h4>
+    <p>Коды аэропортов (KBP, JFK), номера рейсов, цены (€ 189.00), подтверждения бронирования, технические данные (координаты, даты ISO). Не использовать для обычного UI-текста.</p>
+  </div>
+</section>
+
+
+<!-- ── Section 4: Wordmark Variants ── -->
+<section class="section">
+  <div class="section-label">Wordmark — Two variants</div>
+
+  <div class="wordmark-grid">
+
+    <!-- Variant A Light -->
+    <div class="wordmark-cell light">
+      <div class="cell-tag dark-tag">Variant A · Light · Display Sans</div>
+      <div class="wm-a">SVIT</div>
+      <div class="wm-a-sub" style="color:#999;">AI TRAVEL ASSISTANT</div>
+    </div>
+
+    <!-- Variant A Dark -->
+    <div class="wordmark-cell dark">
+      <div class="cell-tag">Variant A · Dark · Display Sans</div>
+      <div class="wm-a wm-a-dark">SVIT</div>
+      <div class="wm-a-sub wm-a-dark-sub">AI TRAVEL ASSISTANT</div>
+    </div>
+
+    <!-- Variant B Light -->
+    <div class="wordmark-cell light">
+      <div class="cell-tag dark-tag">Variant B · Light · Monospaced</div>
+      <div class="wm-b">SV<span class="accent">I</span>T</div>
+      <div class="wm-a-sub" style="color:#999; margin-top:4px;">svit.travel</div>
+    </div>
+
+    <!-- Variant B Dark -->
+    <div class="wordmark-cell dark">
+      <div class="cell-tag">Variant B · Dark · Monospaced</div>
+      <div class="wm-b wm-b-dark">SV<span class="accent">I</span>T</div>
+      <div class="wm-a-sub wm-a-dark-sub" style="margin-top:4px;">svit.travel</div>
+    </div>
+
+  </div>
+
+  <div class="note-card" style="margin-top:16px;">
+    <h4>Выбор варианта</h4>
+    <ul>
+      <li><strong>Variant A</strong> — основной. App header, маркетинг, App Store. DM Sans 700.</li>
+      <li><strong>Variant B</strong> — технические контексты, developer-facing материалы, email подпись, favicon wordmark. Золотая буква I — компасный восток, намёк на направление.</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ── Section 5: Type Scale Summary ── -->
+<section class="section">
+  <div class="section-label">Type Scale — Full Reference</div>
+
+  <div class="note-card">
+    <h4>Полная шкала типографики SVIT</h4>
+    <table style="width:100%; border-collapse:collapse; margin-top:12px;">
+      <thead>
+        <tr style="border-bottom:1px solid #2E2B42;">
+          <th style="text-align:left; padding:8px 12px; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#4E4E68;">Стиль</th>
+          <th style="text-align:left; padding:8px 12px; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#4E4E68;">Шрифт</th>
+          <th style="text-align:left; padding:8px 12px; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#4E4E68;">Размер</th>
+          <th style="text-align:left; padding:8px 12px; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#4E4E68;">Weight</th>
+          <th style="text-align:left; padding:8px 12px; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#4E4E68;">Line-H</th>
+          <th style="text-align:left; padding:8px 12px; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#4E4E68;">Применение</th>
+        </tr>
+      </thead>
+      <tbody style="font-size:13px; color:#8888A8; font-family:monospace;">
+        <tr style="border-bottom:1px solid #1E1C2C;">
+          <td style="padding:9px 12px; color:#EEEEF4;">Display</td>
+          <td style="padding:9px 12px;">DM Sans</td>
+          <td style="padding:9px 12px;">48px</td>
+          <td style="padding:9px 12px;">700</td>
+          <td style="padding:9px 12px;">1.0</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Баланс кошелька, цифры hero</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1E1C2C;">
+          <td style="padding:9px 12px; color:#EEEEF4;">H1</td>
+          <td style="padding:9px 12px;">DM Sans</td>
+          <td style="padding:9px 12px;">34px</td>
+          <td style="padding:9px 12px;">700</td>
+          <td style="padding:9px 12px;">1.18</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Главный заголовок экрана, сплэш</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1E1C2C;">
+          <td style="padding:9px 12px; color:#EEEEF4;">H2</td>
+          <td style="padding:9px 12px;">DM Sans</td>
+          <td style="padding:9px 12px;">26px</td>
+          <td style="padding:9px 12px;">600</td>
+          <td style="padding:9px 12px;">1.23</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Заголовки секций, названия карточек</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1E1C2C;">
+          <td style="padding:9px 12px; color:#EEEEF4;">H3</td>
+          <td style="padding:9px 12px;">DM Sans</td>
+          <td style="padding:9px 12px;">20px</td>
+          <td style="padding:9px 12px;">600</td>
+          <td style="padding:9px 12px;">1.30</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Подзаголовки, имена отелей</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1E1C2C;">
+          <td style="padding:9px 12px; color:#EEEEF4;">Body</td>
+          <td style="padding:9px 12px;">System</td>
+          <td style="padding:9px 12px;">16px</td>
+          <td style="padding:9px 12px;">400</td>
+          <td style="padding:9px 12px;">1.56</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Текст чата, описания</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1E1C2C;">
+          <td style="padding:9px 12px; color:#EEEEF4;">Body Med</td>
+          <td style="padding:9px 12px;">System</td>
+          <td style="padding:9px 12px;">16px</td>
+          <td style="padding:9px 12px;">500</td>
+          <td style="padding:9px 12px;">1.56</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Имена, выделенный UI-текст</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1E1C2C;">
+          <td style="padding:9px 12px; color:#EEEEF4;">Small</td>
+          <td style="padding:9px 12px;">System</td>
+          <td style="padding:9px 12px;">14px</td>
+          <td style="padding:9px 12px;">400</td>
+          <td style="padding:9px 12px;">1.50</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Вторичная информация, даты</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1E1C2C;">
+          <td style="padding:9px 12px; color:#EEEEF4;">Caption</td>
+          <td style="padding:9px 12px;">System</td>
+          <td style="padding:9px 12px;">12px</td>
+          <td style="padding:9px 12px;">400</td>
+          <td style="padding:9px 12px;">1.42</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Метки, подписи к иконкам</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1E1C2C;">
+          <td style="padding:9px 12px; color:#EEEEF4;">Label</td>
+          <td style="padding:9px 12px;">System</td>
+          <td style="padding:9px 12px;">11px</td>
+          <td style="padding:9px 12px;">500</td>
+          <td style="padding:9px 12px;">1.45</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Теги статусов, chip-элементы</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px; color:#EEEEF4;">Overline</td>
+          <td style="padding:9px 12px;">System</td>
+          <td style="padding:9px 12px;">10px</td>
+          <td style="padding:9px 12px;">600</td>
+          <td style="padding:9px 12px;">1.40</td>
+          <td style="padding:9px 12px; color:#4E4E68;">Категории, uppercase-секции · +0.15em ls</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<footer style="text-align:center; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#4E4E68; margin-top:40px;">
+  SVIT · Typography System · v1.0 · 2026
+</footer>
+
+</body>
+</html>

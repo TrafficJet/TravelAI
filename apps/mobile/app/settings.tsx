@@ -13,10 +13,9 @@ import {
   StatusBar,
   Linking,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeStorage as AsyncStorage } from '../utils/safeStorage';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
 import { useTheme } from '../src/theme/ThemeContext';
 import { toast } from '../lib/toast';
@@ -95,6 +94,7 @@ interface DeleteAccountModalProps {
 }
 
 function DeleteAccountModal({ visible, onCancel, onConfirm }: DeleteAccountModalProps) {
+  const { colors } = useTheme();
   const [password, setPassword] = useState('');
 
   function handleConfirm() {
@@ -116,16 +116,16 @@ function DeleteAccountModal({ visible, onCancel, onConfirm }: DeleteAccountModal
       animationType="fade"
       onRequestClose={handleCancel}
     >
-      <View style={modalStyles.overlay}>
-        <View style={[modalStyles.container, { backgroundColor: Colors.card }]}>
-          <Text style={[modalStyles.title, { color: Colors.text }]}>Удалить аккаунт</Text>
-          <Text style={[modalStyles.subtitle, { color: Colors.textMuted }]}>
+      <View style={[modalStyles.overlay, { backgroundColor: colors.overlay }]}>
+        <View style={[modalStyles.container, { backgroundColor: colors.card }]}>
+          <Text style={[modalStyles.title, { color: colors.text }]}>Удалить аккаунт</Text>
+          <Text style={[modalStyles.subtitle, { color: colors.textMuted }]}>
             Введите пароль для подтверждения. Это действие нельзя отменить.
           </Text>
           <TextInput
-            style={[modalStyles.input, { backgroundColor: Colors.surface, borderColor: Colors.border, color: Colors.text }]}
+            style={[modalStyles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
             placeholder="Пароль"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             secureTextEntry
             value={password}
             onChangeText={setPassword}
@@ -133,18 +133,18 @@ function DeleteAccountModal({ visible, onCancel, onConfirm }: DeleteAccountModal
           />
           <View style={modalStyles.buttons}>
             <TouchableOpacity
-              style={[modalStyles.btn, { borderColor: Colors.border }]}
+              style={[modalStyles.btn, { borderColor: colors.border }]}
               onPress={handleCancel}
               activeOpacity={0.7}
             >
-              <Text style={[modalStyles.btnText, { color: Colors.text }]}>Отмена</Text>
+              <Text style={[modalStyles.btnText, { color: colors.text }]}>Отмена</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[modalStyles.btn, modalStyles.btnDanger]}
+              style={[modalStyles.btn, modalStyles.btnDanger, { backgroundColor: colors.error, borderColor: colors.error }]}
               onPress={handleConfirm}
               activeOpacity={0.7}
             >
-              <Text style={[modalStyles.btnText, { color: Colors.textInverse }]}>Удалить</Text>
+              <Text style={[modalStyles.btnText, { color: colors.textInverse }]}>Удалить</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -156,7 +156,6 @@ function DeleteAccountModal({ visible, onCancel, onConfirm }: DeleteAccountModal
 const modalStyles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: Colors.overlay,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
@@ -199,8 +198,7 @@ const modalStyles = StyleSheet.create({
     alignItems: 'center',
   },
   btnDanger: {
-    backgroundColor: Colors.error,
-    borderColor: Colors.error,
+    // background/border set via inline style
   },
   btnText: {
     fontFamily: 'Inter',
@@ -225,7 +223,7 @@ interface RowItem {
 
 function SettingsRow({
   icon,
-  iconColor = Colors.primary,
+  iconColor,
   label,
   sublabel,
   onPress,
@@ -234,32 +232,34 @@ function SettingsRow({
   disabled,
   labelColor,
 }: RowItem) {
+  const { colors } = useTheme();
+  const resolvedIconColor = iconColor ?? colors.primary;
   return (
     <TouchableOpacity
       style={[
         rowStyles.row,
-        !isLast && rowStyles.rowBorder,
+        !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
         disabled && rowStyles.rowDisabled,
       ]}
       onPress={onPress}
       activeOpacity={onPress ? 0.7 : 1}
       disabled={disabled || !onPress}
     >
-      <View style={[rowStyles.iconWrap, { backgroundColor: `${iconColor}18` }]}>
-        <Ionicons name={icon} size={18} color={iconColor} />
+      <View style={[rowStyles.iconWrap, { backgroundColor: `${resolvedIconColor}18` }]}>
+        <Ionicons name={icon} size={18} color={resolvedIconColor} />
       </View>
       <View style={rowStyles.labelBlock}>
-        <Text style={[rowStyles.label, labelColor ? { color: labelColor } : undefined]}>
+        <Text style={[rowStyles.label, { color: labelColor ?? colors.text }]}>
           {label}
         </Text>
         {sublabel ? (
-          <Text style={rowStyles.sublabel}>{sublabel}</Text>
+          <Text style={[rowStyles.sublabel, { color: colors.textMuted }]}>{sublabel}</Text>
         ) : null}
       </View>
       <View style={rowStyles.right}>
         {rightElement ?? (
           onPress ? (
-            <Ionicons name="chevron-forward" size={16} color={Colors.textMuted} />
+            <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
           ) : null
         )}
       </View>
@@ -273,10 +273,6 @@ const rowStyles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 13,
     paddingHorizontal: 16,
-  },
-  rowBorder: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
   rowDisabled: {
     opacity: 0.45,
@@ -297,12 +293,10 @@ const rowStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
-    color: Colors.text,
   },
   sublabel: {
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
     marginTop: 1,
   },
   right: {
@@ -322,6 +316,7 @@ interface PresetGroupProps<T extends string> {
 }
 
 function PresetGroup<T extends string>({ options, selected, onSelect }: PresetGroupProps<T>) {
+  const { colors } = useTheme();
   return (
     <View style={presetStyles.row}>
       {options.map((opt, idx) => {
@@ -331,13 +326,18 @@ function PresetGroup<T extends string>({ options, selected, onSelect }: PresetGr
             key={opt.value}
             style={[
               presetStyles.btn,
+              { borderColor: colors.border, backgroundColor: colors.surface },
               idx < options.length - 1 && presetStyles.btnGap,
-              isActive && presetStyles.btnActive,
+              isActive && { borderColor: colors.primary, backgroundColor: `${colors.primary}15` },
             ]}
             onPress={() => onSelect(opt.value)}
             activeOpacity={0.75}
           >
-            <Text style={[presetStyles.btnText, isActive && presetStyles.btnTextActive]}>
+            <Text style={[
+              presetStyles.btnText,
+              { color: colors.textMuted },
+              isActive && { color: colors.primary },
+            ]}>
               {opt.label}
             </Text>
           </TouchableOpacity>
@@ -356,25 +356,15 @@ const presetStyles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
     alignItems: 'center',
   },
   btnGap: {
     marginRight: 8,
   },
-  btnActive: {
-    borderColor: Colors.primary,
-    backgroundColor: `${Colors.primary}15`,
-  },
   btnText: {
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
-    color: Colors.textMuted,
-  },
-  btnTextActive: {
-    color: Colors.primary,
   },
 });
 
@@ -386,10 +376,11 @@ interface SectionProps {
 }
 
 function Section({ title, children }: SectionProps) {
+  const { colors } = useTheme();
   return (
     <View style={sectionStyles.section}>
-      <Text style={sectionStyles.title}>{title}</Text>
-      <View style={sectionStyles.card}>{children}</View>
+      <Text style={[sectionStyles.title, { color: colors.textMuted }]}>{title}</Text>
+      <View style={[sectionStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>{children}</View>
     </View>
   );
 }
@@ -402,17 +393,15 @@ const sectionStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
-    color: Colors.textMuted,
     letterSpacing: Typography.letterSpacing.wider,
     textTransform: 'uppercase',
     marginBottom: 10,
     paddingHorizontal: 4,
+    textAlign: 'center',
   },
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
     overflow: 'hidden',
   },
 });
@@ -431,20 +420,25 @@ interface OptionGroupRowProps<T extends string> {
 
 function OptionGroupRow<T extends string>({
   icon,
-  iconColor = Colors.primary,
+  iconColor,
   label,
   options,
   selected,
   onSelect,
   isLast,
 }: OptionGroupRowProps<T>) {
+  const { colors } = useTheme();
+  const resolvedIconColor = iconColor ?? colors.primary;
   return (
-    <View style={[optGroupStyles.wrapper, !isLast && optGroupStyles.wrapperBorder]}>
+    <View style={[
+      optGroupStyles.wrapper,
+      !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+    ]}>
       <View style={optGroupStyles.header}>
-        <View style={[optGroupStyles.iconWrap, { backgroundColor: `${iconColor}18` }]}>
-          <Ionicons name={icon} size={18} color={iconColor} />
+        <View style={[optGroupStyles.iconWrap, { backgroundColor: `${resolvedIconColor}18` }]}>
+          <Ionicons name={icon} size={18} color={resolvedIconColor} />
         </View>
-        <Text style={optGroupStyles.label}>{label}</Text>
+        <Text style={[optGroupStyles.label, { color: colors.text }]}>{label}</Text>
       </View>
       <View style={optGroupStyles.presetArea}>
         <PresetGroup options={options} selected={selected} onSelect={onSelect} />
@@ -458,10 +452,6 @@ const optGroupStyles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 13,
     paddingBottom: 14,
-  },
-  wrapperBorder: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -481,7 +471,6 @@ const optGroupStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
-    color: Colors.text,
   },
   presetArea: {
     paddingLeft: 46,
@@ -491,8 +480,9 @@ const optGroupStyles = StyleSheet.create({
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function SettingsScreen() {
-  const { setTheme: applyTheme } = useTheme();
+  const { setTheme: applyTheme, colors, isDark } = useTheme();
   const logout = useAuthStore((s) => s.logout);
+  const user = useAuthStore((s) => s.user);
   const insets = useSafeAreaInsets();
 
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
@@ -587,12 +577,6 @@ export default function SettingsScreen() {
   function handleThemeSelect(theme: ThemeOption) {
     handleChange({ ...settings, theme });
     applyTheme(theme);
-    const labels: Record<ThemeOption, string> = {
-      light: 'Светлая тема',
-      dark: 'Тёмная тема',
-      system: 'Системная тема',
-    };
-    toast.info(labels[theme]);
   }
 
   async function handleLanguageSelect(lang: LanguageOption) {
@@ -672,24 +656,24 @@ export default function SettingsScreen() {
 
   return (
     <>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
       {/* Custom header */}
-      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? 48 : insets.top + 16 }]}>
+      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? 16 : insets.top + 4, backgroundColor: colors.background, borderBottomColor: colors.border }]}>
         <TouchableOpacity
           onPress={() => router.back()}
-          style={styles.backBtn}
+          style={[styles.backBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="arrow-back" size={22} color={Colors.text} />
+          <Ionicons name="arrow-back" size={22} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Настройки</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Настройки</Text>
         <View style={styles.headerRight} />
       </View>
 
       <ScrollView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: colors.background }]}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
@@ -697,7 +681,7 @@ export default function SettingsScreen() {
         <Section title="Внешний вид">
           <OptionGroupRow
             icon="color-palette-outline"
-            iconColor={Colors.secondary}
+            iconColor={colors.secondary}
             label="Тема"
             options={themeOptions}
             selected={settings.theme}
@@ -706,7 +690,7 @@ export default function SettingsScreen() {
           />
           <OptionGroupRow
             icon="language-outline"
-            iconColor={Colors.info}
+            iconColor={colors.info}
             label="Язык"
             options={langOptions}
             selected={settings.language}
@@ -719,35 +703,35 @@ export default function SettingsScreen() {
         <Section title="Уведомления">
           <SettingsRow
             icon="pricetag-outline"
-            iconColor={Colors.primary}
+            iconColor={colors.primary}
             label="Изменение цен"
             sublabel="Снижение цен на рейсы и отели"
             rightElement={
               <Switch
                 value={settings.notifPrices}
                 onValueChange={handleNotifChange('notifPrices')}
-                trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
-                thumbColor={settings.notifPrices ? Colors.primary : Colors.textMuted}
+                trackColor={{ false: colors.border, true: `${colors.primary}80` }}
+                thumbColor={settings.notifPrices ? colors.primary : colors.textMuted}
               />
             }
           />
           <SettingsRow
             icon="airplane-outline"
-            iconColor={Colors.secondary}
+            iconColor={colors.secondary}
             label="Бронирования"
             sublabel="Статус и изменения по броням"
             rightElement={
               <Switch
                 value={settings.notifBookings}
                 onValueChange={handleNotifChange('notifBookings')}
-                trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
-                thumbColor={settings.notifBookings ? Colors.primary : Colors.textMuted}
+                trackColor={{ false: colors.border, true: `${colors.primary}80` }}
+                thumbColor={settings.notifBookings ? colors.primary : colors.textMuted}
               />
             }
           />
           <SettingsRow
             icon="notifications-outline"
-            iconColor={Colors.textMuted}
+            iconColor={colors.textMuted}
             label="Системные"
             sublabel="Обновления приложения и сервиса"
             isLast
@@ -755,8 +739,8 @@ export default function SettingsScreen() {
               <Switch
                 value={settings.notifSystem}
                 onValueChange={handleNotifChange('notifSystem')}
-                trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
-                thumbColor={settings.notifSystem ? Colors.primary : Colors.textMuted}
+                trackColor={{ false: colors.border, true: `${colors.primary}80` }}
+                thumbColor={settings.notifSystem ? colors.primary : colors.textMuted}
               />
             }
           />
@@ -766,7 +750,7 @@ export default function SettingsScreen() {
         <Section title="Безопасность">
           <SettingsRow
             icon="lock-closed-outline"
-            iconColor={Colors.warning}
+            iconColor={colors.warning}
             label="Изменить пароль"
             sublabel="Обновите пароль аккаунта"
             onPress={() => {
@@ -775,28 +759,44 @@ export default function SettingsScreen() {
                 'Письмо с ссылкой для сброса пароля будет отправлено на ваш email.',
                 [
                   { text: 'Отмена', style: 'cancel' },
-                  { text: 'Отправить', onPress: () => toast.success('Письмо отправлено') },
+                  {
+                    text: 'Отправить',
+                    onPress: async () => {
+                      try {
+                        const email = user?.email;
+                        if (!email) {
+                          toast.error('Email не найден');
+                          return;
+                        }
+                        await api.post('/auth/forgot-password', { email });
+                        toast.success('Письмо отправлено на ' + email);
+                      } catch (err) {
+                        const msg = err instanceof Error ? err.message : 'Ошибка';
+                        toast.error('Не удалось отправить письмо: ' + msg);
+                      }
+                    },
+                  },
                 ],
               );
             }}
           />
           <SettingsRow
             icon="finger-print-outline"
-            iconColor={Colors.secondary}
+            iconColor={colors.secondary}
             label="Биометрия"
             sublabel={Platform.OS === 'ios' ? 'Face ID / Touch ID' : 'Отпечаток пальца'}
             rightElement={
               <Switch
                 value={settings.biometrics}
                 onValueChange={handleBiometricsToggle}
-                trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
-                thumbColor={settings.biometrics ? Colors.primary : Colors.textMuted}
+                trackColor={{ false: colors.border, true: `${colors.primary}80` }}
+                thumbColor={settings.biometrics ? colors.primary : colors.textMuted}
               />
             }
           />
           <SettingsRow
             icon="shield-checkmark-outline"
-            iconColor={Colors.textMuted}
+            iconColor={colors.textMuted}
             label="Двухфакторная аутентификация"
             sublabel="Скоро"
             isLast
@@ -808,32 +808,32 @@ export default function SettingsScreen() {
         <Section title="О приложении">
           <SettingsRow
             icon="information-circle-outline"
-            iconColor={Colors.info}
+            iconColor={colors.info}
             label="Версия приложения"
             sublabel="TravelAI"
             rightElement={
-              <Text style={styles.versionText}>{APP_VERSION}</Text>
+              <Text style={[styles.versionText, { color: colors.textMuted }]}>{APP_VERSION}</Text>
             }
           />
           <SettingsRow
             icon="mail-outline"
-            iconColor={Colors.secondary}
+            iconColor={colors.secondary}
             label="Написать нам"
             sublabel="support@travelai.app"
             onPress={() => Linking.openURL('mailto:support@travelai.app')}
           />
           <SettingsRow
             icon="document-text-outline"
-            iconColor={Colors.textMuted}
+            iconColor={colors.textMuted}
             label="Политика конфиденциальности"
             onPress={() => router.push('/privacy-policy')}
           />
           <SettingsRow
             icon="reader-outline"
-            iconColor={Colors.textMuted}
+            iconColor={colors.textMuted}
             label="Условия использования"
             isLast
-            onPress={() => router.push('/privacy-policy')}
+            onPress={() => router.push('/terms-of-service')}
           />
         </Section>
 
@@ -841,9 +841,9 @@ export default function SettingsScreen() {
         <Section title="Аккаунт">
           <SettingsRow
             icon="trash-outline"
-            iconColor={Colors.error}
+            iconColor={colors.error}
             label={isDeleting ? 'Удаление...' : 'Удалить аккаунт'}
-            labelColor={Colors.error}
+            labelColor={colors.error}
             isLast
             disabled={isDeleting}
             onPress={handleDeleteAccount}
@@ -871,21 +871,17 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.background,
     paddingBottom: 14,
     paddingHorizontal: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
   backBtn: {
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: Colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   headerTitle: {
     flex: 1,
@@ -893,14 +889,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
-    color: Colors.text,
   },
   headerRight: {
     width: 38,
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     paddingHorizontal: 16,
@@ -910,7 +904,6 @@ const styles = StyleSheet.create({
   versionText: {
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
-    color: Colors.textMuted,
     fontWeight: Typography.weights.medium,
   },
 });

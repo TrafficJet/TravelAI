@@ -1,26 +1,37 @@
 import { PostHog } from 'posthog-react-native';
 import type { PostHogEventProperties } from '@posthog/core';
 
-const posthog = new PostHog(
-  process.env.EXPO_PUBLIC_POSTHOG_KEY ?? 'phc_placeholder',
-  {
-    host: 'https://eu.posthog.com',
-    disabled: !process.env.EXPO_PUBLIC_POSTHOG_KEY,
+let _posthog: PostHog | null = null;
+
+function getPosthog(): PostHog | null {
+  if (_posthog) return _posthog;
+  try {
+    _posthog = new PostHog(
+      process.env.EXPO_PUBLIC_POSTHOG_KEY ?? 'phc_placeholder',
+      {
+        host: 'https://eu.posthog.com',
+        disabled: !process.env.EXPO_PUBLIC_POSTHOG_KEY,
+      }
+    );
+    return _posthog;
+  } catch (e) {
+    console.warn('[Analytics] PostHog init failed:', e);
+    return null;
   }
-);
+}
 
 export const analytics = {
   identify(userId: string, props?: PostHogEventProperties) {
-    posthog.identify(userId, props);
+    try { getPosthog()?.identify(userId, props); } catch {}
   },
   track(event: string, props?: PostHogEventProperties) {
-    posthog.capture(event, props);
+    try { getPosthog()?.capture(event, props); } catch {}
   },
   screen(name: string, props?: PostHogEventProperties) {
-    posthog.screen(name, props);
+    try { getPosthog()?.screen(name, props); } catch {}
   },
   reset() {
-    posthog.reset();
+    try { getPosthog()?.reset(); } catch {}
   },
 };
 

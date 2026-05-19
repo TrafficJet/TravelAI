@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { searchHotelsAmadeus } from './amadeus.service.js';
 
 // Mock Booking.com Partner API — returns realistic hotel offers
 // In production, replace with actual Booking.com Demand API
@@ -703,7 +704,8 @@ function getCurrencyAndBasePrice(city: string, stars: number): { currency: strin
   return { currency: 'RUB', base };
 }
 
-export async function searchHotels(params: SearchHotelsParams): Promise<HotelOffer[]> {
+// Mock implementation — preserved as fallback when Amadeus is unavailable
+export async function searchHotelsMock(params: SearchHotelsParams): Promise<HotelOffer[]> {
   const { city, checkIn, checkOut, starRating, maxPrice } = params;
   const nights = getNights(checkIn, checkOut);
 
@@ -763,4 +765,29 @@ export async function searchHotels(params: SearchHotelsParams): Promise<HotelOff
       expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hour
     };
   });
+}
+
+// ---------------------------------------------------------------------------
+// Public entry point with Amadeus fallback
+// ---------------------------------------------------------------------------
+
+/**
+ * Search for hotels.
+ * Priority:
+ *   1. Amadeus real API (when AMADEUS_CLIENT_ID is set in env)
+ *   2. Mock data (always available as fallback)
+ */
+export async function searchHotels(params: SearchHotelsParams): Promise<HotelOffer[]> {
+  if (process.env.AMADEUS_CLIENT_ID) {
+    console.log('[Amadeus] Fetching hotels for', params.city);
+    try {
+      return await searchHotelsAmadeus(params);
+    } catch (e) {
+      const reason = e instanceof Error ? e.message : String(e);
+      console.log('[Amadeus] Falling back to mock');
+      console.warn(`[Amadeus] Fallback reason: ${reason}`);
+    }
+  }
+
+  return searchHotelsMock(params);
 }

@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Share } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { Booking, BookingStatus, FlightDetails } from '../../types';
 
 interface Props {
@@ -15,13 +15,6 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
   CONFIRMED: 'Подтверждено',
   CANCELLED: 'Отменено',
   FAILED: 'Ошибка',
-};
-
-const STATUS_COLORS: Record<BookingStatus, string> = {
-  PENDING: Colors.warning,
-  CONFIRMED: Colors.success,
-  CANCELLED: Colors.error,
-  FAILED: Colors.error,
 };
 
 // Deterministic colour from airline IATA code
@@ -57,7 +50,7 @@ const logoStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   letters: {
-    color: Colors.textInverse,
+    color: '#FFFFFF',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
@@ -92,9 +85,10 @@ function parseIsoDuration(iso: string): number | null {
 }
 
 function StopsBadge({ stops }: { stops: number }) {
+  const { colors } = useTheme();
   const label =
     stops === 0 ? 'Прямой' : stops === 1 ? '1 пересадка' : `${stops} пересадки`;
-  const color = stops === 0 ? Colors.success : stops === 1 ? Colors.warning : Colors.error;
+  const color = stops === 0 ? colors.success : stops === 1 ? colors.warning : colors.error;
 
   return (
     <View style={[stopStyles.wrap, { backgroundColor: `${color}22` }]}>
@@ -117,7 +111,14 @@ const stopStyles = StyleSheet.create({
 });
 
 export function FlightCard({ booking, onPress }: Props) {
+  const { colors } = useTheme();
   const details = booking.details as FlightDetails;
+  const STATUS_COLORS: Record<BookingStatus, string> = {
+    PENDING: colors.warning,
+    CONFIRMED: colors.success,
+    CANCELLED: colors.error,
+    FAILED: colors.error,
+  };
   const statusColor = STATUS_COLORS[booking.status];
   const statusLabel = STATUS_LABELS[booking.status];
 
@@ -175,20 +176,20 @@ export function FlightCard({ booking, onPress }: Props) {
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         activeOpacity={1}
-        style={styles.card}
+        style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
       >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <AirlineLogo code={details.flightNumber.slice(0, 2) || details.airline.slice(0, 2)} />
             <View style={styles.headerInfo}>
-              <Text style={styles.airline}>{details.airline}</Text>
-              <Text style={styles.flightNum}>{details.flightNumber}</Text>
+              <Text style={[styles.airline, { color: colors.text }]}>{details.airline}</Text>
+              <Text style={[styles.flightNum, { color: colors.textMuted }]}>{details.flightNumber}</Text>
             </View>
           </View>
           <View style={styles.headerRight}>
             <TouchableOpacity onPress={handleShare} style={styles.shareBtn}>
-              <Ionicons name="share-outline" size={18} color={Colors.textMuted} />
+              <Ionicons name="share-outline" size={18} color={colors.textMuted} />
             </TouchableOpacity>
             <View style={[styles.statusBadge, { backgroundColor: `${statusColor}20` }]}>
               <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
@@ -199,29 +200,29 @@ export function FlightCard({ booking, onPress }: Props) {
         {/* Route */}
         <View style={styles.routeRow}>
           <View style={styles.routePoint}>
-            <Text style={styles.city}>{details.origin}</Text>
-            <Text style={styles.date}>{formatDate(details.departureDate)}</Text>
+            <Text style={[styles.city, { color: colors.text }]}>{details.origin}</Text>
+            <Text style={[styles.date, { color: colors.textMuted }]}>{formatDate(details.departureDate)}</Text>
           </View>
 
           <View style={styles.routeCenter}>
-            <Ionicons name="airplane" size={18} color={Colors.primary} />
+            <Ionicons name="airplane" size={18} color={colors.primary} />
             {durationMin !== undefined && (
-              <Text style={styles.duration}>{formatDuration(durationMin)}</Text>
+              <Text style={[styles.duration, { color: colors.textMuted }]}>{formatDuration(durationMin)}</Text>
             )}
           </View>
 
           <View style={[styles.routePoint, styles.routePointRight]}>
-            <Text style={styles.city}>{details.destination}</Text>
+            <Text style={[styles.city, { color: colors.text }]}>{details.destination}</Text>
             {details.returnDate && (
-              <Text style={styles.date}>обр. {formatDate(details.returnDate)}</Text>
+              <Text style={[styles.date, { color: colors.textMuted }]}>обр. {formatDate(details.returnDate)}</Text>
             )}
           </View>
         </View>
 
         {/* Footer */}
-        <View style={styles.footer}>
+        <View style={[styles.footer, { borderTopColor: colors.border }]}>
           <StopsBadge stops={stops} />
-          <Text style={styles.price}>
+          <Text style={[styles.price, { color: colors.primary }]}>
             {booking.totalPrice.toLocaleString('ru-RU')} {booking.currency}
           </Text>
         </View>
@@ -232,13 +233,11 @@ export function FlightCard({ booking, onPress }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 6,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -260,13 +259,11 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   airline: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
   flightNum: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
@@ -299,19 +296,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   city: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   date: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },
   duration: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     marginTop: 2,
@@ -322,10 +316,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   price: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,

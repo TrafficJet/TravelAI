@@ -12,7 +12,9 @@ import {
   LayoutChangeEvent,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
+
+type ThemeColors = ReturnType<typeof useTheme>['colors'];
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -38,16 +40,25 @@ interface OptionButtonProps {
   label: string;
   selected: boolean;
   onPress: () => void;
+  colors: ThemeColors;
 }
 
-function OptionButton({ label, selected, onPress }: OptionButtonProps) {
+function OptionButton({ label, selected, onPress, colors }: OptionButtonProps) {
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      style={[styles.optBtn, selected && styles.optBtnSelected]}
+      style={[
+        styles.optBtn,
+        { borderColor: colors.border, backgroundColor: colors.card },
+        selected && { borderColor: colors.primary, backgroundColor: `${colors.primary}22` },
+      ]}
     >
-      <Text style={[styles.optBtnText, selected && styles.optBtnTextSelected]}>
+      <Text style={[
+        styles.optBtnText,
+        { color: colors.textMuted },
+        selected && { color: colors.primary, fontWeight: '700' },
+      ]}>
         {label}
       </Text>
     </TouchableOpacity>
@@ -56,10 +67,10 @@ function OptionButton({ label, selected, onPress }: OptionButtonProps) {
 
 // ── Section wrapper ───────────────────────────────────────────────────────────
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, colors }: { title: string; children: React.ReactNode; colors: ThemeColors }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>{title}</Text>
       {children}
     </View>
   );
@@ -70,9 +81,10 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 interface PriceSliderProps {
   value: number;
   onChange: (v: number) => void;
+  colors: ThemeColors;
 }
 
-function PriceSlider({ value, onChange }: PriceSliderProps) {
+function PriceSlider({ value, onChange, colors }: PriceSliderProps) {
   const [sliderWidth, setSliderWidth] = useState(0);
   const [inputText, setInputText] = useState(String(value));
   const startX = useRef(0);
@@ -171,36 +183,44 @@ function PriceSlider({ value, onChange }: PriceSliderProps) {
         onLayout={(e: LayoutChangeEvent) => setSliderWidth(e.nativeEvent.layout.width)}
       >
         {/* Filled portion */}
-        <View style={sliderStyles.track}>
-          <View style={[sliderStyles.fill, { width: `${thumbPercent}%` }]} />
+        <View style={[sliderStyles.track, { backgroundColor: colors.border }]}>
+          <View style={[sliderStyles.fill, { width: `${thumbPercent}%`, backgroundColor: colors.primary }]} />
         </View>
         {/* Thumb */}
         <View
-          style={[sliderStyles.thumb, { left: `${thumbPercent}%` }]}
+          style={[sliderStyles.thumb, {
+            backgroundColor: colors.primary,
+            borderColor: colors.surface,
+            left: `${thumbPercent}%` as `${number}%`,
+          }]}
           {...dynamicPanResponder.panHandlers}
         />
       </TouchableOpacity>
 
       {/* Range labels */}
       <View style={sliderStyles.rangeRow}>
-        <Text style={sliderStyles.rangeLabel}>{PRICE_MIN}$</Text>
-        <Text style={sliderStyles.rangeLabel}>{PRICE_MAX}$</Text>
+        <Text style={[sliderStyles.rangeLabel, { color: colors.textMuted }]}>{PRICE_MIN}$</Text>
+        <Text style={[sliderStyles.rangeLabel, { color: colors.textMuted }]}>{PRICE_MAX}$</Text>
       </View>
 
       {/* Manual input */}
       <View style={sliderStyles.inputRow}>
-        <Text style={sliderStyles.inputLabel}>Максимум:</Text>
+        <Text style={[sliderStyles.inputLabel, { color: colors.textMuted }]}>Максимум:</Text>
         <TextInput
-          style={sliderStyles.input}
+          style={[sliderStyles.input, {
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+            color: colors.text,
+          }]}
           value={inputText}
           onChangeText={handleInputChange}
           onBlur={handleInputBlur}
           keyboardType="number-pad"
           returnKeyType="done"
-          placeholderTextColor={Colors.textMuted}
+          placeholderTextColor={colors.textMuted}
           maxLength={5}
         />
-        <Text style={sliderStyles.currency}>$</Text>
+        <Text style={[sliderStyles.currency, { color: colors.textMuted }]}>$</Text>
       </View>
     </View>
   );
@@ -217,13 +237,11 @@ const sliderStyles = StyleSheet.create({
   },
   track: {
     height: 4,
-    backgroundColor: Colors.border,
     borderRadius: 2,
     overflow: 'hidden',
   },
   fill: {
     height: '100%',
-    backgroundColor: Colors.primary,
     borderRadius: 2,
   },
   thumb: {
@@ -231,9 +249,7 @@ const sliderStyles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: Colors.primary,
     borderWidth: 3,
-    borderColor: Colors.surface,
     marginLeft: -12,
     top: 8,
     shadowColor: '#000',
@@ -248,7 +264,6 @@ const sliderStyles = StyleSheet.create({
     marginTop: 4,
   },
   rangeLabel: {
-    color: Colors.textMuted,
     fontSize: 11,
   },
   inputRow: {
@@ -258,25 +273,20 @@ const sliderStyles = StyleSheet.create({
     gap: 8,
   },
   inputLabel: {
-    color: Colors.textMuted,
     fontSize: 13,
     flex: 1,
   },
   input: {
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    color: Colors.text,
     fontSize: 15,
     fontWeight: '600',
     minWidth: 72,
     textAlign: 'center',
   },
   currency: {
-    color: Colors.textMuted,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -321,9 +331,10 @@ interface TimeInputProps {
   value: string;
   placeholder: string;
   onChange: (val: string) => void;
+  colors: ThemeColors;
 }
 
-function TimeInput({ value, placeholder, onChange }: TimeInputProps) {
+function TimeInput({ value, placeholder, onChange, colors }: TimeInputProps) {
   function applyMask(text: string): string {
     // Strip everything except digits
     const digits = text.replace(/\D/g, '').slice(0, 4);
@@ -348,11 +359,15 @@ function TimeInput({ value, placeholder, onChange }: TimeInputProps) {
 
   return (
     <TextInput
-      style={[timeStyles.input, !isValid && timeStyles.inputError]}
+      style={[
+        timeStyles.input,
+        { backgroundColor: colors.card, borderColor: colors.border, color: colors.text },
+        !isValid && { borderColor: colors.error },
+      ]}
       value={value}
       onChangeText={handleChange}
       placeholder={placeholder}
-      placeholderTextColor={Colors.textMuted}
+      placeholderTextColor={colors.textMuted}
       keyboardType="number-pad"
       maxLength={5}
       returnKeyType="done"
@@ -363,19 +378,13 @@ function TimeInput({ value, placeholder, onChange }: TimeInputProps) {
 const timeStyles = StyleSheet.create({
   input: {
     flex: 1,
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    color: Colors.text,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-  },
-  inputError: {
-    borderColor: Colors.error ?? '#EF4444',
   },
 });
 
@@ -394,6 +403,7 @@ export function FlightFiltersSheet({
   visible,
   onClose,
 }: FlightFiltersSheetProps) {
+  const { colors } = useTheme();
   const [draft, setDraft] = useState<FlightFilters>(filters);
 
   React.useEffect(() => {
@@ -439,17 +449,21 @@ export function FlightFiltersSheet({
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
+        <TouchableOpacity
+          style={[styles.backdrop, { backgroundColor: 'rgba(0,0,0,0.6)' }]}
+          activeOpacity={1}
+          onPress={onClose}
+        />
 
-        <SafeAreaView style={styles.sheet}>
+        <SafeAreaView style={[styles.sheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           {/* Handle */}
-          <View style={styles.handle} />
+          <View style={[styles.handle, { backgroundColor: colors.border }]} />
 
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Фильтры рейсов</Text>
+          <View style={[styles.header, { borderBottomColor: colors.border }]}>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Фильтры рейсов</Text>
             <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Ionicons name="close" size={22} color={Colors.text} />
+              <Ionicons name="close" size={22} color={colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -459,15 +473,16 @@ export function FlightFiltersSheet({
             showsVerticalScrollIndicator={false}
           >
             {/* Max price — slider */}
-            <Section title="Максимальная цена">
+            <Section title="Максимальная цена" colors={colors}>
               <PriceSlider
                 value={currentPrice}
                 onChange={(v) => update('maxPrice', v === PRICE_MAX ? undefined : v)}
+                colors={colors}
               />
             </Section>
 
             {/* Stops */}
-            <Section title="Пересадки">
+            <Section title="Пересадки" colors={colors}>
               <View style={styles.optRow}>
                 {STOPS_OPTIONS.map((opt) => (
                   <OptionButton
@@ -475,13 +490,14 @@ export function FlightFiltersSheet({
                     label={opt.label}
                     selected={draft.maxStops === opt.value}
                     onPress={() => update('maxStops', opt.value)}
+                    colors={colors}
                   />
                 ))}
               </View>
             </Section>
 
             {/* Cabin class */}
-            <Section title="Класс обслуживания">
+            <Section title="Класс обслуживания" colors={colors}>
               <View style={styles.optRow}>
                 {CABIN_OPTIONS.map((opt) => (
                   <OptionButton
@@ -494,13 +510,14 @@ export function FlightFiltersSheet({
                         draft.cabinClass === opt.value ? undefined : opt.value,
                       )
                     }
+                    colors={colors}
                   />
                 ))}
               </View>
             </Section>
 
             {/* Departure time */}
-            <Section title="Время вылета">
+            <Section title="Время вылета" colors={colors}>
               {/* Quick presets */}
               <View style={styles.optRow}>
                 {TIME_PRESETS.map((preset) => (
@@ -512,6 +529,7 @@ export function FlightFiltersSheet({
                       (preset.from === '' && activePreset == null)
                     }
                     onPress={() => handlePresetPress(preset)}
+                    colors={colors}
                   />
                 ))}
               </View>
@@ -522,18 +540,20 @@ export function FlightFiltersSheet({
                   value={draft.departureTimeFrom ?? ''}
                   placeholder="06:00"
                   onChange={(v) => update('departureTimeFrom', v || undefined)}
+                  colors={colors}
                 />
-                <Text style={styles.timeSeparator}>—</Text>
+                <Text style={[styles.timeSeparator, { color: colors.textMuted }]}>—</Text>
                 <TimeInput
                   value={draft.departureTimeTo ?? ''}
                   placeholder="23:00"
                   onChange={(v) => update('departureTimeTo', v || undefined)}
+                  colors={colors}
                 />
               </View>
             </Section>
 
             {/* Sort */}
-            <Section title="Сортировка">
+            <Section title="Сортировка" colors={colors}>
               <View style={styles.optRow}>
                 {SORT_OPTIONS.map((opt) => (
                   <OptionButton
@@ -548,6 +568,7 @@ export function FlightFiltersSheet({
                         update('sortOrder', 'asc');
                       }
                     }}
+                    colors={colors}
                   />
                 ))}
                 {draft.sortBy && (
@@ -557,6 +578,7 @@ export function FlightFiltersSheet({
                     onPress={() =>
                       update('sortOrder', draft.sortOrder === 'asc' ? 'desc' : 'asc')
                     }
+                    colors={colors}
                   />
                 )}
               </View>
@@ -564,12 +586,20 @@ export function FlightFiltersSheet({
           </ScrollView>
 
           {/* Footer actions */}
-          <View style={styles.footer}>
-            <TouchableOpacity style={styles.resetBtn} onPress={handleReset} activeOpacity={0.8}>
-              <Text style={styles.resetBtnText}>Сбросить</Text>
+          <View style={[styles.footer, { borderTopColor: colors.border }]}>
+            <TouchableOpacity
+              style={[styles.resetBtn, { borderColor: colors.border }]}
+              onPress={handleReset}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.resetBtnText, { color: colors.textMuted }]}>Сбросить</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.applyBtn} onPress={handleApply} activeOpacity={0.8}>
-              <Text style={styles.applyBtnText}>Применить</Text>
+            <TouchableOpacity
+              style={[styles.applyBtn, { backgroundColor: colors.primary }]}
+              onPress={handleApply}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.applyBtnText, { color: '#0A0A14' }]}>Применить</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -593,29 +623,39 @@ interface QuickChipProps {
   active: boolean;
   onPress: () => void;
   icon?: React.ComponentProps<typeof Ionicons>['name'];
+  colors: ThemeColors;
 }
 
-function QuickChip({ label, active, onPress, icon }: QuickChipProps) {
+function QuickChip({ label, active, onPress, icon, colors }: QuickChipProps) {
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.75}
-      style={[styles.chip, active && styles.chipActive]}
+      style={[
+        styles.chip,
+        { borderColor: colors.border, backgroundColor: colors.card },
+        active && { borderColor: colors.primary, backgroundColor: colors.primary },
+      ]}
     >
       {icon && (
         <Ionicons
           name={icon}
           size={13}
-          color={active ? Colors.textInverse : Colors.textMuted}
+          color={active ? '#0A0A14' : colors.textMuted}
           style={{ marginRight: 4 }}
         />
       )}
-      <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
+      <Text style={[
+        styles.chipText,
+        { color: colors.textMuted },
+        active && { color: '#0A0A14', fontWeight: '700' },
+      ]}>{label}</Text>
     </TouchableOpacity>
   );
 }
 
 export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCountProp }: FlightFilterBarProps) {
+  const { colors } = useTheme();
   const activeCount = activeCountProp ?? Object.values(filters).filter((v) => v !== undefined).length;
 
   // Derive active states for quick chips
@@ -624,7 +664,7 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
   const isCheapActive = filters.maxPrice !== undefined && filters.maxPrice <= 200;
 
   return (
-    <View style={styles.barContainer}>
+    <View style={[styles.barContainer, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -637,6 +677,7 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
           label={`Фильтры${activeCount > 0 ? ` (${activeCount})` : ''}`}
           active={activeCount > 0}
           onPress={onOpenFilters}
+          colors={colors}
         />
 
         {/* Quick chip: direct flights */}
@@ -644,6 +685,7 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
           label="Прямые рейсы"
           active={isDirectActive}
           onPress={onOpenFilters}
+          colors={colors}
         />
 
         {/* Quick chip: economy */}
@@ -651,6 +693,7 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
           label="Эконом"
           active={isEconomActive}
           onPress={onOpenFilters}
+          colors={colors}
         />
 
         {/* Quick chip: cheap */}
@@ -658,6 +701,7 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
           label="Дешевле €200"
           active={isCheapActive}
           onPress={onOpenFilters}
+          colors={colors}
         />
 
         {/* Reset button — visible only when filters active */}
@@ -665,10 +709,10 @@ export function FlightFilterBar({ filters, onOpenFilters, activeCount: activeCou
           <TouchableOpacity
             onPress={onOpenFilters}
             activeOpacity={0.75}
-            style={styles.resetChip}
+            style={[styles.resetChip, { borderColor: colors.error, backgroundColor: `${colors.error}18` }]}
           >
-            <Ionicons name="close-outline" size={14} color={Colors.error} style={{ marginRight: 2 }} />
-            <Text style={styles.resetChipText}>Сбросить</Text>
+            <Ionicons name="close-outline" size={14} color={colors.error} style={{ marginRight: 2 }} />
+            <Text style={[styles.resetChipText, { color: colors.error }]}>Сбросить</Text>
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -685,23 +729,19 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.overlay,
   },
   sheet: {
-    backgroundColor: Colors.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: '85%',
     borderTopWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: Colors.border,
   },
   handle: {
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.border,
     alignSelf: 'center',
     marginTop: 10,
     marginBottom: 4,
@@ -714,10 +754,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   headerTitle: {
-    color: Colors.text,
     fontSize: 17,
     fontWeight: '700',
   },
@@ -735,7 +773,6 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   sectionTitle: {
-    color: Colors.textMuted,
     fontSize: 12,
     fontWeight: '600',
     letterSpacing: 0.8,
@@ -756,7 +793,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   timeSeparator: {
-    color: Colors.textMuted,
     fontSize: 18,
     fontWeight: '300',
   },
@@ -766,22 +802,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.card,
-  },
-  optBtnSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: `${Colors.primary}22`,
   },
   optBtnText: {
-    color: Colors.textMuted,
     fontSize: 13,
     fontWeight: '500',
     textAlign: 'center',
-  },
-  optBtnTextSelected: {
-    color: Colors.primary,
-    fontWeight: '700',
   },
 
   footer: {
@@ -791,18 +816,15 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   resetBtn: {
     flex: 1,
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
   },
   resetBtnText: {
-    color: Colors.textMuted,
     fontSize: 15,
     fontWeight: '600',
   },
@@ -810,19 +832,15 @@ const styles = StyleSheet.create({
     flex: 2,
     paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor: Colors.primary,
     alignItems: 'center',
   },
   applyBtnText: {
-    color: '#fff',
     fontSize: 15,
     fontWeight: '700',
   },
 
   barContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    backgroundColor: Colors.surface,
   },
   barScroll: {
     paddingHorizontal: 16,
@@ -838,23 +856,12 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.card,
     flexDirection: 'row',
     alignItems: 'center',
   },
-  chipActive: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary,
-  },
   chipText: {
-    color: Colors.textMuted,
     fontSize: 13,
     fontWeight: '600',
-  },
-  chipTextActive: {
-    color: Colors.textInverse,
-    fontWeight: '700',
   },
 
   // Reset chip
@@ -863,13 +870,10 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.error,
-    backgroundColor: `${Colors.error}18`,
     flexDirection: 'row',
     alignItems: 'center',
   },
   resetChipText: {
-    color: Colors.error,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -881,19 +885,11 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.card,
   },
-  filterBtnActive: {
-    borderColor: Colors.primary,
-    backgroundColor: `${Colors.primary}22`,
-  },
+  filterBtnActive: {},
   filterBtnText: {
-    color: Colors.textMuted,
     fontSize: 13,
     fontWeight: '600',
   },
-  filterBtnTextActive: {
-    color: Colors.primary,
-  },
+  filterBtnTextActive: {},
 });

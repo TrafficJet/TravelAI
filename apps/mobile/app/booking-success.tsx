@@ -19,7 +19,7 @@ import Animated, {
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../constants/colors';
+import { useTheme } from '../src/theme/ThemeContext';
 import { Typography } from '../constants/typography';
 import { Spacing } from '../constants/spacing';
 import { Radius } from '../constants/radius';
@@ -92,7 +92,7 @@ const CONFETTI_PIECES: ConfettiPieceProps[] = [
 
 // ── Animated checkmark ──────────────────────────────────────────────────────
 
-function AnimatedCheckmark() {
+function AnimatedCheckmark({ successColor }: { successColor: string }) {
   const scale = useSharedValue(0);
   const ringScale = useSharedValue(0.6);
   const ringOpacity = useSharedValue(0);
@@ -114,11 +114,13 @@ function AnimatedCheckmark() {
 
   return (
     <View style={checkStyles.wrapper}>
-      {/* Expanding ring pulse */}
-      <Animated.View style={[checkStyles.ring, ringStyle]} />
-      {/* Main circle */}
-      <Animated.View style={[checkStyles.circle, circleStyle]}>
-        <Ionicons name="checkmark" size={48} color={Colors.success} />
+      <Animated.View style={[checkStyles.ring, { borderColor: successColor }, ringStyle]} />
+      <Animated.View style={[
+        checkStyles.circle,
+        { backgroundColor: `${successColor}22`, borderColor: successColor, shadowColor: successColor },
+        circleStyle,
+      ]}>
+        <Ionicons name="checkmark" size={48} color={successColor} />
       </Animated.View>
     </View>
   );
@@ -137,30 +139,19 @@ const checkStyles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 2,
-    borderColor: Colors.success,
     backgroundColor: 'transparent',
   },
   circle: {
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: `${Colors.success}22`,
     borderWidth: 3,
-    borderColor: Colors.success,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.success,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.45,
     shadowRadius: 20,
     elevation: 8,
-  },
-  icon: {
-    color: Colors.success,
-    fontFamily: 'Inter',
-    fontSize: 44,
-    fontWeight: Typography.weights.bold,
-    lineHeight: 52,
   },
 });
 
@@ -170,13 +161,15 @@ interface DetailRowProps {
   label: string;
   value: string;
   valueColor?: string;
+  labelColor: string;
+  textColor: string;
 }
 
-function DetailRow({ label, value, valueColor }: DetailRowProps) {
+function DetailRow({ label, value, valueColor, labelColor, textColor }: DetailRowProps) {
   return (
     <View style={detailStyles.row}>
-      <Text style={detailStyles.label}>{label}</Text>
-      <Text style={[detailStyles.value, valueColor ? { color: valueColor } : null]}>
+      <Text style={[detailStyles.label, { color: labelColor }]}>{label}</Text>
+      <Text style={[detailStyles.value, { color: valueColor ?? textColor }]}>
         {value}
       </Text>
     </View>
@@ -191,13 +184,11 @@ const detailStyles = StyleSheet.create({
     paddingVertical: 6,
   },
   label: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
   },
   value: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
@@ -209,6 +200,7 @@ const detailStyles = StyleSheet.create({
 // ── Screen ──────────────────────────────────────────────────────────────────
 
 export default function BookingSuccessScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const raw = useLocalSearchParams();
 
@@ -222,7 +214,6 @@ export default function BookingSuccessScreen() {
   const totalPriceStr = str(raw.totalPrice, '0');
   const currency    = str(raw.currency, 'USD');
 
-  // Flight-specific
   const origin      = str(raw.origin);
   const destination = str(raw.destination);
   const departureDate = str(raw.departureDate);
@@ -230,7 +221,6 @@ export default function BookingSuccessScreen() {
   const airline       = str(raw.airline);
   const cabin         = str(raw.cabin);
 
-  // Hotel-specific
   const hotelName  = str(raw.hotelName);
   const checkIn    = str(raw.checkIn);
   const checkOut   = str(raw.checkOut);
@@ -241,19 +231,16 @@ export default function BookingSuccessScreen() {
     ? `${totalPrice.toLocaleString('ru-RU')} ${currencySymbol}`
     : '—';
 
-  // Short booking reference: TRV-XXXX-XXX
   const shortRef = bookingId
     ? `TRV-${bookingId.toUpperCase().slice(0, 4)}-${bookingId.toUpperCase().slice(4, 7)}`
     : 'TRV-2024-001';
 
   const isHotel = type === 'HOTEL';
 
-  // Route label e.g. "WAW → BCN"
   const routeLabel = isHotel
     ? hotelName || 'Отель'
     : (origin && destination ? `${origin.toUpperCase()} → ${destination.toUpperCase()}` : 'Маршрут');
 
-  // Subtitle line e.g. "31 мая 2026 · LO 100 Эконом"
   function buildSubtitle(): string {
     if (isHotel) {
       if (checkIn && checkOut) return `${formatRuDate(checkIn)} — ${formatRuDate(checkOut)}`;
@@ -267,9 +254,8 @@ export default function BookingSuccessScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Confetti layer */}
-      <View style={styles.confettiLayer} pointerEvents="none">
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      <View style={[styles.confettiLayer, styles.confettiAbsolute]} pointerEvents="none">
         {CONFETTI_PIECES.map((p, i) => (
           <ConfettiPiece key={i} {...p} />
         ))}
@@ -279,56 +265,45 @@ export default function BookingSuccessScreen() {
         contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + 32 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Plane / hotel icon */}
         <Animated.View entering={FadeIn.delay(0).duration(400)} style={styles.planeEmoji}>
-          <Ionicons name={isHotel ? 'bed-outline' : 'airplane'} size={64} color={Colors.primary} />
+          <Ionicons name={isHotel ? 'bed-outline' : 'airplane'} size={64} color={colors.primary} />
         </Animated.View>
 
-        {/* Animated checkmark */}
-        <AnimatedCheckmark />
+        <AnimatedCheckmark successColor={colors.success} />
 
-        {/* Title */}
-        <Animated.Text entering={FadeIn.delay(250).duration(400)} style={styles.title}>
+        <Animated.Text entering={FadeIn.delay(250).duration(400)} style={[styles.title, { color: colors.success }]}>
           Бронь подтверждена!
         </Animated.Text>
-        <Animated.Text entering={FadeIn.delay(350).duration(400)} style={styles.subtitle}>
+        <Animated.Text entering={FadeIn.delay(350).duration(400)} style={[styles.subtitle, { color: colors.textMuted }]}>
           {isHotel
             ? 'Ваш отель забронирован и оплачен'
             : 'Ваш рейс забронирован и оплачен'}
         </Animated.Text>
 
-        {/* Booking details card */}
-        <Animated.View entering={FadeInUp.delay(450).springify()} style={styles.card}>
-          {/* Route / hotel name */}
+        <Animated.View entering={FadeInUp.delay(450).springify()} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={styles.cardHeader}>
-            <Text style={styles.routeLabel}>{routeLabel}</Text>
+            <Text style={[styles.routeLabel, { color: colors.text }]}>{routeLabel}</Text>
             {buildSubtitle().length > 0 && (
-              <Text style={styles.routeSub}>{buildSubtitle()}</Text>
+              <Text style={[styles.routeSub, { color: colors.textMuted }]}>{buildSubtitle()}</Text>
             )}
           </View>
 
-          <View style={styles.cardDivider} />
+          <View style={[styles.cardDivider, { backgroundColor: colors.border }]} />
 
-          {/* Booking reference */}
-          <DetailRow label="Номер брони" value={shortRef} valueColor={Colors.primary} />
+          <DetailRow label="Номер брони" value={shortRef} valueColor={colors.primary} labelColor={colors.textMuted} textColor={colors.text} />
+          <DetailRow label="Тип" value={isHotel ? 'Отель' : 'Авиарейс'} labelColor={colors.textMuted} textColor={colors.text} />
 
-          {/* Type */}
-          <DetailRow label="Тип" value={isHotel ? 'Отель' : 'Авиарейс'} />
-
-          {/* Extra details for flights */}
           {!isHotel && airline ? (
-            <DetailRow label="Авиакомпания" value={airline} />
+            <DetailRow label="Авиакомпания" value={airline} labelColor={colors.textMuted} textColor={colors.text} />
           ) : null}
 
-          {/* Total */}
-          <View style={styles.cardDivider} />
+          <View style={[styles.cardDivider, { backgroundColor: colors.border }]} />
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Итого оплачено</Text>
-            <Text style={styles.totalValue}>{formattedTotal}</Text>
+            <Text style={[styles.totalLabel, { color: colors.textMuted }]}>Итого оплачено</Text>
+            <Text style={[styles.totalValue, { color: colors.primary }]}>{formattedTotal}</Text>
           </View>
         </Animated.View>
 
-        {/* Actions */}
         <Animated.View entering={FadeInUp.delay(580).springify()} style={styles.actions}>
           <Button
             title="Посмотреть бронь"
@@ -360,8 +335,6 @@ export default function BookingSuccessScreen() {
   );
 }
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
-
 function formatRuDate(dateStr: string): string {
   try {
     return new Date(dateStr).toLocaleDateString('ru-RU', {
@@ -374,20 +347,19 @@ function formatRuDate(dateStr: string): string {
   }
 }
 
-// ── Styles ───────────────────────────────────────────────────────────────────
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   confettiLayer: {
+    height: SCREEN_HEIGHT * 0.55,
+    overflow: 'hidden',
+  },
+  confettiAbsolute: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: SCREEN_HEIGHT * 0.55,
-    overflow: 'hidden',
     pointerEvents: 'none',
   },
   body: {
@@ -401,7 +373,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color: Colors.success,
     fontFamily: 'Sora',
     fontSize: Typography.sizes['3xl'],
     fontWeight: Typography.weights.extrabold,
@@ -410,20 +381,16 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   subtitle: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     textAlign: 'center',
     lineHeight: 24,
   },
-  // Card
   card: {
     width: '100%',
-    backgroundColor: Colors.card,
     borderRadius: Radius.cardLg,
     padding: Spacing.cardPaddingLg,
     borderWidth: 1,
-    borderColor: Colors.border,
     marginTop: 8,
   },
   cardHeader: {
@@ -432,7 +399,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   routeLabel: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,
@@ -440,14 +406,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   routeSub: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     textAlign: 'center',
   },
   cardDivider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.border,
     marginVertical: Spacing.sm,
   },
   totalRow: {
@@ -457,18 +421,15 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   totalLabel: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
   },
   totalValue: {
-    color: Colors.primary,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.extrabold,
   },
-  // Actions
   actions: {
     width: '100%',
     gap: Spacing.sm,

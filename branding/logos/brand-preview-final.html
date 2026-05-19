@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SVIT AI Travel — Brand Identity Final</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0D0D1A;
+      color: #E8E8F0;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .page-header .brand-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #6C63FF;
+      margin-bottom: 14px;
+    }
+    .page-header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+    }
+    .page-header .subtitle {
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      color: #6B6B8A;
+    }
+    .page-header .version-chip {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 4px 14px;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid rgba(108,99,255,0.3);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: #9B93FF;
+    }
+
+    /* ── Section heading ── */
+    .section-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #4A4A6A;
+      margin-bottom: 24px;
+      padding-left: 4px;
+    }
+
+    /* ── Logo variants grid ── */
+    .variants-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .variant-card {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .variant-card__canvas {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      min-height: 200px;
+    }
+    .variant-card__canvas--light  { background: #FFFFFF; }
+    .variant-card__canvas--dark   { background: #1A1A2E; }
+    .variant-card__canvas--mono   { background: #F5F5F7; }
+
+    .variant-card__canvas svg {
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+    }
+
+    .variant-card__label {
+      background: #161626;
+      padding: 14px 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .variant-card__label .name {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: #C0C0D8;
+      margin-bottom: 4px;
+    }
+    .variant-card__label .desc {
+      font-size: 11px;
+      font-weight: 300;
+      color: #4A4A6A;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Icon spotlight ── */
+    .icon-section {
+      margin-bottom: 60px;
+    }
+    .icon-row {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .icon-tile {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .icon-tile__canvas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .icon-tile__canvas--white { background: #FFFFFF; }
+    .icon-tile__canvas--dark  { background: #1A1A2E; }
+    .icon-tile__canvas--mid   { background: #3A3A5A; }
+    .icon-tile__canvas svg { width: 80px; height: 80px; }
+    .icon-tile__size {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: #4A4A6A;
+      padding: 6px 12px;
+      background: #161626;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ── Color palette ── */
+    .palette-section {
+      margin-bottom: 60px;
+    }
+    .palette-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .swatch__block {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .swatch__hex {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #6B6B8A;
+    }
+    .swatch__name {
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      color: #4A4A6A;
+      text-align: center;
+      max-width: 80px;
+    }
+
+    /* ── Typography specimen ── */
+    .type-section {
+      margin-bottom: 60px;
+    }
+    .type-row {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .type-specimen {
+      padding: 24px 28px;
+      background: #161626;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+    }
+    .type-specimen .specimen-text {
+      flex: 1;
+    }
+    .type-specimen .specimen-meta {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: #3A3A5A;
+      white-space: nowrap;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.05);
+      margin: 48px 0;
+    }
+
+    /* ── Footer ── */
+    .page-footer {
+      text-align: center;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .page-footer p {
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: #2E2E48;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <p class="brand-label">Brand Identity System</p>
+    <h1>SVIT AI TRAVEL</h1>
+    <p class="subtitle">Abstract Symbol — Variant C Final</p>
+    <span class="version-chip">v1.0 Production — May 2026</span>
+  </header>
+
+  <!-- SECTION: LOGO VARIANTS -->
+  <p class="section-title">01 — Logo Variants</p>
+  <div class="variants-grid">
+
+    <!-- Card 1: Full lockup light -->
+    <div class="variant-card">
+      <div class="variant-card__canvas variant-card__canvas--light">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 140">
+          <defs>
+            <style>
+              .wm-l { font-family:'Helvetica Neue',Arial,sans-serif; font-weight:700; font-size:48px; letter-spacing:0.15em; fill:#1A1A2E; }
+              .tl-l { font-family:'Helvetica Neue',Arial,sans-serif; font-weight:300; font-size:14px; letter-spacing:0.3em; fill:#1A1A2E; opacity:0.55; }
+            </style>
+          </defs>
+          <rect width="400" height="140" fill="#FFFFFF"/>
+          <circle cx="70" cy="70" r="52" fill="none" stroke="#1A1A2E" stroke-width="2"/>
+          <line x1="70" y1="18" x2="70" y2="26" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+          <line x1="70" y1="114" x2="70" y2="122" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+          <line x1="118" y1="70" x2="122" y2="70" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+          <line x1="18" y1="70" x2="22" y2="70" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+          <path d="M 70 70 C 92 70, 94 56, 94 50 C 94 38, 86 32, 70 32 C 58 32, 50 37, 46 44" fill="none" stroke="#1A1A2E" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 70 70 C 48 70, 46 84, 46 90 C 46 102, 54 108, 70 108 C 82 108, 90 103, 94 96" fill="none" stroke="#1A1A2E" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="70" cy="70" r="4" fill="#1A1A2E"/>
+          <line x1="143" y1="35" x2="143" y2="105" stroke="#1A1A2E" stroke-width="1" opacity="0.18"/>
+          <text x="163" y="92" class="wm-l">SVIT</text>
+          <text x="166" y="113" class="tl-l">AI TRAVEL</text>
+        </svg>
+      </div>
+      <div class="variant-card__label">
+        <p class="name">FULL LOCKUP LIGHT</p>
+        <p class="desc">Horizontal · White background · 400×140</p>
+      </div>
+    </div>
+
+    <!-- Card 2: Icon only monochrome -->
+    <div class="variant-card">
+      <div class="variant-card__canvas variant-card__canvas--mono">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:120px;height:120px;">
+          <rect width="512" height="512" fill="#F5F5F7"/>
+          <circle cx="256" cy="256" r="220" fill="none" stroke="#1A1A2E" stroke-width="10"/>
+          <line x1="256" y1="36" x2="256" y2="72" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+          <line x1="256" y1="440" x2="256" y2="476" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+          <line x1="440" y1="256" x2="476" y2="256" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+          <line x1="36" y1="256" x2="72" y2="256" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+          <line x1="411" y1="101" x2="388" y2="124" stroke="#1A1A2E" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+          <line x1="411" y1="411" x2="388" y2="388" stroke="#1A1A2E" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+          <line x1="101" y1="411" x2="124" y2="388" stroke="#1A1A2E" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+          <line x1="101" y1="101" x2="124" y2="124" stroke="#1A1A2E" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+          <path d="M 256 256 C 318 256, 344 228, 344 200 C 344 154, 312 130, 256 130 C 222 130, 196 143, 182 162" fill="none" stroke="#1A1A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 256 256 C 194 256, 168 284, 168 312 C 168 358, 200 382, 256 382 C 290 382, 316 369, 330 350" fill="none" stroke="#1A1A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="256" cy="256" r="18" fill="#1A1A2E"/>
+          <circle cx="256" cy="256" r="7" fill="#F5F5F7"/>
+        </svg>
+      </div>
+      <div class="variant-card__label">
+        <p class="name">ICON ONLY MONOCHROME</p>
+        <p class="desc">Symbol only · 512×512 · App Store ready</p>
+      </div>
+    </div>
+
+    <!-- Card 3: Dark background version -->
+    <div class="variant-card">
+      <div class="variant-card__canvas variant-card__canvas--dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 140">
+          <defs>
+            <style>
+              .wm-d { font-family:'Helvetica Neue',Arial,sans-serif; font-weight:700; font-size:48px; letter-spacing:0.15em; fill:#FFFFFF; }
+              .tl-d { font-family:'Helvetica Neue',Arial,sans-serif; font-weight:300; font-size:14px; letter-spacing:0.3em; fill:#FFFFFF; opacity:0.45; }
+            </style>
+          </defs>
+          <rect width="400" height="140" fill="#1A1A2E"/>
+          <circle cx="70" cy="70" r="52" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="70" y1="18" x2="70" y2="26" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+          <line x1="70" y1="114" x2="70" y2="122" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+          <line x1="118" y1="70" x2="122" y2="70" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+          <line x1="18" y1="70" x2="22" y2="70" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+          <path d="M 70 70 C 92 70, 94 56, 94 50 C 94 38, 86 32, 70 32 C 58 32, 50 37, 46 44" fill="none" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 70 70 C 48 70, 46 84, 46 90 C 46 102, 54 108, 70 108 C 82 108, 90 103, 94 96" fill="none" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="70" cy="70" r="4" fill="#FFFFFF"/>
+          <line x1="143" y1="35" x2="143" y2="105" stroke="#FFFFFF" stroke-width="1" opacity="0.2"/>
+          <text x="163" y="92" class="wm-d">SVIT</text>
+          <text x="166" y="113" class="tl-d">AI TRAVEL</text>
+        </svg>
+      </div>
+      <div class="variant-card__label">
+        <p class="name">DARK BACKGROUND</p>
+        <p class="desc">Horizontal · Deep Navy #1A1A2E · White lines</p>
+      </div>
+    </div>
+
+  </div><!-- /variants-grid -->
+
+  <div class="divider"></div>
+
+  <!-- SECTION: ICON SIZES -->
+  <p class="section-title">02 — Icon at Scale</p>
+  <div class="icon-section">
+    <div class="icon-row">
+
+      <div class="icon-tile">
+        <div class="icon-tile__canvas icon-tile__canvas--white">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <rect width="512" height="512" fill="#FFFFFF"/>
+            <circle cx="256" cy="256" r="220" fill="none" stroke="#1A1A2E" stroke-width="10"/>
+            <line x1="256" y1="36" x2="256" y2="72" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+            <line x1="256" y1="440" x2="256" y2="476" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+            <line x1="440" y1="256" x2="476" y2="256" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+            <line x1="36" y1="256" x2="72" y2="256" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+            <path d="M 256 256 C 318 256, 344 228, 344 200 C 344 154, 312 130, 256 130 C 222 130, 196 143, 182 162" fill="none" stroke="#1A1A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 256 256 C 194 256, 168 284, 168 312 C 168 358, 200 382, 256 382 C 290 382, 316 369, 330 350" fill="none" stroke="#1A1A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="256" cy="256" r="18" fill="#1A1A2E"/>
+            <circle cx="256" cy="256" r="7" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <p class="icon-tile__size">80px — White</p>
+      </div>
+
+      <div class="icon-tile">
+        <div class="icon-tile__canvas icon-tile__canvas--dark">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <rect width="512" height="512" fill="#1A1A2E"/>
+            <circle cx="256" cy="256" r="220" fill="none" stroke="#FFFFFF" stroke-width="10"/>
+            <line x1="256" y1="36" x2="256" y2="72" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+            <line x1="256" y1="440" x2="256" y2="476" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+            <line x1="440" y1="256" x2="476" y2="256" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+            <line x1="36" y1="256" x2="72" y2="256" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+            <path d="M 256 256 C 318 256, 344 228, 344 200 C 344 154, 312 130, 256 130 C 222 130, 196 143, 182 162" fill="none" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 256 256 C 194 256, 168 284, 168 312 C 168 358, 200 382, 256 382 C 290 382, 316 369, 330 350" fill="none" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="256" cy="256" r="18" fill="#FFFFFF"/>
+            <circle cx="256" cy="256" r="7" fill="#1A1A2E"/>
+          </svg>
+        </div>
+        <p class="icon-tile__size">80px — Dark</p>
+      </div>
+
+      <div class="icon-tile">
+        <div class="icon-tile__canvas icon-tile__canvas--mid">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <rect width="512" height="512" fill="#3A3A5A"/>
+            <circle cx="256" cy="256" r="220" fill="none" stroke="#FFFFFF" stroke-width="10"/>
+            <line x1="256" y1="36" x2="256" y2="72" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+            <line x1="256" y1="440" x2="256" y2="476" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+            <line x1="440" y1="256" x2="476" y2="256" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+            <line x1="36" y1="256" x2="72" y2="256" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+            <path d="M 256 256 C 318 256, 344 228, 344 200 C 344 154, 312 130, 256 130 C 222 130, 196 143, 182 162" fill="none" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 256 256 C 194 256, 168 284, 168 312 C 168 358, 200 382, 256 382 C 290 382, 316 369, 330 350" fill="none" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="256" cy="256" r="18" fill="#FFFFFF"/>
+            <circle cx="256" cy="256" r="7" fill="#3A3A5A"/>
+          </svg>
+        </div>
+        <p class="icon-tile__size">80px — Mid tone</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION: COLOR PALETTE -->
+  <p class="section-title">03 — Color Palette</p>
+  <div class="palette-section">
+    <div class="palette-row">
+
+      <div class="swatch">
+        <div class="swatch__block" style="background:#6C63FF;"></div>
+        <p class="swatch__hex">#6C63FF</p>
+        <p class="swatch__name">Indigo</p>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch__block" style="background:#00B4D8;"></div>
+        <p class="swatch__hex">#00B4D8</p>
+        <p class="swatch__name">Teal</p>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch__block" style="background:#FFB347;"></div>
+        <p class="swatch__hex">#FFB347</p>
+        <p class="swatch__name">Gold</p>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch__block" style="background:#1A1A2E; border-color:rgba(255,255,255,0.14);"></div>
+        <p class="swatch__hex">#1A1A2E</p>
+        <p class="swatch__name">Deep Navy</p>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch__block" style="background:#1A1A1A; border-color:rgba(255,255,255,0.14);"></div>
+        <p class="swatch__hex">#1A1A1A</p>
+        <p class="swatch__name">Near Black</p>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch__block" style="background:#FFFFFF; border-color:rgba(0,0,0,0.12);"></div>
+        <p class="swatch__hex">#FFFFFF</p>
+        <p class="swatch__name">White</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION: TYPOGRAPHY -->
+  <p class="section-title">04 — Typography</p>
+  <div class="type-section">
+    <div class="type-row">
+
+      <div class="type-specimen">
+        <div class="specimen-text">
+          <span style="font-family:'Helvetica Neue',Arial,sans-serif; font-weight:700; font-size:36px; letter-spacing:0.15em; color:#FFFFFF;">SVIT</span>
+        </div>
+        <p class="specimen-meta">Helvetica Neue · Bold 700 · 0.15em tracking</p>
+      </div>
+
+      <div class="type-specimen">
+        <div class="specimen-text">
+          <span style="font-family:'Helvetica Neue',Arial,sans-serif; font-weight:300; font-size:14px; letter-spacing:0.3em; color:#9090AA;">AI TRAVEL</span>
+        </div>
+        <p class="specimen-meta">Helvetica Neue · Light 300 · 0.3em tracking</p>
+      </div>
+
+      <div class="type-specimen">
+        <div class="specimen-text">
+          <span style="font-family:'Helvetica Neue',Arial,sans-serif; font-weight:400; font-size:14px; color:#6B6B8A; letter-spacing:0.04em;">Compass meets S. Pure geometry. Monochrome only. Works on any background.</span>
+        </div>
+        <p class="specimen-meta">Body · Regular 400</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION: USAGE RULES -->
+  <p class="section-title">05 — Usage Rules</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:60px;">
+
+    <div style="padding:20px 24px; background:#161626; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+      <p style="font-size:11px; font-weight:600; letter-spacing:0.2em; color:#4CAF50; margin-bottom:12px;">ALLOWED</p>
+      <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
+        <li style="font-size:12px; color:#8080A0; letter-spacing:0.04em;">White symbol on dark backgrounds</li>
+        <li style="font-size:12px; color:#8080A0; letter-spacing:0.04em;">Dark symbol on light/white backgrounds</li>
+        <li style="font-size:12px; color:#8080A0; letter-spacing:0.04em;">Symbol alone (icon-only) at any size &ge;16px</li>
+        <li style="font-size:12px; color:#8080A0; letter-spacing:0.04em;">Full lockup horizontal only</li>
+      </ul>
+    </div>
+
+    <div style="padding:20px 24px; background:#161626; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+      <p style="font-size:11px; font-weight:600; letter-spacing:0.2em; color:#F43F5E; margin-bottom:12px;">FORBIDDEN</p>
+      <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
+        <li style="font-size:12px; color:#8080A0; letter-spacing:0.04em;">Colour fills inside the S or circle</li>
+        <li style="font-size:12px; color:#8080A0; letter-spacing:0.04em;">Non-proportional scaling</li>
+        <li style="font-size:12px; color:#8080A0; letter-spacing:0.04em;">Rotation of the symbol</li>
+        <li style="font-size:12px; color:#8080A0; letter-spacing:0.04em;">Adding shadows or outer glows to symbol</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- PAGE FOOTER -->
+  <footer class="page-footer">
+    <p>SVIT AI Travel &mdash; Brand Identity System v1.0 &mdash; May 2026 &mdash; Confidential</p>
+  </footer>
+
+</body>
+</html>

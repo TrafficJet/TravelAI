@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
 import { Typography } from '../../constants/typography';
 import type { WalletTransaction, TransactionType } from '../../types';
 
@@ -28,19 +28,20 @@ function formatDate(dateStr: string): string {
 }
 
 export function TransactionItem({ transaction }: Props) {
+  const { colors } = useTheme();
   const isIncoming = transaction.type === 'TOPUP';
-  const amountColor = isIncoming ? Colors.success : Colors.error;
+  const amountColor = isIncoming ? colors.success : colors.error;
   const amountPrefix = isIncoming ? '+' : '-';
   const icon = TYPE_ICONS[transaction.type];
 
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { borderBottomColor: colors.border }]}>
       <View style={[styles.iconContainer, { backgroundColor: `${amountColor}20` }]}>
         <Text style={[styles.icon, { color: amountColor }]}>{icon}</Text>
       </View>
       <View style={styles.info}>
-        <Text style={styles.label}>{transaction.description}</Text>
-        <Text style={styles.type}>
+        <Text style={[styles.label, { color: colors.text }]}>{transaction.description}</Text>
+        <Text style={[styles.type, { color: colors.textMuted }]}>
           {TYPE_LABELS[transaction.type]} · {formatDate(transaction.createdAt)}
         </Text>
       </View>
@@ -59,7 +60,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   iconContainer: {
     width: 40,
@@ -77,12 +77,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    color: Colors.text,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
   },
   type: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     marginTop: 2,
   },

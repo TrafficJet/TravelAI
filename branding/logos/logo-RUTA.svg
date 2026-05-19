@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
+  <defs>
+    <style>
+      .brand-name {
+        font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+        font-size: 52px;
+        letter-spacing: -1px;
+        fill: #F4F4F8;
+      }
+      .brand-tagline {
+        font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 400;
+        font-size: 13px;
+        letter-spacing: 2px;
+        fill: #6B7280;
+        text-transform: uppercase;
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="200" fill="#0A0A14"/>
+
+  <!-- Icon: Stylized R formed by a route line with node dots -->
+  <!-- Route line forming the letter R shape -->
+  <!-- Vertical stem -->
+  <line x1="30" y1="58" x2="30" y2="142" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+  <!-- Top horizontal bar -->
+  <line x1="30" y1="58" x2="62" y2="58" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+  <!-- Arc of R (shoulder) -->
+  <path d="M 62 58 Q 82 58 82 78 Q 82 98 62 98" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+  <!-- Middle horizontal (leg start) -->
+  <line x1="30" y1="98" x2="62" y2="98" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+  <!-- Diagonal leg of R -->
+  <line x1="62" y1="98" x2="88" y2="142" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Route node dots (waypoints on the path) -->
+  <circle cx="30" cy="58" r="5" fill="#0A0A14" stroke="#F59E0B" stroke-width="2.5"/>
+  <circle cx="30" cy="142" r="5" fill="#0A0A14" stroke="#14B8A6" stroke-width="2.5"/>
+  <circle cx="82" cy="78" r="4" fill="#F59E0B"/>
+  <circle cx="88" cy="142" r="5.5" fill="#14B8A6"/>
+
+  <!-- Small dot accent at midpoint of leg -->
+  <circle cx="75" cy="120" r="2.5" fill="#14B8A6" opacity="0.6"/>
+
+  <!-- Vertical divider -->
+  <line x1="120" y1="60" x2="120" y2="140" stroke="#1E2030" stroke-width="1"/>
+
+  <!-- Brand name -->
+  <text x="148" y="120" class="brand-name">RUTA</text>
+
+  <!-- Tagline -->
+  <text x="150" y="145" class="brand-tagline">AI travel routes</text>
+</svg>

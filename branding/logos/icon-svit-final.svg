@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- No gradients — pure monochrome as per Variant C spec -->
+  </defs>
+
+  <!-- White background -->
+  <rect width="512" height="512" fill="#FFFFFF"/>
+
+  <!--
+    COMPASS + S SYMBOL — ICON ONLY MONOCHROME
+    Centered at (256, 256), icon fills ~80% of canvas
+    Compass outer ring r=220
+    S curves span y=130..382, x=168..344
+    Color: #1A1A2E (Deep Navy) on white
+    Stroke-width scaled up for icon clarity at small sizes
+  -->
+
+  <!-- Compass outer ring -->
+  <circle
+    cx="256" cy="256"
+    r="220"
+    fill="none"
+    stroke="#1A1A2E"
+    stroke-width="10"
+  />
+
+  <!-- Cardinal tick marks — N/S/E/W -->
+  <!-- North -->
+  <line x1="256" y1="36" x2="256" y2="72" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+  <!-- South -->
+  <line x1="256" y1="440" x2="256" y2="476" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+  <!-- East -->
+  <line x1="440" y1="256" x2="476" y2="256" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+  <!-- West -->
+  <line x1="36" y1="256" x2="72" y2="256" stroke="#1A1A2E" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- Intercardinal ticks — 45deg marks, shorter -->
+  <!-- NE -->
+  <line x1="411" y1="101" x2="388" y2="124" stroke="#1A1A2E" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+  <!-- SE -->
+  <line x1="411" y1="411" x2="388" y2="388" stroke="#1A1A2E" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+  <!-- SW -->
+  <line x1="101" y1="411" x2="124" y2="388" stroke="#1A1A2E" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+  <!-- NW -->
+  <line x1="101" y1="101" x2="124" y2="124" stroke="#1A1A2E" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+
+  <!--
+    S CURVE — two Bezier half-arcs
+    Top half: (256,256) → sweeps right → terminates top-left at ~(185,165)
+    Bottom half: (256,256) → sweeps left → terminates bottom-right at ~(327,347)
+    Stroke-width: 22px for strong icon presence
+  -->
+
+  <!-- Top half of S -->
+  <path
+    d="M 256 256
+       C 318 256, 344 228, 344 200
+       C 344 154, 312 130, 256 130
+       C 222 130, 196 143, 182 162"
+    fill="none"
+    stroke="#1A1A2E"
+    stroke-width="22"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Bottom half of S -->
+  <path
+    d="M 256 256
+       C 194 256, 168 284, 168 312
+       C 168 358, 200 382, 256 382
+       C 290 382, 316 369, 330 350"
+    fill="none"
+    stroke="#1A1A2E"
+    stroke-width="22"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Center pivot dot — compass needle center / route node -->
+  <circle cx="256" cy="256" r="18" fill="#1A1A2E"/>
+
+  <!-- Inner ring of pivot — small white cutout for refinement -->
+  <circle cx="256" cy="256" r="7" fill="#FFFFFF"/>
+
+</svg>

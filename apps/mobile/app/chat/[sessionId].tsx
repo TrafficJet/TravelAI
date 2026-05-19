@@ -27,7 +27,7 @@ import { BookingConfirmModal } from '../../components/chat/BookingConfirmModal';
 import { ChatHistorySheet } from '../../components/chat/ChatHistorySheet';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { SkeletonChatMessage } from '../../components/ui/Skeleton';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
 import { Typography } from '../../constants/typography';
 import { analytics, Events } from '../../src/analytics';
 import { captureError } from '../../lib/sentry';
@@ -44,6 +44,7 @@ function humanizeError(message: string): string {
 // ── Offline banner ────────────────────────────────────────────────────────────
 
 function OfflineBanner({ visible }: { visible: boolean }) {
+  const { colors } = useTheme();
   const translateY = useRef(new Animated.Value(-48)).current;
 
   useEffect(() => {
@@ -56,7 +57,7 @@ function OfflineBanner({ visible }: { visible: boolean }) {
 
   return (
     <Animated.View
-      style={[bannerStyles.container, { transform: [{ translateY }] }]}
+      style={[bannerStyles.container, { backgroundColor: colors.error, transform: [{ translateY }] }]}
       pointerEvents="none"
     >
       <Text style={bannerStyles.text}>Нет подключения к интернету</Text>
@@ -71,13 +72,12 @@ const bannerStyles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 100,
-    backgroundColor: Colors.error,
     paddingVertical: 10,
     paddingHorizontal: 16,
     alignItems: 'center',
   },
   text: {
-    color: Colors.textInverse,
+    color: '#fff',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -95,14 +95,15 @@ const CONTEXT_SUGGESTIONS = [
 ];
 
 function EmptyState() {
+  const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
-      <Ionicons name="airplane" size={64} color={Colors.primary} style={{ opacity: 0.25, marginBottom: 24 }} />
-      <Text style={emptyStyles.title}>Куда летим?</Text>
-      <Text style={emptyStyles.subtitle}>
+      <Ionicons name="airplane" size={64} color={colors.primary} style={{ opacity: 0.25, marginBottom: 24 }} />
+      <Text style={[emptyStyles.title, { color: colors.text }]}>Куда летим?</Text>
+      <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
         Напишите маршрут, даты и бюджет — {'\n'}я подберу рейсы, отели и трансфер
       </Text>
-      <Text style={emptyStyles.hint}>
+      <Text style={[emptyStyles.hint, { color: colors.primary }]}>
         Например: "Варшава → Барселона, 10-17 июня, 2 человека"
       </Text>
     </View>
@@ -112,8 +113,9 @@ function EmptyState() {
 // ── Post-message suggestions ──────────────────────────────────────────────────
 
 function PostMessageSuggestions({ onSelect }: { onSelect: (text: string) => void }) {
+  const { colors } = useTheme();
   return (
-    <View style={suggStyles.wrap}>
+    <View style={[suggStyles.wrap, { borderTopColor: colors.border, backgroundColor: colors.surface }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -122,11 +124,11 @@ function PostMessageSuggestions({ onSelect }: { onSelect: (text: string) => void
         {CONTEXT_SUGGESTIONS.map((s) => (
           <TouchableOpacity
             key={s}
-            style={suggStyles.chip}
+            style={[suggStyles.chip, { backgroundColor: colors.card, borderColor: `${colors.primary}40` }]}
             onPress={() => onSelect(s)}
             activeOpacity={0.7}
           >
-            <Text style={suggStyles.chipText}>{s}</Text>
+            <Text style={[suggStyles.chipText, { color: colors.primary }]}>{s}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -138,23 +140,18 @@ const suggStyles = StyleSheet.create({
   wrap: {
     paddingVertical: 8,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    backgroundColor: Colors.surface,
   },
   row: {
     paddingHorizontal: 16,
     gap: 8,
   },
   chip: {
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: `${Colors.primary}40`,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 7,
   },
   chipText: {
-    color: Colors.primary,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
   },
@@ -170,7 +167,6 @@ const emptyStyles = StyleSheet.create({
     paddingBottom: 16,
   },
   title: {
-    color: Colors.text,
     fontSize: 24,
     fontWeight: Typography.weights.bold,
     marginBottom: 12,
@@ -178,7 +174,6 @@ const emptyStyles = StyleSheet.create({
     fontFamily: 'Sora',
   },
   subtitle: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.base,
     textAlign: 'center',
     lineHeight: 24,
@@ -186,7 +181,6 @@ const emptyStyles = StyleSheet.create({
     marginBottom: 16,
   },
   hint: {
-    color: Colors.primary,
     fontSize: Typography.sizes.sm,
     textAlign: 'center',
     opacity: 0.6,
@@ -198,15 +192,16 @@ const emptyStyles = StyleSheet.create({
 // ── Guest welcome ─────────────────────────────────────────────────────────────
 
 function GuestWelcomeState({ onSignIn }: { onSignIn: () => void }) {
+  const { colors } = useTheme();
   return (
     <View style={guestStyles.container}>
-      <Ionicons name="airplane" size={64} color={Colors.primary} style={{ opacity: 0.3, marginBottom: 24 }} />
-      <Text style={guestStyles.title}>Добро пожаловать в TravelAI</Text>
-      <Text style={guestStyles.subtitle}>
+      <Ionicons name="airplane" size={64} color={colors.primary} style={{ opacity: 0.3, marginBottom: 24 }} />
+      <Text style={[guestStyles.title, { color: colors.text }]}>Добро пожаловать в TravelAI</Text>
+      <Text style={[guestStyles.subtitle, { color: colors.textMuted }]}>
         AI-ассистент поможет подобрать рейсы, отели и трансфер.{'\n'}
         Войдите, чтобы начать планировать путешествие.
       </Text>
-      <TouchableOpacity style={guestStyles.btn} onPress={onSignIn} activeOpacity={0.8}>
+      <TouchableOpacity style={[guestStyles.btn, { backgroundColor: colors.primary }]} onPress={onSignIn} activeOpacity={0.8}>
         <Ionicons name="person-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
         <Text style={guestStyles.btnText}>Войти / Зарегистрироваться</Text>
       </TouchableOpacity>
@@ -223,7 +218,6 @@ const guestStyles = StyleSheet.create({
     paddingBottom: 32,
   },
   title: {
-    color: Colors.text,
     fontSize: 22,
     fontWeight: '700' as const,
     marginBottom: 12,
@@ -231,7 +225,6 @@ const guestStyles = StyleSheet.create({
     fontFamily: 'Sora',
   },
   subtitle: {
-    color: Colors.textMuted,
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 22,
@@ -242,7 +235,6 @@ const guestStyles = StyleSheet.create({
   btn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 13,
     borderRadius: 14,
@@ -258,10 +250,15 @@ const guestStyles = StyleSheet.create({
 // ── Guest input banner ─────────────────────────────────────────────────────────
 
 function GuestInputBanner({ onSignIn }: { onSignIn: () => void }) {
+  const { colors } = useTheme();
   return (
-    <TouchableOpacity style={guestBannerStyles.container} onPress={onSignIn} activeOpacity={0.85}>
-      <Ionicons name="lock-closed-outline" size={16} color={Colors.primary} style={{ marginRight: 8 }} />
-      <Text style={guestBannerStyles.text}>Войдите чтобы общаться с AI-ассистентом</Text>
+    <TouchableOpacity
+      style={[guestBannerStyles.container, { borderTopColor: colors.border, backgroundColor: colors.surface }]}
+      onPress={onSignIn}
+      activeOpacity={0.85}
+    >
+      <Ionicons name="lock-closed-outline" size={16} color={colors.primary} style={{ marginRight: 8 }} />
+      <Text style={[guestBannerStyles.text, { color: colors.primary }]}>Войдите чтобы общаться с AI-ассистентом</Text>
     </TouchableOpacity>
   );
 }
@@ -274,11 +271,8 @@ const guestBannerStyles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    backgroundColor: Colors.surface,
   },
   text: {
-    color: Colors.primary,
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '500' as const,
@@ -288,6 +282,7 @@ const guestBannerStyles = StyleSheet.create({
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function ChatScreen() {
+  const { colors } = useTheme();
   const { sessionId, initialMessage } = useLocalSearchParams<{
     sessionId: string;
     initialMessage?: string;
@@ -343,15 +338,11 @@ export default function ChatScreen() {
   // ── Offline state ─────────────────────────────────────────────────────────
   const [isOffline, setIsOffline] = React.useState(false);
 
-  // Subscribe to network state changes
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
-      // На web Platform NetInfo может ложно сообщать offline.
-      // Считаем offline только если оба признака подтверждают отсутствие сети.
       const offline = state.isConnected === false && state.isInternetReachable === false;
       setIsOffline(offline);
     });
-    // Check immediately on mount
     NetInfo.fetch().then((state) => {
       const offline = state.isConnected === false && state.isInternetReachable === false;
       setIsOffline(offline);
@@ -378,7 +369,6 @@ export default function ChatScreen() {
                   text: 'Очистить',
                   style: 'destructive',
                   onPress: () => {
-                    // Delete all messages on server, then reload (empty)
                     import('../../services/chatService').then(({ chatService }) => {
                       chatService.clearMessages(sessionId)
                         .catch(() => {})
@@ -432,7 +422,7 @@ export default function ChatScreen() {
         fontFamily: 'Sora',
         fontSize: 16,
         fontWeight: '600' as const,
-        color: Colors.text,
+        color: colors.text,
       },
       headerLeft: () => (
         <TouchableOpacity
@@ -441,8 +431,8 @@ export default function ChatScreen() {
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="time-outline" size={18} color={Colors.primary} style={{ marginRight: 4 }} />
-          <Text style={chatHeaderStyles.historyBtnText}>История</Text>
+          <Ionicons name="time-outline" size={18} color={colors.primary} style={{ marginRight: 4 }} />
+          <Text style={[chatHeaderStyles.historyBtnText, { color: colors.primary }]}>История</Text>
         </TouchableOpacity>
       ),
       headerRight: () => (
@@ -459,7 +449,7 @@ export default function ChatScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Ionicons name="person-circle-outline" size={22} color={Colors.textMuted} />
+            <Ionicons name="person-circle-outline" size={22} color={colors.textMuted} />
           </TouchableOpacity>
           <View style={chatHeaderStyles.divider} />
           <TouchableOpacity
@@ -467,17 +457,16 @@ export default function ChatScreen() {
             onPress={handleHeaderMenu}
             activeOpacity={0.7}
           >
-            <Ionicons name="ellipsis-horizontal" size={22} color={Colors.textMuted} />
+            <Ionicons name="ellipsis-horizontal" size={22} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
       ),
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu, historyVisible, isAuthenticated]);
+  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu, historyVisible, isAuthenticated, colors]);
 
   useEffect(() => {
     if (!sessionId) return;
-    // Reset streaming state on session change to prevent stuck "isStreaming=true" from a previous session
     setStreaming(false);
     loadMessages(sessionId)
       .catch(() => {})
@@ -485,7 +474,6 @@ export default function ChatScreen() {
     loadWallet().catch(() => {});
   }, [sessionId, loadMessages, loadWallet, setStreaming]);
 
-  // Auto-send initialMessage once messages have loaded and streaming is idle
   const autoSentRef = useRef(false);
   useEffect(() => {
     if (!initialMessage || isLoading || isStreaming || autoSentRef.current) return;
@@ -553,7 +541,6 @@ export default function ChatScreen() {
             addMessage(toolMsg);
           },
           onToolResult: (toolUseId, result) => {
-            // Attach result to the matching tool message so ChatToolResult can render cards
             const toolMsgId = `local-tool-${toolUseId}`;
             updateMessage(toolMsgId, { toolResult: result });
           },
@@ -584,8 +571,6 @@ export default function ChatScreen() {
           },
         },
       );
-      // Safety net: ensure streaming is reset even if onDone/onError weren't called
-      // (e.g. server closed connection without a "done" event)
       setStreaming(false);
     } catch (err: unknown) {
       setStreaming(false);
@@ -608,7 +593,6 @@ export default function ChatScreen() {
     const totalPrice = pendingBooking.totalPrice;
     const currency = pendingBooking.currency;
 
-    // Extract flight/hotel details for success screen
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const details = pendingBooking.details as any;
     const origin = details?.origin || details?.segments?.[0]?.origin || '';
@@ -633,14 +617,12 @@ export default function ChatScreen() {
           type: bookingType,
           totalPrice: String(totalPrice),
           currency,
-          // Flight details
           origin,
           destination,
           airline,
           flightNumber,
           departureDate,
           cabin,
-          // Hotel details
           hotelName,
           checkIn,
           checkOut,
@@ -652,7 +634,6 @@ export default function ChatScreen() {
     }
   }
 
-  // Build display data: real messages + optional streaming bubble
   const displayMessages: (Message & { _streaming?: boolean })[] = [
     ...safeMessages,
     ...(isStreaming
@@ -670,18 +651,17 @@ export default function ChatScreen() {
 
   void currentSession;
 
-  // ── Skeleton loading state ────────────────────────────────────────────────
   if (isLoading) {
     return (
       <KeyboardAvoidingView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: colors.background }]}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
         <View style={styles.skeletonWrap}>
           <SkeletonChatMessage />
           <View style={styles.skeletonUserRow}>
-            <View style={styles.skeletonUserBubble} />
+            <View style={[styles.skeletonUserBubble, { backgroundColor: `${colors.primary}33` }]} />
           </View>
           <SkeletonChatMessage />
         </View>
@@ -697,14 +677,13 @@ export default function ChatScreen() {
   return (
     <View {...swipePanResponder.panHandlers} style={{ flex: 1 }}>
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       {/* Offline banner */}
       <OfflineBanner visible={isOffline} />
 
-      {/* Чат: пустое состояние или список сообщений */}
       {displayMessages.length === 0 ? (
         <EmptyState />
       ) : (
@@ -727,7 +706,6 @@ export default function ChatScreen() {
         />
       )}
 
-      {/* Context suggestions shown after AI replies */}
       {showPostSuggestions && (
         <PostMessageSuggestions
           onSelect={(suggestion) => {
@@ -736,8 +714,6 @@ export default function ChatScreen() {
         />
       )}
 
-      {/* Поле ввода — доступно всем, включая гостей */}
-      {/* Для гостей при попытке отправки открывается AuthModal */}
       <ChatInput
         ref={chatInputRef}
         onSend={handleSend}
@@ -759,7 +735,6 @@ export default function ChatScreen() {
         />
       )}
 
-      {/* Chat history bottom sheet */}
       <ChatHistorySheet
         visible={historyVisible}
         currentSessionId={sessionId}
@@ -783,7 +758,6 @@ export default function ChatScreen() {
 }
 
 const chatHeaderStyles = StyleSheet.create({
-  // History button (left side)
   historyBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -795,9 +769,7 @@ const chatHeaderStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: '500' as const,
-    color: Colors.primary,
   },
-  // Right side group
   rightGroup: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -805,18 +777,15 @@ const chatHeaderStyles = StyleSheet.create({
     marginRight: 4,
     height: 36,
   },
-  // Profile button
   profileBtn: {
     width: 40,
     height: 36,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // Divider (hidden — no background pill)
   divider: {
     width: 4,
   },
-  // Menu (•••) button
   menuBtn: {
     width: 40,
     height: 36,
@@ -829,7 +798,6 @@ const chatHeaderStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   messageList: {
     paddingVertical: 8,
@@ -837,7 +805,6 @@ const styles = StyleSheet.create({
   listHeader: {
     height: 8,
   },
-  // Skeleton loading state
   skeletonWrap: {
     flex: 1,
     paddingTop: 20,
@@ -851,6 +818,5 @@ const styles = StyleSheet.create({
     width: '55%',
     height: 44,
     borderRadius: 18,
-    backgroundColor: `${Colors.primary}33`,
   },
 });

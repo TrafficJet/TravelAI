@@ -14,24 +14,19 @@ import {
   StyleSheet,
   Alert,
   TextInput,
-  Animated,
-  PanResponder,
-  Dimensions,
   ActivityIndicator,
   Platform,
 } from 'react-native';
+import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeStorage } from '../../utils/safeStorage';
 import { useChatStore } from '../../stores/chatStore';
-import { Colors, TextPresets, Radius, Spacing } from '../../constants';
+import { TextPresets, Radius, Spacing } from '../../constants';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { ChatSession } from '../../types';
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const DELETE_BUTTON_WIDTH = 80;
-const SWIPE_THRESHOLD = DELETE_BUTTON_WIDTH * 0.6;
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -59,15 +54,16 @@ interface SearchBarProps {
 }
 
 function SearchBar({ value, onChangeText }: SearchBarProps) {
+  const { colors } = useTheme();
   return (
-    <View style={searchStyles.container}>
-      <Ionicons name="search-outline" size={16} color={Colors.textMuted} style={{ marginRight: 8 }} />
+    <View style={[searchStyles.container, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <Ionicons name="search-outline" size={16} color={colors.textMuted} style={{ marginRight: 8 }} />
       <TextInput
-        style={searchStyles.input}
+        style={[searchStyles.input, { color: colors.text }]}
         value={value}
         onChangeText={onChangeText}
         placeholder="Поиск по чатам..."
-        placeholderTextColor={Colors.textMuted}
+        placeholderTextColor={colors.textMuted}
         clearButtonMode="while-editing"
         returnKeyType="search"
       />
@@ -79,17 +75,14 @@ const searchStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
     marginHorizontal: 16,
     marginBottom: 12,
     borderRadius: Radius.input,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: 12,
   },
   input: {
     flex: 1,
-    color: Colors.text,
     ...TextPresets.body,
     paddingVertical: 12,
   },
@@ -105,149 +98,110 @@ interface SessionItemProps {
   onDelete: () => void;
   onRename: (session: ChatSession) => void;
   onTogglePin: () => void;
+  onSwipeOpen: (ref: Swipeable) => void;
+  onSwipeClose: (ref: Swipeable) => void;
 }
 
-function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename, onTogglePin }: SessionItemProps) {
-  const translateX = useRef(new Animated.Value(0)).current;
-  const isOpen = useRef(false);
+function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename, onTogglePin, onSwipeOpen, onSwipeClose }: SessionItemProps) {
+  const { colors } = useTheme();
+  const swipeableRef = useRef<Swipeable>(null);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gs) =>
-        Math.abs(gs.dx) > 8 && Math.abs(gs.dy) < 20,
-      onPanResponderGrant: () => {
-        translateX.stopAnimation();
-      },
-      onPanResponderMove: (_, gs) => {
-        const currentOffset = isOpen.current ? -DELETE_BUTTON_WIDTH : 0;
-        const clamped = Math.max(-DELETE_BUTTON_WIDTH, Math.min(0, currentOffset + gs.dx));
-        translateX.setValue(clamped);
-      },
-      onPanResponderRelease: (_, gs) => {
-        const currentOffset = isOpen.current ? -DELETE_BUTTON_WIDTH : 0;
-        const projected = currentOffset + gs.dx;
-
-        if (projected < -SWIPE_THRESHOLD) {
-          isOpen.current = true;
-          Animated.spring(translateX, {
-            toValue: -DELETE_BUTTON_WIDTH,
-            useNativeDriver: true,
-            damping: 18,
-            stiffness: 200,
-          }).start();
-        } else {
-          isOpen.current = false;
-          Animated.spring(translateX, {
-            toValue: 0,
-            useNativeDriver: true,
-            damping: 18,
-            stiffness: 200,
-          }).start();
-        }
-      },
-    }),
-  ).current;
-
-  function handlePress() {
-    if (isOpen.current) {
-      isOpen.current = false;
-      Animated.spring(translateX, {
-        toValue: 0,
-        useNativeDriver: true,
-        damping: 18,
-        stiffness: 200,
-      }).start();
-      return;
-    }
-    void Haptics.selectionAsync();
-    onPress();
-  }
-
-  function handleDelete() {
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    isOpen.current = false;
-    Animated.timing(translateX, {
-      toValue: -SCREEN_WIDTH,
-      duration: 220,
-      useNativeDriver: true,
-    }).start(() => onDelete());
+  function renderRightActions() {
+    return (
+      <TouchableOpacity
+        style={[itemStyles.deleteBtn, { backgroundColor: colors.error }]}
+        onPress={() => {
+          void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          swipeableRef.current?.close();
+          onDelete();
+        }}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="trash-outline" size={20} color="#fff" />
+        <Text style={itemStyles.deleteBtnText}>Удалить</Text>
+      </TouchableOpacity>
+    );
   }
 
   return (
-    <View style={itemStyles.outerWrap}>
-      {/* Delete button behind card */}
-      <View style={itemStyles.deleteWrap}>
-        <TouchableOpacity
-          style={itemStyles.deleteBtn}
-          onPress={handleDelete}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="trash-outline" size={20} color="#fff" />
-          <Text style={itemStyles.deleteBtnText}>Удалить</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Card */}
-      <Animated.View
+    <Swipeable
+      ref={swipeableRef}
+      renderRightActions={renderRightActions}
+      rightThreshold={40}
+      friction={2}
+      overshootRight={false}
+      containerStyle={[itemStyles.outerWrap, { backgroundColor: colors.error }]}
+      onSwipeableWillOpen={(direction) => {
+        if (direction === 'right') {
+          onSwipeOpen(swipeableRef.current!);
+        }
+      }}
+      onSwipeableClose={() => {
+        onSwipeClose(swipeableRef.current!);
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => {
+          void Haptics.selectionAsync();
+          onPress();
+        }}
+        activeOpacity={0.85}
         style={[
-          itemStyles.cardAnimated,
-          { transform: [{ translateX }] },
-          isActive && itemStyles.cardActive,
+          itemStyles.card,
+          { backgroundColor: colors.card, borderColor: colors.border },
+          isActive && { backgroundColor: colors.elevated },
         ]}
-        {...panResponder.panHandlers}
       >
-        <TouchableOpacity
-          onPress={handlePress}
-          activeOpacity={0.85}
-          style={itemStyles.card}
-        >
-          <View style={[itemStyles.iconCircle, isActive && itemStyles.iconCircleActive]}>
-            <Ionicons name="airplane-outline" size={20} color={Colors.primary} />
-          </View>
+        <View style={[
+          itemStyles.iconCircle,
+          { backgroundColor: `${colors.primary}26` },
+          isActive && { backgroundColor: `${colors.primary}30`, borderWidth: 1.5, borderColor: colors.primary },
+        ]}>
+          <Ionicons name="airplane-outline" size={20} color={colors.primary} />
+        </View>
 
-          <View style={itemStyles.content}>
-            <View style={itemStyles.titleRow}>
-              {isPinned && (
-                <Ionicons name="pin" size={11} color={Colors.primary} style={{ marginRight: 4 }} />
-              )}
-              <Text style={itemStyles.title} numberOfLines={1}>
-                {session.title}
-              </Text>
-            </View>
-            {session.lastMessage ? (
-              <Text style={itemStyles.subtitle} numberOfLines={1}>
-                {session.lastMessage}
-              </Text>
-            ) : null}
+        <View style={itemStyles.content}>
+          <View style={itemStyles.titleRow}>
+            {isPinned && (
+              <Ionicons name="pin" size={11} color={colors.primary} style={{ marginRight: 4 }} />
+            )}
+            <Text style={[itemStyles.title, { color: colors.text }]} numberOfLines={1}>
+              {session.title}
+            </Text>
           </View>
+          {session.lastMessage ? (
+            <Text style={[itemStyles.subtitle, { color: colors.textMuted }]} numberOfLines={1}>
+              {session.lastMessage}
+            </Text>
+          ) : null}
+        </View>
 
-          <View style={itemStyles.rightCol}>
-            <View style={itemStyles.actions}>
-              <TouchableOpacity
-                onPress={onTogglePin}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                activeOpacity={0.7}
-              >
-                <Ionicons
-                  name={isPinned ? 'pin' : 'pin-outline'}
-                  size={14}
-                  color={isPinned ? Colors.primary : Colors.textMuted}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => onRename(session)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="pencil-outline" size={14} color={Colors.textMuted} />
-              </TouchableOpacity>
-            </View>
-            <Text style={itemStyles.time}>{formatItemTime(session.updatedAt)}</Text>
-            {isActive && <View style={itemStyles.activeDot} />}
+        <View style={itemStyles.rightCol}>
+          <View style={itemStyles.actions}>
+            <TouchableOpacity
+              onPress={onTogglePin}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={isPinned ? 'pin' : 'pin-outline'}
+                size={14}
+                color={isPinned ? colors.primary : colors.textMuted}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => onRename(session)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="pencil-outline" size={14} color={colors.textMuted} />
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-      </Animated.View>
-    </View>
+          <Text style={[itemStyles.time, { color: colors.textMuted }]}>{formatItemTime(session.updatedAt)}</Text>
+          {isActive && <View style={[itemStyles.activeDot, { backgroundColor: colors.primary }]} />}
+        </View>
+      </TouchableOpacity>
+    </Swipeable>
   );
 }
 
@@ -256,23 +210,12 @@ const itemStyles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 8,
     borderRadius: Radius.card,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  deleteWrap: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    width: DELETE_BUTTON_WIDTH,
-    borderRadius: Radius.card,
-    overflow: 'hidden',
   },
   deleteBtn: {
-    flex: 1,
-    backgroundColor: Colors.error,
+    width: 80,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: Radius.card,
     gap: 4,
   },
   deleteBtnText: {
@@ -281,20 +224,11 @@ const itemStyles = StyleSheet.create({
     fontSize: 10,
     letterSpacing: 0.5,
   },
-  cardAnimated: {
-    borderRadius: Radius.card,
-    backgroundColor: Colors.card,
-  },
-  cardActive: {
-    backgroundColor: Colors.elevated,
-  },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent',
     borderRadius: Radius.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingVertical: 13,
     paddingHorizontal: 14,
     gap: 12,
@@ -303,15 +237,9 @@ const itemStyles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: Colors.primaryMuted,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-  },
-  iconCircleActive: {
-    backgroundColor: `${Colors.primary}30`,
-    borderWidth: 1.5,
-    borderColor: Colors.primary,
   },
   content: {
     flex: 1,
@@ -325,7 +253,6 @@ const itemStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: '600' as const,
-    color: Colors.text,
     lineHeight: 20,
     flex: 1,
   },
@@ -333,7 +260,6 @@ const itemStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 12,
     fontWeight: '400' as const,
-    color: Colors.textMuted,
     lineHeight: 16,
   },
   rightCol: {
@@ -348,25 +274,24 @@ const itemStyles = StyleSheet.create({
   },
   time: {
     ...TextPresets.label,
-    color: Colors.textMuted,
     fontSize: 11,
   },
   activeDot: {
     width: 7,
     height: 7,
     borderRadius: 3.5,
-    backgroundColor: Colors.primary,
   },
 });
 
 // ── Empty state inside sheet ───────────────────────────────────────────────────
 
 function EmptyHistory() {
+  const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
-      <Ionicons name="chatbubbles-outline" size={44} color={Colors.textMuted} style={{ marginBottom: 4 }} />
-      <Text style={emptyStyles.title}>Нет истории чатов</Text>
-      <Text style={emptyStyles.subtitle}>
+      <Ionicons name="chatbubbles-outline" size={44} color={colors.textMuted} style={{ marginBottom: 4 }} />
+      <Text style={[emptyStyles.title, { color: colors.text }]}>Нет истории чатов</Text>
+      <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
         Начни новый чат, и он появится здесь
       </Text>
     </View>
@@ -386,13 +311,11 @@ const emptyStyles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 18,
     fontWeight: '600' as const,
-    color: Colors.text,
     textAlign: 'center',
   },
   subtitle: {
     fontFamily: 'Inter',
     fontSize: 14,
-    color: Colors.textMuted,
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -415,6 +338,7 @@ export function ChatHistorySheet({
   onSelectSession,
   onNewChat,
 }: ChatHistorySheetProps) {
+  const { colors } = useTheme();
   const { sessions, deleteSession, createSession, updateSessionTitle } = useChatStore();
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
@@ -422,11 +346,12 @@ export function ChatHistorySheet({
   const [pinnedIds, setPinnedIds] = useState<string[]>([]);
   const [renameSession, setRenameSession] = useState<ChatSession | null>(null);
   const [renameText, setRenameText] = useState('');
+  const openSwipeableRef = useRef<Swipeable | null>(null);
 
   // Load pinned chats when sheet opens
   useEffect(() => {
     if (visible) {
-      AsyncStorage.getItem('pinnedChats').then((val) => {
+      safeStorage.getItem('pinnedChats').then((val) => {
         if (val) setPinnedIds(JSON.parse(val) as string[]);
       }).catch(() => {});
     }
@@ -472,9 +397,22 @@ export function ChatHistorySheet({
       ? pinnedIds.filter((id) => id !== sessionId)
       : [sessionId, ...pinnedIds];
     setPinnedIds(newPinned);
-    await AsyncStorage.setItem('pinnedChats', JSON.stringify(newPinned));
+    await safeStorage.setItem('pinnedChats', JSON.stringify(newPinned));
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }
+
+  const handleSwipeOpen = useCallback((ref: Swipeable) => {
+    if (openSwipeableRef.current && openSwipeableRef.current !== ref) {
+      openSwipeableRef.current.close();
+    }
+    openSwipeableRef.current = ref;
+  }, []);
+
+  const handleSwipeClose = useCallback((ref: Swipeable) => {
+    if (openSwipeableRef.current === ref) {
+      openSwipeableRef.current = null;
+    }
+  }, []);
 
   const handleNewChat = useCallback(async () => {
     if (isCreating) return;
@@ -499,133 +437,138 @@ export function ChatHistorySheet({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View style={[sheetStyles.container, { paddingBottom: insets.bottom + 8 }]}>
-        {/* Drag handle */}
-        <View style={sheetStyles.handle} />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={[sheetStyles.container, { backgroundColor: colors.surface, paddingBottom: insets.bottom + 8 }]}>
+          {/* Drag handle */}
+          <View style={[sheetStyles.handle, { backgroundColor: colors.border }]} />
 
-        {/* Header */}
-        <View style={sheetStyles.header}>
-          <Text style={sheetStyles.headerTitle}>История чатов</Text>
+          {/* Header */}
+          <View style={sheetStyles.header}>
+            <View style={{ width: 32 }} />
+            <Text style={[sheetStyles.headerTitle, { color: colors.text }]}>История чатов</Text>
+            <TouchableOpacity
+              style={[sheetStyles.closeBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+              onPress={onClose}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="close" size={16} color={colors.textMuted} />
+            </TouchableOpacity>
+          </View>
+
+          {/* New chat button */}
           <TouchableOpacity
-            style={sheetStyles.closeBtn}
-            onPress={onClose}
-            activeOpacity={0.7}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            style={[sheetStyles.newChatBtn, { shadowColor: colors.primary }, isCreating && sheetStyles.newChatBtnDisabled]}
+            onPress={() => { void handleNewChat(); }}
+            activeOpacity={0.85}
+            disabled={isCreating}
           >
-            <Ionicons name="close" size={16} color={Colors.textMuted} />
+            <LinearGradient
+              colors={['#F59E0B', '#D97706']}
+              style={sheetStyles.newChatGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              {isCreating ? (
+                <ActivityIndicator color="#0A0A14" size="small" />
+              ) : (
+                <>
+                  <Text style={sheetStyles.newChatIcon}>+</Text>
+                  <Text style={sheetStyles.newChatText}>Новый чат</Text>
+                </>
+              )}
+            </LinearGradient>
           </TouchableOpacity>
-        </View>
 
-        {/* New chat button */}
-        <TouchableOpacity
-          style={[sheetStyles.newChatBtn, isCreating && sheetStyles.newChatBtnDisabled]}
-          onPress={() => { void handleNewChat(); }}
-          activeOpacity={0.85}
-          disabled={isCreating}
-        >
-          <LinearGradient
-            colors={['#F59E0B', '#D97706']}
-            style={sheetStyles.newChatGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-          >
-            {isCreating ? (
-              <ActivityIndicator color={Colors.textInverse} size="small" />
-            ) : (
-              <>
-                <Text style={sheetStyles.newChatIcon}>+</Text>
-                <Text style={sheetStyles.newChatText}>Новый чат</Text>
-              </>
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
-
-        {/* Search */}
-        {(sessions ?? []).length > 0 && (
-          <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-        )}
-
-        {/* Sessions list */}
-        <FlatList
-          data={sortedSessions}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <SessionItem
-              session={item}
-              isActive={item.id === currentSessionId}
-              isPinned={pinnedIds.includes(item.id)}
-              onPress={() => {
-                onClose();
-                onSelectSession(item.id);
-              }}
-              onDelete={() => handleSessionDelete(item)}
-              onRename={handleRename}
-              onTogglePin={() => { void handleTogglePin(item.id); }}
-            />
+          {/* Search */}
+          {(sessions ?? []).length > 0 && (
+            <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
           )}
-          ListEmptyComponent={
-            searchQuery.trim() ? (
-              <View style={sheetStyles.noResults}>
-                <Text style={sheetStyles.noResultsText}>
-                  По запросу "{searchQuery}" ничего не найдено
-                </Text>
-              </View>
-            ) : (
-              <EmptyHistory />
-            )
-          }
-          contentContainerStyle={
-            sortedSessions.length === 0
-              ? sheetStyles.emptyList
-              : sheetStyles.list
-          }
-          showsVerticalScrollIndicator={false}
-        />
 
-        {/* Rename Modal (Android) */}
-        <Modal
-          visible={renameSession !== null}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setRenameSession(null)}
-        >
-          <View style={renameStyles.overlay}>
-            <View style={renameStyles.dialog}>
-              <Text style={renameStyles.title}>Переименовать чат</Text>
-              <TextInput
-                style={renameStyles.input}
-                value={renameText}
-                onChangeText={setRenameText}
-                placeholder="Название чата"
-                placeholderTextColor={Colors.textMuted}
-                autoFocus
-                maxLength={100}
+          {/* Sessions list */}
+          <FlatList
+            data={sortedSessions}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <SessionItem
+                session={item}
+                isActive={item.id === currentSessionId}
+                isPinned={pinnedIds.includes(item.id)}
+                onPress={() => {
+                  onClose();
+                  onSelectSession(item.id);
+                }}
+                onDelete={() => handleSessionDelete(item)}
+                onRename={handleRename}
+                onTogglePin={() => { void handleTogglePin(item.id); }}
+                onSwipeOpen={handleSwipeOpen}
+                onSwipeClose={handleSwipeClose}
               />
-              <View style={renameStyles.buttons}>
-                <TouchableOpacity
-                  style={renameStyles.cancelBtn}
-                  onPress={() => setRenameSession(null)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={renameStyles.cancelText}>Отмена</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={renameStyles.saveBtn}
-                  onPress={() => {
-                    if (renameText.trim() && renameSession) {
-                      updateSessionTitle(renameSession.id, renameText.trim());
-                    }
-                    setRenameSession(null);
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <Text style={renameStyles.saveText}>Сохранить</Text>
-                </TouchableOpacity>
+            )}
+            ListEmptyComponent={
+              searchQuery.trim() ? (
+                <View style={sheetStyles.noResults}>
+                  <Text style={[sheetStyles.noResultsText, { color: colors.textMuted }]}>
+                    По запросу "{searchQuery}" ничего не найдено
+                  </Text>
+                </View>
+              ) : (
+                <EmptyHistory />
+              )
+            }
+            contentContainerStyle={
+              sortedSessions.length === 0
+                ? sheetStyles.emptyList
+                : sheetStyles.list
+            }
+            showsVerticalScrollIndicator={false}
+          />
+
+          {/* Rename Modal (Android) */}
+          <Modal
+            visible={renameSession !== null}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setRenameSession(null)}
+          >
+            <View style={renameStyles.overlay}>
+              <View style={[renameStyles.dialog, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Text style={[renameStyles.title, { color: colors.text }]}>Переименовать чат</Text>
+                <TextInput
+                  style={[renameStyles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+                  value={renameText}
+                  onChangeText={setRenameText}
+                  placeholder="Название чата"
+                  placeholderTextColor={colors.textMuted}
+                  autoFocus
+                  maxLength={100}
+                />
+                <View style={renameStyles.buttons}>
+                  <TouchableOpacity
+                    style={[renameStyles.cancelBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    onPress={() => setRenameSession(null)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[renameStyles.cancelText, { color: colors.textMuted }]}>Отмена</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[renameStyles.saveBtn, { backgroundColor: colors.primary }]}
+                    onPress={() => {
+                      if (renameText.trim() && renameSession) {
+                        updateSessionTitle(renameSession.id, renameText.trim());
+                      }
+                      setRenameSession(null);
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={renameStyles.saveText}>Сохранить</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
-      </View>
+          </Modal>
+        </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
@@ -639,28 +582,22 @@ const renameStyles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   dialog: {
-    backgroundColor: Colors.surface,
     borderRadius: 16,
     padding: 24,
     width: '100%',
     gap: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   title: {
     fontFamily: 'Sora',
     fontSize: 18,
     fontWeight: '600' as const,
-    color: Colors.text,
   },
   input: {
-    backgroundColor: Colors.card,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: 15,
   },
@@ -673,12 +610,9 @@ const renameStyles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 8,
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   cancelText: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: '500' as const,
@@ -687,10 +621,9 @@ const renameStyles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
-    backgroundColor: Colors.primary,
   },
   saveText: {
-    color: Colors.textInverse,
+    color: '#0A0A14',
     fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: '600' as const,
@@ -700,14 +633,12 @@ const renameStyles = StyleSheet.create({
 const sheetStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.surface,
     paddingTop: 12,
   },
   handle: {
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.border,
     alignSelf: 'center',
     marginBottom: 16,
   },
@@ -719,19 +650,18 @@ const sheetStyles = StyleSheet.create({
     marginBottom: 16,
   },
   headerTitle: {
+    flex: 1,
+    textAlign: 'center',
     fontFamily: 'Sora',
     fontSize: 20,
     fontWeight: '600' as const,
-    color: Colors.text,
     letterSpacing: -0.3,
   },
   closeBtn: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -740,7 +670,6 @@ const sheetStyles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: Radius.button,
     overflow: 'hidden',
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 10,
@@ -762,14 +691,14 @@ const sheetStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 22,
     fontWeight: '600' as const,
-    color: Colors.textInverse,
+    color: '#0A0A14',
     lineHeight: Platform.select({ ios: 26, android: 24, default: 26 }),
   },
   newChatText: {
     fontFamily: 'Sora',
     fontSize: 16,
     fontWeight: '600' as const,
-    color: Colors.textInverse,
+    color: '#0A0A14',
     letterSpacing: 0.2,
   },
   list: {
@@ -786,7 +715,6 @@ const sheetStyles = StyleSheet.create({
   },
   noResultsText: {
     ...TextPresets.body,
-    color: Colors.textMuted,
     textAlign: 'center',
   },
 });

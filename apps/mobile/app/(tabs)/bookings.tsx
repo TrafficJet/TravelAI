@@ -16,11 +16,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useBookingStore } from '../../stores/bookingStore';
 import { bookingService } from '../../services/bookingService';
 import { SkeletonBookingItem } from '../../components/ui/Skeleton';
-import { Colors } from '../../constants/colors';
 import { Typography, TextPresets } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
 import { toast } from '../../lib/toast';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { Booking, BookingStatus, FlightDetails, HotelDetails } from '../../types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -40,13 +40,6 @@ const FILTER_TABS: FilterTabConfig[] = [
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-const STATUS_BADGE_CONFIG: Record<BookingStatus, { bg: string; color: string; label: string }> = {
-  CONFIRMED: { bg: Colors.successLight,  color: Colors.success, label: 'ПОДТВЕРЖДЕНО' },
-  PENDING:   { bg: Colors.warningLight,  color: Colors.warning, label: 'ОЖИДАЕТ' },
-  CANCELLED: { bg: Colors.errorLight,    color: Colors.error,   label: 'ОТМЕНЕНО' },
-  FAILED:    { bg: Colors.errorLight,    color: Colors.error,   label: 'ОШИБКА' },
-};
 
 function getTypeIconName(booking: Booking): React.ComponentProps<typeof Ionicons>['name'] {
   if (booking.type === 'HOTEL') return 'bed-outline';
@@ -122,8 +115,9 @@ interface FilterTabsProps {
 }
 
 function FilterTabs({ active, onChange }: FilterTabsProps) {
+  const { colors } = useTheme();
   return (
-    <View style={tabStyles.row}>
+    <View style={[tabStyles.row, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
       {FILTER_TABS.map((tab) => {
         const isActive = active === tab.key;
         return (
@@ -133,10 +127,10 @@ function FilterTabs({ active, onChange }: FilterTabsProps) {
             onPress={() => onChange(tab.key)}
             activeOpacity={0.7}
           >
-            <Text style={[tabStyles.label, isActive && tabStyles.labelActive]}>
+            <Text style={[tabStyles.label, { color: colors.textMuted }, isActive && { color: colors.primary, fontWeight: Typography.weights.semibold }]}>
               {tab.label}
             </Text>
-            {isActive && <View style={tabStyles.underline} />}
+            {isActive && <View style={[tabStyles.underline, { backgroundColor: colors.primary }]} />}
           </TouchableOpacity>
         );
       })}
@@ -148,9 +142,7 @@ const tabStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.divider,
   },
   tab: {
     marginRight: Spacing.lg,
@@ -162,11 +154,6 @@ const tabStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
-    color: Colors.textMuted,
-  },
-  labelActive: {
-    color: Colors.primary,
-    fontWeight: Typography.weights.semibold,
   },
   underline: {
     position: 'absolute',
@@ -175,13 +162,21 @@ const tabStyles = StyleSheet.create({
     right: 0,
     height: 2,
     borderRadius: 1,
-    backgroundColor: Colors.primary,
   },
 });
 
 // ── Status Badge ──────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: BookingStatus }) {
+  const { colors } = useTheme();
+
+  const STATUS_BADGE_CONFIG: Record<BookingStatus, { bg: string; color: string; label: string }> = {
+    CONFIRMED: { bg: `${colors.success}20`, color: colors.success, label: 'ПОДТВЕРЖДЕНО' },
+    PENDING:   { bg: `${colors.warning}20`, color: colors.warning, label: 'ОЖИДАЕТ' },
+    CANCELLED: { bg: `${colors.error}15`,   color: colors.error,   label: 'ОТМЕНЕНО' },
+    FAILED:    { bg: `${colors.error}15`,   color: colors.error,   label: 'ОШИБКА' },
+  };
+
   const { bg, color, label } = STATUS_BADGE_CONFIG[status];
   const checkmark = status === 'CONFIRMED' ? ' ✓' : '';
   return (
@@ -216,14 +211,8 @@ interface BookingCardProps {
   index: number;
 }
 
-const STATUS_STRIPE_COLOR: Record<BookingStatus, string> = {
-  CONFIRMED: Colors.success,
-  PENDING:   Colors.warning,
-  CANCELLED: Colors.error,
-  FAILED:    Colors.error,
-};
-
 function FlightCardContent({ booking }: { booking: Booking }) {
+  const { colors } = useTheme();
   const details = (booking.details ?? {}) as Partial<FlightDetails>;
   const departureStr = details.departureDate ?? '';
   const dateLabel = departureStr
@@ -239,19 +228,19 @@ function FlightCardContent({ booking }: { booking: Booking }) {
     <View style={cardStyles.innerContent}>
       {/* Top row: icon + route + price */}
       <View style={cardStyles.topRow}>
-        <View style={cardStyles.iconCircle}>
-          <Ionicons name="airplane-outline" size={18} color={Colors.primary} />
+        <View style={[cardStyles.iconCircle, { backgroundColor: `${colors.primary}15` }]}>
+          <Ionicons name="airplane-outline" size={18} color={colors.primary} />
         </View>
         <View style={cardStyles.routeBlock}>
-          <Text style={cardStyles.route} numberOfLines={1}>
+          <Text style={[cardStyles.route, { color: colors.text }]} numberOfLines={1}>
             {origin} → {destination}
           </Text>
-          <Text style={cardStyles.subtitle} numberOfLines={1}>
+          <Text style={[cardStyles.subtitle, { color: colors.textMuted }]} numberOfLines={1}>
             {[airline, flightNumber].filter(Boolean).join(' ')}
             {cabin ? ` · ${cabin}` : ''}
           </Text>
         </View>
-        <Text style={cardStyles.price}>
+        <Text style={[cardStyles.price, { color: colors.primary }]}>
           {formatPrice(booking.totalPrice, booking.currency)}
         </Text>
       </View>
@@ -259,13 +248,14 @@ function FlightCardContent({ booking }: { booking: Booking }) {
       {/* Status + date row */}
       <View style={cardStyles.metaRow}>
         <StatusBadge status={booking.status} />
-        <Text style={cardStyles.metaText}>{dateLabel}</Text>
+        <Text style={[cardStyles.metaText, { color: colors.textMuted }]}>{dateLabel}</Text>
       </View>
     </View>
   );
 }
 
 function HotelCardContent({ booking }: { booking: Booking }) {
+  const { colors } = useTheme();
   const details = (booking.details ?? {}) as Partial<HotelDetails>;
   const name = details.name ?? 'Отель';
   const address = details.address ?? '';
@@ -280,20 +270,20 @@ function HotelCardContent({ booking }: { booking: Booking }) {
     <View style={cardStyles.innerContent}>
       {/* Top row: icon + name + price */}
       <View style={cardStyles.topRow}>
-        <View style={cardStyles.iconCircle}>
-          <Ionicons name="bed-outline" size={18} color={Colors.primary} />
+        <View style={[cardStyles.iconCircle, { backgroundColor: `${colors.primary}15` }]}>
+          <Ionicons name="bed-outline" size={18} color={colors.primary} />
         </View>
         <View style={cardStyles.routeBlock}>
-          <Text style={cardStyles.route} numberOfLines={1}>
+          <Text style={[cardStyles.route, { color: colors.text }]} numberOfLines={1}>
             {name}
           </Text>
           {address ? (
-            <Text style={cardStyles.subtitle} numberOfLines={1}>
+            <Text style={[cardStyles.subtitle, { color: colors.textMuted }]} numberOfLines={1}>
               {address}
             </Text>
           ) : null}
         </View>
-        <Text style={cardStyles.price}>
+        <Text style={[cardStyles.price, { color: colors.primary }]}>
           {formatPrice(booking.totalPrice, booking.currency)}
         </Text>
       </View>
@@ -301,13 +291,22 @@ function HotelCardContent({ booking }: { booking: Booking }) {
       {/* Status + dates row */}
       <View style={cardStyles.metaRow}>
         <StatusBadge status={booking.status} />
-        <Text style={cardStyles.metaText}>{datesLabel}</Text>
+        <Text style={[cardStyles.metaText, { color: colors.textMuted }]}>{datesLabel}</Text>
       </View>
     </View>
   );
 }
 
 function BookingCard({ booking, onPress, index }: BookingCardProps) {
+  const { colors } = useTheme();
+
+  const STATUS_STRIPE_COLOR: Record<BookingStatus, string> = {
+    CONFIRMED: colors.success,
+    PENDING:   colors.warning,
+    CANCELLED: colors.error,
+    FAILED:    colors.error,
+  };
+
   const stripeColor = STATUS_STRIPE_COLOR[booking.status];
   return (
     <Animated.View
@@ -317,7 +316,7 @@ function BookingCard({ booking, onPress, index }: BookingCardProps) {
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.85}
-        style={cardStyles.card}
+        style={[cardStyles.card, { backgroundColor: colors.card }]}
       >
         {/* Left status stripe */}
         <View style={[cardStyles.statusStripe, { backgroundColor: stripeColor }]} />
@@ -338,7 +337,6 @@ const cardStyles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   card: {
-    backgroundColor: Colors.card,
     borderRadius: Radius.card,
     overflow: 'hidden',
     flexDirection: 'row',
@@ -361,7 +359,6 @@ const cardStyles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.primaryMuted,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
@@ -374,21 +371,18 @@ const cardStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 15,
     fontWeight: '700' as const,
-    color: Colors.text,
     lineHeight: 20,
   },
   subtitle: {
     fontFamily: 'Inter',
     fontSize: 12,
     fontWeight: '400' as const,
-    color: Colors.textMuted,
     lineHeight: 16,
   },
   price: {
     fontFamily: 'Inter',
     fontSize: 17,
     fontWeight: '700' as const,
-    color: Colors.primary,
     flexShrink: 0,
     textAlign: 'right',
   },
@@ -402,7 +396,6 @@ const cardStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 11,
     fontWeight: '400' as const,
-    color: Colors.textMuted,
     flex: 1,
     textAlign: 'right',
   },
@@ -411,36 +404,37 @@ const cardStyles = StyleSheet.create({
 // ── Empty State ───────────────────────────────────────────────────────────────
 
 function BookingsEmptyState() {
+  const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
       <LinearGradient
         colors={['rgba(245,158,11,0.20)', 'rgba(245,158,11,0.05)']}
-        style={emptyStyles.iconWrap}
+        style={[emptyStyles.iconWrap, { borderColor: `${colors.primary}40` }]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <Ionicons name="ticket-outline" size={38} color={Colors.primary} />
+        <Ionicons name="ticket-outline" size={38} color={colors.primary} />
       </LinearGradient>
 
-      <Text style={emptyStyles.title}>Пока нет бронирований</Text>
-      <Text style={emptyStyles.subtitle}>
+      <Text style={[emptyStyles.title, { color: colors.text }]}>Пока нет бронирований</Text>
+      <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
         Запросите рейс или отель в чате
       </Text>
 
       <TouchableOpacity
-        style={emptyStyles.btn}
-        onPress={() => router.back()}
+        style={[emptyStyles.btn, { shadowColor: colors.primary }]}
+        onPress={() => router.replace('/(tabs)')}
         activeOpacity={0.8}
       >
         <LinearGradient
-          colors={['#F59E0B', '#D97706']}
+          colors={[colors.primary, colors.primaryDark]}
           style={emptyStyles.btnGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Ionicons name="arrow-back" size={18} color="#1C1C0A" />
-            <Text style={emptyStyles.btnText}>В чат</Text>
+            <Ionicons name="arrow-back" size={18} color={colors.textInverse} />
+            <Text style={[emptyStyles.btnText, { color: colors.textInverse }]}>В чат</Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -464,29 +458,22 @@ const emptyStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: `${Colors.primary}40`,
     marginBottom: Spacing.sm,
-  },
-  icon: {
-    fontSize: 48,
   },
   title: {
     fontFamily: 'Sora',
     fontSize: 22,
     fontWeight: '600' as const,
-    color: Colors.text,
     textAlign: 'center',
   },
   subtitle: {
     ...TextPresets.body,
-    color: Colors.textMuted,
     textAlign: 'center',
   },
   btn: {
     borderRadius: Radius.button,
     overflow: 'hidden',
     marginTop: 8,
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -502,7 +489,6 @@ const emptyStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 16,
     fontWeight: '600' as const,
-    color: Colors.textInverse,
     letterSpacing: 0.2,
   },
 });
@@ -522,6 +508,7 @@ function SkeletonList() {
 // ── Main Screen ───────────────────────────────────────────────────────────────
 
 export default function BookingsScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { bookings, load, isLoading, appendBookings } = useBookingStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -583,7 +570,7 @@ export default function BookingsScreen() {
 
   if (isLoading && (bookings ?? []).length === 0) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <FilterTabs active={filter} onChange={setFilter} />
         <SkeletonList />
       </View>
@@ -591,7 +578,7 @@ export default function BookingsScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       <FilterTabs active={filter} onChange={setFilter} />
 
       <FlatList
@@ -608,8 +595,8 @@ export default function BookingsScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={() => { void handleRefresh(); }}
-            tintColor={Colors.primary}
-            colors={[Colors.primary]}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
           />
         }
         contentContainerStyle={
@@ -621,7 +608,7 @@ export default function BookingsScreen() {
         ListFooterComponent={
           isLoadingMore ? (
             <View style={styles.loadingMore}>
-              <ActivityIndicator color={Colors.primary} />
+              <ActivityIndicator color={colors.primary} />
             </View>
           ) : null
         }
@@ -634,7 +621,6 @@ export default function BookingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   listContent: {
     paddingBottom: 24,

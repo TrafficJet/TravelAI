@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
+  <defs>
+    <style>
+      .brand-name {
+        font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+        font-size: 52px;
+        letter-spacing: -1px;
+        fill: #F4F4F8;
+      }
+      .brand-tagline {
+        font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 400;
+        font-size: 13px;
+        letter-spacing: 2px;
+        fill: #6B7280;
+        text-transform: uppercase;
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="200" fill="#0A0A14"/>
+
+  <!-- Icon: Flight arc — a trajectory from takeoff dot to destination pin -->
+
+  <!-- Horizon / ground line -->
+  <line x1="20" y1="145" x2="110" y2="145" stroke="#1E2030" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Flight arc trajectory -->
+  <path
+    d="M 28 138 Q 65 52 105 138"
+    fill="none"
+    stroke="#14B8A6"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-dasharray="4 3"
+  />
+
+  <!-- Takeoff dot -->
+  <circle cx="28" cy="138" r="5" fill="#0A0A14" stroke="#14B8A6" stroke-width="2.5"/>
+
+  <!-- Airplane icon at arc apex (top of trajectory) -->
+  <!-- Simple minimal plane shape, pointing right-upward -->
+  <g transform="translate(65, 68) rotate(-35)">
+    <!-- Fuselage -->
+    <rect x="-14" y="-2.5" width="28" height="5" rx="2.5" fill="#F59E0B"/>
+    <!-- Left wing -->
+    <polygon points="-2,-2.5 -2,-11 10,-2.5" fill="#F59E0B" opacity="0.85"/>
+    <!-- Right wing -->
+    <polygon points="-2,2.5 -2,11 10,2.5" fill="#F59E0B" opacity="0.85"/>
+    <!-- Tail fin -->
+    <polygon points="-14,-2.5 -14,-8 -7,-2.5" fill="#F59E0B" opacity="0.7"/>
+  </g>
+
+  <!-- Destination pin at end of arc -->
+  <circle cx="105" cy="132" r="6.5" fill="#F59E0B"/>
+  <line x1="105" y1="138" x2="105" y2="145" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Small stars / air dots -->
+  <circle cx="46" cy="88" r="1.5" fill="#F4F4F8" opacity="0.3"/>
+  <circle cx="84" cy="80" r="1.5" fill="#F4F4F8" opacity="0.3"/>
+  <circle cx="65" cy="100" r="1" fill="#F4F4F8" opacity="0.2"/>
+
+  <!-- Vertical divider -->
+  <line x1="128" y1="60" x2="128" y2="140" stroke="#1E2030" stroke-width="1"/>
+
+  <!-- Brand name -->
+  <text x="148" y="120" class="brand-name">NEBO</text>
+
+  <!-- Tagline -->
+  <text x="150" y="145" class="brand-tagline">fly anywhere</text>
+</svg>

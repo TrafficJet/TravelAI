@@ -14,11 +14,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChatStore } from '../../stores/chatStore';
 import { searchHistoryService } from '../../services/searchHistoryService';
 import { SkeletonBookingCard } from '../../components/ui/Skeleton';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
 import { toast } from '../../lib/toast';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { SearchHistoryItem } from '../../types';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -47,41 +47,45 @@ interface HistoryRowProps {
 }
 
 function HistoryRow({ item, onDelete, onRepeat }: HistoryRowProps) {
+  const { colors } = useTheme();
   const isFlight = item.type === 'FLIGHT';
 
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { backgroundColor: colors.card }]}>
       {/* Left icon */}
-      <View style={[styles.iconWrap, { backgroundColor: isFlight ? Colors.primaryMuted : Colors.successLight }]}>
+      <View style={[
+        styles.iconWrap,
+        { backgroundColor: isFlight ? `${colors.primary}15` : `${colors.success}20` },
+      ]}>
         <Ionicons
           name={isFlight ? 'airplane' : 'bed'}
           size={20}
-          color={isFlight ? Colors.primary : Colors.success}
+          color={isFlight ? colors.primary : colors.success}
         />
       </View>
 
       {/* Content */}
       <View style={styles.rowContent}>
-        <Text style={styles.query} numberOfLines={1}>
+        <Text style={[styles.query, { color: colors.text }]} numberOfLines={1}>
           {item.route ?? item.query}
         </Text>
         <View style={styles.metaRow}>
           {item.date ? (
-            <Text style={styles.metaText}>{formatDate(item.date)}</Text>
+            <Text style={[styles.metaText, { color: colors.textMuted }]}>{formatDate(item.date)}</Text>
           ) : null}
-          {item.date ? <Text style={styles.metaDot}> · </Text> : null}
-          <Text style={styles.metaText}>Поиск {formatSearchDate(item.createdAt)}</Text>
+          {item.date ? <Text style={[styles.metaDot, { color: colors.textMuted }]}> · </Text> : null}
+          <Text style={[styles.metaText, { color: colors.textMuted }]}>Поиск {formatSearchDate(item.createdAt)}</Text>
         </View>
 
         {/* Repeat button */}
         <TouchableOpacity
-          style={styles.repeatBtn}
+          style={[styles.repeatBtn, { borderColor: `${colors.primary}15`, backgroundColor: `${colors.primary}15` }]}
           onPress={() => onRepeat(item)}
           activeOpacity={0.75}
           hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
         >
-          <Ionicons name="refresh-outline" size={13} color={Colors.primary} />
-          <Text style={styles.repeatText}>Повторить поиск</Text>
+          <Ionicons name="refresh-outline" size={13} color={colors.primary} />
+          <Text style={[styles.repeatText, { color: colors.primary }]}>Повторить поиск</Text>
         </TouchableOpacity>
       </View>
 
@@ -91,7 +95,7 @@ function HistoryRow({ item, onDelete, onRepeat }: HistoryRowProps) {
         onPress={() => onDelete(item.id)}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Ionicons name="trash-outline" size={18} color={Colors.error} />
+        <Ionicons name="trash-outline" size={18} color={colors.error} />
       </TouchableOpacity>
     </View>
   );
@@ -107,11 +111,12 @@ interface SectionHeaderProps {
 }
 
 function SectionHeader({ title, iconName, iconColor, count }: SectionHeaderProps) {
+  const { colors } = useTheme();
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
         <Ionicons name={iconName} size={16} color={iconColor} />
-        <Text style={styles.sectionTitle}>{title}</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>{title}</Text>
       </View>
       <View style={[styles.countBadge, { backgroundColor: `${iconColor}22` }]}>
         <Text style={[styles.countText, { color: iconColor }]}>{count}</Text>
@@ -123,11 +128,12 @@ function SectionHeader({ title, iconName, iconColor, count }: SectionHeaderProps
 // ── EmptyState ────────────────────────────────────────────────────────────────
 
 function EmptyHistoryState() {
+  const { colors } = useTheme();
   return (
     <View style={styles.emptyWrap}>
       <Text style={styles.emptyIcon}>🔍</Text>
-      <Text style={styles.emptyTitle}>История пуста</Text>
-      <Text style={styles.emptySub}>
+      <Text style={[styles.emptyTitle, { color: colors.text }]}>История пуста</Text>
+      <Text style={[styles.emptySub, { color: colors.textMuted }]}>
         Твои поисковые запросы будут отображаться здесь
       </Text>
     </View>
@@ -137,6 +143,7 @@ function EmptyHistoryState() {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function SearchHistoryScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [items, setItems] = useState<SearchHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -211,11 +218,11 @@ export default function SearchHistoryScreen() {
 
   async function handleRepeat(item: SearchHistoryItem) {
     try {
-      let sessionId = item.sessionId;
-      if (!sessionId) {
-        sessionId = await createSession(item.query);
-      }
-      router.push(`/chat/${sessionId}` as Parameters<typeof router.push>[0]);
+      const sessionId = await createSession(item.query);
+      router.push({
+        pathname: '/chat/[sessionId]',
+        params: { sessionId, initialMessage: item.query },
+      });
     } catch {
       toast.error('Не удалось открыть чат');
     }
@@ -233,10 +240,10 @@ export default function SearchHistoryScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         {/* Custom header while loading */}
-        <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-          <Text style={styles.headerTitle}>История поисков</Text>
+        <View style={[styles.header, { paddingTop: insets.top + 12, backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>История поисков</Text>
         </View>
         <View style={styles.skeletonWrap}>
           {Array.from({ length: 5 }).map((_, i) => (
@@ -248,19 +255,19 @@ export default function SearchHistoryScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Custom header */}
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <Text style={styles.headerTitle}>История поисков</Text>
+      <View style={[styles.header, { paddingTop: insets.top + 12, backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>История поисков</Text>
         {items.length > 0 && (
           <TouchableOpacity
-            style={styles.clearBtn}
+            style={[styles.clearBtn, { backgroundColor: `${colors.error}15` }]}
             onPress={handleClearAll}
             activeOpacity={0.75}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="trash-outline" size={16} color={Colors.error} />
-            <Text style={styles.clearText}>Очистить</Text>
+            <Ionicons name="trash-outline" size={16} color={colors.error} />
+            <Text style={[styles.clearText, { color: colors.error }]}>Очистить</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -278,7 +285,7 @@ export default function SearchHistoryScreen() {
             <SectionHeader
               title={section.title}
               iconName={section.key === 'FLIGHT' ? 'airplane' : 'bed'}
-              iconColor={section.key === 'FLIGHT' ? Colors.primary : Colors.success}
+              iconColor={section.key === 'FLIGHT' ? colors.primary : colors.success}
               count={section.data.length}
             />
           )}
@@ -286,11 +293,11 @@ export default function SearchHistoryScreen() {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
-              tintColor={Colors.primary}
+              tintColor={colors.primary}
             />
           }
           contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 24 }]}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ItemSeparatorComponent={() => <View style={[styles.separator, { backgroundColor: colors.border }]} />}
           stickySectionHeadersEnabled={false}
         />
       )}
@@ -303,7 +310,6 @@ export default function SearchHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   // Custom header
   header: {
@@ -312,12 +318,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.screenPaddingH,
     paddingBottom: Spacing.md,
-    backgroundColor: Colors.background,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
   headerTitle: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.extrabold,
@@ -330,10 +333,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: Radius.sm,
-    backgroundColor: Colors.errorLight,
   },
   clearText: {
-    color: Colors.error,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
@@ -362,7 +363,6 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   sectionTitle: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
@@ -387,7 +387,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.screenPaddingH,
-    backgroundColor: Colors.card,
   },
   iconWrap: {
     width: 42,
@@ -404,7 +403,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   query: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
@@ -415,12 +413,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   metaText: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   metaDot: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
@@ -434,11 +430,8 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: Radius.sm,
     borderWidth: 1,
-    borderColor: Colors.primaryMuted,
-    backgroundColor: Colors.primaryMuted,
   },
   repeatText: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
@@ -451,7 +444,6 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.border,
     marginLeft: 74,
   },
   // Empty state
@@ -467,14 +459,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   emptyTitle: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     textAlign: 'center',
   },
   emptySub: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     textAlign: 'center',

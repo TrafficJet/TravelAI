@@ -6,7 +6,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
 import { useFavoritesStore } from '../../stores/favoritesStore';
 import type { Hotel, FlightOffer } from '../../types';
 
@@ -17,6 +17,7 @@ type FavoriteButtonProps =
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export function FavoriteButton({ type, item, size = 22 }: FavoriteButtonProps) {
+  const { colors } = useTheme();
   const { addHotel, removeHotel, addFlight, removeFlight, isFavoriteHotel, isFavoriteFlight } =
     useFavoritesStore();
 
@@ -59,7 +60,7 @@ export function FavoriteButton({ type, item, size = 22 }: FavoriteButtonProps) {
       <Ionicons
         name={isFav ? 'heart' : 'heart-outline'}
         size={size}
-        color={isFav ? Colors.error : Colors.textMuted}
+        color={isFav ? colors.error : colors.textMuted}
       />
     </AnimatedTouchable>
   );

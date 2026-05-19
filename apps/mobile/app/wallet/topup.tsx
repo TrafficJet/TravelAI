@@ -19,11 +19,11 @@ import * as WebBrowser from 'expo-web-browser';
 import { router } from 'expo-router';
 import { useWalletStore } from '../../stores/walletStore';
 import { Button } from '../../components/ui/Button';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { sendPaymentConfirmation } from '../../services/notifications.service';
 import { toast } from '../../lib/toast';
 import { createStripePaymentIntent } from '../../src/services/stripeService';
+import { useTheme } from '../../src/theme/ThemeContext';
 import {
   cryptoDepositService,
   type CryptoCurrency,
@@ -69,42 +69,6 @@ function formatCountdown(totalSeconds: number): string {
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
-function getStatusLabel(status: DepositStatus): string {
-  switch (status) {
-    case 'WAITING':
-      return 'Ожидаем платёж...';
-    case 'CONFIRMING':
-      return 'Подтверждение...';
-    case 'CONFIRMED':
-    case 'SENDING':
-    case 'FINISHED':
-      return 'Зачислено!';
-    case 'FAILED':
-      return 'Ошибка платежа';
-    case 'EXPIRED':
-      return 'Истекло';
-    default:
-      return 'Ожидаем платёж...';
-  }
-}
-
-function getStatusPrefix(status: DepositStatus): string {
-  switch (status) {
-    case 'CONFIRMING':
-      return '';
-    case 'CONFIRMED':
-    case 'SENDING':
-    case 'FINISHED':
-      return 'Зачислено!';
-    case 'FAILED':
-      return '';
-    case 'EXPIRED':
-      return '';
-    default:
-      return '';
-  }
-}
-
 function isTerminalStatus(status: DepositStatus): boolean {
   return ['CONFIRMED', 'FINISHED', 'FAILED', 'EXPIRED'].includes(status);
 }
@@ -122,6 +86,7 @@ interface AddressCardProps {
 }
 
 function AddressCard({ deposit, depositStatus, onCopy }: AddressCardProps) {
+  const { colors } = useTheme();
   const status = depositStatus?.status ?? 'WAITING';
   const expiresAt = new Date(deposit.expiresAt).getTime();
   const [secondsLeft, setSecondsLeft] = useState(() =>
@@ -140,50 +105,54 @@ function AddressCard({ deposit, depositStatus, onCopy }: AddressCardProps) {
   const isExpired = status === 'EXPIRED' || secondsLeft <= 0;
   const isFailed = status === 'FAILED';
 
-  let statusColor: string = Colors.textMuted;
+  let statusColor: string = colors.textMuted;
   let statusIcon = '';
   if (isSuccess) {
-    statusColor = Colors.success;
+    statusColor = colors.success;
     statusIcon = 'Зачислено!';
   } else if (isExpired || isFailed) {
-    statusColor = Colors.error;
+    statusColor = colors.error;
     statusIcon = isExpired ? 'Истекло' : 'Ошибка платежа';
   } else if (status === 'CONFIRMING') {
-    statusColor = Colors.warning;
+    statusColor = colors.warning;
     statusIcon = 'Подтверждение...';
   } else {
-    statusColor = Colors.textMuted;
+    statusColor = colors.textMuted;
     statusIcon = 'Ожидаем платёж...';
   }
 
   return (
-    <View style={addrStyles.card}>
+    <View style={[addrStyles.card, { backgroundColor: colors.card }]}>
       {/* Title */}
-      <Text style={addrStyles.title}>
+      <Text style={[addrStyles.title, { color: colors.text }]}>
         Отправьте {deposit.payAmount} {deposit.payCurrency}
       </Text>
-      <Text style={addrStyles.subtitle}>
+      <Text style={[addrStyles.subtitle, { color: colors.textMuted }]}>
         (≈ ${deposit.priceAmount} USD)
       </Text>
 
       {/* QR placeholder — large address in box */}
-      <View style={addrStyles.qrBox}>
-        <Text style={addrStyles.qrHint}>Адрес кошелька</Text>
-        <Text style={addrStyles.qrAddress} selectable>
+      <View style={[addrStyles.qrBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <Text style={[addrStyles.qrHint, { color: colors.textMuted }]}>Адрес кошелька</Text>
+        <Text style={[addrStyles.qrAddress, { color: colors.text }]} selectable>
           {deposit.payAddress}
         </Text>
       </View>
 
       {/* Copy button */}
-      <TouchableOpacity style={addrStyles.copyBtn} onPress={onCopy} activeOpacity={0.75}>
+      <TouchableOpacity
+        style={[addrStyles.copyBtn, { backgroundColor: colors.primary }]}
+        onPress={onCopy}
+        activeOpacity={0.75}
+      >
         <Text style={addrStyles.copyBtnText}>Скопировать адрес</Text>
       </TouchableOpacity>
 
       {/* Timer */}
       {!isTerminalStatus(status) && (
         <View style={addrStyles.timerRow}>
-          <Text style={addrStyles.timerLabel}>Действителен:</Text>
-          <Text style={[addrStyles.timer, isExpired && { color: Colors.error }]}>
+          <Text style={[addrStyles.timerLabel, { color: colors.textMuted }]}>Действителен:</Text>
+          <Text style={[addrStyles.timer, { color: colors.primary }, isExpired && { color: colors.error }]}>
             {formatCountdown(secondsLeft)}
           </Text>
         </View>
@@ -202,6 +171,7 @@ function AddressCard({ deposit, depositStatus, onCopy }: AddressCardProps) {
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function TopupScreen() {
+  const { colors } = useTheme();
   // Shared
   const [activeTab, setActiveTab] = useState<TabId>('card');
 
@@ -285,11 +255,7 @@ export default function TopupScreen() {
         );
       } else {
         // Generic network / server error
-        Alert.alert(
-          'Stripe не настроен',
-          'Добавьте STRIPE_PUBLISHABLE_KEY и STRIPE_SECRET_KEY в Railway',
-          [{ text: 'Понятно' }],
-        );
+        toast.error('Ошибка оплаты. Попробуйте ещё раз. ' + msg);
       }
     } finally {
       setIsCardLoading(false);
@@ -394,45 +360,59 @@ export default function TopupScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.flex}
+      style={[styles.flex, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: colors.background }]}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
         {/* Hero card */}
         <LinearGradient
-          colors={['#1C1C2E', '#2D1A0A']}
+          colors={[colors.card, colors.surface]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.cardPreview}
+          style={[styles.cardPreview, { borderColor: `${colors.primary}30`, shadowColor: colors.primary }]}
         >
-          <Text style={styles.cardLabel}>ПОПОЛНЕНИЕ КОШЕЛЬКА</Text>
-          <Text style={styles.cardNumber}>**** **** **** 4242</Text>
+          <Text style={[styles.cardLabel, { color: colors.textMuted }]}>ПОПОЛНЕНИЕ КОШЕЛЬКА</Text>
+          <Text style={[styles.cardNumber, { color: colors.text }]}>**** **** **** 4242</Text>
           <View style={styles.cardDot}>
-            <Text style={styles.cardDotText}>VISA</Text>
+            <Text style={[styles.cardDotText, { color: colors.primary }]}>VISA</Text>
           </View>
         </LinearGradient>
 
         {/* Tab switcher */}
-        <View style={styles.tabBar}>
+        <View style={[styles.tabBar, { backgroundColor: colors.card }]}>
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'card' && styles.tabActive]}
+            style={[
+              styles.tab,
+              activeTab === 'card' && { backgroundColor: colors.primary, shadowColor: colors.primary },
+            ]}
             onPress={() => setActiveTab('card')}
             activeOpacity={0.8}
           >
-            <Text style={[styles.tabText, activeTab === 'card' && styles.tabTextActive]}>
+            <Text style={[
+              styles.tabText,
+              { color: colors.textMuted },
+              activeTab === 'card' && { color: '#fff', fontWeight: Typography.weights.bold },
+            ]}>
               Карта
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'crypto' && styles.tabActive]}
+            style={[
+              styles.tab,
+              activeTab === 'crypto' && { backgroundColor: colors.primary, shadowColor: colors.primary },
+            ]}
             onPress={() => setActiveTab('crypto')}
             activeOpacity={0.8}
           >
-            <Text style={[styles.tabText, activeTab === 'crypto' && styles.tabTextActive]}>
+            <Text style={[
+              styles.tabText,
+              { color: colors.textMuted },
+              activeTab === 'crypto' && { color: '#fff', fontWeight: Typography.weights.bold },
+            ]}>
               Крипто
             </Text>
           </TouchableOpacity>
@@ -441,32 +421,40 @@ export default function TopupScreen() {
         {/* ── Card tab ── */}
         {activeTab === 'card' && (
           <View>
-            <Text style={styles.label}>Сумма пополнения</Text>
-            <View style={styles.amountInputWrapper}>
+            <Text style={[styles.label, { color: colors.text }]}>Сумма пополнения</Text>
+            <View style={[styles.amountInputWrapper, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <TextInput
                 value={cardAmount}
                 onChangeText={(v) => setCardAmount(v.replace(/[^0-9]/g, ''))}
                 placeholder="0"
-                placeholderTextColor={Colors.textMuted}
-                style={styles.amountInput}
+                placeholderTextColor={colors.textMuted}
+                style={[styles.amountInput, { color: colors.text }]}
                 keyboardType="numeric"
                 maxLength={8}
               />
-              <Text style={styles.currencySymbol}>$</Text>
+              <Text style={[styles.currencySymbol, { color: colors.textMuted }]}>$</Text>
             </View>
 
-            <Text style={styles.presetsLabel}>Быстрый выбор</Text>
+            <Text style={[styles.presetsLabel, { color: colors.textMuted }]}>Быстрый выбор</Text>
             <View style={styles.presetsRow}>
               {PRESETS.map((preset) => {
                 const isActive = Number(cardAmount) === preset;
                 return (
                   <TouchableOpacity
                     key={preset}
-                    style={[styles.presetBtn, isActive && styles.presetBtnActive]}
+                    style={[
+                      styles.presetBtn,
+                      { backgroundColor: colors.card, borderColor: colors.border },
+                      isActive && { backgroundColor: `${colors.primary}20`, borderColor: colors.primary, shadowColor: colors.primary },
+                    ]}
                     onPress={() => handlePreset(preset)}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.presetText, isActive && styles.presetTextActive]}>
+                    <Text style={[
+                      styles.presetText,
+                      { color: colors.text },
+                      isActive && { color: colors.primary, fontWeight: Typography.weights.bold },
+                    ]}>
                       ${preset}
                     </Text>
                   </TouchableOpacity>
@@ -482,7 +470,7 @@ export default function TopupScreen() {
               style={styles.actionBtn}
             />
 
-            <Text style={styles.disclaimer}>
+            <Text style={[styles.disclaimer, { color: colors.textMuted }]}>
               Оплата проходит через Stripe. При нажатии откроется защищённая
               страница для ввода данных карты.
             </Text>
@@ -493,38 +481,50 @@ export default function TopupScreen() {
         {activeTab === 'crypto' && (
           <View>
             {/* Amount input */}
-            <Text style={styles.label}>Сумма в USD</Text>
-            <View style={styles.amountInputWrapper}>
+            <Text style={[styles.label, { color: colors.text }]}>Сумма в USD</Text>
+            <View style={[styles.amountInputWrapper, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <TextInput
                 value={cryptoAmount}
                 onChangeText={(v) => setCryptoAmount(v.replace(/[^0-9.]/g, ''))}
                 placeholder="0"
-                placeholderTextColor={Colors.textMuted}
-                style={styles.amountInput}
+                placeholderTextColor={colors.textMuted}
+                style={[styles.amountInput, { color: colors.text }]}
                 keyboardType="decimal-pad"
                 maxLength={10}
               />
-              <Text style={styles.currencySymbol}>$</Text>
+              <Text style={[styles.currencySymbol, { color: colors.textMuted }]}>$</Text>
             </View>
 
             {/* Currency selector */}
-            <Text style={styles.presetsLabel}>Валюта</Text>
+            <Text style={[styles.presetsLabel, { color: colors.textMuted }]}>Валюта</Text>
             <View style={styles.currencyList}>
               {CURRENCIES.map((cur) => {
                 const isActive = selectedCurrency === cur.id;
                 return (
                   <TouchableOpacity
                     key={cur.id}
-                    style={[styles.currencyRow, isActive && styles.currencyRowActive]}
+                    style={[
+                      styles.currencyRow,
+                      { backgroundColor: colors.card, borderColor: colors.border },
+                      isActive && { backgroundColor: `${colors.primary}15`, borderColor: colors.primary },
+                    ]}
                     onPress={() => setSelectedCurrency(cur.id)}
                     activeOpacity={0.75}
                   >
                     <Text style={styles.currencyIcon}>{cur.icon}</Text>
-                    <Text style={[styles.currencyLabel, isActive && styles.currencyLabelActive]}>
+                    <Text style={[
+                      styles.currencyLabel,
+                      { color: colors.text },
+                      isActive && { color: colors.primary, fontWeight: Typography.weights.semibold },
+                    ]}>
                       {cur.label}
                     </Text>
-                    <View style={[styles.radioCircle, isActive && styles.radioCircleActive]}>
-                      {isActive && <View style={styles.radioDot} />}
+                    <View style={[
+                      styles.radioCircle,
+                      { borderColor: colors.border },
+                      isActive && { borderColor: colors.primary },
+                    ]}>
+                      {isActive && <View style={[styles.radioDot, { backgroundColor: colors.primary }]} />}
                     </View>
                   </TouchableOpacity>
                 );
@@ -534,20 +534,26 @@ export default function TopupScreen() {
             {/* USDT network chips */}
             {selectedCurrency === 'USDT' && (
               <View style={styles.networkSection}>
-                <Text style={styles.presetsLabel}>Сеть</Text>
+                <Text style={[styles.presetsLabel, { color: colors.textMuted }]}>Сеть</Text>
                 <View style={styles.networkRow}>
                   {USDT_NETWORKS.map((net) => {
                     const isActive = selectedNetwork === net;
                     return (
                       <TouchableOpacity
                         key={net}
-                        style={[styles.networkChip, isActive && styles.networkChipActive]}
+                        style={[
+                          styles.networkChip,
+                          { backgroundColor: colors.card, borderColor: colors.border },
+                          isActive && { backgroundColor: `${colors.primary}20`, borderColor: colors.primary },
+                        ]}
                         onPress={() => setSelectedNetwork(net)}
                         activeOpacity={0.75}
                       >
-                        <Text
-                          style={[styles.networkChipText, isActive && styles.networkChipTextActive]}
-                        >
+                        <Text style={[
+                          styles.networkChipText,
+                          { color: colors.textMuted },
+                          isActive && { color: colors.primary },
+                        ]}>
                           {net}
                         </Text>
                       </TouchableOpacity>
@@ -565,7 +571,7 @@ export default function TopupScreen() {
               style={styles.actionBtn}
             />
 
-            <Text style={styles.disclaimer}>
+            <Text style={[styles.disclaimer, { color: colors.textMuted }]}>
               Адрес генерируется разово. Отправляйте только выбранную валюту на
               указанную сеть.
             </Text>
@@ -580,16 +586,16 @@ export default function TopupScreen() {
         presentationStyle="pageSheet"
         onRequestClose={handleCloseDeposit}
       >
-        <View style={modalStyles.root}>
+        <View style={[modalStyles.root, { backgroundColor: colors.background }]}>
           {/* Header */}
-          <View style={modalStyles.header}>
-            <Text style={modalStyles.headerTitle}>Крипто-пополнение</Text>
+          <View style={[modalStyles.header, { borderBottomColor: colors.border }]}>
+            <Text style={[modalStyles.headerTitle, { color: colors.text }]}>Крипто-пополнение</Text>
             <TouchableOpacity
-              style={modalStyles.closeBtn}
+              style={[modalStyles.closeBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
               onPress={handleCloseDeposit}
               activeOpacity={0.7}
             >
-              <Text style={modalStyles.closeBtnText}>Закрыть</Text>
+              <Text style={[modalStyles.closeBtnText, { color: colors.textMuted }]}>Закрыть</Text>
             </TouchableOpacity>
           </View>
 
@@ -609,12 +615,12 @@ export default function TopupScreen() {
             {deposit !== null &&
               depositStatus === null && (
                 <ActivityIndicator
-                  color={Colors.primary}
+                  color={colors.primary}
                   style={{ marginTop: 16 }}
                 />
               )}
 
-            <Text style={modalStyles.hint}>
+            <Text style={[modalStyles.hint, { color: colors.textMuted }]}>
               Мы проверяем транзакцию каждые 10 секунд. Не закрывайте экран до
               подтверждения.
             </Text>
@@ -630,11 +636,9 @@ export default function TopupScreen() {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     padding: 24,
@@ -645,8 +649,6 @@ const styles = StyleSheet.create({
     padding: 24,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: `${Colors.primary}30`,
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
@@ -655,14 +657,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardLabel: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
     fontWeight: Typography.weights.semibold,
   },
   cardNumber: {
-    color: Colors.text,
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
     letterSpacing: 3,
@@ -673,7 +673,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   cardDotText: {
-    color: Colors.primary,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
     letterSpacing: 1,
@@ -681,7 +680,6 @@ const styles = StyleSheet.create({
   // Tabs
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: Colors.card,
     borderRadius: 32,
     padding: 4,
     marginBottom: 28,
@@ -692,26 +690,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 28,
   },
-  tabActive: {
-    backgroundColor: Colors.primary,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 4,
-  },
   tabText: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
-  tabTextActive: {
-    color: Colors.textInverse,
-    fontWeight: Typography.weights.bold,
-  },
   // Shared form elements
   label: {
-    color: Colors.text,
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
     marginBottom: 12,
@@ -719,27 +703,22 @@ const styles = StyleSheet.create({
   amountInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
     borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: Colors.border,
     paddingHorizontal: 20,
     marginBottom: 24,
   },
   amountInput: {
     flex: 1,
-    color: Colors.text,
     fontSize: Typography.sizes['3xl'],
     fontWeight: Typography.weights.bold,
     paddingVertical: 16,
   },
   currencySymbol: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.medium,
   },
   presetsLabel: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
     marginBottom: 12,
@@ -753,36 +732,19 @@ const styles = StyleSheet.create({
   presetBtn: {
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: Colors.card,
     borderRadius: 32,
     borderWidth: 1.5,
-    borderColor: Colors.border,
     flex: 1,
     alignItems: 'center',
   },
-  presetBtnActive: {
-    backgroundColor: `${Colors.primary}20`,
-    borderColor: Colors.primary,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
   presetText: {
-    color: Colors.text,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
-  },
-  presetTextActive: {
-    color: Colors.primary,
-    fontWeight: Typography.weights.bold,
   },
   actionBtn: {
     marginBottom: 20,
   },
   disclaimer: {
-    color: Colors.textMuted,
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 18,
@@ -795,17 +757,11 @@ const styles = StyleSheet.create({
   currencyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
     borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: Colors.border,
     paddingVertical: 14,
     paddingHorizontal: 16,
     gap: 12,
-  },
-  currencyRowActive: {
-    backgroundColor: `${Colors.primary}15`,
-    borderColor: Colors.primary,
   },
   currencyIcon: {
     fontSize: 22,
@@ -814,31 +770,21 @@ const styles = StyleSheet.create({
   },
   currencyLabel: {
     flex: 1,
-    color: Colors.text,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
-  },
-  currencyLabelActive: {
-    color: Colors.primary,
-    fontWeight: Typography.weights.semibold,
   },
   radioCircle: {
     width: 20,
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  radioCircleActive: {
-    borderColor: Colors.primary,
   },
   radioDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: Colors.primary,
   },
   // Network chips
   networkSection: {
@@ -851,22 +797,12 @@ const styles = StyleSheet.create({
   networkChip: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: Colors.card,
     borderRadius: 32,
     borderWidth: 1.5,
-    borderColor: Colors.border,
-  },
-  networkChipActive: {
-    backgroundColor: `${Colors.primary}20`,
-    borderColor: Colors.primary,
   },
   networkChipText: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
-  },
-  networkChipTextActive: {
-    color: Colors.primary,
   },
 });
 
@@ -874,41 +810,34 @@ const styles = StyleSheet.create({
 
 const addrStyles = StyleSheet.create({
   card: {
-    backgroundColor: '#1A1A2E',
     borderRadius: 16,
     padding: 20,
     gap: 16,
   },
   title: {
-    color: Colors.text,
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
     textAlign: 'center',
   },
   subtitle: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     textAlign: 'center',
     marginTop: -10,
   },
   qrBox: {
-    backgroundColor: Colors.surface,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     gap: 8,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   qrHint: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     letterSpacing: 1,
     textTransform: 'uppercase',
     fontWeight: Typography.weights.semibold,
   },
   qrAddress: {
-    color: Colors.text,
     fontFamily: 'monospace',
     fontSize: 13,
     textAlign: 'center',
@@ -916,13 +845,12 @@ const addrStyles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   copyBtn: {
-    backgroundColor: Colors.primary,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
   },
   copyBtnText: {
-    color: Colors.textInverse,
+    color: '#fff',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
@@ -933,11 +861,9 @@ const addrStyles = StyleSheet.create({
     gap: 8,
   },
   timerLabel: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
   },
   timer: {
-    color: Colors.primary,
     fontFamily: 'monospace',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
@@ -962,7 +888,6 @@ const addrStyles = StyleSheet.create({
 const modalStyles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -972,23 +897,18 @@ const modalStyles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.divider,
   },
   headerTitle: {
-    color: Colors.text,
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   closeBtn: {
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: Colors.card,
     borderRadius: 32,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   closeBtnText: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
   },
@@ -998,7 +918,6 @@ const modalStyles = StyleSheet.create({
     gap: 20,
   },
   hint: {
-    color: Colors.textMuted,
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 18,

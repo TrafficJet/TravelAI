@@ -116,10 +116,13 @@ export const useAuthStore = create<AuthStore>((set, get) => {
             await storage.removeItem(SECURE_STORE_KEYS.ACCESS_TOKEN);
             await storage.removeItem(SECURE_STORE_KEYS.REFRESH_TOKEN);
             set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
+            // Guest session must be loaded so the chat entry screen can proceed
+            await get().loadGuestId();
           }
         }
       } catch {
         set({ isLoading: false, isAuthenticated: false });
+        await get().loadGuestId();
       }
     },
 

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logo Candidates — AI Travel App</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #07070F;
+      color: #F4F4F8;
+      font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    header h1 {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #6B7280;
+      margin-bottom: 12px;
+    }
+
+    header p {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #F4F4F8;
+    }
+
+    header span {
+      color: #F59E0B;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      max-width: 880px;
+      width: 100%;
+    }
+
+    .card {
+      background: #0A0A14;
+      border: 1px solid #14161E;
+      border-radius: 0;
+      padding: 40px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .card:first-child { border-radius: 16px 0 0 0; }
+    .card:nth-child(2) { border-radius: 0 16px 0 0; }
+    .card:nth-child(3) { border-radius: 0 0 0 16px; }
+    .card:last-child { border-radius: 0 0 16px 0; }
+
+    .card:hover {
+      border-color: #F59E0B33;
+    }
+
+    .card svg {
+      width: 400px;
+      height: 200px;
+      max-width: 100%;
+    }
+
+    .meta {
+      text-align: center;
+    }
+
+    .meta-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #4B5563;
+      margin-bottom: 8px;
+    }
+
+    .meta-desc {
+      font-size: 13px;
+      color: #6B7280;
+      line-height: 1.6;
+      max-width: 320px;
+    }
+
+    .meta-desc em {
+      color: #F59E0B;
+      font-style: normal;
+    }
+
+    .divider {
+      width: 32px;
+      height: 1px;
+      background: #1E2030;
+      margin: 0 auto 8px;
+    }
+
+    footer {
+      margin-top: 56px;
+      text-align: center;
+    }
+
+    footer p {
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #374151;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Name candidates</h1>
+    <p>AI Travel <span>Assistant</span></p>
+  </header>
+
+  <div class="grid">
+
+    <!-- RUTA -->
+    <div class="card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+        <defs>
+          <style>
+            .rn { font-family: 'SF Pro Display','Helvetica Neue',Arial,sans-serif; font-weight:700; font-size:52px; letter-spacing:-1px; fill:#F4F4F8; }
+            .rt { font-family: 'SF Pro Display','Helvetica Neue',Arial,sans-serif; font-weight:400; font-size:13px; letter-spacing:2px; fill:#6B7280; }
+          </style>
+        </defs>
+        <rect width="400" height="200" fill="#0A0A14"/>
+        <!-- Vertical stem -->
+        <line x1="30" y1="58" x2="30" y2="142" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+        <!-- Top bar -->
+        <line x1="30" y1="58" x2="62" y2="58" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+        <!-- Shoulder arc -->
+        <path d="M 62 58 Q 82 58 82 78 Q 82 98 62 98" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+        <!-- Mid bar -->
+        <line x1="30" y1="98" x2="62" y2="98" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+        <!-- Diagonal leg -->
+        <line x1="62" y1="98" x2="88" y2="142" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+        <!-- Waypoint nodes -->
+        <circle cx="30" cy="58" r="5" fill="#0A0A14" stroke="#F59E0B" stroke-width="2.5"/>
+        <circle cx="30" cy="142" r="5" fill="#0A0A14" stroke="#14B8A6" stroke-width="2.5"/>
+        <circle cx="82" cy="78" r="4" fill="#F59E0B"/>
+        <circle cx="88" cy="142" r="5.5" fill="#14B8A6"/>
+        <circle cx="75" cy="120" r="2.5" fill="#14B8A6" opacity="0.6"/>
+        <!-- Divider -->
+        <line x1="120" y1="60" x2="120" y2="140" stroke="#1E2030" stroke-width="1"/>
+        <text x="148" y="120" class="rn">RUTA</text>
+        <text x="150" y="145" class="rt">AI travel routes</text>
+      </svg>
+      <div class="meta">
+        <span class="meta-label">Option 01</span>
+        <div class="divider"></div>
+        <p class="meta-desc">
+          Укр. <em>рута</em> (трава-символ) + EN <em>route</em>.
+          Иконка: буква R из линии маршрута с узловыми точками waypoint.
+        </p>
+      </div>
+    </div>
+
+    <!-- MANDRY -->
+    <div class="card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+        <defs>
+          <style>
+            .mn { font-family: 'SF Pro Display','Helvetica Neue',Arial,sans-serif; font-weight:700; font-size:42px; letter-spacing:-1px; fill:#F4F4F8; }
+            .mt { font-family: 'SF Pro Display','Helvetica Neue',Arial,sans-serif; font-weight:400; font-size:13px; letter-spacing:2px; fill:#6B7280; }
+          </style>
+        </defs>
+        <rect width="400" height="200" fill="#0A0A14"/>
+        <!-- Mountain M silhouette -->
+        <polyline points="18,138 45,68 72,108 99,68 118,138" fill="none" stroke="#14B8A6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Snow caps -->
+        <polyline points="38,82 45,68 52,82" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="92,82 99,68 106,82" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Compass -->
+        <circle cx="68" cy="155" r="10" fill="none" stroke="#F59E0B" stroke-width="1.5" opacity="0.5"/>
+        <line x1="68" y1="148" x2="68" y2="145" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+        <line x1="68" y1="162" x2="68" y2="165" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="61" y1="155" x2="58" y2="155" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="75" y1="155" x2="78" y2="155" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="68" cy="155" r="2" fill="#F59E0B"/>
+        <!-- Divider -->
+        <line x1="128" y1="60" x2="128" y2="140" stroke="#1E2030" stroke-width="1"/>
+        <text x="148" y="118" class="mn">MANDRY</text>
+        <text x="150" y="143" class="mt">discover adventures</text>
+      </svg>
+      <div class="meta">
+        <span class="meta-label">Option 02</span>
+        <div class="divider"></div>
+        <p class="meta-desc">
+          Укр. <em>мандри</em> — путешествия, приключения.
+          Иконка: буква M из горных пиков со снеговыми шапками + минимальный компас.
+        </p>
+      </div>
+    </div>
+
+    <!-- NEBO -->
+    <div class="card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+        <defs>
+          <style>
+            .nbn { font-family: 'SF Pro Display','Helvetica Neue',Arial,sans-serif; font-weight:700; font-size:52px; letter-spacing:-1px; fill:#F4F4F8; }
+            .nbt { font-family: 'SF Pro Display','Helvetica Neue',Arial,sans-serif; font-weight:400; font-size:13px; letter-spacing:2px; fill:#6B7280; }
+          </style>
+        </defs>
+        <rect width="400" height="200" fill="#0A0A14"/>
+        <!-- Ground -->
+        <line x1="20" y1="145" x2="110" y2="145" stroke="#1E2030" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Flight arc -->
+        <path d="M 28 138 Q 65 52 105 138" fill="none" stroke="#14B8A6" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 3"/>
+        <!-- Takeoff dot -->
+        <circle cx="28" cy="138" r="5" fill="#0A0A14" stroke="#14B8A6" stroke-width="2.5"/>
+        <!-- Plane at apex -->
+        <g transform="translate(65, 68) rotate(-35)">
+          <rect x="-14" y="-2.5" width="28" height="5" rx="2.5" fill="#F59E0B"/>
+          <polygon points="-2,-2.5 -2,-11 10,-2.5" fill="#F59E0B" opacity="0.85"/>
+          <polygon points="-2,2.5 -2,11 10,2.5" fill="#F59E0B" opacity="0.85"/>
+          <polygon points="-14,-2.5 -14,-8 -7,-2.5" fill="#F59E0B" opacity="0.7"/>
+        </g>
+        <!-- Destination pin -->
+        <circle cx="105" cy="132" r="6.5" fill="#F59E0B"/>
+        <line x1="105" y1="138" x2="105" y2="145" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Stars -->
+        <circle cx="46" cy="88" r="1.5" fill="#F4F4F8" opacity="0.3"/>
+        <circle cx="84" cy="80" r="1.5" fill="#F4F4F8" opacity="0.3"/>
+        <circle cx="65" cy="100" r="1" fill="#F4F4F8" opacity="0.2"/>
+        <!-- Divider -->
+        <line x1="128" y1="60" x2="128" y2="140" stroke="#1E2030" stroke-width="1"/>
+        <text x="148" y="120" class="nbn">NEBO</text>
+        <text x="150" y="145" class="nbt">fly anywhere</text>
+      </svg>
+      <div class="meta">
+        <span class="meta-label">Option 03</span>
+        <div class="divider"></div>
+        <p class="meta-desc">
+          Укр. <em>небо</em> — sky. Чистое, ёмкое слово.
+          Иконка: дуга перелёта — из точки отправления через самолёт к пину назначения.
+        </p>
+      </div>
+    </div>
+
+    <!-- SVIT -->
+    <div class="card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+        <defs>
+          <style>
+            .svn { font-family: 'SF Pro Display','Helvetica Neue',Arial,sans-serif; font-weight:700; font-size:52px; letter-spacing:-1px; fill:#F4F4F8; }
+            .svt { font-family: 'SF Pro Display','Helvetica Neue',Arial,sans-serif; font-weight:400; font-size:13px; letter-spacing:2px; fill:#6B7280; }
+          </style>
+        </defs>
+        <rect width="400" height="200" fill="#0A0A14"/>
+        <!-- Globe outline -->
+        <circle cx="65" cy="100" r="42" fill="none" stroke="#14B8A6" stroke-width="2"/>
+        <!-- Equator -->
+        <line x1="23" y1="100" x2="107" y2="100" stroke="#14B8A6" stroke-width="1.5" opacity="0.6"/>
+        <!-- Left meridian -->
+        <path d="M 65 58 Q 40 100 65 142" fill="none" stroke="#14B8A6" stroke-width="1.5" opacity="0.5"/>
+        <!-- Right meridian -->
+        <path d="M 65 58 Q 90 100 65 142" fill="none" stroke="#14B8A6" stroke-width="1.5" opacity="0.5"/>
+        <!-- Orbit ellipse -->
+        <ellipse cx="65" cy="100" rx="42" ry="16" fill="none" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5 3" transform="rotate(-30, 65, 100)"/>
+        <!-- Traveller dot on orbit -->
+        <circle cx="100" cy="80" r="5.5" fill="#F59E0B"/>
+        <!-- Pole dots -->
+        <circle cx="65" cy="58" r="3" fill="#14B8A6" opacity="0.7"/>
+        <circle cx="65" cy="142" r="3" fill="#14B8A6" opacity="0.4"/>
+        <!-- Divider -->
+        <line x1="128" y1="60" x2="128" y2="140" stroke="#1E2030" stroke-width="1"/>
+        <text x="148" y="120" class="svn">SVIT</text>
+        <text x="150" y="145" class="svt">the whole world</text>
+      </svg>
+      <div class="meta">
+        <span class="meta-label">Option 04</span>
+        <div class="divider"></div>
+        <p class="meta-desc">
+          Укр. <em>світ</em> — мир, свет. Глобальный масштаб.
+          Иконка: минималистичный глобус с меридианами и орбитой путешественника.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>AI Travel Assistant &mdash; Brand Identity 2026</p>
+  </footer>
+
+</body>
+</html>

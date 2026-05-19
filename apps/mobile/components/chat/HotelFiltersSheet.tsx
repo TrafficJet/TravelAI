@@ -9,7 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -33,29 +33,72 @@ interface OptionButtonProps {
 }
 
 function OptionButton({ label, selected, onPress }: OptionButtonProps) {
+  const { colors } = useTheme();
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      style={[styles.optBtn, selected && styles.optBtnSelected]}
+      style={[
+        optBtnStyles.base,
+        { borderColor: colors.border, backgroundColor: colors.card },
+        selected && { borderColor: colors.primary, backgroundColor: `${colors.primary}22` },
+      ]}
     >
-      <Text style={[styles.optBtnText, selected && styles.optBtnTextSelected]}>
+      <Text style={[
+        optBtnStyles.text,
+        { color: colors.textMuted },
+        selected && { color: colors.primary, fontWeight: '700' },
+      ]}>
         {label}
       </Text>
     </TouchableOpacity>
   );
 }
 
+const optBtnStyles = StyleSheet.create({
+  base: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  text: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+});
+
 // ── Section wrapper ───────────────────────────────────────────────────────────
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const { colors } = useTheme();
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.optRow}>{children}</View>
+    <View style={sectionStyles.section}>
+      <Text style={[sectionStyles.title, { color: colors.textMuted }]}>{title}</Text>
+      <View style={sectionStyles.optRow}>{children}</View>
     </View>
   );
 }
+
+const sectionStyles = StyleSheet.create({
+  section: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 4,
+  },
+  title: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+  },
+  optRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+});
 
 // ── Price options ─────────────────────────────────────────────────────────────
 
@@ -106,6 +149,7 @@ export function HotelFiltersSheet({
   visible,
   onClose,
 }: HotelFiltersSheetProps) {
+  const { colors } = useTheme();
   const [draft, setDraft] = useState<HotelFilters>(filters);
 
   React.useEffect(() => {
@@ -142,24 +186,24 @@ export function HotelFiltersSheet({
       transparent
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
+      <View style={staticStyles.overlay}>
+        <TouchableOpacity style={staticStyles.backdrop} activeOpacity={1} onPress={onClose} />
 
-        <SafeAreaView style={styles.sheet}>
+        <SafeAreaView style={[staticStyles.sheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           {/* Handle */}
-          <View style={styles.handle} />
+          <View style={[staticStyles.handle, { backgroundColor: colors.border }]} />
 
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Фильтры отелей</Text>
+          <View style={[staticStyles.header, { borderBottomColor: colors.border }]}>
+            <Text style={[staticStyles.headerTitle, { color: colors.text }]}>Фильтры отелей</Text>
             <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Ionicons name="close" size={22} color={Colors.text} />
+              <Ionicons name="close" size={22} color={colors.text} />
             </TouchableOpacity>
           </View>
 
           <ScrollView
-            style={styles.scroll}
-            contentContainerStyle={styles.scrollContent}
+            style={staticStyles.scroll}
+            contentContainerStyle={staticStyles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
             {/* Max price */}
@@ -214,12 +258,20 @@ export function HotelFiltersSheet({
           </ScrollView>
 
           {/* Footer actions */}
-          <View style={styles.footer}>
-            <TouchableOpacity style={styles.resetBtn} onPress={handleReset} activeOpacity={0.8}>
-              <Text style={styles.resetBtnText}>Сбросить</Text>
+          <View style={[staticStyles.footer, { borderTopColor: colors.border }]}>
+            <TouchableOpacity
+              style={[staticStyles.resetBtn, { borderColor: colors.border }]}
+              onPress={handleReset}
+              activeOpacity={0.8}
+            >
+              <Text style={[staticStyles.resetBtnText, { color: colors.textMuted }]}>Сбросить</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.applyBtn} onPress={handleApply} activeOpacity={0.8}>
-              <Text style={styles.applyBtnText}>Применить</Text>
+            <TouchableOpacity
+              style={[staticStyles.applyBtn, { backgroundColor: colors.primary }]}
+              onPress={handleApply}
+              activeOpacity={0.8}
+            >
+              <Text style={staticStyles.applyBtnText}>Применить</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -237,6 +289,7 @@ interface HotelFilterBarProps {
 
 /** Compact bar for hotel filters. */
 export function HotelFilterBar({ filters, onOpenFilters }: HotelFilterBarProps) {
+  const { colors } = useTheme();
   const amenityCount = filters.amenities?.length ?? 0;
   const activeCount =
     (filters.maxPrice !== undefined ? 1 : 0) +
@@ -246,11 +299,19 @@ export function HotelFilterBar({ filters, onOpenFilters }: HotelFilterBarProps) 
 
   return (
     <TouchableOpacity
-      style={[styles.filterBtn, activeCount > 0 && styles.filterBtnActive]}
+      style={[
+        staticStyles.filterBtn,
+        { borderColor: colors.border, backgroundColor: colors.card },
+        activeCount > 0 && { borderColor: colors.warning, backgroundColor: `${colors.warning}22` },
+      ]}
       onPress={onOpenFilters}
       activeOpacity={0.8}
     >
-      <Text style={[styles.filterBtnText, activeCount > 0 && styles.filterBtnTextActive]}>
+      <Text style={[
+        staticStyles.filterBtnText,
+        { color: colors.textMuted },
+        activeCount > 0 && { color: colors.warning },
+      ]}>
         Отели{activeCount > 0 ? ` (${activeCount})` : ''}
       </Text>
     </TouchableOpacity>
@@ -259,30 +320,27 @@ export function HotelFilterBar({ filters, onOpenFilters }: HotelFilterBarProps) 
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const staticStyles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.overlay,
+    backgroundColor: 'rgba(0,0,0,0.6)',
   },
   sheet: {
-    backgroundColor: Colors.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: '85%',
     borderTopWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: Colors.border,
   },
   handle: {
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.border,
     alignSelf: 'center',
     marginTop: 10,
     marginBottom: 4,
@@ -294,10 +352,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   headerTitle: {
-    color: Colors.text,
     fontSize: 17,
     fontWeight: '700',
   },
@@ -307,45 +363,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 8,
   },
-  section: {
-    paddingHorizontal: 20,
-    paddingTop: 18,
-    paddingBottom: 4,
-  },
-  sectionTitle: {
-    color: Colors.textMuted,
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    marginBottom: 10,
-  },
-  optRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  optBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.card,
-  },
-  optBtnSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: `${Colors.primary}22`,
-  },
-  optBtnText: {
-    color: Colors.textMuted,
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  optBtnTextSelected: {
-    color: Colors.primary,
-    fontWeight: '700',
-  },
   footer: {
     flexDirection: 'row',
     gap: 12,
@@ -353,18 +370,15 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   resetBtn: {
     flex: 1,
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
   },
   resetBtnText: {
-    color: Colors.textMuted,
     fontSize: 15,
     fontWeight: '600',
   },
@@ -372,7 +386,6 @@ const styles = StyleSheet.create({
     flex: 2,
     paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor: Colors.primary,
     alignItems: 'center',
   },
   applyBtnText: {
@@ -385,19 +398,9 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.card,
-  },
-  filterBtnActive: {
-    borderColor: Colors.warning,
-    backgroundColor: `${Colors.warning}22`,
   },
   filterBtnText: {
-    color: Colors.textMuted,
     fontSize: 13,
     fontWeight: '600',
-  },
-  filterBtnTextActive: {
-    color: Colors.warning,
   },
 });

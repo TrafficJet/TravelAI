@@ -5,14 +5,15 @@ import {
   StyleSheet,
   Animated,
 } from 'react-native';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 interface Props {
   message?: string;
 }
 
 export function FullScreenLoading({ message = 'Загрузка...' }: Props) {
+  const { colors } = useTheme();
   const planeOpacity = useRef(new Animated.Value(0.4)).current;
   const planeScale = useRef(new Animated.Value(0.95)).current;
 
@@ -50,6 +51,40 @@ export function FullScreenLoading({ message = 'Загрузка...' }: Props) {
     return () => pulse.stop();
   }, [planeOpacity, planeScale]);
 
+  const styles = React.useMemo(() => StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: colors.background,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 20,
+    },
+    glowRing: {
+      position: 'absolute',
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      backgroundColor: 'rgba(245,158,11,0.07)',
+      borderWidth: 1,
+      borderColor: 'rgba(245,158,11,0.15)',
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 30,
+      elevation: 0,
+    },
+    plane: {
+      fontSize: 52,
+      lineHeight: 60,
+    },
+    message: {
+      color: colors.textMuted,
+      fontSize: Typography.sizes.sm,
+      fontWeight: '400',
+      letterSpacing: 0.3,
+    },
+  }), [colors]);
+
   return (
     <View style={styles.root}>
       {/* Amber glow ring behind the plane */}
@@ -71,37 +106,3 @@ export function FullScreenLoading({ message = 'Загрузка...' }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 20,
-  },
-  glowRing: {
-    position: 'absolute',
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(245,158,11,0.07)',
-    borderWidth: 1,
-    borderColor: 'rgba(245,158,11,0.15)',
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 30,
-    elevation: 0,
-  },
-  plane: {
-    fontSize: 52,
-    lineHeight: 60,
-  },
-  message: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.sm,
-    fontWeight: '400',
-    letterSpacing: 0.3,
-  },
-});

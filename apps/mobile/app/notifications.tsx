@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
+import { useTheme } from '../src/theme/ThemeContext';
 import api from '../services/api';
 import { useFocusEffect } from 'expo-router';
 import { toast } from '../lib/toast';
@@ -33,20 +33,13 @@ interface Notification {
   createdAt: string;
 }
 
-// ── Icon / color maps ─────────────────────────────────────────────────────────
+// ── Icon map ──────────────────────────────────────────────────────────────────
 
 const TYPE_ICON: Record<NotificationType, string> = {
   BOOKING_CONFIRMED: 'checkmark-circle-outline',
   BOOKING_UPDATE: 'calendar-outline',
   PRICE_ALERT: 'trending-down-outline',
   SYSTEM: 'information-circle-outline',
-};
-
-const TYPE_COLOR: Record<NotificationType, string> = {
-  BOOKING_CONFIRMED: Colors.success,
-  BOOKING_UPDATE: Colors.info,
-  PRICE_ALERT: Colors.primary,
-  SYSTEM: Colors.textMuted,
 };
 
 // ── Time formatting ───────────────────────────────────────────────────────────
@@ -73,7 +66,17 @@ interface NotificationItemProps {
 }
 
 function NotificationItem({ item, onPress, onDelete }: NotificationItemProps) {
-  const accentColor = TYPE_COLOR[item.type] ?? Colors.textMuted;
+  const { colors } = useTheme();
+
+  // Colors by notification type, using theme
+  const TYPE_COLOR: Record<NotificationType, string> = {
+    BOOKING_CONFIRMED: colors.success,
+    BOOKING_UPDATE: colors.primary,
+    PRICE_ALERT: colors.primary,
+    SYSTEM: colors.textMuted,
+  };
+
+  const accentColor = TYPE_COLOR[item.type] ?? colors.textMuted;
   const iconName = TYPE_ICON[item.type] ?? 'notifications-outline';
   const translateX = useRef(new Animated.Value(0)).current;
   const deleteThreshold = -80;
@@ -107,19 +110,23 @@ function NotificationItem({ item, onPress, onDelete }: NotificationItemProps) {
   return (
     <View style={itemStyles.wrapper}>
       {/* Delete hint behind the item */}
-      <View style={itemStyles.deleteHint}>
+      <View style={[itemStyles.deleteHint, { backgroundColor: colors.error }]}>
         <Ionicons name="trash-outline" size={22} color="#fff" />
         <Text style={itemStyles.deleteHintText}>Удалить</Text>
       </View>
       <Animated.View style={{ transform: [{ translateX }] }} {...panResponder.panHandlers}>
         <TouchableOpacity
-          style={[itemStyles.row, !item.isRead && itemStyles.rowUnread]}
+          style={[
+            itemStyles.row,
+            { borderBottomColor: colors.border, backgroundColor: colors.background },
+            !item.isRead && { backgroundColor: colors.surface },
+          ]}
           onPress={() => onPress(item)}
           activeOpacity={0.75}
         >
           {/* Unread dot */}
           <View style={itemStyles.dotWrap}>
-            {!item.isRead && <View style={itemStyles.dot} />}
+            {!item.isRead && <View style={[itemStyles.dot, { backgroundColor: colors.primary }]} />}
           </View>
 
           {/* Icon badge */}
@@ -131,14 +138,18 @@ function NotificationItem({ item, onPress, onDelete }: NotificationItemProps) {
           <View style={itemStyles.content}>
             <View style={itemStyles.headerRow}>
               <Text
-                style={[itemStyles.title, !item.isRead && itemStyles.titleUnread]}
+                style={[
+                  itemStyles.title,
+                  { color: colors.text },
+                  !item.isRead && { fontWeight: Typography.weights.bold },
+                ]}
                 numberOfLines={1}
               >
                 {item.title}
               </Text>
-              <Text style={itemStyles.time}>{formatTimeLabel(item.createdAt)}</Text>
+              <Text style={[itemStyles.time, { color: colors.textMuted }]}>{formatTimeLabel(item.createdAt)}</Text>
             </View>
-            <Text style={itemStyles.body} numberOfLines={2}>
+            <Text style={[itemStyles.body, { color: colors.textMuted }]} numberOfLines={2}>
               {item.body}
             </Text>
           </View>
@@ -159,7 +170,6 @@ const itemStyles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 80,
-    backgroundColor: Colors.error,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
@@ -175,11 +185,6 @@ const itemStyles = StyleSheet.create({
     paddingVertical: 14,
     paddingRight: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
-    backgroundColor: Colors.background,
-  },
-  rowUnread: {
-    backgroundColor: Colors.surface,
   },
   dotWrap: {
     width: 20,
@@ -190,7 +195,6 @@ const itemStyles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 3.5,
-    backgroundColor: Colors.primary,
   },
   iconBadge: {
     width: 42,
@@ -213,20 +217,14 @@ const itemStyles = StyleSheet.create({
     flex: 1,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.medium,
-    color: Colors.text,
     marginRight: 8,
-  },
-  titleUnread: {
-    fontWeight: Typography.weights.bold,
   },
   time: {
     fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
     flexShrink: 0,
   },
   body: {
     fontSize: Typography.sizes.sm,
-    color: Colors.textMuted,
     lineHeight: Typography.sizes.sm * 1.5,
   },
 });
@@ -234,13 +232,14 @@ const itemStyles = StyleSheet.create({
 // ── Empty state ───────────────────────────────────────────────────────────────
 
 function EmptyNotifications() {
+  const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
-      <View style={emptyStyles.iconWrap}>
-        <Ionicons name="notifications-off-outline" size={48} color={Colors.textMuted} />
+      <View style={[emptyStyles.iconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <Ionicons name="notifications-off-outline" size={48} color={colors.textMuted} />
       </View>
-      <Text style={emptyStyles.title}>Нет уведомлений</Text>
-      <Text style={emptyStyles.subtitle}>
+      <Text style={[emptyStyles.title, { color: colors.text }]}>Нет уведомлений</Text>
+      <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
         Здесь появятся уведомления об изменении цен и статусов бронирований
       </Text>
     </View>
@@ -258,23 +257,19 @@ const emptyStyles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   title: {
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
-    color: Colors.text,
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: Typography.sizes.sm,
-    color: Colors.textMuted,
     textAlign: 'center',
     lineHeight: Typography.sizes.sm * 1.6,
   },
@@ -283,14 +278,19 @@ const emptyStyles = StyleSheet.create({
 // ── Error state ───────────────────────────────────────────────────────────────
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
+  const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
-      <View style={emptyStyles.iconWrap}>
-        <Ionicons name="cloud-offline-outline" size={48} color={Colors.textMuted} />
+      <View style={[emptyStyles.iconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <Ionicons name="cloud-offline-outline" size={48} color={colors.textMuted} />
       </View>
-      <Text style={emptyStyles.title}>Не удалось загрузить</Text>
-      <Text style={emptyStyles.subtitle}>Проверьте интернет-соединение и повторите попытку</Text>
-      <TouchableOpacity style={errorStyles.retryBtn} onPress={onRetry} activeOpacity={0.8}>
+      <Text style={[emptyStyles.title, { color: colors.text }]}>Не удалось загрузить</Text>
+      <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>Проверьте интернет-соединение и повторите попытку</Text>
+      <TouchableOpacity
+        style={[errorStyles.retryBtn, { backgroundColor: colors.primary }]}
+        onPress={onRetry}
+        activeOpacity={0.8}
+      >
         <Ionicons name="refresh-outline" size={16} color="#fff" />
         <Text style={errorStyles.retryText}>Повторить</Text>
       </TouchableOpacity>
@@ -303,7 +303,6 @@ const errorStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: Colors.primary,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 10,
@@ -319,6 +318,7 @@ const errorStyles = StyleSheet.create({
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function NotificationsScreen() {
+  const { colors } = useTheme();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -400,7 +400,7 @@ export default function NotificationsScreen() {
       <NotificationItem item={item} onPress={handlePress} onDelete={handleDelete} />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [colors],
   );
 
   return (
@@ -408,19 +408,19 @@ export default function NotificationsScreen() {
       <StatusBar barStyle="light-content" />
 
       {/* Custom header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
         <TouchableOpacity
           onPress={() => router.back()}
-          style={styles.backBtn}
+          style={[styles.backBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="arrow-back" size={22} color={Colors.text} />
+          <Ionicons name="arrow-back" size={22} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Уведомления</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Уведомления</Text>
         {unreadCount > 0 ? (
           <TouchableOpacity onPress={handleMarkAllRead} activeOpacity={0.7} style={styles.markAllBtn}>
-            <Text style={styles.markAllText}>Все прочитаны</Text>
+            <Text style={[styles.markAllText, { color: colors.primary }]}>Все прочитаны</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.headerRight} />
@@ -429,31 +429,31 @@ export default function NotificationsScreen() {
 
       {/* Unread count badge row */}
       {unreadCount > 0 && (
-        <View style={styles.unreadBar}>
-          <View style={styles.unreadBadge}>
+        <View style={[styles.unreadBar, { backgroundColor: `${colors.primary}12`, borderBottomColor: colors.border }]}>
+          <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
             <Text style={styles.unreadBadgeText}>{unreadCount}</Text>
           </View>
-          <Text style={styles.unreadBarText}>
+          <Text style={[styles.unreadBarText, { color: colors.primary }]}>
             {unreadCount === 1 ? 'непрочитанное уведомление' : 'непрочитанных уведомления'}
           </Text>
         </View>
       )}
 
       {isLoading ? (
-        <View style={[styles.container, styles.centered]}>
-          <ActivityIndicator color={Colors.primary} size="large" />
+        <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
+          <ActivityIndicator color={colors.primary} size="large" />
         </View>
       ) : hasError ? (
-        <View style={[styles.container, styles.flex]}>
+        <View style={[styles.container, styles.flex, { backgroundColor: colors.background }]}>
           <ErrorState onRetry={() => void fetchNotifications()} />
         </View>
       ) : notifications.length === 0 ? (
-        <View style={[styles.container, styles.flex]}>
+        <View style={[styles.container, styles.flex, { backgroundColor: colors.background }]}>
           <EmptyNotifications />
         </View>
       ) : (
         <FlatList
-          style={styles.container}
+          style={[styles.container, { backgroundColor: colors.background }]}
           data={notifications}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
@@ -463,8 +463,8 @@ export default function NotificationsScreen() {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
-              tintColor={Colors.primary}
-              colors={[Colors.primary]}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
             />
           }
         />
@@ -487,29 +487,24 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.background,
     paddingTop: Platform.OS === 'android' ? 48 : 58,
     paddingBottom: 14,
     paddingHorizontal: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
   backBtn: {
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: Colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
-    color: Colors.text,
   },
   headerRight: {
     width: 80,
@@ -523,41 +518,35 @@ const styles = StyleSheet.create({
   markAllText: {
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
-    color: Colors.primary,
   },
   unreadBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
-    backgroundColor: `${Colors.primary}12`,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
     gap: 8,
   },
   unreadBadge: {
     minWidth: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 5,
   },
   unreadBadgeText: {
-    color: Colors.textInverse,
+    color: '#fff',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     lineHeight: 14,
   },
   unreadBarText: {
     fontSize: Typography.sizes.sm,
-    color: Colors.primary,
     fontWeight: Typography.weights.medium,
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   listContent: {
     paddingBottom: Platform.OS === 'ios' ? 32 : 16,

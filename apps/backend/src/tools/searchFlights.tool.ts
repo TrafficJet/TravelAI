@@ -290,6 +290,8 @@ function buildFlightResult(
     normaliseMobileOffer(o, input.origin, input.destination),
   );
 
+  const passengersCount = input.passengers ?? 1;
+
   return {
     offers: normalised,
     count: normalised.length,
@@ -297,5 +299,9 @@ function buildFlightResult(
     route: `${input.origin.toUpperCase()} → ${input.destination.toUpperCase()}`,
     date: input.departure_date,
     filtersApplied: Object.values(filters).some((v) => v !== undefined),
+    // IMPORTANT FOR AI: price in each offer is already the TOTAL for all passengers
+    // Do NOT multiply price by passengers count — it is already the final amount
+    priceNote: `price = total for ${passengersCount} passenger(s). Do NOT multiply.`,
+    passengersCount,
   };
 }

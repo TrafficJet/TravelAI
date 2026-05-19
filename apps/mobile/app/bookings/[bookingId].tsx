@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useBookingStore } from '../../stores/bookingStore';
 import { Button } from '../../components/ui/Button';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../src/theme/ThemeContext';
 import { Typography } from '../../constants/typography';
 import { toast } from '../../lib/toast';
 import type { BookingStatus, FlightDetails, HotelDetails } from '../../types';
@@ -24,13 +24,6 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
   CONFIRMED: 'Подтверждено',
   CANCELLED: 'Отменено',
   FAILED: 'Ошибка',
-};
-
-const STATUS_COLORS: Record<BookingStatus, string> = {
-  PENDING: Colors.warning,
-  CONFIRMED: Colors.success,
-  CANCELLED: Colors.error,
-  FAILED: Colors.error,
 };
 
 function formatDate(dateStr: string): string {
@@ -44,42 +37,38 @@ function formatDate(dateStr: string): string {
 // ── Booking number block ──────────────────────────────────────────────────────
 
 function BookingNumber({ id }: { id: string }) {
+  const { colors } = useTheme();
   const short = id.toUpperCase().slice(0, 8);
   return (
-    <View style={numStyles.wrap}>
-      <Text style={numStyles.label}>Номер бронирования</Text>
-      <Text style={numStyles.number}>{short}</Text>
-      <Text style={numStyles.hint}>Предъявите на стойке регистрации</Text>
+    <View style={[numStyles.wrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <Text style={[numStyles.label, { color: colors.textMuted }]}>Номер бронирования</Text>
+      <Text style={[numStyles.number, { color: colors.text }]}>{short}</Text>
+      <Text style={[numStyles.hint, { color: colors.textMuted }]}>Предъявите на стойке регистрации</Text>
     </View>
   );
 }
 
 const numStyles = StyleSheet.create({
   wrap: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   label: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium,
     letterSpacing: 0.5,
     marginBottom: 10,
   },
   number: {
-    color: Colors.text,
     fontSize: Typography.sizes['2xl'],
     fontWeight: Typography.weights.extrabold,
     letterSpacing: 4,
     fontVariant: ['tabular-nums'],
   },
   hint: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     marginTop: 8,
   },
@@ -88,10 +77,11 @@ const numStyles = StyleSheet.create({
 // ── Info row ──────────────────────────────────────────────────────────────────
 
 function InfoRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
+  const { colors } = useTheme();
   return (
-    <View style={[detailStyles.infoRow, last && detailStyles.infoRowLast]}>
-      <Text style={detailStyles.infoLabel}>{label}</Text>
-      <Text style={detailStyles.infoValue}>{value}</Text>
+    <View style={[detailStyles.infoRow, { borderBottomColor: colors.border }, last && detailStyles.infoRowLast]}>
+      <Text style={[detailStyles.infoLabel, { color: colors.textMuted }]}>{label}</Text>
+      <Text style={[detailStyles.infoValue, { color: colors.text }]}>{value}</Text>
     </View>
   );
 }
@@ -99,24 +89,25 @@ function InfoRow({ label, value, last }: { label: string; value: string; last?: 
 // ── Flight details ────────────────────────────────────────────────────────────
 
 function FlightDetailsBlock({ details }: { details: FlightDetails }) {
+  const { colors } = useTheme();
   return (
-    <View style={detailStyles.card}>
+    <View style={[detailStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={detailStyles.sectionHeader}>
-        <Ionicons name="airplane" size={16} color={Colors.primary} />
-        <Text style={detailStyles.sectionTitle}>РЕЙС</Text>
+        <Ionicons name="airplane" size={16} color={colors.primary} />
+        <Text style={[detailStyles.sectionTitle, { color: colors.primary }]}>РЕЙС</Text>
       </View>
       <View style={detailStyles.row}>
         <View>
-          <Text style={detailStyles.city}>{details.origin}</Text>
-          <Text style={detailStyles.date}>
+          <Text style={[detailStyles.city, { color: colors.text }]}>{details.origin}</Text>
+          <Text style={[detailStyles.date, { color: colors.textMuted }]}>
             {new Date(details.departureDate).toLocaleDateString('ru-RU')}
           </Text>
         </View>
-        <Text style={detailStyles.arrow}>→</Text>
+        <Text style={[detailStyles.arrow, { color: colors.primary }]}>→</Text>
         <View style={{ alignItems: 'flex-end' }}>
-          <Text style={detailStyles.city}>{details.destination}</Text>
+          <Text style={[detailStyles.city, { color: colors.text }]}>{details.destination}</Text>
           {details.returnDate && (
-            <Text style={detailStyles.date}>
+            <Text style={[detailStyles.date, { color: colors.textMuted }]}>
               {new Date(details.returnDate).toLocaleDateString('ru-RU')}
             </Text>
           )}
@@ -132,15 +123,16 @@ function FlightDetailsBlock({ details }: { details: FlightDetails }) {
 
 // ── Hotel details ─────────────────────────────────────────────────────────────
 
-function HotelDetailsBlock({ details }: { details: HotelDetails }) {
+function HotelDetailsBlock({ details, currency }: { details: HotelDetails; currency: string }) {
+  const { colors } = useTheme();
   return (
-    <View style={detailStyles.card}>
+    <View style={[detailStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={detailStyles.sectionHeader}>
-        <Ionicons name="bed" size={16} color={Colors.primary} />
-        <Text style={detailStyles.sectionTitle}>ОТЕЛЬ</Text>
+        <Ionicons name="bed" size={16} color={colors.primary} />
+        <Text style={[detailStyles.sectionTitle, { color: colors.primary }]}>ОТЕЛЬ</Text>
       </View>
-      <Text style={detailStyles.hotelName}>{details.name}</Text>
-      <Text style={detailStyles.hotelAddress}>{details.address}</Text>
+      <Text style={[detailStyles.hotelName, { color: colors.text }]}>{details.name}</Text>
+      <Text style={[detailStyles.hotelAddress, { color: colors.textMuted }]}>{details.address}</Text>
       <InfoRow label="Звёзды" value={'★'.repeat(details.stars)} />
       <InfoRow
         label="Заезд"
@@ -154,7 +146,7 @@ function HotelDetailsBlock({ details }: { details: HotelDetails }) {
       <InfoRow label="Гостей" value={String(details.guests)} />
       <InfoRow
         label="Цена/ночь"
-        value={`${details.pricePerNight.toLocaleString('ru-RU')} USD`}
+        value={`${details.pricePerNight.toLocaleString('ru-RU')} ${currency}`}
         last
       />
     </View>
@@ -163,12 +155,10 @@ function HotelDetailsBlock({ details }: { details: HotelDetails }) {
 
 const detailStyles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -177,7 +167,6 @@ const detailStyles = StyleSheet.create({
     marginBottom: 14,
   },
   sectionTitle: {
-    color: Colors.primary,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 1,
@@ -189,27 +178,22 @@ const detailStyles = StyleSheet.create({
     marginBottom: 16,
   },
   city: {
-    color: Colors.text,
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
   },
   date: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     marginTop: 2,
   },
   arrow: {
-    color: Colors.primary,
     fontSize: Typography.sizes.xl,
   },
   hotelName: {
-    color: Colors.text,
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     marginBottom: 4,
   },
   hotelAddress: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     marginBottom: 14,
   },
@@ -218,17 +202,14 @@ const detailStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   infoRowLast: {
     borderBottomWidth: 0,
   },
   infoLabel: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
   },
   infoValue: {
-    color: Colors.text,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
   },
@@ -248,15 +229,17 @@ const TIMELINE_STEPS: TimelineStep[] = [
 ];
 
 function StatusTimeline({ status }: { status: BookingStatus }) {
+  const { colors } = useTheme();
+
   if (status === 'FAILED' || status === 'CANCELLED') {
     return (
-      <View style={tlStyles.cancelledWrap}>
+      <View style={[tlStyles.cancelledWrap, { backgroundColor: `${colors.error}12`, borderColor: `${colors.error}30` }]}>
         <Text style={tlStyles.cancelledIcon}>{status === 'CANCELLED' ? '🚫' : '❌'}</Text>
         <View>
-          <Text style={tlStyles.cancelledTitle}>
+          <Text style={[tlStyles.cancelledTitle, { color: colors.error }]}>
             {status === 'CANCELLED' ? 'Бронирование отменено' : 'Ошибка бронирования'}
           </Text>
-          <Text style={tlStyles.cancelledSub}>
+          <Text style={[tlStyles.cancelledSub, { color: colors.textMuted }]}>
             {status === 'CANCELLED'
               ? 'Средства возвращены на кошелёк'
               : 'Обратитесь в поддержку'}
@@ -269,8 +252,8 @@ function StatusTimeline({ status }: { status: BookingStatus }) {
   const currentIdx = TIMELINE_STEPS.findIndex((s) => s.key === status);
 
   return (
-    <View style={tlStyles.wrap}>
-      <Text style={tlStyles.heading}>СТАТУС БРОНИРОВАНИЯ</Text>
+    <View style={[tlStyles.wrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <Text style={[tlStyles.heading, { color: colors.textMuted }]}>СТАТУС БРОНИРОВАНИЯ</Text>
       <View style={tlStyles.steps}>
         {TIMELINE_STEPS.map((step, idx) => {
           const isDone = idx <= currentIdx;
@@ -280,20 +263,21 @@ function StatusTimeline({ status }: { status: BookingStatus }) {
               <View style={tlStyles.step}>
                 <View style={[
                   tlStyles.stepDot,
-                  isDone && tlStyles.stepDotDone,
-                  isActive && tlStyles.stepDotActive,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  isDone && { backgroundColor: `${colors.success}15`, borderColor: colors.success },
+                  isActive && { shadowColor: colors.success },
                 ]}>
                   {isDone
                     ? <Text style={tlStyles.stepDotIcon}>{step.icon}</Text>
-                    : <View style={tlStyles.stepDotEmpty} />
+                    : <View style={[tlStyles.stepDotEmpty, { backgroundColor: colors.border }]} />
                   }
                 </View>
-                <Text style={[tlStyles.stepLabel, isDone && tlStyles.stepLabelDone]}>
+                <Text style={[tlStyles.stepLabel, { color: colors.textMuted }, isDone && { color: colors.text, fontWeight: Typography.weights.semibold }]}>
                   {step.label}
                 </Text>
               </View>
               {idx < TIMELINE_STEPS.length - 1 ? (
-                <View style={[tlStyles.connector, idx < currentIdx && tlStyles.connectorDone]} />
+                <View style={[tlStyles.connector, { backgroundColor: colors.border }, idx < currentIdx && { backgroundColor: colors.success }]} />
               ) : null}
             </React.Fragment>
           );
@@ -305,15 +289,12 @@ function StatusTimeline({ status }: { status: BookingStatus }) {
 
 const tlStyles = StyleSheet.create({
   wrap: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   heading: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.8,
@@ -333,18 +314,9 @@ const tlStyles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.surface,
     borderWidth: 2,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  stepDotDone: {
-    backgroundColor: `${Colors.success}15`,
-    borderColor: Colors.success,
-  },
-  stepDotActive: {
-    shadowColor: Colors.success,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
@@ -357,49 +329,35 @@ const tlStyles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: Colors.border,
   },
   stepLabel: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
-  },
-  stepLabelDone: {
-    color: Colors.text,
-    fontWeight: Typography.weights.semibold,
   },
   connector: {
     flex: 1,
     height: 2,
-    backgroundColor: Colors.border,
     borderRadius: 1,
     marginBottom: 20,
-  },
-  connectorDone: {
-    backgroundColor: Colors.success,
   },
   cancelledWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: `${Colors.error}12`,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: `${Colors.error}30`,
     gap: 12,
   },
   cancelledIcon: {
     fontSize: 28,
   },
   cancelledTitle: {
-    color: Colors.error,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
     marginBottom: 2,
   },
   cancelledSub: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
   },
 });
@@ -407,11 +365,19 @@ const tlStyles = StyleSheet.create({
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function BookingDetailScreen() {
+  const { colors } = useTheme();
   const { bookingId } = useLocalSearchParams<{ bookingId: string }>();
   const { currentBooking, loadBooking, confirmBooking, cancelBooking, isLoading } =
     useBookingStore();
   const [isConfirming, setIsConfirming] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+
+  const STATUS_COLORS: Record<BookingStatus, string> = {
+    PENDING: colors.warning,
+    CONFIRMED: colors.success,
+    CANCELLED: colors.error,
+    FAILED: colors.error,
+  };
 
   useEffect(() => {
     if (bookingId) {
@@ -503,7 +469,7 @@ export default function BookingDetailScreen() {
   const statusLabel = STATUS_LABELS[currentBooking.status];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={styles.content}>
       {/* Status banner */}
       <View style={[styles.statusBanner, { backgroundColor: `${statusColor}20`, borderWidth: 1, borderColor: `${statusColor}35` }]}>
         <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
@@ -520,18 +486,18 @@ export default function BookingDetailScreen() {
       {currentBooking.type === 'FLIGHT' ? (
         <FlightDetailsBlock details={currentBooking.details as FlightDetails} />
       ) : (
-        <HotelDetailsBlock details={currentBooking.details as HotelDetails} />
+        <HotelDetailsBlock details={currentBooking.details as HotelDetails} currency={currentBooking.currency} />
       )}
 
       {/* Price */}
-      <View style={styles.priceCard}>
-        <Text style={styles.priceLabel}>Итого</Text>
-        <Text style={styles.priceValue}>
+      <View style={[styles.priceCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[styles.priceLabel, { color: colors.text }]}>Итого</Text>
+        <Text style={[styles.priceValue, { color: colors.text }]}>
           {currentBooking.totalPrice.toLocaleString('ru-RU')} {currentBooking.currency}
         </Text>
       </View>
 
-      <Text style={styles.createdAt}>Создано {formatDate(currentBooking.createdAt)}</Text>
+      <Text style={[styles.createdAt, { color: colors.textMuted }]}>Создано {formatDate(currentBooking.createdAt)}</Text>
 
       {/* Action buttons */}
       <View style={styles.actions}>
@@ -545,34 +511,34 @@ export default function BookingDetailScreen() {
               style={styles.actionBtn}
             />
             <TouchableOpacity
-              style={styles.cancelBtn}
+              style={[styles.cancelBtn, { borderColor: colors.error, backgroundColor: `${colors.error}10` }]}
               onPress={handleCancelConfirm}
               disabled={isCancelling}
               activeOpacity={0.7}
             >
-              <Ionicons name="close-circle-outline" size={18} color={Colors.error} />
-              <Text style={styles.cancelBtnText}>
+              <Ionicons name="close-circle-outline" size={18} color={colors.error} />
+              <Text style={[styles.cancelBtnText, { color: colors.error }]}>
                 {isCancelling ? 'Отменяем...' : 'Отменить бронирование'}
               </Text>
             </TouchableOpacity>
           </>
         )}
 
-        <View style={styles.secondaryActions}>
+        <View style={[styles.secondaryActions, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <TouchableOpacity style={styles.secondaryBtn} onPress={handleShare} activeOpacity={0.7}>
-            <Ionicons name="share-outline" size={20} color={Colors.primary} />
-            <Text style={styles.secondaryBtnText}>Поделиться</Text>
+            <Ionicons name="share-outline" size={20} color={colors.primary} />
+            <Text style={[styles.secondaryBtnText, { color: colors.primary }]}>Поделиться</Text>
           </TouchableOpacity>
 
-          <View style={styles.secondaryDivider} />
+          <View style={[styles.secondaryDivider, { backgroundColor: colors.border }]} />
 
           <TouchableOpacity
             style={styles.secondaryBtn}
             onPress={handleDownloadTicket}
             activeOpacity={0.7}
           >
-            <Ionicons name="download-outline" size={20} color={Colors.primary} />
-            <Text style={styles.secondaryBtnText}>Скачать билет</Text>
+            <Ionicons name="download-outline" size={20} color={colors.primary} />
+            <Text style={[styles.secondaryBtnText, { color: colors.primary }]}>Скачать билет</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -583,7 +549,6 @@ export default function BookingDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     padding: 16,
@@ -609,7 +574,6 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.bold,
   },
   priceCard: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
@@ -617,20 +581,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   priceLabel: {
-    color: Colors.text,
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.semibold,
   },
   priceValue: {
-    color: Colors.text,
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   createdAt: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.sm,
     textAlign: 'center',
     marginBottom: 24,
@@ -649,20 +609,15 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: Colors.error,
-    backgroundColor: `${Colors.error}10`,
   },
   cancelBtnText: {
-    color: Colors.error,
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.semibold,
   },
   secondaryActions: {
     flexDirection: 'row',
-    backgroundColor: Colors.card,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: Colors.border,
     overflow: 'hidden',
   },
   secondaryBtn: {
@@ -674,12 +629,10 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   secondaryBtnText: {
-    color: Colors.primary,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
   secondaryDivider: {
     width: 1,
-    backgroundColor: Colors.border,
   },
 });

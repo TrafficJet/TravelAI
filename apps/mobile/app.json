@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "TravelAI",
+    "name": "SVIT",
     "slug": "travel-ai",
     "owner": "forza22",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "travelai",
+    "scheme": "svit",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#060B18",
     "splash": {
@@ -19,7 +19,7 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.travelai.app",
+      "bundleIdentifier": "com.getsvit.app",
       "buildNumber": "1",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Для поиска отелей рядом с вами",
@@ -36,7 +36,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#060B18"
       },
-      "package": "com.travelai.app",
+      "package": "com.getsvit.app",
       "versionCode": 1,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",

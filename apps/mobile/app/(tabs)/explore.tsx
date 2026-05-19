@@ -12,7 +12,6 @@ import {
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
@@ -20,6 +19,7 @@ import { useChatStore } from '../../stores/chatStore';
 import { toast } from '../../lib/toast';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { MultiCityForm } from '../../components/chat/MultiCityForm';
+import { useTheme } from '../../src/theme/ThemeContext';
 import api from '../../services/api';
 
 // ── Static route data ─────────────────────────────────────────────────────────
@@ -53,26 +53,31 @@ interface StaticRouteCardProps {
 }
 
 function StaticRouteCard({ item, onPress, index }: StaticRouteCardProps) {
+  const { colors } = useTheme();
   return (
     <Animated.View entering={FadeInDown.delay(index * 70).springify()}>
-      <TouchableOpacity style={routeCardStyles.card} onPress={onPress} activeOpacity={0.75}>
+      <TouchableOpacity
+        style={[routeCardStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+        onPress={onPress}
+        activeOpacity={0.75}
+      >
         {/* Route code row with right arrow */}
         <View style={routeCardStyles.headerRow}>
           <View style={routeCardStyles.routeRow}>
-            <Text style={routeCardStyles.iata}>{item.origin}</Text>
-            <Text style={routeCardStyles.separator}> → </Text>
-            <Text style={routeCardStyles.iata}>{item.destination}</Text>
+            <Text style={[routeCardStyles.iata, { color: colors.text }]}>{item.origin}</Text>
+            <Text style={[routeCardStyles.separator, { color: colors.primary }]}> → </Text>
+            <Text style={[routeCardStyles.iata, { color: colors.text }]}>{item.destination}</Text>
           </View>
-          <Ionicons name="chevron-forward" size={14} color={Colors.textMuted} />
+          <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
         </View>
 
         {/* City name */}
-        <Text style={routeCardStyles.city} numberOfLines={1}>{item.city}</Text>
+        <Text style={[routeCardStyles.city, { color: colors.textMuted }]} numberOfLines={1}>{item.city}</Text>
 
         {/* Price + duration */}
         <View style={routeCardStyles.footer}>
-          <Text style={routeCardStyles.price}>{item.price}</Text>
-          <Text style={routeCardStyles.duration}>{item.duration}</Text>
+          <Text style={[routeCardStyles.price, { color: colors.primary }]}>{item.price}</Text>
+          <Text style={[routeCardStyles.duration, { color: colors.textMuted }]}>{item.duration}</Text>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -81,13 +86,11 @@ function StaticRouteCard({ item, onPress, index }: StaticRouteCardProps) {
 
 const routeCardStyles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: Radius.card,
     padding: 14,
     marginRight: Spacing.sm,
     width: 168,
     borderWidth: 1,
-    borderColor: Colors.border,
     minHeight: 110,
     justifyContent: 'space-between',
   },
@@ -102,20 +105,17 @@ const routeCardStyles = StyleSheet.create({
     alignItems: 'center',
   },
   iata: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
     letterSpacing: 0.3,
   },
   separator: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
   city: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: 8,
@@ -126,13 +126,11 @@ const routeCardStyles = StyleSheet.create({
     alignItems: 'center',
   },
   price: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
   duration: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
@@ -195,20 +193,25 @@ interface FlightCardProps {
 }
 
 function FlightCard({ item, onPress, index }: FlightCardProps) {
+  const { colors } = useTheme();
   return (
     <Animated.View entering={FadeInDown.delay(index * 80).springify()}>
-      <TouchableOpacity style={flightStyles.card} onPress={onPress} activeOpacity={0.75}>
-        <Text style={flightStyles.label}>{item.label}</Text>
+      <TouchableOpacity
+        style={[flightStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+        onPress={onPress}
+        activeOpacity={0.75}
+      >
+        <Text style={[flightStyles.label, { color: colors.text }]}>{item.label}</Text>
         <View style={flightStyles.routeRow}>
-          <Text style={flightStyles.route}>
+          <Text style={[flightStyles.route, { color: colors.textMuted }]}>
             {item.origin}
           </Text>
-          <Ionicons name="arrow-forward" size={12} color={Colors.textMuted} style={flightStyles.arrow} />
-          <Text style={flightStyles.route}>
+          <Ionicons name="arrow-forward" size={12} color={colors.textMuted} style={flightStyles.arrow} />
+          <Text style={[flightStyles.route, { color: colors.textMuted }]}>
             {item.destination}
           </Text>
         </View>
-        <Text style={flightStyles.count}>
+        <Text style={[flightStyles.count, { color: colors.primary }]}>
           {item.count.toLocaleString('ru-RU')} запросов
         </Text>
       </TouchableOpacity>
@@ -218,18 +221,15 @@ function FlightCard({ item, onPress, index }: FlightCardProps) {
 
 const flightStyles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: Radius.card,
     padding: Spacing.md,
     marginRight: Spacing.sm,
     width: 160,
     borderWidth: 1,
-    borderColor: Colors.border,
     justifyContent: 'space-between',
     minHeight: 110,
   },
   label: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
@@ -241,7 +241,6 @@ const flightStyles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   route: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
@@ -250,7 +249,6 @@ const flightStyles = StyleSheet.create({
     marginHorizontal: Spacing.xs,
   },
   count: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
@@ -266,18 +264,23 @@ interface HotelCardProps {
 }
 
 function HotelCard({ item, onPress, index }: HotelCardProps) {
+  const { colors } = useTheme();
   const emoji = getCountryEmoji(item.code);
   return (
     <Animated.View
       entering={FadeInDown.delay(index * 80).springify()}
       style={{ flex: 1 }}
     >
-      <TouchableOpacity style={hotelStyles.card} onPress={onPress} activeOpacity={0.75}>
+      <TouchableOpacity
+        style={[hotelStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+        onPress={onPress}
+        activeOpacity={0.75}
+      >
         <Text style={hotelStyles.emoji}>{emoji}</Text>
-        <Text style={hotelStyles.city} numberOfLines={1}>
+        <Text style={[hotelStyles.city, { color: colors.text }]} numberOfLines={1}>
           {item.city}
         </Text>
-        <Text style={hotelStyles.country} numberOfLines={1}>
+        <Text style={[hotelStyles.country, { color: colors.textMuted }]} numberOfLines={1}>
           {item.country}
         </Text>
       </TouchableOpacity>
@@ -287,12 +290,10 @@ function HotelCard({ item, onPress, index }: HotelCardProps) {
 
 const hotelStyles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: Radius.card,
     padding: Spacing.md,
     flex: 1,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 110,
@@ -302,14 +303,12 @@ const hotelStyles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   city: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
     textAlign: 'center',
   },
   country: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     textAlign: 'center',
@@ -335,12 +334,13 @@ const QUICK_FILTERS: QuickFilter[] = [
 // ── Section header ────────────────────────────────────────────────────────────
 
 function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+  const { colors } = useTheme();
   return (
     <View style={sectionStyles.wrapper}>
-      <View style={sectionStyles.accent} />
+      <View style={[sectionStyles.accent, { backgroundColor: colors.primary }]} />
       <View>
-        <Text style={sectionStyles.title}>{title}</Text>
-        {subtitle ? <Text style={sectionStyles.subtitle}>{subtitle}</Text> : null}
+        <Text style={[sectionStyles.title, { color: colors.text }]}>{title}</Text>
+        {subtitle ? <Text style={[sectionStyles.subtitle, { color: colors.textMuted }]}>{subtitle}</Text> : null}
       </View>
     </View>
   );
@@ -358,16 +358,13 @@ const sectionStyles = StyleSheet.create({
     width: 3,
     height: 20,
     borderRadius: 2,
-    backgroundColor: Colors.primary,
   },
   title: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
   },
   subtitle: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginTop: 1,
@@ -421,6 +418,7 @@ const skeletonStyles = StyleSheet.create({
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function ExploreScreen() {
+  const { colors } = useTheme();
   const { createSession } = useChatStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -483,18 +481,18 @@ export default function ExploreScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
       {/* Search bar + map button */}
       <Animated.View entering={FadeIn.duration(400)} style={styles.searchRow}>
-        <View style={styles.searchWrap}>
-          <Ionicons name="search" size={16} color={Colors.textMuted} style={styles.searchIcon} />
+        <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Ionicons name="search" size={16} color={colors.textMuted} style={styles.searchIcon} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.text }]}
             placeholder="Куда летим?"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearchSubmit}
@@ -503,11 +501,11 @@ export default function ExploreScreen() {
             editable={!isNavigating}
           />
           {isNavigating && (
-            <ActivityIndicator size="small" color={Colors.primary} style={styles.searchSpinner} />
+            <ActivityIndicator size="small" color={colors.primary} style={styles.searchSpinner} />
           )}
         </View>
         <TouchableOpacity
-          style={styles.mapBtn}
+          style={[styles.mapBtn, { backgroundColor: colors.primary, shadowColor: colors.primary }]}
           onPress={() => router.push('/hotels-map')}
           activeOpacity={0.8}
         >
@@ -564,7 +562,7 @@ export default function ExploreScreen() {
         {flightsLoading ? (
           <SkeletonFlightRow />
         ) : flights.length === 0 ? (
-          <Text style={styles.emptyText}>Нет данных</Text>
+          <Text style={[styles.emptyText, { color: colors.textMuted }]}>Нет данных</Text>
         ) : (
           <FlatList
             data={flights}
@@ -591,7 +589,7 @@ export default function ExploreScreen() {
         {hotelsLoading ? (
           <SkeletonHotelGrid />
         ) : hotels.length === 0 ? (
-          <Text style={styles.emptyText}>Нет данных</Text>
+          <Text style={[styles.emptyText, { color: colors.textMuted }]}>Нет данных</Text>
         ) : (
           <View style={styles.grid}>
             {hotelRows.map((row, rowIdx) => (
@@ -627,13 +625,13 @@ export default function ExploreScreen() {
           {QUICK_FILTERS.map((f, i) => (
             <Animated.View key={f.label} entering={FadeInDown.delay(240 + i * 60).springify()}>
               <TouchableOpacity
-                style={styles.filterChip}
+                style={[styles.filterChip, { backgroundColor: colors.card, borderColor: colors.border }]}
                 onPress={() => openChat(f.query)}
                 activeOpacity={0.75}
                 disabled={isNavigating}
               >
                 <Text style={styles.filterChipEmoji}>{f.emoji}</Text>
-                <Text style={styles.filterChipText}>{f.label}</Text>
+                <Text style={[styles.filterChipText, { color: colors.text }]}>{f.label}</Text>
               </TouchableOpacity>
             </Animated.View>
           ))}
@@ -651,7 +649,6 @@ export default function ExploreScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     paddingBottom: 32,
@@ -668,10 +665,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
     borderRadius: Radius.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: 14,
   },
   searchIcon: {
@@ -679,7 +674,6 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     paddingVertical: 14,
@@ -691,18 +685,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: Colors.primary,
     paddingHorizontal: 14,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.card,
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.35,
     shadowRadius: 6,
     elevation: 4,
   },
   mapBtnText: {
-    color: Colors.textInverse,
+    color: '#fff',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,
@@ -732,9 +724,7 @@ const styles = StyleSheet.create({
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.chip,
@@ -744,13 +734,11 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.md,
   },
   filterChipText: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
   emptyText: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     textAlign: 'center',

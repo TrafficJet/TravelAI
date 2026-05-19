@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
+  <defs>
+    <style>
+      .brand-name {
+        font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+        font-size: 52px;
+        letter-spacing: -1px;
+        fill: #F4F4F8;
+      }
+      .brand-tagline {
+        font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 400;
+        font-size: 13px;
+        letter-spacing: 2px;
+        fill: #6B7280;
+        text-transform: uppercase;
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="200" fill="#0A0A14"/>
+
+  <!-- Icon: Minimal globe — circle with meridian arcs and a horizontal equator -->
+  <!-- Globe outline -->
+  <circle cx="65" cy="100" r="42" fill="none" stroke="#14B8A6" stroke-width="2"/>
+
+  <!-- Equator line -->
+  <line x1="23" y1="100" x2="107" y2="100" stroke="#14B8A6" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Left meridian arc -->
+  <path
+    d="M 65 58 Q 40 100 65 142"
+    fill="none"
+    stroke="#14B8A6"
+    stroke-width="1.5"
+    opacity="0.5"
+  />
+
+  <!-- Right meridian arc -->
+  <path
+    d="M 65 58 Q 90 100 65 142"
+    fill="none"
+    stroke="#14B8A6"
+    stroke-width="1.5"
+    opacity="0.5"
+  />
+
+  <!-- Orbit path — amber arc crossing over the globe -->
+  <ellipse
+    cx="65"
+    cy="100"
+    rx="42"
+    ry="16"
+    fill="none"
+    stroke="#F59E0B"
+    stroke-width="2"
+    stroke-dasharray="5 3"
+    transform="rotate(-30, 65, 100)"
+  />
+
+  <!-- Traveller dot on orbit -->
+  <circle
+    cx="100"
+    cy="80"
+    r="5.5"
+    fill="#F59E0B"
+  />
+
+  <!-- Globe pole dots -->
+  <circle cx="65" cy="58" r="3" fill="#14B8A6" opacity="0.7"/>
+  <circle cx="65" cy="142" r="3" fill="#14B8A6" opacity="0.4"/>
+
+  <!-- Vertical divider -->
+  <line x1="128" y1="60" x2="128" y2="140" stroke="#1E2030" stroke-width="1"/>
+
+  <!-- Brand name -->
+  <text x="148" y="120" class="brand-name">SVIT</text>
+
+  <!-- Tagline -->
+  <text x="150" y="145" class="brand-tagline">the whole world</text>
+</svg>

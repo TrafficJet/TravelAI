@@ -1,7 +1,8 @@
 import React from 'react';
 import { Image, StyleSheet, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, Radius, Typography } from '../../constants';
+import { Radius, Typography } from '../../constants';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 interface AvatarProps {
   name?: string;
@@ -17,8 +18,25 @@ function getInitials(name?: string): string {
 }
 
 export function Avatar({ name, imageUri, size = 44 }: AvatarProps) {
+  const { colors } = useTheme();
   const borderRadius = Radius.avatar;
   const fontSize = Math.round(size * 0.36);
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    image: {
+      overflow: 'hidden',
+      backgroundColor: colors.card,
+    },
+    gradient: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+    },
+    initials: {
+      color: '#0A0A14',
+      fontWeight: '700',
+    },
+  }), [colors]);
 
   if (imageUri) {
     return (
@@ -31,7 +49,7 @@ export function Avatar({ name, imageUri, size = 44 }: AvatarProps) {
 
   return (
     <LinearGradient
-      colors={[Colors.primary, Colors.secondary]}
+      colors={[colors.primary, '#14B8A6']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.gradient, { width: size, height: size, borderRadius }]}
@@ -47,19 +65,3 @@ export function Avatar({ name, imageUri, size = 44 }: AvatarProps) {
     </LinearGradient>
   );
 }
-
-const styles = StyleSheet.create({
-  image: {
-    overflow: 'hidden',
-    backgroundColor: Colors.elevated,
-  },
-  gradient: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  initials: {
-    color: Colors.textInverse,
-    fontWeight: '700',
-  },
-});

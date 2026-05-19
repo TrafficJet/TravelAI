@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 140" width="400" height="140">
+  <defs>
+    <!-- Gradient for S symbol: teal top → amber bottom -->
+    <linearGradient id="sHorizonGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#14B8A6"/>
+      <stop offset="48%" stop-color="#14B8A6" stop-opacity="0.9"/>
+      <stop offset="52%" stop-color="#F59E0B" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+
+    <!-- Subtle glow for the waypoint dot -->
+    <filter id="dotGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Amber glow for bottom arc -->
+    <filter id="amberGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <style>
+      .wordmark {
+        font-family: 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+        font-weight: 700;
+        font-size: 54px;
+        letter-spacing: 6px;
+        fill: #F4F4F8;
+      }
+      .tagline {
+        font-family: 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+        font-weight: 400;
+        font-size: 11px;
+        letter-spacing: 4px;
+        fill: #8B8BA7;
+      }
+    </style>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="400" height="140" fill="#0A0A14"/>
+
+  <!--
+    S-HORIZON SYMBOL
+    The S is built from two arcs meeting at the center.
+    Top arc: teal (#14B8A6) — horizon/sea/aurora
+    Bottom arc: amber (#F59E0B) — dawn/earth/departure lights
+    Center waypoint dot: the meeting point, the "you are here"
+
+    Icon bounding box: 56×96, centered at x=60, y=70
+    Icon spans: x=32..88, y=22..118
+  -->
+
+  <!-- Top arc of S — teal, curves right -->
+  <!-- From bottom-center (60,70) curving up-right then down to top-center (60,22) shape -->
+  <!-- S top half: starts at midpoint (60,70), goes up to (60,22) with rightward bulge -->
+  <path
+    d="M 60 70
+       C 82 70, 88 58, 88 46
+       C 88 34, 82 22, 60 22
+       C 46 22, 36 28, 33 35"
+    fill="none"
+    stroke="#14B8A6"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Bottom arc of S — amber, curves left -->
+  <!-- S bottom half: starts at midpoint (60,70), goes down to (60,118) with leftward bulge -->
+  <path
+    d="M 60 70
+       C 38 70, 32 82, 32 94
+       C 32 106, 38 118, 60 118
+       C 74 118, 84 112, 87 105"
+    fill="none"
+    stroke="#F59E0B"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Center waypoint dot — the horizon meeting point -->
+  <!-- Teal outer ring -->
+  <circle cx="60" cy="70" r="6" fill="none" stroke="#14B8A6" stroke-width="1.5" opacity="0.5" filter="url(#dotGlow)"/>
+  <!-- Amber fill + teal split — split dot showing transition -->
+  <circle cx="60" cy="70" r="3.5" fill="#F59E0B" filter="url(#dotGlow)"/>
+
+  <!-- Thin horizontal rule — the actual horizon line, purely decorative -->
+  <!-- A very subtle divider between icon and text area would be too heavy. Skip. -->
+
+  <!-- Vertical separator between icon and wordmark -->
+  <line x1="110" y1="38" x2="110" y2="102" stroke="#2A2A42" stroke-width="1"/>
+
+  <!-- SVIT wordmark -->
+  <text x="130" y="97" class="wordmark">SVIT</text>
+
+  <!-- AI TRAVEL tagline -->
+  <text x="132" y="116" class="tagline">AI TRAVEL</text>
+
+</svg>

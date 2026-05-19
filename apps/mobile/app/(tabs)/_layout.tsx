@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Tabs } from 'expo-router';
+import { Tabs, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   useAnimatedStyle,
@@ -9,10 +9,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Colors } from '../../constants';
 import { Typography } from '../../constants/typography';
 import { useTranslation } from 'react-i18next';
 import { useNotificationsContext } from '../../context/NotificationsContext';
+import { useTheme } from '../../src/theme/ThemeContext';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -35,7 +35,7 @@ const badgeStyles = StyleSheet.create({
     minWidth: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: Colors.error,
+    backgroundColor: '#F43F5E',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 3,
@@ -91,6 +91,7 @@ function TabIcon({ focused, color, size, icon, iconFocused, badge }: TabIconProp
 export default function TabsLayout() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   useNotificationsContext(); // keep context subscribed for background badge updates
 
   const tabBarHeight = 56 + (Platform.OS === 'ios' ? insets.bottom : 0);
@@ -98,20 +99,20 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: Colors.background },
-        headerTintColor: Colors.text,
-        headerTitleStyle: { fontWeight: Typography.weights.bold },
+        headerStyle: { backgroundColor: colors.background },
+        headerTintColor: colors.text,
+        headerTitleStyle: { fontWeight: Typography.weights.bold, color: colors.text },
         headerShadowVisible: false,
         tabBarStyle: {
-          backgroundColor: Colors.surface,
-          borderTopColor: Colors.divider,
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           borderTopWidth: StyleSheet.hairlineWidth,
           height: tabBarHeight,
           paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
           paddingTop: 6,
         },
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: Typography.weights.medium,
@@ -181,7 +182,19 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="notifications"
-        options={{ href: null }}
+        options={{
+          href: null,
+          title: 'Уведомления',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{ marginLeft: 8, padding: 6 }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="arrow-back" size={24} color={colors.text} />
+            </TouchableOpacity>
+          ),
+        }}
       />
       <Tabs.Screen
         name="search-history"

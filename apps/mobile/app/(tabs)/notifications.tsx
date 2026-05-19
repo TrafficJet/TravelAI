@@ -12,10 +12,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotificationsContext } from '../../context/NotificationsContext';
 import { useTheme } from '../../src/theme/ThemeContext';
-import { Colors } from '../../constants/colors';
+import type { Colors as ColorsType } from '../../src/theme/colors';
 import { Typography } from '../../constants/typography';
 import { Spacing } from '../../constants/spacing';
 import { SkeletonNotificationItem } from '../../components/ui/Skeleton';
@@ -38,15 +39,15 @@ function getNotificationIconName(type: NotificationType): React.ComponentProps<t
   }
 }
 
-function getNotificationIconColor(type: NotificationType): string {
+function getNotificationIconColor(type: NotificationType, colors: ColorsType): string {
   switch (type) {
     case 'PRICE_ALERT':
-      return Colors.warning;
+      return colors.warning;
     case 'BOOKING_UPDATE':
-      return Colors.primary;
+      return colors.primary;
     case 'SYSTEM':
     default:
-      return Colors.textMuted;
+      return colors.textMuted;
   }
 }
 
@@ -101,11 +102,16 @@ type ListRow =
 
 interface SwipeableRowProps {
   notification: AppNotification;
-  onPress: (id: string) => void;
+  onPress: (notification: AppNotification) => void;
   onDelete: (id: string) => void;
   rowBg: string;
   textColor: string;
   subtextColor: string;
+  surfaceBg: string;
+  iconColor: string;
+  trashColor: string;
+  deleteBg: string;
+  borderColor: string;
 }
 
 function SwipeableRow({
@@ -115,6 +121,11 @@ function SwipeableRow({
   rowBg,
   textColor,
   subtextColor,
+  surfaceBg,
+  iconColor,
+  trashColor,
+  deleteBg,
+  borderColor,
 }: SwipeableRowProps) {
   const translateX = useRef(new Animated.Value(0)).current;
   const [deleteVisible, setDeleteVisible] = useState(false);
@@ -160,32 +171,31 @@ function SwipeableRow({
       closeRow();
       return;
     }
-    onPress(notification.id);
+    onPress(notification);
   }
 
   const iconName = getNotificationIconName(notification.type);
-  const iconColor = getNotificationIconColor(notification.type);
 
   return (
-    <View style={styles.swipeableContainer}>
+    <View style={[styles.swipeableContainer, { borderBottomColor: borderColor }]}>
       {/* Delete button behind the row */}
-      <View style={styles.deleteActionContainer}>
+      <View style={[styles.deleteActionContainer, { backgroundColor: deleteBg }]}>
         <TouchableOpacity
           style={styles.deleteAction}
           onPress={() => onDelete(notification.id)}
           activeOpacity={0.8}
         >
-          <Ionicons name="trash-outline" size={22} color={Colors.text} />
+          <Ionicons name="trash-outline" size={22} color={trashColor} />
         </TouchableOpacity>
       </View>
 
       {/* Sliding row */}
       <Animated.View
-        style={[styles.animatedRow, { transform: [{ translateX }] }]}
+        style={[styles.animatedRow, { backgroundColor: rowBg, transform: [{ translateX }] }]}
         {...panResponder.panHandlers}
       >
         <TouchableOpacity
-          style={[styles.row, { backgroundColor: notification.isRead ? rowBg : Colors.surface }]}
+          style={[styles.row, { backgroundColor: notification.isRead ? rowBg : surfaceBg }]}
           onPress={handlePress}
           activeOpacity={0.75}
         >
@@ -205,7 +215,7 @@ function SwipeableRow({
               >
                 {notification.title}
               </Text>
-              {!notification.isRead && <View style={styles.unreadDot} />}
+              {!notification.isRead && <View style={[styles.unreadDot, { backgroundColor: iconColor }]} />}
             </View>
 
             <Text
@@ -215,7 +225,7 @@ function SwipeableRow({
               {notification.body}
             </Text>
 
-            <Text style={styles.rowTime}>{formatRelativeDate(notification.createdAt)}</Text>
+            <Text style={[styles.rowTime, { color: subtextColor }]}>{formatRelativeDate(notification.createdAt)}</Text>
           </View>
         </TouchableOpacity>
       </Animated.View>
@@ -284,8 +294,12 @@ export default function NotificationsScreen() {
   }, [notifications, isLoading]);
 
   const handlePress = useCallback(
-    async (id: string) => {
-      await markRead(id);
+    async (notification: AppNotification) => {
+      await markRead(notification.id);
+      const bookingId = notification.data?.bookingId;
+      if (bookingId && typeof bookingId === 'string') {
+        router.push(`/bookings/${bookingId}`);
+      }
     },
     [markRead],
   );
@@ -330,7 +344,7 @@ export default function NotificationsScreen() {
           onPress={markAllRead}
           activeOpacity={0.7}
         >
-          <Text style={styles.markAllText}>
+          <Text style={[styles.markAllText, { color: colors.primary }]}>
             Отметить все как прочитанные ({unreadCount})
           </Text>
         </TouchableOpacity>
@@ -363,6 +377,11 @@ export default function NotificationsScreen() {
                 rowBg={colors.background}
                 textColor={colors.text}
                 subtextColor={colors.textSecondary}
+                surfaceBg={colors.surface}
+                iconColor={getNotificationIconColor(item.notification.type, colors)}
+                trashColor={colors.textInverse}
+                deleteBg={colors.error}
+                borderColor={colors.border}
               />
             </Reanimated.View>
           );
@@ -371,8 +390,8 @@ export default function NotificationsScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={Colors.primary}
-            colors={[Colors.primary]}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
           />
         }
         onEndReached={handleLoadMore}
@@ -380,7 +399,7 @@ export default function NotificationsScreen() {
         ListFooterComponent={
           isLoadingMore ? (
             <View style={styles.loadingMore}>
-              <ActivityIndicator color={Colors.primary} />
+              <ActivityIndicator color={colors.primary} />
             </View>
           ) : null
         }
@@ -413,7 +432,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   markAllText: {
-    color: Colors.primary,
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -431,7 +449,7 @@ const styles = StyleSheet.create({
   swipeableContainer: {
     overflow: 'hidden',
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
+    borderBottomColor: 'transparent', // tinted per-row via inline style below
   },
   deleteActionContainer: {
     position: 'absolute',
@@ -439,7 +457,6 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: DELETE_BTN_WIDTH,
-    backgroundColor: Colors.error,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -450,7 +467,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   animatedRow: {
-    backgroundColor: Colors.background,
+    flex: 1,
   },
   row: {
     flexDirection: 'row',
@@ -487,7 +504,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.primary,
     marginLeft: 6,
     flexShrink: 0,
   },
@@ -498,7 +514,6 @@ const styles = StyleSheet.create({
   },
   rowTime: {
     fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
   },
   listContent: {
     paddingBottom: Platform.OS === 'ios' ? 20 : 12,

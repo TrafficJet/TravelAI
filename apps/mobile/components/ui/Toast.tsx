@@ -8,52 +8,12 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants';
+import { useTheme } from '../../src/theme/ThemeContext';
 import { toast, ToastConfig, ToastType } from '../../lib/toast';
 
 const TOAST_DURATION = 3000;
 const ANIMATION_DURATION = 350;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-const TYPE_CONFIG: Record<
-  ToastType,
-  {
-    bg: string;
-    borderColor: string;
-    iconColor: string;
-    textColor: string;
-    icon: React.ComponentProps<typeof Ionicons>['name'];
-  }
-> = {
-  success: {
-    bg: Colors.successLight,
-    borderColor: Colors.success,
-    iconColor: Colors.success,
-    textColor: Colors.text,
-    icon: 'checkmark-circle',
-  },
-  error: {
-    bg: Colors.errorLight,
-    borderColor: Colors.error,
-    iconColor: Colors.error,
-    textColor: Colors.text,
-    icon: 'close-circle',
-  },
-  info: {
-    bg: Colors.infoLight,
-    borderColor: Colors.info,
-    iconColor: Colors.info,
-    textColor: Colors.text,
-    icon: 'information-circle',
-  },
-  warning: {
-    bg: Colors.warningLight,
-    borderColor: Colors.warning,
-    iconColor: Colors.warning,
-    textColor: Colors.text,
-    icon: 'warning',
-  },
-};
 
 interface ToastItemProps {
   config: ToastConfig;
@@ -62,6 +22,48 @@ interface ToastItemProps {
 }
 
 function ToastItem({ config, onHide, bottomOffset }: ToastItemProps) {
+  const { colors } = useTheme();
+
+  const TYPE_CONFIG: Record<
+    ToastType,
+    {
+      bg: string;
+      borderColor: string;
+      iconColor: string;
+      textColor: string;
+      icon: React.ComponentProps<typeof Ionicons>['name'];
+    }
+  > = {
+    success: {
+      bg: 'rgba(16,185,129,0.15)',
+      borderColor: colors.success,
+      iconColor: colors.success,
+      textColor: colors.text,
+      icon: 'checkmark-circle',
+    },
+    error: {
+      bg: 'rgba(244,63,94,0.15)',
+      borderColor: colors.error,
+      iconColor: colors.error,
+      textColor: colors.text,
+      icon: 'close-circle',
+    },
+    info: {
+      bg: `${colors.primary}26`,
+      borderColor: colors.primary,
+      iconColor: colors.primary,
+      textColor: colors.text,
+      icon: 'information-circle',
+    },
+    warning: {
+      bg: 'rgba(245,158,11,0.15)',
+      borderColor: colors.warning,
+      iconColor: colors.warning,
+      textColor: colors.text,
+      icon: 'warning',
+    },
+  };
+
   const translateY = useRef(new Animated.Value(120)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);

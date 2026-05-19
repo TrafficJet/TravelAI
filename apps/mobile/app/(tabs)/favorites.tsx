@@ -11,11 +11,11 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
 import { useFavoritesStore } from '../../stores/favoritesStore';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { Hotel, FlightOffer } from '../../types';
 
 // ── Tab selector ──────────────────────────────────────────────────────────────
@@ -28,23 +28,30 @@ interface TabSelectorProps {
 }
 
 function TabSelector({ active, onChange }: TabSelectorProps) {
+  const { colors } = useTheme();
   return (
-    <View style={tabStyles.container}>
+    <View style={[tabStyles.container, { backgroundColor: colors.card }]}>
       <TouchableOpacity
-        style={[tabStyles.tab, active === 'hotels' && tabStyles.tabActive]}
+        style={[
+          tabStyles.tab,
+          active === 'hotels' && { backgroundColor: colors.primary },
+        ]}
         onPress={() => onChange('hotels')}
         activeOpacity={0.75}
       >
-        <Text style={[tabStyles.label, active === 'hotels' && tabStyles.labelActive]}>
+        <Text style={[tabStyles.label, { color: colors.textMuted }, active === 'hotels' && { color: '#fff' }]}>
           Отели
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[tabStyles.tab, active === 'flights' && tabStyles.tabActive]}
+        style={[
+          tabStyles.tab,
+          active === 'flights' && { backgroundColor: colors.primary },
+        ]}
         onPress={() => onChange('flights')}
         activeOpacity={0.75}
       >
-        <Text style={[tabStyles.label, active === 'flights' && tabStyles.labelActive]}>
+        <Text style={[tabStyles.label, { color: colors.textMuted }, active === 'flights' && { color: '#fff' }]}>
           Рейсы
         </Text>
       </TouchableOpacity>
@@ -55,7 +62,6 @@ function TabSelector({ active, onChange }: TabSelectorProps) {
 const tabStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: Colors.card,
     borderRadius: Radius.md,
     padding: Spacing.xs,
     marginHorizontal: Spacing.md,
@@ -67,30 +73,24 @@ const tabStyles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: Radius.sm,
   },
-  tabActive: {
-    backgroundColor: Colors.primary,
-  },
   label: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
-  },
-  labelActive: {
-    color: Colors.textInverse,
   },
 });
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 
 function EmptyState() {
+  const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
-      <View style={emptyStyles.iconWrap}>
-        <Ionicons name="heart-outline" size={48} color={Colors.textMuted} />
+      <View style={[emptyStyles.iconWrap, { backgroundColor: colors.card }]}>
+        <Ionicons name="heart-outline" size={48} color={colors.textMuted} />
       </View>
-      <Text style={emptyStyles.title}>Пока пусто</Text>
-      <Text style={emptyStyles.subtitle}>
+      <Text style={[emptyStyles.title, { color: colors.text }]}>Пока пусто</Text>
+      <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
         Добавьте отели и рейсы в избранное
       </Text>
     </View>
@@ -109,20 +109,17 @@ const emptyStyles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: Radius.avatar,
-    backgroundColor: Colors.card,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
   },
   title: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
     marginBottom: Spacing.sm,
   },
   subtitle: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     textAlign: 'center',
@@ -139,6 +136,7 @@ interface HotelRowProps {
 }
 
 function HotelRow({ hotel, index, onRemove }: HotelRowProps) {
+  const { colors } = useTheme();
   const currencySymbol = hotel.currency === 'USD' ? '$' : hotel.currency;
 
   function handlePress() {
@@ -166,18 +164,22 @@ function HotelRow({ hotel, index, onRemove }: HotelRowProps) {
 
   return (
     <Animated.View entering={FadeInDown.delay(index * 60).springify()}>
-      <TouchableOpacity style={rowStyles.card} onPress={handlePress} activeOpacity={0.8}>
-        <View style={rowStyles.iconWrap}>
+      <TouchableOpacity
+        style={[rowStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+        onPress={handlePress}
+        activeOpacity={0.8}
+      >
+        <View style={[rowStyles.iconWrap, { backgroundColor: `${colors.primary}15` }]}>
           <Text style={rowStyles.typeIcon}>🏨</Text>
         </View>
         <View style={rowStyles.info}>
-          <Text style={rowStyles.name} numberOfLines={1}>{hotel.name}</Text>
+          <Text style={[rowStyles.name, { color: colors.text }]} numberOfLines={1}>{hotel.name}</Text>
           {(hotel.city || hotel.address) && (
-            <Text style={rowStyles.sub} numberOfLines={1}>
+            <Text style={[rowStyles.sub, { color: colors.textMuted }]} numberOfLines={1}>
               {[hotel.city, hotel.address].filter(Boolean).join(', ')}
             </Text>
           )}
-          <Text style={rowStyles.price}>
+          <Text style={[rowStyles.price, { color: colors.primary }]}>
             {hotel.pricePerNight.toLocaleString('ru-RU')} {currencySymbol}/ночь
           </Text>
         </View>
@@ -186,7 +188,7 @@ function HotelRow({ hotel, index, onRemove }: HotelRowProps) {
           onPress={onRemove}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="trash-outline" size={20} color={Colors.error} />
+          <Ionicons name="trash-outline" size={20} color={colors.error} />
         </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
@@ -202,6 +204,7 @@ interface FlightRowProps {
 }
 
 function FlightRow({ flight, index, onRemove }: FlightRowProps) {
+  const { colors } = useTheme();
   const currencySymbol = flight.currency === 'USD' ? '$' : flight.currency;
 
   function handlePress() {
@@ -227,18 +230,22 @@ function FlightRow({ flight, index, onRemove }: FlightRowProps) {
 
   return (
     <Animated.View entering={FadeInDown.delay(index * 60).springify()}>
-      <TouchableOpacity style={rowStyles.card} onPress={handlePress} activeOpacity={0.8}>
-        <View style={rowStyles.iconWrap}>
-          <Ionicons name="airplane" size={22} color={Colors.primary} />
+      <TouchableOpacity
+        style={[rowStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+        onPress={handlePress}
+        activeOpacity={0.8}
+      >
+        <View style={[rowStyles.iconWrap, { backgroundColor: `${colors.primary}15` }]}>
+          <Ionicons name="airplane" size={22} color={colors.primary} />
         </View>
         <View style={rowStyles.info}>
-          <Text style={rowStyles.name} numberOfLines={1}>
+          <Text style={[rowStyles.name, { color: colors.text }]} numberOfLines={1}>
             {flight.origin} → {flight.destination}
           </Text>
-          <Text style={rowStyles.sub} numberOfLines={1}>
+          <Text style={[rowStyles.sub, { color: colors.textMuted }]} numberOfLines={1}>
             {flight.airline} · {flight.flightNumber}
           </Text>
-          <Text style={rowStyles.price}>
+          <Text style={[rowStyles.price, { color: colors.primary }]}>
             {flight.price.toLocaleString('ru-RU')} {currencySymbol}
           </Text>
         </View>
@@ -247,7 +254,7 @@ function FlightRow({ flight, index, onRemove }: FlightRowProps) {
           onPress={onRemove}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="trash-outline" size={20} color={Colors.error} />
+          <Ionicons name="trash-outline" size={20} color={colors.error} />
         </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
@@ -258,20 +265,17 @@ const rowStyles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
     borderRadius: Radius.card,
     padding: 14,
     marginHorizontal: Spacing.md,
     marginVertical: 5,
     borderWidth: 1,
-    borderColor: Colors.border,
     gap: Spacing.sm,
   },
   iconWrap: {
     width: 44,
     height: 44,
     borderRadius: Radius.md,
-    backgroundColor: Colors.primaryMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -283,18 +287,15 @@ const rowStyles = StyleSheet.create({
     gap: 3,
   },
   name: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
   sub: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
   },
   price: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
@@ -307,14 +308,15 @@ const rowStyles = StyleSheet.create({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function FavoritesScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<TabType>('hotels');
   const { hotels, flights, removeHotel, removeFlight } = useFavoritesStore();
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Избранное</Text>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Избранное</Text>
       </View>
 
       <TabSelector active={activeTab} onChange={setActiveTab} />
@@ -367,17 +369,14 @@ export default function FavoritesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     paddingHorizontal: Spacing.md,
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
     marginBottom: Spacing.md,
   },
   title: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.extrabold,

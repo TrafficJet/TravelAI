@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { Booking, BookingStatus, HotelDetails } from '../../types';
 
 interface Props {
@@ -15,13 +15,6 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
   CONFIRMED: 'Подтверждено',
   CANCELLED: 'Отменено',
   FAILED: 'Ошибка',
-};
-
-const STATUS_COLORS: Record<BookingStatus, string> = {
-  PENDING: Colors.warning,
-  CONFIRMED: Colors.success,
-  CANCELLED: Colors.error,
-  FAILED: Colors.error,
 };
 
 function formatDate(dateStr: string): string {
@@ -37,38 +30,45 @@ function nightsCount(checkIn: string, checkOut: string): number {
 }
 
 export function HotelCard({ booking, onPress }: Props) {
+  const { colors } = useTheme();
   const details = booking.details as HotelDetails;
+  const STATUS_COLORS: Record<BookingStatus, string> = {
+    PENDING: colors.warning,
+    CONFIRMED: colors.success,
+    CANCELLED: colors.error,
+    FAILED: colors.error,
+  };
   const statusColor = STATUS_COLORS[booking.status];
   const statusLabel = STATUS_LABELS[booking.status];
   const nights = nightsCount(details.checkIn, details.checkOut);
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.card}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Ionicons name="bed-outline" size={16} color={Colors.primary} />
-          <Text style={styles.stars}>{'★'.repeat(details.stars)}</Text>
+          <Ionicons name="bed-outline" size={16} color={colors.primary} />
+          <Text style={[styles.stars, { color: colors.warning }]}>{'★'.repeat(details.stars)}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: `${statusColor}20` }]}>
           <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
         </View>
       </View>
 
-      <Text style={styles.hotelName}>{details.name}</Text>
-      <Text style={styles.address}>{details.address}</Text>
+      <Text style={[styles.hotelName, { color: colors.text }]}>{details.name}</Text>
+      <Text style={[styles.address, { color: colors.textMuted }]}>{details.address}</Text>
 
       <View style={styles.datesRow}>
-        <Text style={styles.dates}>
+        <Text style={[styles.dates, { color: colors.text }]}>
           {formatDate(details.checkIn)} — {formatDate(details.checkOut)}
         </Text>
-        <Text style={styles.nights}>{nights} ночей</Text>
+        <Text style={[styles.nights, { color: colors.textMuted }]}>{nights} ночей</Text>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.guests}>
+      <View style={[styles.footer, { borderTopColor: colors.border }]}>
+        <Text style={[styles.guests, { color: colors.textMuted }]}>
           {details.rooms} ном. · {details.guests} гост.
         </Text>
-        <Text style={styles.price}>
+        <Text style={[styles.price, { color: colors.primary }]}>
           {booking.totalPrice.toLocaleString('ru-RU')} {booking.currency}
         </Text>
       </View>
@@ -78,13 +78,11 @@ export function HotelCard({ booking, onPress }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 6,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -98,7 +96,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   stars: {
-    color: Colors.warning,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
@@ -113,14 +110,12 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.semibold,
   },
   hotelName: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
     marginBottom: 4,
   },
   address: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     marginBottom: 10,
@@ -131,12 +126,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dates: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   nights: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
@@ -145,15 +138,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   guests: {
-    color: Colors.textMuted,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
   },
   price: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,

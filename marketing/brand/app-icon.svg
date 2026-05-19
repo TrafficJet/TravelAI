@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!--
+    SVIT — App Icon 1024×1024
+    App Store / Google Play ready
+    Version: 1.0 | May 2026
+
+    Color system:
+      Background: Deep space gradient — #0C0C1A → #1A1228 (135deg)
+      Symbol ring: rgba(255,255,255,0.90)
+      S-needle: #E8A020 (SVIT Gold) + warm glow
+      Center dot: #E8A020
+  -->
+  <defs>
+    <!-- Background: deep space — not black, not navy, own territory -->
+    <linearGradient id="bg" x1="0" y1="0" x2="724" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#0E0C1C"/>
+      <stop offset="55%"  stop-color="#12101E"/>
+      <stop offset="100%" stop-color="#1E1428"/>
+    </linearGradient>
+
+    <!-- Subtle inner glow behind S-needle (warm) -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="35%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#E8A020" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#E8A020" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- iOS icon corner mask -->
+    <clipPath id="mask">
+      <rect width="1024" height="1024" rx="230" ry="230"/>
+    </clipPath>
+
+    <!-- Subtle noise/texture filter (optional, keep light) -->
+    <filter id="softblur">
+      <feGaussianBlur stdDeviation="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- ─── Clipped group (iOS rounded corners) ─── -->
+  <g clip-path="url(#mask)">
+
+    <!-- Background fill -->
+    <rect width="1024" height="1024" fill="url(#bg)"/>
+
+    <!-- Warm center glow -->
+    <ellipse cx="512" cy="512" rx="340" ry="340" fill="url(#glow)"/>
+
+    <!-- ─── Compass Symbol, centered 1024×1024 ─── -->
+    <!-- All coordinates offset to center at 512,512 with radius ~380 -->
+
+    <!-- Outer ring -->
+    <circle cx="512" cy="512" r="380" stroke="rgba(255,255,255,0.88)" stroke-width="20" fill="none"/>
+
+    <!-- Inner ring (subtle) -->
+    <circle cx="512" cy="512" r="248" stroke="rgba(255,255,255,0.14)" stroke-width="8" fill="none"/>
+
+    <!-- Cardinal tick marks — N, S, E, W -->
+    <!-- N -->
+    <line x1="512" y1="88"  x2="512" y2="168" stroke="rgba(255,255,255,0.88)" stroke-width="24" stroke-linecap="round"/>
+    <!-- S -->
+    <line x1="512" y1="856" x2="512" y2="936" stroke="rgba(255,255,255,0.88)" stroke-width="24" stroke-linecap="round"/>
+    <!-- W -->
+    <line x1="88"  y1="512" x2="168" y2="512" stroke="rgba(255,255,255,0.88)" stroke-width="24" stroke-linecap="round"/>
+    <!-- E -->
+    <line x1="856" y1="512" x2="936" y2="512" stroke="rgba(255,255,255,0.88)" stroke-width="24" stroke-linecap="round"/>
+
+    <!-- Diagonal tick marks — NE, NW, SE, SW -->
+    <!-- NE -->
+    <line x1="781" y1="243" x2="726" y2="298" stroke="rgba(255,255,255,0.30)" stroke-width="12" stroke-linecap="round"/>
+    <!-- NW -->
+    <line x1="243" y1="243" x2="298" y2="298" stroke="rgba(255,255,255,0.30)" stroke-width="12" stroke-linecap="round"/>
+    <!-- SE -->
+    <line x1="781" y1="781" x2="726" y2="726" stroke="rgba(255,255,255,0.30)" stroke-width="12" stroke-linecap="round"/>
+    <!-- SW -->
+    <line x1="243" y1="781" x2="298" y2="726" stroke="rgba(255,255,255,0.30)" stroke-width="12" stroke-linecap="round"/>
+
+    <!--
+      S-needle: two Bezier curves
+      Upper lobe: right + up from center (512,512)
+      Lower lobe: left + down from center
+      Stroke: SVIT Gold #E8A020
+      Width: 30px — prominent at 1024 size, scales correctly to 60px favicon
+    -->
+    <!-- Upper lobe of S -->
+    <path
+      d="M 512 512 C 512 374 638 362 638 272 C 638 182 512 182 512 244"
+      stroke="#E8A020"
+      stroke-width="30"
+      fill="none"
+      stroke-linecap="round"
+      stroke-linejoin="round"/>
+
+    <!-- Lower lobe of S -->
+    <path
+      d="M 512 512 C 512 650 386 662 386 752 C 386 842 512 842 512 780"
+      stroke="#E8A020"
+      stroke-width="30"
+      fill="none"
+      stroke-linecap="round"
+      stroke-linejoin="round"/>
+
+    <!-- Center pivot dot — gold -->
+    <circle cx="512" cy="512" r="32" fill="#E8A020"/>
+
+    <!-- Inner dot (white core) — gives depth at large size -->
+    <circle cx="512" cy="512" r="12" fill="#FFFFFF" opacity="0.6"/>
+
+  </g>
+</svg>

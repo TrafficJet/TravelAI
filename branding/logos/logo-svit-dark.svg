@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 140" width="400" height="140">
+  <defs>
+    <style>
+      .svit-wordmark-dark {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+        font-size: 48px;
+        letter-spacing: 0.15em;
+        fill: #FFFFFF;
+      }
+      .svit-tagline-dark {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 300;
+        font-size: 14px;
+        letter-spacing: 0.3em;
+        fill: #FFFFFF;
+        opacity: 0.45;
+      }
+    </style>
+  </defs>
+
+  <!-- Dark background: Deep Navy #1A1A2E -->
+  <rect width="400" height="140" fill="#1A1A2E"/>
+
+  <!--
+    COMPASS + S SYMBOL — DARK BACKGROUND VERSION
+    Same geometry as logo-svit-final.svg
+    All strokes inverted: white lines on #1A1A2E
+    Center: (70, 70)
+  -->
+
+  <!-- Compass outer ring — white stroke -->
+  <circle
+    cx="70" cy="70"
+    r="52"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="2"
+  />
+
+  <!-- Cardinal ticks — white -->
+  <!-- North -->
+  <line x1="70" y1="18" x2="70" y2="26" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+  <!-- South -->
+  <line x1="70" y1="114" x2="70" y2="122" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+  <!-- East -->
+  <line x1="118" y1="70" x2="122" y2="70" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+  <!-- West -->
+  <line x1="18" y1="70" x2="22" y2="70" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+
+  <!--
+    S CURVE — identical geometry to light version, strokes white
+  -->
+
+  <!-- Top half of S -->
+  <path
+    d="M 70 70
+       C 92 70, 94 56, 94 50
+       C 94 38, 86 32, 70 32
+       C 58 32, 50 37, 46 44"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="5.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Bottom half of S -->
+  <path
+    d="M 70 70
+       C 48 70, 46 84, 46 90
+       C 46 102, 54 108, 70 108
+       C 82 108, 90 103, 94 96"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="5.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Center pivot dot — white -->
+  <circle cx="70" cy="70" r="4" fill="#FFFFFF"/>
+
+  <!-- Vertical separator -->
+  <line x1="143" y1="35" x2="143" y2="105" stroke="#FFFFFF" stroke-width="1" opacity="0.2"/>
+
+  <!-- SVIT wordmark — white -->
+  <text x="163" y="92" class="svit-wordmark-dark">SVIT</text>
+
+  <!-- AI TRAVEL tagline — white muted -->
+  <text x="166" y="113" class="svit-tagline-dark">AI TRAVEL</text>
+
+</svg>

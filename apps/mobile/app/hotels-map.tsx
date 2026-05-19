@@ -18,7 +18,7 @@ import Animated, {
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../constants/colors';
+import { useTheme } from '../src/theme/ThemeContext';
 import type { Hotel } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -40,6 +40,7 @@ interface PriceMarkerProps {
 }
 
 function PriceMarker({ price, currency, selected, onPress }: PriceMarkerProps) {
+  const { colors } = useTheme();
   const scale = useSharedValue(selected ? 1.2 : 1);
 
   useEffect(() => {
@@ -61,61 +62,57 @@ function PriceMarker({ price, currency, selected, onPress }: PriceMarkerProps) {
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.9}
-        style={[markerStyles.bubble, selected && markerStyles.bubbleSelected]}
+        style={[
+          markerStyles.bubble,
+          {
+            backgroundColor: selected ? colors.primary : colors.card,
+            borderColor: selected ? colors.primary : colors.border,
+            shadowColor: colors.background,
+          },
+        ]}
       >
-        <Text style={[markerStyles.text, selected && markerStyles.textSelected]}>
+        <Text style={[markerStyles.text, { color: selected ? '#fff' : colors.text }]}>
           {label}
         </Text>
       </TouchableOpacity>
-      <View style={[markerStyles.pin, selected && markerStyles.pinSelected]} />
+      <View style={[
+        markerStyles.pin,
+        {
+          backgroundColor: selected ? colors.primary : colors.card,
+          borderColor: selected ? colors.primary : colors.border,
+          shadowColor: colors.background,
+        },
+      ]} />
     </Animated.View>
   );
 }
 
 const markerStyles = StyleSheet.create({
   bubble: {
-    backgroundColor: Colors.card,
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 5,
-    shadowColor: Colors.background,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.18,
     shadowRadius: 4,
     elevation: 4,
     borderWidth: 1.5,
-    borderColor: Colors.border,
-  },
-  bubbleSelected: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
   },
   text: {
-    color: Colors.text,
     fontSize: 12,
     fontWeight: '700',
-  },
-  textSelected: {
-    color: Colors.textInverse,
   },
   pin: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.card,
     borderWidth: 1.5,
-    borderColor: Colors.border,
     alignSelf: 'center',
     marginTop: 2,
-    shadowColor: Colors.background,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.12,
     shadowRadius: 2,
     elevation: 2,
-  },
-  pinSelected: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
   },
 });
 
@@ -128,30 +125,38 @@ interface MiniCardProps {
 }
 
 function MiniCard({ hotel, onClose, onOpen }: MiniCardProps) {
+  const { colors } = useTheme();
   const currencySymbol = hotel.currency === 'USD' ? '$' : hotel.currency;
   return (
     <Animated.View entering={FadeInDown.springify()} style={miniCardStyles.wrapper}>
       <TouchableOpacity
-        style={miniCardStyles.card}
+        style={[
+          miniCardStyles.card,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            shadowColor: colors.background,
+          },
+        ]}
         onPress={onOpen}
         activeOpacity={0.85}
       >
         <View style={miniCardStyles.content}>
-          <Text style={miniCardStyles.name} numberOfLines={1}>{hotel.name}</Text>
+          <Text style={[miniCardStyles.name, { color: colors.text }]} numberOfLines={1}>{hotel.name}</Text>
           {hotel.city && (
             <View style={miniCardStyles.locationRow}>
-              <Ionicons name="location-outline" size={12} color={Colors.textMuted} />
-              <Text style={miniCardStyles.city}>{hotel.city}</Text>
+              <Ionicons name="location-outline" size={12} color={colors.textMuted} />
+              <Text style={[miniCardStyles.city, { color: colors.textMuted }]}>{hotel.city}</Text>
             </View>
           )}
           <View style={miniCardStyles.footer}>
             {hotel.rating !== undefined && (
-              <View style={miniCardStyles.ratingBadge}>
-                <Ionicons name="star" size={11} color={Colors.warning} />
-                <Text style={miniCardStyles.ratingText}>{hotel.rating.toFixed(1)}</Text>
+              <View style={[miniCardStyles.ratingBadge, { backgroundColor: `${colors.warning}22` }]}>
+                <Ionicons name="star" size={11} color={colors.warning} />
+                <Text style={[miniCardStyles.ratingText, { color: colors.warning }]}>{hotel.rating.toFixed(1)}</Text>
               </View>
             )}
-            <Text style={miniCardStyles.price}>
+            <Text style={[miniCardStyles.price, { color: colors.primary }]}>
               {hotel.pricePerNight.toLocaleString('ru-RU')} {currencySymbol}/ночь
             </Text>
           </View>
@@ -161,7 +166,7 @@ function MiniCard({ hotel, onClose, onOpen }: MiniCardProps) {
           onPress={onClose}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="close" size={18} color={Colors.textMuted} />
+          <Ionicons name="close" size={18} color={colors.textMuted} />
         </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
@@ -176,25 +181,21 @@ const miniCardStyles = StyleSheet.create({
     right: 16,
   },
   card: {
-    backgroundColor: Colors.surface,
     borderRadius: 16,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: Colors.background,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   content: {
     flex: 1,
     gap: 4,
   },
   name: {
-    color: Colors.text,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -204,7 +205,6 @@ const miniCardStyles = StyleSheet.create({
     gap: 3,
   },
   city: {
-    color: Colors.textMuted,
     fontSize: 12,
   },
   footer: {
@@ -217,18 +217,15 @@ const miniCardStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
-    backgroundColor: `${Colors.warning}22`,
     paddingHorizontal: 7,
     paddingVertical: 3,
     borderRadius: 6,
   },
   ratingText: {
-    color: Colors.warning,
     fontSize: 11,
     fontWeight: '600',
   },
   price: {
-    color: Colors.primary,
     fontSize: 14,
     fontWeight: '700',
   },
@@ -241,6 +238,7 @@ const miniCardStyles = StyleSheet.create({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function HotelsMapScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const raw = useLocalSearchParams();
   const mapRef = useRef<MapView>(null);
@@ -306,7 +304,7 @@ export default function HotelsMapScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -336,25 +334,47 @@ export default function HotelsMapScreen() {
 
       {/* Back button */}
       <TouchableOpacity
-        style={[styles.backBtn, { top: insets.top + 12 }]}
+        style={[
+          styles.backBtn,
+          {
+            top: insets.top + 12,
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            shadowColor: colors.background,
+          },
+        ]}
         onPress={() => router.back()}
         activeOpacity={0.85}
       >
-        <Ionicons name="chevron-back" size={22} color={Colors.text} />
+        <Ionicons name="chevron-back" size={22} color={colors.text} />
       </TouchableOpacity>
 
       {/* Header title */}
       <View style={[styles.headerTitle, { top: insets.top + 12 }]}>
-        <Text style={styles.headerText}>Отели на карте</Text>
+        <Text style={[
+          styles.headerText,
+          {
+            color: colors.text,
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
+        ]}>Отели на карте</Text>
       </View>
 
       {/* List button — bottom right */}
       <TouchableOpacity
-        style={[styles.listBtn, { bottom: insets.bottom + 24 }]}
+        style={[
+          styles.listBtn,
+          {
+            bottom: insets.bottom + 24,
+            backgroundColor: colors.primary,
+            shadowColor: colors.primary,
+          },
+        ]}
         onPress={() => router.back()}
         activeOpacity={0.85}
       >
-        <Ionicons name="list" size={18} color={Colors.textInverse} />
+        <Ionicons name="list" size={18} color="#fff" />
         <Text style={styles.listBtnText}>Список</Text>
       </TouchableOpacity>
 
@@ -370,9 +390,9 @@ export default function HotelsMapScreen() {
       {/* Empty state when no hotels have coordinates */}
       {hotels.length === 0 && (
         <View style={[styles.emptyOverlay, { top: insets.top + 70 }]}>
-          <View style={styles.emptyCard}>
-            <Ionicons name="map-outline" size={24} color={Colors.textMuted} />
-            <Text style={styles.emptyText}>Нет отелей для отображения</Text>
+          <View style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Ionicons name="map-outline" size={24} color={colors.textMuted} />
+            <Text style={[styles.emptyText, { color: colors.textMuted }]}>Нет отелей для отображения</Text>
           </View>
         </View>
       )}
@@ -383,7 +403,6 @@ export default function HotelsMapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   map: {
     width: SCREEN_WIDTH,
@@ -395,16 +414,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.background,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   headerTitle: {
     position: 'absolute',
@@ -414,16 +430,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerText: {
-    color: Colors.text,
     fontSize: 15,
     fontWeight: '700',
-    backgroundColor: Colors.surface,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   listBtn: {
     position: 'absolute',
@@ -431,18 +444,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: Colors.primary,
     paddingHorizontal: 18,
     paddingVertical: 12,
     borderRadius: 24,
-    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
     elevation: 6,
   },
   listBtnText: {
-    color: Colors.textInverse,
+    color: '#fff',
     fontSize: 14,
     fontWeight: '700',
   },
@@ -456,15 +467,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: Colors.surface,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   emptyText: {
-    color: Colors.textMuted,
     fontSize: 14,
   },
 });

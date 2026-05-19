@@ -4,40 +4,21 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
-  Platform,
-  StatusBar,
 } from 'react-native';
-import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../constants/colors';
+import { useTheme } from '../src/theme/ThemeContext';
 import { Typography } from '../constants/typography';
 
 export default function PrivacyPolicyScreen() {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
+
   return (
     <>
-      <StatusBar barStyle="light-content" />
-
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backBtn}
-          activeOpacity={0.7}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="arrow-back" size={22} color={Colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Политика конфиденциальности</Text>
-        <View style={styles.headerRight} />
-      </View>
-
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.updated}>Дата вступления в силу: 1 января 2026 г.</Text>
-
         <Text style={styles.intro}>
           TravelAI («мы», «нас» или «наш») серьёзно относится к конфиденциальности ваших данных.
           Настоящая Политика описывает, какую информацию мы собираем, как её используем и какие
@@ -119,107 +100,78 @@ export default function PrivacyPolicyScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.background,
-    paddingTop: Platform.OS === 'android' ? 48 : 58,
-    paddingBottom: 14,
-    paddingHorizontal: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
-  },
-  backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    backgroundColor: Colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  headerTitle: {
-    flex: 1,
-    textAlign: 'center',
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
-    color: Colors.text,
-  },
-  headerRight: {
-    width: 38,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 48,
-  },
-  updated: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    marginBottom: 16,
-  },
-  intro: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    color: Colors.text,
-    lineHeight: 24,
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.bold,
-    color: Colors.text,
-    marginTop: 8,
-    marginBottom: 10,
-  },
-  body: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    color: Colors.textMuted,
-    lineHeight: 22,
-    marginBottom: 8,
-  },
-  bullet: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    color: Colors.textMuted,
-    lineHeight: 22,
-    paddingLeft: 8,
-    marginBottom: 4,
-  },
-  emphasis: {
-    color: Colors.text,
-    marginTop: 8,
-    fontWeight: Typography.weights.medium,
-  },
-  contact: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    color: Colors.primary,
-    fontWeight: Typography.weights.semibold,
-    marginTop: 4,
-    marginBottom: 8,
-  },
-  footer: {
-    marginTop: 32,
-    paddingTop: 20,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.border,
-    gap: 4,
-  },
-  footerText: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.xs,
-    color: Colors.textDisabled,
-    textAlign: 'center',
-  },
-});
+function getStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      paddingHorizontal: 20,
+      paddingTop: 24,
+      paddingBottom: 48,
+    },
+    updated: {
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      color: colors.textMuted,
+      marginBottom: 16,
+    },
+    intro: {
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      color: colors.text,
+      lineHeight: 24,
+      marginBottom: 24,
+    },
+    sectionTitle: {
+      fontFamily: 'Sora',
+      fontSize: Typography.sizes.md,
+      fontWeight: Typography.weights.bold,
+      color: colors.text,
+      marginTop: 8,
+      marginBottom: 10,
+    },
+    body: {
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      color: colors.textMuted,
+      lineHeight: 22,
+      marginBottom: 8,
+    },
+    bullet: {
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      color: colors.textMuted,
+      lineHeight: 22,
+      paddingLeft: 8,
+      marginBottom: 4,
+    },
+    emphasis: {
+      color: colors.text,
+      marginTop: 8,
+      fontWeight: Typography.weights.medium,
+    },
+    contact: {
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.base,
+      color: colors.primary,
+      fontWeight: Typography.weights.semibold,
+      marginTop: 4,
+      marginBottom: 8,
+    },
+    footer: {
+      marginTop: 32,
+      paddingTop: 20,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.border,
+      gap: 4,
+    },
+    footerText: {
+      fontFamily: 'Inter',
+      fontSize: Typography.sizes.xs,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+  });
+}

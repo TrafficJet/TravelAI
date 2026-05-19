@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { ChatToolResult } from './ToolResultCard';
+import { useTheme } from '../../src/theme/ThemeContext';
 import type { Message } from '../../types';
 
 interface Props {
@@ -41,6 +41,7 @@ function getToolLabel(toolName?: string): string {
 // ── Tool loading chip with blinking indicator ─────────────────────────────────
 
 function ToolLoadingChip({ toolName }: { toolName?: string }) {
+  const { colors } = useTheme();
   const blinkAnim = useRef(new Animated.Value(1)).current;
   const dot0Opacity = useRef(new Animated.Value(1)).current;
   const dot1Opacity = useRef(new Animated.Value(0.75)).current;
@@ -105,14 +106,14 @@ function ToolLoadingChip({ toolName }: { toolName?: string }) {
   return (
     <View style={toolChipStyles.row}>
       <Animated.View style={{ opacity: blinkAnim }}>
-        <Ionicons name="search-outline" size={13} color={Colors.textMuted} />
+        <Ionicons name="search-outline" size={13} color={colors.textMuted} />
       </Animated.View>
-      <Text style={toolChipStyles.text}>{getToolLabel(toolName)}</Text>
+      <Text style={[toolChipStyles.text, { color: colors.textMuted }]}>{getToolLabel(toolName)}</Text>
       <View style={toolChipStyles.dots}>
         {[dot0Opacity, dot1Opacity, dot2Opacity].map((dotOpacity, i) => (
           <Animated.View
             key={i}
-            style={[toolChipStyles.dot, { opacity: dotOpacity }]}
+            style={[toolChipStyles.dot, { backgroundColor: colors.primary, opacity: dotOpacity }]}
           />
         ))}
       </View>
@@ -127,7 +128,6 @@ const toolChipStyles = StyleSheet.create({
     gap: 6,
   },
   text: {
-    color: Colors.textMuted,
     fontSize: Typography.sizes.xs,
   },
   dots: {
@@ -139,13 +139,13 @@ const toolChipStyles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.primary,
   },
 });
 
 // ── Typing indicator ──────────────────────────────────────────────────────────
 
 function TypingIndicator() {
+  const { colors } = useTheme();
   const dot1 = useRef(new Animated.Value(0.3)).current;
   const dot2 = useRef(new Animated.Value(0.3)).current;
   const dot3 = useRef(new Animated.Value(0.3)).current;
@@ -188,7 +188,7 @@ function TypingIndicator() {
   return (
     <View style={typingStyles.row}>
       {[dot1, dot2, dot3].map((dot, i) => (
-        <Animated.View key={i} style={[typingStyles.dot, { opacity: dot }]} />
+        <Animated.View key={i} style={[typingStyles.dot, { backgroundColor: colors.textMuted, opacity: dot }]} />
       ))}
     </View>
   );
@@ -206,7 +206,6 @@ const typingStyles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.textMuted,
   },
 });
 
@@ -245,9 +244,10 @@ function splitPrices(raw: string): Segment[] {
 interface RichLineProps {
   text: string;
   baseStyle: object;
+  priceColor: string;
 }
 
-function RichLine({ text, baseStyle }: RichLineProps) {
+function RichLine({ text, baseStyle, priceColor }: RichLineProps) {
   // Split on **bold** markers
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return (
@@ -260,7 +260,7 @@ function RichLine({ text, baseStyle }: RichLineProps) {
             <Text key={i} style={richStyles.bold}>
               {priceSegs.map((seg, j) =>
                 seg.isPrice ? (
-                  <Text key={j} style={richStyles.price}>{seg.text}</Text>
+                  <Text key={j} style={[richStyles.price, { color: priceColor }]}>{seg.text}</Text>
                 ) : (
                   <Text key={j}>{seg.text}</Text>
                 ),
@@ -271,7 +271,7 @@ function RichLine({ text, baseStyle }: RichLineProps) {
         const priceSegs = splitPrices(part);
         return priceSegs.map((seg, j) =>
           seg.isPrice ? (
-            <Text key={`${i}-${j}`} style={richStyles.price}>{seg.text}</Text>
+            <Text key={`${i}-${j}`} style={[richStyles.price, { color: priceColor }]}>{seg.text}</Text>
           ) : (
             <Text key={`${i}-${j}`}>{seg.text}</Text>
           ),
@@ -285,10 +285,8 @@ const richStyles = StyleSheet.create({
   bold: {
     fontFamily: 'Inter',
     fontWeight: '700',
-    color: Colors.text,
   },
   price: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontWeight: '600',
   },
@@ -300,10 +298,15 @@ interface RichTextProps {
 }
 
 function RichText({ content, isUser }: RichTextProps) {
+  const { colors } = useTheme();
+
   if (isUser) {
-    // For user messages just render plain text — no markdown
+    // For user messages just render plain text — no markdown.
+    // Always use dark text (textInverse) on the amber bubble for sufficient contrast.
     return (
-      <Text style={[contentStyles.base, contentStyles.user]}>{content}</Text>
+      <Text style={[contentStyles.base, { color: colors.textInverse, fontFamily: 'Inter', lineHeight: 22 }]}>
+        {content}
+      </Text>
     );
   }
 
@@ -321,7 +324,8 @@ function RichText({ content, isUser }: RichTextProps) {
             <RichLine
               key={key}
               text={text}
-              baseStyle={contentStyles.headingH1}
+              baseStyle={[contentStyles.headingH1, { color: colors.text }]}
+              priceColor={colors.primary}
             />
           );
         }
@@ -333,7 +337,8 @@ function RichText({ content, isUser }: RichTextProps) {
             <RichLine
               key={key}
               text={text}
-              baseStyle={contentStyles.heading}
+              baseStyle={[contentStyles.heading, { color: colors.text }]}
+              priceColor={colors.primary}
             />
           );
         }
@@ -343,8 +348,12 @@ function RichText({ content, isUser }: RichTextProps) {
           const text = line.replace(/^[-*•]\s+/, '');
           return (
             <View key={key} style={contentStyles.listRow}>
-              <Text style={contentStyles.bullet}>•</Text>
-              <RichLine text={text} baseStyle={contentStyles.listItem} />
+              <Text style={[contentStyles.bullet, { color: colors.primary }]}>•</Text>
+              <RichLine
+                text={text}
+                baseStyle={[contentStyles.listItem, { color: colors.text }]}
+                priceColor={colors.primary}
+              />
             </View>
           );
         }
@@ -355,8 +364,12 @@ function RichText({ content, isUser }: RichTextProps) {
           if (numMatch) {
             return (
               <View key={key} style={contentStyles.listRow}>
-                <Text style={contentStyles.bullet}>{numMatch[1]}.</Text>
-                <RichLine text={numMatch[2]} baseStyle={contentStyles.listItem} />
+                <Text style={[contentStyles.bullet, { color: colors.primary }]}>{numMatch[1]}.</Text>
+                <RichLine
+                  text={numMatch[2]}
+                  baseStyle={[contentStyles.listItem, { color: colors.text }]}
+                  priceColor={colors.primary}
+                />
               </View>
             );
           }
@@ -372,7 +385,8 @@ function RichText({ content, isUser }: RichTextProps) {
           <RichLine
             key={key}
             text={line}
-            baseStyle={contentStyles.paragraph}
+            baseStyle={[contentStyles.paragraph, { color: colors.text }]}
+            priceColor={colors.primary}
           />
         );
       })}
@@ -385,14 +399,7 @@ const contentStyles = StyleSheet.create({
     fontSize: Typography.sizes.base,
     lineHeight: 22,
   },
-  user: {
-    color: Colors.textInverse,
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    lineHeight: 22,
-  },
   headingH1: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: (Typography.sizes['2xl'] as number | undefined) ?? 22,
     fontWeight: '700',
@@ -401,7 +408,6 @@ const contentStyles = StyleSheet.create({
     marginTop: 8,
   },
   heading: {
-    color: Colors.text,
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: '700',
@@ -410,7 +416,6 @@ const contentStyles = StyleSheet.create({
     marginTop: 6,
   },
   paragraph: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     lineHeight: 22,
@@ -421,7 +426,6 @@ const contentStyles = StyleSheet.create({
     marginVertical: 1,
   },
   bullet: {
-    color: Colors.primary,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     lineHeight: 22,
@@ -429,7 +433,6 @@ const contentStyles = StyleSheet.create({
     flexShrink: 0,
   },
   listItem: {
-    color: Colors.text,
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     lineHeight: 22,
@@ -467,6 +470,7 @@ function useEntranceAnim() {
 // ── MessageBubble ─────────────────────────────────────────────────────────────
 
 export function MessageBubble({ message, isStreaming, streamingText, onLongPress }: Props) {
+  const { colors } = useTheme();
   const isUser = message.role === 'user';
   const displayContent =
     isStreaming && streamingText !== undefined ? streamingText : message.content;
@@ -488,7 +492,15 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
     }
     // Otherwise show the animated loading chip
     return (
-      <Animated.View style={[styles.toolRow, { opacity, transform: [{ translateY }] }]}>
+      <Animated.View style={[
+        styles.toolRow,
+        {
+          backgroundColor: colors.card,
+          borderColor: colors.border,
+          opacity,
+        },
+        { transform: [{ translateY }] },
+      ]}>
         <ToolLoadingChip toolName={message.toolName} />
       </Animated.View>
     );
@@ -501,22 +513,23 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
         style={[styles.row, styles.rowAssistant, { opacity, transform: [{ translateY }] }]}
       >
         {/* Avatar */}
-        <View style={styles.avatar}>
-          <Ionicons name="airplane" size={16} color={Colors.primary} />
+        <View style={[styles.avatar, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Ionicons name="airplane" size={16} color={colors.primary} />
         </View>
 
         <TouchableOpacity
           onLongPress={() => onLongPress?.(message)}
           activeOpacity={1}
           delayLongPress={350}
+          style={styles.bubbleWrapper}
         >
-          <View style={[styles.bubble, styles.bubbleAssistant]}>
+          <View style={[styles.bubble, styles.bubbleAssistant, { backgroundColor: colors.card, borderColor: colors.border }]}>
             {isStreaming && !streamingText ? (
               <TypingIndicator />
             ) : (
               <RichText content={displayContent} isUser={false} />
             )}
-            <Text style={styles.timeAssistant}>{formatTime(message.createdAt)}</Text>
+            <Text style={[styles.timeAssistant, { color: colors.textMuted }]}>{formatTime(message.createdAt)}</Text>
           </View>
         </TouchableOpacity>
       </Animated.View>
@@ -532,10 +545,11 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
         onLongPress={() => onLongPress?.(message)}
         activeOpacity={1}
         delayLongPress={350}
+        style={styles.bubbleWrapper}
       >
-        <View style={[styles.bubble, styles.bubbleUser]}>
+        <View style={[styles.bubble, styles.bubbleUser, { backgroundColor: colors.primary }]}>
           <RichText content={displayContent} isUser={true} />
-          <Text style={styles.timeUser}>{formatTime(message.createdAt)}</Text>
+          <Text style={[styles.timeUser, { color: `${colors.textInverse}88` }]}>{formatTime(message.createdAt)}</Text>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -545,7 +559,7 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    marginVertical: 5,
+    marginVertical: 6,
     paddingHorizontal: 16,
     alignItems: 'flex-end',
   },
@@ -561,9 +575,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
@@ -571,36 +583,38 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
 
-  // Bubbles
+  // Bubbles — wrapper limits width so TouchableOpacity doesn't stretch full row
+  bubbleWrapper: {
+    maxWidth: '88%',
+    flexShrink: 1,
+  },
   bubble: {
-    maxWidth: '78%',
     borderRadius: 18,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   bubbleUser: {
-    backgroundColor: Colors.primary,
     borderBottomRightRadius: 4,
   },
   bubbleAssistant: {
-    backgroundColor: Colors.card,
     borderBottomLeftRadius: 4,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
+    elevation: 1,
   },
 
   // Timestamps
   timeUser: {
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
-    color: `${Colors.textInverse}88`,
     textAlign: 'right',
     marginTop: 4,
   },
   timeAssistant: {
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
     textAlign: 'left',
     marginTop: 4,
   },
@@ -614,16 +628,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     paddingHorizontal: 14,
     paddingVertical: 6,
-    backgroundColor: Colors.card,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  toolIcon: {
-    fontSize: 13,
-  },
-  toolText: {
-    color: Colors.textMuted,
-    fontSize: Typography.sizes.xs,
   },
 });
