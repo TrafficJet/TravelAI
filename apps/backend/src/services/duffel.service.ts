@@ -398,7 +398,7 @@ export async function searchFlights(params: SearchFlightsParams): Promise<Flight
   }
 
   // --- Priority 2: Travelpayouts (Aviasales) real API ---
-  if (process.env.TRAVELPAYOUTS_API_KEY) {
+  if (process.env.TRAVELPAYOUTS_TOKEN ?? process.env.TRAVELPAYOUTS_API_KEY) {
     console.log('[Travelpayouts] Duffel unavailable — trying Travelpayouts flights');
     try {
       return await searchFlightsTravelpayouts(params);
