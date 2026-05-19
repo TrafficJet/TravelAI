@@ -212,6 +212,8 @@ export interface Hotel {
   longitude?: number;
 }
 
+export type FlightProvider = 'AVIASALES' | 'DUFFEL';
+
 export interface FlightOffer {
   id: string;
   origin: string;
@@ -227,4 +229,5 @@ export interface FlightOffer {
   currency: string;
   departureTime?: string;
   arrivalTime?: string;
+  provider?: FlightProvider;
 }

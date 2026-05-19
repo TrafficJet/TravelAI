@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -18,77 +19,23 @@ import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
 import { Radius } from '../constants/radius';
 import { Spacing } from '../constants/spacing';
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-type AlertType = 'flight' | 'hotel';
-
-interface PriceAlert {
-  id: string;
-  type: AlertType;
-  label: string;
-  route?: string;      // e.g. "WAW → BCN"
-  city?: string;       // for hotels
-  maxPrice: number;
-  currency: string;
-  currentPrice: number;
-  active: boolean;
-}
-
-// ── Mock data ─────────────────────────────────────────────────────────────────
-
-const INITIAL_ALERTS: PriceAlert[] = [
-  {
-    id: '1',
-    type: 'flight',
-    label: 'WAW → BCN',
-    route: 'WAW → BCN',
-    maxPrice: 200,
-    currency: '€',
-    currentPrice: 149,
-    active: true,
-  },
-  {
-    id: '2',
-    type: 'hotel',
-    label: 'Барселона',
-    city: 'Барселона',
-    maxPrice: 150,
-    currency: '€',
-    currentPrice: 89,
-    active: true,
-  },
-  {
-    id: '3',
-    type: 'flight',
-    label: 'KRK → LHR',
-    route: 'KRK → LHR',
-    maxPrice: 120,
-    currency: '€',
-    currentPrice: 134,
-    active: false,
-  },
-  {
-    id: '4',
-    type: 'hotel',
-    label: 'Рим',
-    city: 'Рим',
-    maxPrice: 180,
-    currency: '€',
-    currentPrice: 210,
-    active: true,
-  },
-];
+import {
+  priceAlertsService,
+  type PriceAlert,
+  type PriceAlertType,
+  type CreateAlertData,
+} from '../services/priceAlertsService';
 
 // ── Alert card ────────────────────────────────────────────────────────────────
 
 interface AlertCardProps {
   alert: PriceAlert;
   onToggle: (id: string, value: boolean) => void;
+  onDelete: (id: string) => void;
   delay: number;
 }
 
-function AlertCard({ alert, onToggle, delay }: AlertCardProps) {
+function AlertCard({ alert, onToggle, onDelete, delay }: AlertCardProps) {
   const isPriceOk = alert.currentPrice <= alert.maxPrice;
   const isFlight = alert.type === 'flight';
 
@@ -131,6 +78,13 @@ function AlertCard({ alert, onToggle, delay }: AlertCardProps) {
               thumbColor={alert.active ? Colors.primary : Colors.textMuted}
               style={cardStyles.toggle}
             />
+            <TouchableOpacity
+              onPress={() => onDelete(alert.id)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={cardStyles.deleteBtn}
+            >
+              <Text style={cardStyles.deleteText}>✕</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -232,6 +186,15 @@ const cardStyles = StyleSheet.create({
   toggle: {
     marginLeft: 4,
   },
+  deleteBtn: {
+    marginLeft: 2,
+    padding: 4,
+  },
+  deleteText: {
+    color: Colors.textMuted,
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.bold,
+  },
   divider: {
     height: 1,
     backgroundColor: Colors.border,
@@ -276,11 +239,12 @@ interface NewAlertFormProps {
 }
 
 function NewAlertForm({ visible, onClose, onCreate }: NewAlertFormProps) {
-  const [type, setType] = useState<AlertType>('flight');
+  const [type, setType] = useState<PriceAlertType>('flight');
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   const [city, setCity] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   function handleReset() {
     setType('flight');
@@ -288,9 +252,10 @@ function NewAlertForm({ visible, onClose, onCreate }: NewAlertFormProps) {
     setDestination('');
     setCity('');
     setMaxPrice('');
+    setSubmitting(false);
   }
 
-  function handleCreate() {
+  async function handleCreate() {
     const price = parseFloat(maxPrice);
     if (isNaN(price) || price <= 0) {
       Alert.alert('Ошибка', 'Укажите корректную максимальную цену.');
@@ -305,25 +270,32 @@ function NewAlertForm({ visible, onClose, onCreate }: NewAlertFormProps) {
       return;
     }
 
-    const label = type === 'flight'
-      ? `${origin.trim().toUpperCase()} → ${destination.trim().toUpperCase()}`
-      : city.trim();
+    let payload: CreateAlertData;
+    if (type === 'flight') {
+      payload = {
+        type: 'flight',
+        origin: origin.trim().toUpperCase(),
+        destination: destination.trim().toUpperCase(),
+        maxPrice: price,
+      };
+    } else {
+      payload = {
+        type: 'hotel',
+        city: city.trim(),
+        maxPrice: price,
+      };
+    }
 
-    const newAlert: PriceAlert = {
-      id: Date.now().toString(),
-      type,
-      label,
-      route: type === 'flight' ? label : undefined,
-      city: type === 'hotel' ? city.trim() : undefined,
-      maxPrice: price,
-      currency: '€',
-      currentPrice: Math.round(price * (0.7 + Math.random() * 0.6)),
-      active: true,
-    };
-
-    onCreate(newAlert);
-    handleReset();
-    onClose();
+    setSubmitting(true);
+    try {
+      const created = await priceAlertsService.createPriceAlert(payload);
+      onCreate(created);
+      handleReset();
+      onClose();
+    } catch {
+      Alert.alert('Ошибка', 'Не удалось создать алерт. Попробуйте ещё раз.');
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -428,11 +400,16 @@ function NewAlertForm({ visible, onClose, onCreate }: NewAlertFormProps) {
 
           {/* Submit */}
           <TouchableOpacity
-            style={formStyles.createBtn}
+            style={[formStyles.createBtn, submitting && formStyles.createBtnDisabled]}
             onPress={handleCreate}
             activeOpacity={0.85}
+            disabled={submitting}
           >
-            <Text style={formStyles.createBtnText}>Создать алерт</Text>
+            {submitting ? (
+              <ActivityIndicator color={Colors.textInverse} />
+            ) : (
+              <Text style={formStyles.createBtnText}>Создать алерт</Text>
+            )}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -532,6 +509,9 @@ const formStyles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 12,
   },
+  createBtnDisabled: {
+    opacity: 0.6,
+  },
   createBtnText: {
     color: Colors.textInverse,
     fontSize: Typography.sizes.md,
@@ -542,12 +522,66 @@ const formStyles = StyleSheet.create({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function PriceAlertsScreen() {
-  const [alerts, setAlerts] = useState<PriceAlert[]>(INITIAL_ALERTS);
+  const [alerts, setAlerts] = useState<PriceAlert[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
-  function handleToggle(id: string, value: boolean) {
+  const fetchAlerts = useCallback(async () => {
+    try {
+      const data = await priceAlertsService.getPriceAlerts();
+      setAlerts(data);
+    } catch {
+      Alert.alert('Ошибка', 'Не удалось загрузить ценовые алерты.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchAlerts();
+  }, [fetchAlerts]);
+
+  async function handleToggle(id: string, value: boolean) {
+    // Optimistic update
     setAlerts((prev) =>
       prev.map((a) => (a.id === id ? { ...a, active: value } : a)),
+    );
+    try {
+      await priceAlertsService.togglePriceAlert(id, value);
+    } catch {
+      // Rollback
+      setAlerts((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, active: !value } : a)),
+      );
+      Alert.alert('Ошибка', 'Не удалось изменить статус алерта.');
+    }
+  }
+
+  async function handleDelete(id: string) {
+    Alert.alert(
+      'Удалить алерт',
+      'Вы уверены, что хотите удалить этот алерт?',
+      [
+        { text: 'Отмена', style: 'cancel' },
+        {
+          text: 'Удалить',
+          style: 'destructive',
+          onPress: async () => {
+            const prev = alerts.find((a) => a.id === id);
+            // Optimistic remove
+            setAlerts((current) => current.filter((a) => a.id !== id));
+            try {
+              await priceAlertsService.deletePriceAlert(id);
+            } catch {
+              // Rollback
+              if (prev) {
+                setAlerts((current) => [prev, ...current]);
+              }
+              Alert.alert('Ошибка', 'Не удалось удалить алерт.');
+            }
+          },
+        },
+      ],
     );
   }
 
@@ -582,42 +616,53 @@ export default function PriceAlertsScreen() {
 
         {/* Stats row */}
         <Animated.View entering={FadeInDown.delay(60).duration(350)} style={screenStyles.statsRow}>
-          <Text style={screenStyles.statsText}>
-            {activeCount} активных из {alerts.length}
-          </Text>
+          {loading ? (
+            <Text style={screenStyles.statsText}>Загрузка...</Text>
+          ) : (
+            <Text style={screenStyles.statsText}>
+              {activeCount} активных из {alerts.length}
+            </Text>
+          )}
         </Animated.View>
 
         {/* Separator */}
         <View style={screenStyles.separator} />
 
         {/* List */}
-        <ScrollView
-          style={screenStyles.scroll}
-          contentContainerStyle={screenStyles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {alerts.length === 0 ? (
-            <Animated.View
-              entering={FadeInDown.delay(120).duration(350)}
-              style={screenStyles.emptyState}
-            >
-              <Text style={screenStyles.emptyEmoji}>🔔</Text>
-              <Text style={screenStyles.emptyTitle}>Нет алертов</Text>
-              <Text style={screenStyles.emptySubtitle}>
-                Нажмите + чтобы добавить первый ценовой алерт
-              </Text>
-            </Animated.View>
-          ) : (
-            alerts.map((alert, index) => (
-              <AlertCard
-                key={alert.id}
-                alert={alert}
-                onToggle={handleToggle}
-                delay={120 + index * 60}
-              />
-            ))
-          )}
-        </ScrollView>
+        {loading ? (
+          <View style={screenStyles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.primary} />
+          </View>
+        ) : (
+          <ScrollView
+            style={screenStyles.scroll}
+            contentContainerStyle={screenStyles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {alerts.length === 0 ? (
+              <Animated.View
+                entering={FadeInDown.delay(120).duration(350)}
+                style={screenStyles.emptyState}
+              >
+                <Text style={screenStyles.emptyEmoji}>🔔</Text>
+                <Text style={screenStyles.emptyTitle}>Нет алертов</Text>
+                <Text style={screenStyles.emptySubtitle}>
+                  Нажмите + чтобы добавить первый ценовой алерт
+                </Text>
+              </Animated.View>
+            ) : (
+              alerts.map((alert, index) => (
+                <AlertCard
+                  key={alert.id}
+                  alert={alert}
+                  onToggle={handleToggle}
+                  onDelete={handleDelete}
+                  delay={120 + index * 60}
+                />
+              ))
+            )}
+          </ScrollView>
+        )}
       </View>
 
       <NewAlertForm
@@ -689,6 +734,11 @@ const screenStyles = StyleSheet.create({
     backgroundColor: Colors.border,
     marginHorizontal: 20,
     marginBottom: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scroll: {
     flex: 1,

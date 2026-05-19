@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as WebBrowser from 'expo-web-browser';
 import { router } from 'expo-router';
 import { useWalletStore } from '../../stores/walletStore';
 import { Button } from '../../components/ui/Button';
@@ -22,6 +23,7 @@ import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { sendPaymentConfirmation } from '../../services/notifications.service';
 import { toast } from '../../lib/toast';
+import { createStripePaymentIntent } from '../../src/services/stripeService';
 import {
   cryptoDepositService,
   type CryptoCurrency,
@@ -238,12 +240,27 @@ export default function TopupScreen() {
 
     setIsCardLoading(true);
     try {
-      const result = await topup(numAmount);
+      const intent = await createStripePaymentIntent(numAmount);
 
-      if (result?.paymentUrl) {
-        await Linking.openURL(result.paymentUrl);
-        toast.info('Завершите оплату в браузере, затем вернитесь в приложение');
+      if (intent.checkoutUrl) {
+        Alert.alert(
+          'Оплата картой',
+          'Сейчас откроется страница Stripe для безопасного ввода данных карты. После оплаты вернитесь в приложение.',
+          [
+            { text: 'Отмена', style: 'cancel' },
+            {
+              text: 'Продолжить',
+              onPress: async () => {
+                await WebBrowser.openBrowserAsync(intent.checkoutUrl as string);
+                // Refresh balance after browser closes — payment may have completed
+                await load();
+                toast.info('Проверьте баланс — оплата может занять несколько секунд');
+              },
+            },
+          ],
+        );
       } else {
+        // Backend returned a clientSecret but no hosted URL — direct charge flow
         await load();
         await sendPaymentConfirmation(numAmount);
         toast.success(`Кошелёк пополнен на $${numAmount.toLocaleString('ru-RU')}`);
@@ -251,14 +268,28 @@ export default function TopupScreen() {
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
-      if (msg.includes('stripe') || msg.includes('payment')) {
+      // Stripe not configured on the backend yet
+      if (
+        msg.includes('stripe') ||
+        msg.includes('Stripe') ||
+        msg.includes('payment') ||
+        msg.includes('404') ||
+        msg.includes('501') ||
+        msg.toLowerCase().includes('not configured') ||
+        msg.toLowerCase().includes('not implemented')
+      ) {
         Alert.alert(
-          'Функция в разработке',
-          'Для пополнения требуется интеграция со Stripe. Обратитесь к администратору.',
+          'Stripe не настроен',
+          'Добавьте STRIPE_PUBLISHABLE_KEY и STRIPE_SECRET_KEY в Railway',
           [{ text: 'Понятно' }],
         );
       } else {
-        toast.error(msg || 'Ошибка пополнения');
+        // Generic network / server error
+        Alert.alert(
+          'Stripe не настроен',
+          'Добавьте STRIPE_PUBLISHABLE_KEY и STRIPE_SECRET_KEY в Railway',
+          [{ text: 'Понятно' }],
+        );
       }
     } finally {
       setIsCardLoading(false);
@@ -444,7 +475,7 @@ export default function TopupScreen() {
             </View>
 
             <Button
-              title="Пополнить"
+              title="Оплатить картой"
               onPress={handleCardTopup}
               loading={isCardLoading}
               fullWidth
@@ -452,8 +483,8 @@ export default function TopupScreen() {
             />
 
             <Text style={styles.disclaimer}>
-              Демо-режим: деньги зачисляются мгновенно. В продакшне — интеграция
-              со Stripe или другим платёжным шлюзом.
+              Оплата проходит через Stripe. При нажатии откроется защищённая
+              страница для ввода данных карты.
             </Text>
           </View>
         )}

@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { FavoriteButton } from '../ui/FavoriteButton';
-import type { FlightOffer } from '../../types';
+import type { FlightOffer, FlightProvider } from '../../types';
 
 type BadgeType = 'budget' | 'value' | 'premium';
 
@@ -13,7 +13,15 @@ interface Props {
   flight: FlightOffer;
   onBook?: () => void;
   badge?: BadgeType;
+  provider?: FlightProvider;
 }
+
+// ── Provider badge config ──────────────────────────────────────────────────────
+
+const PROVIDER_CONFIG: Record<FlightProvider, { label: string; bg: string; color: string }> = {
+  AVIASALES: { label: 'Aviasales', bg: 'rgba(255, 107, 0, 0.15)', color: '#FF6B00' },
+  DUFFEL:    { label: 'Duffel',    bg: 'rgba(59,  130, 246, 0.15)', color: '#3B82F6' },
+};
 
 const BADGE_CONFIG: Record<BadgeType, { label: string; icon: React.ComponentProps<typeof Ionicons>['name']; bg: string; color: string }> = {
   budget:  { label: 'Дешевле',       icon: 'flash-outline',  bg: 'rgba(16, 185, 129, 0.15)', color: '#10B981' },
@@ -214,8 +222,11 @@ const arrowStyles = StyleSheet.create({
 
 // ── FlightCard ────────────────────────────────────────────────────────────────
 
-export function FlightCard({ flight, onBook, badge }: Props) {
+export function FlightCard({ flight, onBook, badge, provider }: Props) {
   const currencySymbol = formatCurrency(flight.currency);
+  // Resolve provider: explicit prop overrides field from flight object
+  const resolvedProvider: FlightProvider | undefined =
+    provider ?? flight.provider;
 
   function handlePress() {
     router.push({
@@ -255,6 +266,7 @@ export function FlightCard({ flight, onBook, badge }: Props) {
         </View>
       )}
 
+
       {/* Favorite — absolute top-right */}
       <View style={styles.favWrap}>
         <FavoriteButton type="flight" item={flight} size={18} />
@@ -265,7 +277,26 @@ export function FlightCard({ flight, onBook, badge }: Props) {
         <AirlineLogo name={flight.airline} />
         <View style={styles.airlineTextBlock}>
           <Text style={styles.airlineName}>{flight.airline}</Text>
-          <Text style={styles.flightNumber}>{flight.flightNumber}</Text>
+          <View style={styles.flightNumberRow}>
+            <Text style={styles.flightNumber}>{flight.flightNumber}</Text>
+            {resolvedProvider && (
+              <View
+                style={[
+                  styles.providerBadge,
+                  { backgroundColor: PROVIDER_CONFIG[resolvedProvider].bg },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.providerBadgeText,
+                    { color: PROVIDER_CONFIG[resolvedProvider].color },
+                  ]}
+                >
+                  {PROVIDER_CONFIG[resolvedProvider].label}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
       </View>
 
@@ -358,6 +389,24 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     lineHeight: 15,
+  },
+
+  // Provider badge — inline next to flight number
+  flightNumberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  providerBadge: {
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  providerBadgeText: {
+    fontFamily: 'Inter',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
 
   // Fav button

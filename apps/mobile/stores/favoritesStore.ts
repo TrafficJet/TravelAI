@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
+import { favoritesService } from '../services/favoritesService';
 import type { Hotel, FlightOffer } from '../types';
 
 interface FavoritesState {
@@ -10,6 +11,7 @@ interface FavoritesState {
 }
 
 interface FavoritesActions {
+  loadFavorites: () => Promise<void>;
   addHotel: (hotel: Hotel) => void;
   removeHotel: (id: string) => void;
   addFlight: (flight: FlightOffer) => void;
@@ -25,6 +27,24 @@ export const useFavoritesStore = create<FavoritesStore>()(
     (set, get) => ({
       hotels: [],
       flights: [],
+
+      loadFavorites: async () => {
+        try {
+          const items = await favoritesService.getFavorites();
+          const hotels: Hotel[] = [];
+          const flights: FlightOffer[] = [];
+          for (const item of items) {
+            if (item.type === 'hotel') {
+              hotels.push(item.itemData as Hotel);
+            } else if (item.type === 'flight') {
+              flights.push(item.itemData as FlightOffer);
+            }
+          }
+          set({ hotels, flights });
+        } catch {
+          // Non-fatal — keep whatever is already in local storage
+        }
+      },
 
       addHotel: (hotel: Hotel) => {
         // Optimistic update first
