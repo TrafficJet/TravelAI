@@ -439,11 +439,24 @@ export default function ChatScreen() {
     if (session) {
       setCurrentSession(session);
     }
+    // Strip emoji & special chars that render as [?] on iOS 26 beta
+    const displayTitle = title
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}\u{1F300}-\u{1F9FF}]/gu, '')
+      .replace(/[^\p{L}\p{N}\p{Z}\p{P}\-→]/gu, '')
+      .trim() || 'Новый чат';
+
     navigation.setOptions({
       headerBackTitle: '',
       headerTitle: () => (
-        <View style={{ alignItems: 'center' }}>
-          <Text style={{ fontFamily: 'Sora', fontSize: 17, fontWeight: '700', color: colors.text }}>{title}</Text>
+        <View style={{ alignItems: 'center', maxWidth: 180 }}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={{ fontFamily: 'Sora', fontSize: 15, fontWeight: '700', color: colors.text, maxWidth: 180 }}
+          >
+            {displayTitle}
+          </Text>
           <Text style={{ fontSize: 10, color: '#10B981' }}>{'● На связи · отвечает мгновенно'}</Text>
         </View>
       ),
