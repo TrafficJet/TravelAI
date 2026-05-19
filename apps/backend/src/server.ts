@@ -30,6 +30,7 @@ import { integrationsRoutes } from './routes/integrations.routes';
 import { favoritesRoutes } from './routes/favorites.routes';
 import { stripeRoutes } from './routes/stripe.routes';
 import { documentsRoutes } from './routes/documents.routes';
+import { nowpaymentsWebhook } from './handlers/crypto-deposit.handler';
 
 // Workers
 import { registerPriceAlertWorker } from './workers/priceAlert.worker';
@@ -135,6 +136,9 @@ async function buildServer() {
 
   // Document scanning via Claude Vision API
   await fastify.register(documentsRoutes, { prefix: '/api/documents' });
+
+  // NOWPayments IPN webhook — public route, no auth, HMAC-verified inside handler
+  fastify.post('/api/webhooks/nowpayments', nowpaymentsWebhook);
 
   // Health check — registered WITHOUT auth middleware
   await fastify.register(healthRoutes, { prefix: '/health' });

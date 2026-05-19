@@ -38,6 +38,7 @@ model User {
   notifications        Notification[]
   passwordResetTokens  PasswordResetToken[]
   favorites            Favorite[]
+  cryptoDeposits       CryptoDeposit[]
 
   @@unique([provider, providerId])
   @@map("users")
@@ -299,4 +300,41 @@ model AnalyticsEvent {
   @@index([event])
   @@index([createdAt])
   @@map("analytics_events")
+}
+
+model CryptoDeposit {
+  id              String              @id @default(cuid())
+  userId          String
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  nowPaymentId    String              @unique @default("")
+  payAddress      String              @default("")
+  payCurrency     String
+  payNetwork      String
+  payAmount       Float               @default(0)
+  priceAmount     Float
+  priceCurrency   String              @default("USD")
+
+  status          CryptoDepositStatus @default(PENDING)
+  txHash          String?
+  confirmedAt     DateTime?
+
+  expiresAt       DateTime
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("crypto_deposits")
+}
+
+enum CryptoDepositStatus {
+  PENDING
+  WAITING
+  CONFIRMING
+  CONFIRMED
+  FINISHED
+  PARTIALLY_PAID
+  EXPIRED
+  FAILED
 }

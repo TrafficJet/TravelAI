@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { getWallet, topupWallet, getTransactions, getPaymentStatus } from '../handlers/wallet.handler';
+import { initCryptoDeposit, getCryptoDepositStatus } from '../handlers/crypto-deposit.handler';
 import { authenticate } from '../middleware/auth.middleware';
 
 // Wallet routes — all require authentication
@@ -41,4 +42,23 @@ export async function walletRoutes(fastify: FastifyInstance) {
     },
     handler: getTransactions,
   });
+
+  // POST /api/wallet/crypto-deposit — initiate a crypto top-up via NOWPayments
+  fastify.post('/crypto-deposit', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['amount', 'currency'],
+        properties: {
+          amount:   { type: 'number', minimum: 2, maximum: 10000 },
+          currency: { type: 'string', enum: ['BTC', 'ETH', 'USDT', 'USDC', 'TON', 'LTC'] },
+          network:  { type: 'string' },
+        },
+      },
+    },
+    handler: initCryptoDeposit,
+  });
+
+  // GET /api/wallet/crypto-deposit/:depositId — poll deposit status
+  fastify.get('/crypto-deposit/:depositId', { handler: getCryptoDepositStatus });
 }
