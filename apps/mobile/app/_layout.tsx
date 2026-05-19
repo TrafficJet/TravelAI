@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Stack, router } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Linking, View, Text, StyleSheet, Animated, LogBox } from 'react-native';
 
 // NativeWind v4 + React 19 known compatibility warnings — safe to suppress in dev
@@ -360,16 +361,18 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <ThemeProvider>
-        <NotificationsProvider>
-          <ThemedStack
-            fontsLoaded={fontsLoaded}
-            showBrandSplash={showBrandSplash}
-            onBrandSplashFinish={() => setShowBrandSplash(false)}
-          />
-        </NotificationsProvider>
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <NotificationsProvider>
+            <ThemedStack
+              fontsLoaded={fontsLoaded}
+              showBrandSplash={showBrandSplash}
+              onBrandSplashFinish={() => setShowBrandSplash(false)}
+            />
+          </NotificationsProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
