@@ -44,9 +44,43 @@
 
 ## ✅ Фаза 21 завершена — Применение брендинга на все экраны (TypeScript 0 ошибок)
 
-## Текущая фаза: 22 — Деплой на Railway (пересборка — фикс Prisma permissions)
-**Исполнитель:** mobile-dev (два батча параллельно)
-**Цель:** Все 27 экранов используют токены дизайн-системы (Colors, Typography, Spacing)
+## ✅ Фаза 22 завершена — Деплой на Railway
+URL: https://travel-ai-backend-production-90a0.up.railway.app (status: ok, db: ok)
+
+## ✅ Фаза 23 — EAS Build Android (запущен 19.05.2026)
+Build ID: db0be556-550d-42c9-8121-87651100207f
+https://expo.dev/accounts/forza22/projects/travel-ai/builds/db0be556-550d-42c9-8121-87651100207f
+
+## ✅ Фаза 24 — App Store скриншоты (7 экранов)
+Файл: marketing/screenshots/app-store-screenshots.html (62KB)
+
+## ✅ Фаза 25 — API интеграции (infrastructure ready)
+- Amadeus, Duffel, Aviasales сервисы реализованы, работают на моке без ключей
+- OAuth token caching в amadeus.service.ts (30 мин TTL)
+- Endpoint: GET /api/integrations/status — показывает статус каждой интеграции
+- scripts/railway-env-setup.sh — скрипт для выставления prod env vars
+- INTEGRATIONS_SETUP.md — гайд по получению всех API ключей
+- DEPLOY.md — полная документация деплоя
+- tsc: 0 ошибок ✅
+
+### Что нужно сделать вручную для перехода с mock → real:
+| Сервис | Env var | Где взять |
+|---|---|---|
+| Amadeus (отели) | AMADEUS_CLIENT_ID + CLIENT_SECRET | developers.amadeus.com (бесплатно) |
+| Duffel (рейсы) | DUFFEL_API_KEY | app.duffel.com → Settings → API Tokens |
+| Aviasales (СНГ) | AVIASALES_TOKEN + MARKER | travelpayouts.com |
+| YooKassa | YOOKASSA_SECRET_KEY | yookassa.ru |
+| Stripe | STRIPE_SECRET_KEY | dashboard.stripe.com |
+
+## 📋 Фаза 26 — iOS Build (требует Apple Developer Account $99/год)
+
+## 📋 Фаза 27 — App Store скриншоты (очередь)
+**Исполнитель:** ui-designer + copywriter
+**Цель:** 7 скриншотов для iOS/Android (тексты готовы в marketing/appstore-copy.md)
+
+## 📋 Фаза 25 — iOS Build (требует Apple Developer Account)
+**Исполнитель:** devops
+**Цель:** IPA для TestFlight
 
 ### Батч A (auth + tabs):
 - (auth)/login.tsx, register.tsx, forgot-password.tsx, reset-password.tsx

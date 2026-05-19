@@ -1,299 +1,345 @@
-# Travel AI — Deploy Guide (Railway)
+# Travel AI / SVIT — Deploy Guide (Railway)
 
 ## Overview
 
 The backend is a Fastify + Prisma + PostgreSQL application packaged as a Docker image.
 Railway builds it from `apps/backend/Dockerfile` (multi-stage, node:20-alpine).
 
-Automated CI/CD is configured in `.github/workflows/deploy.yml`:
-lint → tests → build Docker image → deploy to Railway on every push to `main`.
+Production URL: https://travel-ai-backend-production-90a0.up.railway.app
 
 ---
 
-## 1. One-time Railway setup
+## Первый деплой (First Deploy)
 
-### 1.1 Create a Railway project
+### Шаг 1. Создать Railway проект
 
-1. Go to https://railway.app and sign in (GitHub account recommended).
-2. Click **New Project** → **Empty Project**.
-3. Name it `travel-ai`.
+1. Зайди на https://railway.app, войди через GitHub.
+2. Нажми **New Project** → **Empty Project**, назови `travel-ai`.
 
-### 1.2 Add PostgreSQL
+### Шаг 2. Добавить PostgreSQL
 
-1. In the project dashboard click **+ Add Service** → **Database** → **PostgreSQL**.
-2. Railway provisions the database and automatically creates the `DATABASE_URL`
-   environment variable — it is injected into your service at runtime.
+1. В дашборде проекта нажми **+ Add Service** → **Database** → **PostgreSQL**.
+2. Railway автоматически создаст переменную `DATABASE_URL` и прокинет её в сервис — не нужно задавать вручную.
 
-### 1.3 Create the backend service
+### Шаг 3. Создать backend-сервис
 
-1. Click **+ Add Service** → **Empty Service**, name it `travel-ai-backend`.
-2. In the service settings go to **Settings** → **Source** → connect your GitHub repo.
-   Railway will detect `railway.toml` in the root and use `apps/backend/Dockerfile`.
+1. Нажми **+ Add Service** → **Empty Service**, назови `travel-ai-backend`.
+2. В настройках сервиса: **Settings** → **Source** → подключи GitHub репозиторий.
+   Railway автоматически обнаружит `railway.toml` в корне и использует `apps/backend/Dockerfile`.
 
-### 1.4 Set environment variables
+### Шаг 4. Задать env vars
 
-In the service **Variables** tab add:
-
-| Variable | Value | How to get |
-|---|---|---|
-| `DATABASE_URL` | set automatically by Railway PostgreSQL plugin | — |
-| `JWT_ACCESS_SECRET` | random string, min 32 chars | `openssl rand -hex 32` |
-| `JWT_REFRESH_SECRET` | different random string, min 32 chars | `openssl rand -hex 32` |
-| `ANTHROPIC_API_KEY` | `sk-ant-...` | see section 2.1 |
-| `DUFFEL_API_KEY` | `duffel_test_...` | see section 2.2 |
-| `AVIASALES_TOKEN` | token string | see section 2.3 |
-| `YOOKASSA_SHOP_ID` | numeric shop ID | see section 2.4 |
-| `YOOKASSA_SECRET_KEY` | `test_...` or `live_...` | see section 2.4 |
-| `STRIPE_SECRET_KEY` | `sk_live_...` or `sk_test_...` | see section 2.5 |
-| `STRIPE_WEBHOOK_SECRET` | `whsec_...` | see section 2.5 |
-| `NODE_ENV` | `production` | — |
-| `PORT` | `3000` | — |
-| `LOG_LEVEL` | `info` | — |
-| `PAYMENT_MOCK_MODE` | `false` (real payments) or `true` (mock) | — |
-| `CORS_ORIGIN` | your mobile/web app origin | — |
-
-### 1.5 Run database migrations on first deploy
-
-After the first successful build connect to the service shell via Railway CLI:
+**Способ А — через CLI (рекомендуется для первичной настройки):**
 
 ```bash
-railway run --service travel-ai-backend npx prisma migrate deploy
+brew install railway       # установить Railway CLI
+railway login              # войти
+railway link               # привязать локальный репозиторий к проекту
+
+# Отредактируй скрипт, подставив реальные значения вместо YOUR_...
+nano scripts/railway-env-setup.sh
+
+# Запусти
+bash scripts/railway-env-setup.sh
 ```
 
-Subsequent deploys run migrations automatically if you add this to your start command.
-Alternatively update `railway.toml` `startCommand`:
+**Способ Б — через Railway Dashboard:**
+
+В сервисе открой вкладку **Variables**, нажми **Raw Editor** и вставь:
 
 ```
-startCommand = "npx prisma migrate deploy && node dist/server.js"
-```
-
----
-
-## 1.6 Railway Environment Variables — full reference
-
-Copy-paste the block below into the Railway **Variables** tab (one variable per line,
-use **Raw Editor** / "Paste as text" for bulk import).  
-Replace placeholder values with your actual keys before saving.
-
-```
-# ─── Database (injected automatically by Railway PostgreSQL plugin) ───────────
-DATABASE_URL=postgresql://...  # set automatically — do not override
-
-# ─── Auth ─────────────────────────────────────────────────────────────────────
-JWT_ACCESS_SECRET=<random-min-32-chars>   # openssl rand -hex 32
-JWT_REFRESH_SECRET=<random-min-32-chars>  # openssl rand -hex 32
-
-# ─── AI ───────────────────────────────────────────────────────────────────────
-ANTHROPIC_API_KEY=sk-ant-...             # Anthropic console → API Keys
-
-# ─── Flight search (Duffel) ───────────────────────────────────────────────────
-# Test key:  duffel_test_...   (sandbox — no real tickets)
-# Live key:  duffel_live_...   (requires Duffel production approval)
-DUFFEL_API_KEY=duffel_test_...           # app.duffel.com → Settings → API Tokens
-
-# ─── Flight price data (Aviasales / Travelpayouts) ────────────────────────────
-AVIASALES_TOKEN=...                      # travelpayouts.com → Tools → API
-
-# ─── Payments (Stripe) — primary method for international users ───────────────
-# If STRIPE_SECRET_KEY is set, Stripe takes priority over YooKassa.
-# Without either key the server falls back to mock mode (dev only).
-#
-# Test key:  sk_test_...   (sandbox — no real charges)
-# Live key:  sk_live_...   (requires Stripe account activation)
-STRIPE_SECRET_KEY=sk_test_...            # dashboard.stripe.com → Developers → API Keys
-STRIPE_WEBHOOK_SECRET=whsec_...         # dashboard.stripe.com → Developers → Webhooks → signing secret
-                                         # Register endpoint: POST https://<your-host>/api/stripe/webhook
-                                         # Events to listen: payment_intent.succeeded
-
-# ─── Payments (YooKassa) — Russian users fallback ────────────────────────────
-# Used only when STRIPE_SECRET_KEY is NOT set.
-# Test credentials (official, ready to use):
-#   YOOKASSA_SHOP_ID=381764
-#   YOOKASSA_SECRET_KEY=test_OTE4NDM2NTE0MDk4NzI0MA==
+JWT_ACCESS_SECRET=<openssl rand -hex 32>
+JWT_REFRESH_SECRET=<openssl rand -hex 32>
+ADMIN_SECRET=<any-hard-secret>
+ANTHROPIC_API_KEY=sk-ant-...
+DUFFEL_API_KEY=duffel_test_...
+AVIASALES_TOKEN=...
+AVIASALES_MARKER=...
+AMADEUS_CLIENT_ID=...
+AMADEUS_CLIENT_SECRET=...
+AMADEUS_BASE_URL=https://test.api.amadeus.com
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 YOOKASSA_SHOP_ID=381764
-YOOKASSA_SECRET_KEY=test_OTE4NDM2NTE0MDk4NzI0MA==  # yookassa.ru → Integration → Security
-PAYMENT_MOCK_MODE=false                  # true = skip real payment gateway
-
-# ─── Push notifications (Expo) ────────────────────────────────────────────────
-EXPO_ACCESS_TOKEN=...                    # expo.dev → Account Settings → Access Tokens
-
-# ─── Runtime ──────────────────────────────────────────────────────────────────
+YOOKASSA_SECRET_KEY=test_OTE4NDM2NTE0MDk4NzI0MA==
+YOOKASSA_RETURN_URL=https://travel-ai-backend-production-90a0.up.railway.app/payment/return
+PAYMENT_MOCK_MODE=false
+EXPO_ACCESS_TOKEN=...
 NODE_ENV=production
 PORT=3000
 LOG_LEVEL=info
-CORS_ORIGIN=*                            # or your exact mobile/web app origin
+CORS_ORIGIN=*
 ```
 
-> **Diagnostic check**: after deploying, call `GET /health/providers` to confirm
-> which integrations are active:
-> ```json
-> {
->   "duffel":    { "configured": true,  "mode": "real" },
->   "aviasales": { "configured": true },
->   "yookassa":  { "configured": true }
-> }
-> ```
-> If a key is missing the service falls back to mock data automatically.
+Полный справочник где брать каждый ключ — см. раздел **"Получение API ключей"** ниже.
+
+### Шаг 5. Запустить деплой
+
+После сохранения переменных Railway автоматически начнёт первый деплой.
+`start.sh` при запуске выполняет `prisma migrate deploy` — миграции применяются автоматически.
+
+Проверить результат:
+
+```bash
+railway logs --tail
+curl https://travel-ai-backend-production-90a0.up.railway.app/health
+```
 
 ---
 
-## 2. Getting API keys
+## Обновление env vars (Update Environment Variables)
 
-### 2.1 Anthropic (Claude AI)
+### Через Railway Dashboard
 
-1. Go to https://console.anthropic.com
-2. Sign in or create an account.
-3. Open **API Keys** in the left sidebar.
-4. Click **Create Key**, give it a name (e.g. `travel-ai-prod`).
-5. Copy the key — it starts with `sk-ant-`.
-   It is shown only once; store it immediately.
+1. Открой сервис в Railway → вкладка **Variables**.
+2. Нажми **+ New Variable**, введи имя и значение, нажми **Add**.
+3. Railway автоматически перезапустит сервис — деплой не нужен.
 
-### 2.2 Duffel (flight search and booking)
-
-1. Go to https://app.duffel.com → Sign Up (or Log In).
-2. Navigate to **Settings** → **API Tokens** (direct URL: https://app.duffel.com/settings/api-tokens).
-3. Click **Create token**.
-4. For testing choose **Test** environment — the token starts with `duffel_test_`.
-5. For production choose **Live** — token starts with `duffel_live_`.
-   Live tokens require Duffel to approve your account for production access.
-
-### 2.3 Aviasales / Travelpayouts (flight price data)
-
-1. Go to https://www.travelpayouts.com and register.
-2. In the partner dashboard go to **Tools** → **API** → **Get token**
-   (Russian interface: Инструменты → API → Получить токен).
-3. Your API token appears on that page.
-4. The `AVIASALES_MARKER` value (affiliate marker) is shown in your partner profile.
-
-### 2.5 Stripe (payments — international)
-
-Stripe is the primary payment method for international users.
-When `STRIPE_SECRET_KEY` is set it takes priority over YooKassa.
-
-**Test credentials:**
-
-1. Go to https://dashboard.stripe.com and sign in (or create a free account).
-2. In the top-right toggle switch to **Test mode**.
-3. Go to **Developers** → **API Keys**.
-4. Copy the **Secret key** — it starts with `sk_test_`.
-5. Set `STRIPE_SECRET_KEY=sk_test_...` in your environment.
-
-**Webhook secret (required in production):**
-
-1. In the Stripe dashboard go to **Developers** → **Webhooks**.
-2. Click **Add endpoint**.
-3. Set the URL to `https://<your-railway-host>/api/stripe/webhook`.
-4. Under **Events to listen** select `payment_intent.succeeded`.
-5. Click **Add endpoint** then open the new webhook and copy the **Signing secret** — it starts with `whsec_`.
-6. Set `STRIPE_WEBHOOK_SECRET=whsec_...` in your environment.
-
-**Local webhook testing (Stripe CLI):**
+### Через Railway CLI
 
 ```bash
-# Install Stripe CLI
-brew install stripe/stripe-cli/stripe
+# Задать одну переменную
+railway variables set MY_NEW_KEY=my_new_value
 
-# Forward webhooks to local server
-stripe listen --forward-to localhost:3000/api/stripe/webhook
-# The CLI prints a webhook signing secret — set it as STRIPE_WEBHOOK_SECRET in .env
+# Задать несколько
+railway variables set KEY1=value1 KEY2=value2
+
+# Посмотреть все текущие переменные
+railway variables
+
+# Удалить переменную
+railway variables delete MY_OLD_KEY
 ```
 
-**Live credentials:**
+### Bulk-обновление через скрипт
 
-Live keys (`sk_live_...`) require activating your Stripe account (business details + bank account).
-Use test keys for MVP/development.
+```bash
+# Отредактируй scripts/railway-env-setup.sh, добавь новую переменную
+# Запусти — Railway перезапишет только те ключи, которые указаны в скрипте
+bash scripts/railway-env-setup.sh
+```
 
-### 2.4 YooKassa (payments)
+---
 
-**Test credentials (ready to use, no registration required):**
+## Мониторинг (Monitoring)
 
+### Health check
+
+Railway автоматически опрашивает `GET /health` каждые 30 секунд (таймаут 300s, задан в `railway.toml`).
+
+```bash
+# Полный статус сервиса
+curl https://travel-ai-backend-production-90a0.up.railway.app/health
+
+# Пример ответа:
+# {
+#   "status": "ok",
+#   "db": "ok",
+#   "version": "2.1.0",
+#   "timestamp": "2026-05-19T15:54:04.510Z",
+#   "services": { "database": "connected", "ai": "available", "cache": "active" },
+#   "uptime": 10557.59,
+#   "websocketConnections": 0,
+#   "cacheSize": 0,
+#   "activeAlerts": 1
+# }
+
+# Статус внешних провайдеров (Duffel / Aviasales / YooKassa / Stripe)
+curl https://travel-ai-backend-production-90a0.up.railway.app/health/providers
+```
+
+Если `status != "ok"` или `db != "ok"` — Railway покажет красный индикатор и остановит трафик на сервис.
+
+### Логи
+
+```bash
+# Живые логи через CLI
+railway logs --tail
+
+# Последние 100 строк
+railway logs -n 100
+
+# В Railway Dashboard
+# Открой сервис → вкладка "Deployments" → выбери деплой → "View Logs"
+```
+
+### Алерты
+
+Railway по умолчанию присылает email при падении сервиса (crash / healthcheck fail).
+Настройка: Railway Dashboard → Project Settings → Notifications.
+
+Для продвинутого мониторинга можно подключить:
+- **UptimeRobot** (бесплатный tier): мониторит `/health` каждые 5 минут, шлёт алерт в Telegram/Email.
+- **Sentry** (если настроен `SENTRY_DSN` в env): отлавливает ошибки в runtime.
+
+---
+
+## CI/CD
+
+### Как устроен автоматический деплой
+
+Конфигурация: `.github/workflows/deploy.yml`
+
+Деплой запускается автоматически при каждом **push в ветку `main`** при условии, что изменения затрагивают `apps/backend/**`.
+
+Пайплайн состоит из 4 jobs, которые выполняются последовательно:
+
+```
+push to main
+    │
+    ▼
+Job 1: lint & type-check (TypeScript)
+    │
+    ▼
+Job 2: unit tests (против реального PostgreSQL в GitHub-hosted runner)
+    │
+    ▼
+Job 3: build Docker image → push to GitHub Container Registry (GHCR)
+    │
+    ▼
+Job 4: deploy to Railway (GraphQL API — serviceInstanceUpdate + serviceInstanceDeployV2)
+```
+
+На Pull Request запускаются только Job 1 (lint) и Job 2 (tests). Docker build и deploy — только на merge в main.
+
+Дополнительно в `.github/workflows/deploy-railway.yml` есть упрощённый workflow:
+- Запускается при push в main с изменениями в `apps/backend/**`
+- Запускает `railway up --service backend` напрямую (без Docker/GHCR)
+
+### Необходимые секреты в GitHub
+
+Настройка: **GitHub repo → Settings → Secrets and variables → Actions**
+
+| Secret | Описание |
+|---|---|
+| `RAILWAY_TOKEN` | Railway Account Token: Railway Dashboard → Account Settings → Tokens → Create token |
+| `ANTHROPIC_API_KEY` | Anthropic API key — используется в CI-тестах |
+
+Необходимые переменные (не секреты):
+
+| Variable | Описание |
+|---|---|
+| `RAILWAY_PUBLIC_URL` | Публичный URL сервиса: `https://travel-ai-backend-production-90a0.up.railway.app` |
+
+### Ручной деплой (без GitHub Actions)
+
+```bash
+railway login
+railway link
+
+# ВАЖНО: запускать из корня репозитория, а НЕ из apps/backend/
+# railway.toml задаёт rootDirectory="apps/backend" — если запустить из apps/backend/,
+# builder попытается найти apps/backend/ внутри уже урезанного снапшота и упадёт с ошибкой
+# "no such file or directory"
+cd /path/to/travel-ai   # корень репозитория
+railway up --detach
+
+# Или через существующий скрипт
+bash scripts/deploy-railway.sh
+```
+
+### Известные проблемы CI (задокументировано 2026-05-19)
+
+**Проблема: деплои `73e4bebc` и `94dea303` упали — Railway не смог получить образ из GHCR**
+
+`deploy.yml` (Job 4) пишет образ в `ghcr.io/TrafficJet/TravelAI/travel-ai-backend:latest` и отдаёт Railway команду на деплой через GraphQL API. Railway пытается подтянуть образ из GHCR, но пакет приватный — нет credentials для `ghcr.io` в настройках Railway сервиса.
+
+Варианты решения:
+1. **Рекомендуется** — сделать пакет GHCR публичным: GitHub → Packages → `travel-ai-backend` → Package Settings → Make public
+2. Добавить `GHCR_PAT` (Personal Access Token с `read:packages`) в Railway переменные: `railway variables set GHCR_PAT=ghp_...`, затем настроить `imageCredentials` через Railway GraphQL API
+3. Перейти на `railway up --detach` в CI вместо GHCR (уже настроено в `deploy-railway.yml`)
+
+**Проблема: `deploy-railway.yml` запускал `railway up --service backend` из `apps/backend/`**
+
+Исправлено: теперь команда — `railway up --service travel-ai-backend --detach` (без смены директории, запускается из корня репозитория где лежит `railway.toml`).
+
+### Railway IDs (для GraphQL API в CI)
+
+```
+Service ID:     9b7ed984-302f-4713-aed0-442452c53f9a
+Environment ID: 4e70a63d-d982-4f87-8be4-210c7a8aa0fa
+```
+
+---
+
+## Получение API ключей
+
+### Anthropic (Claude AI)
+
+1. https://console.anthropic.com → sign in
+2. Левая панель → **API Keys** → **Create Key**
+3. Ключ начинается с `sk-ant-` — скопировать сразу (показывается один раз)
+
+### Duffel (поиск и бронирование рейсов)
+
+1. https://app.duffel.com → Sign Up
+2. **Settings** → **API Tokens** → **Create token**
+3. Test-ключ: `duffel_test_...` (sandbox, бесплатно)
+4. Live-ключ: `duffel_live_...` — требует approval от Duffel
+
+### Aviasales / Travelpayouts (цены на рейсы, СНГ)
+
+1. https://www.travelpayouts.com → регистрация
+2. **Tools** → **API** → **Get token**
+3. `AVIASALES_MARKER` — партнёрский маркер, виден в профиле партнёра
+
+### Amadeus (отели + рейсы, free sandbox)
+
+1. https://developers.amadeus.com → регистрация
+2. **My Self-Service Workspace** → **Create new app**
+3. Получишь Client ID и Client Secret
+4. Sandbox бесплатный: `AMADEUS_BASE_URL=https://test.api.amadeus.com`
+5. Production: `AMADEUS_BASE_URL=https://api.amadeus.com` (нужна отдельная заявка)
+
+### Stripe (платежи, международные пользователи)
+
+1. https://dashboard.stripe.com → вверху переключи в **Test mode**
+2. **Developers** → **API Keys** → скопируй Secret key (`sk_test_...`)
+3. Для webhook: **Developers** → **Webhooks** → **Add endpoint**
+   - URL: `https://travel-ai-backend-production-90a0.up.railway.app/api/stripe/webhook`
+   - Events: `payment_intent.succeeded`
+   - Скопируй Signing secret (`whsec_...`)
+
+### YooKassa (платежи, Россия)
+
+**Тестовые credentials (официальные, работают без регистрации):**
 ```
 YOOKASSA_SHOP_ID=381764
 YOOKASSA_SECRET_KEY=test_OTE4NDM2NTE0MDk4NzI0MA==
 ```
 
-These are official YooKassa test credentials. Payments go through but no real money moves.
+**Production**: регистрация на https://yookassa.ru → KYC-верификация → **Интеграция** → **Безопасность**.
 
-**Production credentials:**
+### Expo (push-уведомления)
 
-1. Register at https://yookassa.ru → go to **My shop** (Мой магазин).
-2. Navigate to **Integration** → **Security** (Подключение → Безопасность).
-   Direct URL: https://yookassa.ru/my/shop-settings/main
-3. Your `SHOP_ID` is shown at the top of the page.
-4. Click **Issue secret key** (Выпустить секретный ключ) to generate `SECRET_KEY`.
-
-Note: production YooKassa requires passing merchant verification (KYC).
-For MVP use the test credentials above with `PAYMENT_MOCK_MODE=false`.
+1. https://expo.dev → Account Settings → Access Tokens → Create
+2. Ключ вида `expo_...`
 
 ---
 
-## 3. Manual deploy (Railway CLI)
+## Конфигурация Railway (railway.toml)
 
-```bash
-# Install Railway CLI
-brew install railway
+```toml
+[build]
+builder = "DOCKERFILE"
+rootDirectory = "apps/backend"
+dockerfilePath = "Dockerfile"
 
-# Authenticate
-railway login
-
-# Link to the project (run once from monorepo root)
-railway link
-
-# Deploy
-bash scripts/deploy-railway.sh
+[deploy]
+startCommand = "/app/start.sh"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
 ```
 
-Or directly:
-
-```bash
-railway up --detach
-```
-
-Check deploy status:
-
-```bash
-railway status
-railway logs --tail
-```
+Файл `apps/backend/start.sh` при запуске:
+1. Выполняет `prisma migrate deploy` (с обработкой baseline P3005)
+2. Запускает `node dist/server.js`
 
 ---
 
-## 4. GitHub Actions CI/CD
-
-The workflow in `.github/workflows/deploy.yml` handles:
-- lint and type-check on every PR
-- tests against a real PostgreSQL (GitHub-hosted)
-- Docker image build and push to GHCR on merge to `main`
-- Railway deploy triggered after successful image push
-
-Required secrets in GitHub repository (**Settings → Secrets and variables → Actions**):
-
-| Secret | Description |
-|---|---|
-| `RAILWAY_TOKEN` | Railway project token (Railway dashboard → Settings → Tokens) |
-| `ANTHROPIC_API_KEY` | Used in CI integration tests |
-
-Required repository variable:
-
-| Variable | Description |
-|---|---|
-| `RAILWAY_PUBLIC_URL` | Public URL of the Railway service (shown in Railway dashboard) |
-
----
-
-## 5. Health check
-
-Railway monitors `GET /health`. The endpoint returns:
-
-```json
-{ "status": "ok", "uptime": 123.4 }
-```
-
-Timeout is set to 300 seconds to allow Prisma migrations to complete on cold start.
-
----
-
-## 6. Local Docker build (smoke test before deploy)
+## Локальная сборка Docker (smoke test перед деплоем)
 
 ```bash
 cd apps/backend
@@ -302,31 +348,95 @@ docker build -t travel-ai-backend:local .
 
 docker run --rm \
   -e DATABASE_URL="postgresql://travelai:password@host.docker.internal:5432/travelai_dev" \
-  -e JWT_ACCESS_SECRET="local-test-secret-min-32-chars-xx" \
-  -e JWT_REFRESH_SECRET="local-test-refresh-min-32-chars-x" \
+  -e JWT_ACCESS_SECRET="local-test-secret-min-32-chars-xxx" \
+  -e JWT_REFRESH_SECRET="local-test-refresh-min-32-chars-xx" \
   -e ANTHROPIC_API_KEY="sk-ant-..." \
   -p 3000:3000 \
   travel-ai-backend:local
+
+curl http://localhost:3000/health
 ```
 
 ---
 
-## 7. File structure reference
+## NOWPayments
+
+### Текущее состояние (проверено 2026-05-19)
+
+**ВНИМАНИЕ: SANDBOX=false в production — реальные платежи активны.**
+
+Railway переменные (подтверждено `railway variables`):
+```
+NOWPAYMENTS_API_KEY   = 0VJDPPE-QBP4CNA-NYZT2C5-7DZ33DR
+NOWPAYMENTS_SANDBOX   = false
+NOWPAYMENTS_IPN_SECRET = 506109f2-7181-4f67-9169-1bfd6e676993
+```
+
+Логика в `apps/backend/src/services/nowpayments.service.ts`, строка 4–7:
+```ts
+const SANDBOX = process.env.NOWPAYMENTS_SANDBOX === 'true';
+const BASE_URL = SANDBOX
+  ? 'https://api.sandbox.nowpayments.io/v1'
+  : 'https://api.nowpayments.io/v1';
+```
+
+`NOWPAYMENTS_SANDBOX=false` → приложение звонит в `https://api.nowpayments.io/v1` (production API).
+
+### Оценка риска
+
+| Вопрос | Ответ |
+|---|---|
+| Реальные деньги возможны? | Да. Любой `POST /api/payments/crypto` создаёт реальный платёж. |
+| API ключ уже в Railway? | Да — `0VJDPPE-QBP4CNA-NYZT2C5-7DZ33DR` задан в production. |
+| IPN webhook настроен? | Да — `NOWPAYMENTS_IPN_SECRET` задан, webhook верификация работает. |
+| Пользователи уже могут платить? | Да, если интеграция доступна в мобильном приложении. |
+
+### Рекомендации
+
+**Если приложение ещё не в публичном доступе (beta/soft launch):**
+Немедленной угрозы нет, но нужно убедиться что у NOWPayments ключ — production, а не test.
+Проверь на https://nowpayments.io/login → API Keys: если ключ `0VJDPPE-...` там виден,
+это production ключ и всё верно.
+
+**Если нужно вернуться в sandbox для тестирования:**
+```bash
+railway variables set NOWPAYMENTS_SANDBOX=true
+# Railway автоматически перезапустит сервис
+```
+
+**Минимальные защитные меры (уже реализованы в коде):**
+- HMAC-SHA512 верификация IPN webhook (`verifyWebhookSignature`)
+- Таймаут API клиента 15 секунд
+- `is_fixed_rate: false` — курс фиксируется NOWPayments, не нами
+
+**Рекомендуется добавить:**
+- Лимит максимальной суммы платежа (защита от ошибок)
+- Логирование каждого созданного платежа с `payment_id` и `order_id`
+- Алерт (Sentry/Telegram) при статусе `failed` или `expired`
+
+---
+
+## Структура файлов
 
 ```
 travel-ai/
-  railway.toml                    # Railway build + deploy config
+  railway.toml                         # Railway build + deploy config
+  DEPLOY.md                            # этот файл
+  .github/
+    workflows/
+      deploy.yml                       # основной CI/CD: lint → test → docker → railway
+      deploy-railway.yml               # упрощённый: railway up напрямую
   scripts/
-    deploy-railway.sh             # CLI deploy helper
+    deploy-railway.sh                  # CLI deploy helper (ручной деплой)
+    railway-env-setup.sh               # bulk-установка env vars через Railway CLI
   apps/
     backend/
-      Dockerfile                  # Multi-stage Docker build
+      Dockerfile                       # multi-stage Docker build (node:20-alpine)
+      start.sh                         # entrypoint: migrate + start node
+      .env.example                     # шаблон переменных для локальной разработки
       prisma/
         schema.prisma
         migrations/
       src/
         server.ts
-        routes/
-        services/
-        lib/
 ```

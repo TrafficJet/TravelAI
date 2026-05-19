@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVIT — App Store Screens v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --indigo:    #6C63FF;
+      --teal:      #00B4D8;
+      --gold:      #FFB347;
+      --navy:      #1A1A2E;
+      --bg:        #060B18;
+      --card:      #111827;
+      --glass:     rgba(255,255,255,0.06);
+      --glassbr:   rgba(255,255,255,0.11);
+      --white:     #FFFFFF;
+      --text60:    rgba(255,255,255,0.6);
+      --text40:    rgba(255,255,255,0.4);
+      --text25:    rgba(255,255,255,0.25);
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      background: #0D1117;
+      padding: 56px 40px 80px;
+      color: var(--white);
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .page-sub {
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 52px;
+    }
+
+    /* ── Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 44px 28px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    /* Row 2 centers the last 3 phones */
+    .grid-row2 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 44px 28px;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+
+    /* ── Wrap ── */
+    .sw {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* ── Caption ── */
+    .cap {
+      text-align: center;
+      max-width: 290px;
+    }
+    .cap h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.25;
+      margin-bottom: 4px;
+      letter-spacing: -0.2px;
+    }
+    .cap p {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.5;
+    }
+
+    /* ── iPhone Frame ── */
+    .phone {
+      position: relative;
+      width: 295px;
+      height: 638px;
+      background: linear-gradient(145deg, #2A2A30, #1C1C22);
+      border-radius: 48px;
+      padding: 11px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.12),
+        0 0 0 2px rgba(0,0,0,0.6),
+        0 28px 64px rgba(0,0,0,0.55),
+        0 8px 20px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+    /* Volume / side buttons */
+    .phone::before {
+      content: '';
+      position: absolute;
+      left: -3px;
+      top: 108px;
+      width: 3px;
+      height: 32px;
+      background: #3A3A42;
+      border-radius: 2px 0 0 2px;
+      box-shadow: 0 44px 0 #3A3A42, 0 82px 0 #3A3A42;
+    }
+    .phone::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 148px;
+      width: 3px;
+      height: 60px;
+      background: #3A3A42;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Screen */
+    .screen {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      border-radius: 38px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Dynamic Island */
+    .di {
+      position: absolute;
+      top: 11px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 30px;
+      background: #000;
+      border-radius: 18px;
+      z-index: 100;
+    }
+
+    /* Status Bar */
+    .sbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      height: 52px;
+      flex-shrink: 0;
+      z-index: 10;
+      position: relative;
+    }
+    .sbar-time {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      padding-top: 2px;
+    }
+    .sbar-icons {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding-top: 2px;
+    }
+    .sbar-icons svg { fill: #fff; }
+
+    /* Screen body below status */
+    .scontent {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ── App Header ── */
+    .apphdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 18px 9px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .brand { display: flex; align-items: center; gap: 7px; }
+    .brand-ico { width: 28px; height: 28px; }
+    .brand-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 1.8px;
+    }
+    .hdr-btn {
+      width: 30px; height: 30px;
+      border-radius: 9px;
+      background: var(--glass);
+      border: 1px solid var(--glassbr);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Chat Area ── */
+    .chatarea {
+      flex: 1;
+      overflow: hidden;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .datesep {
+      text-align: center;
+      font-size: 10px;
+      color: var(--text25);
+      padding-bottom: 2px;
+    }
+    .msg-u {
+      align-self: flex-end;
+      max-width: 78%;
+      background: var(--indigo);
+      color: #fff;
+      border-radius: 16px 16px 3px 16px;
+      padding: 9px 13px;
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+    .msg-ai {
+      align-self: flex-start;
+      max-width: 90%;
+      display: flex;
+      gap: 7px;
+      align-items: flex-start;
+    }
+    .ai-ava {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--indigo), var(--teal));
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ai-bbl {
+      background: var(--glass);
+      border: 1px solid var(--glassbr);
+      border-radius: 3px 16px 16px 16px;
+      padding: 9px 13px;
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.5;
+    }
+
+    /* ── Chat Input ── */
+    .chatinput {
+      padding: 7px 13px 13px;
+      flex-shrink: 0;
+    }
+    .chatinput-inner {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 22px;
+      padding: 7px 7px 7px 15px;
+      gap: 7px;
+    }
+    .input-ph {
+      flex: 1;
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.28);
+      font-family: inherit;
+    }
+    .ibtn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ibtn-mic { background: rgba(255,255,255,0.07); }
+    .ibtn-send { background: var(--indigo); }
+
+    /* ── Flight Card ── */
+    .fcrd {
+      background: rgba(108,99,255,0.14);
+      border: 1px solid rgba(108,99,255,0.32);
+      border-radius: 11px;
+      padding: 11px;
+      margin-top: 5px;
+    }
+    .fcrd-alt {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 11px;
+      padding: 9px 11px;
+      margin-top: 5px;
+      opacity: 0.72;
+    }
+    .f-route { font-size: 13.5px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .f-airline { font-size: 10.5px; color: var(--text60); margin-bottom: 5px; }
+    .f-time { font-size: 12px; color: rgba(255,255,255,0.82); margin-bottom: 3px; }
+    .f-price { font-size: 14px; font-weight: 700; color: var(--teal); }
+    .btn-book {
+      display: block;
+      width: 100%;
+      margin-top: 9px;
+      background: var(--indigo);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 8px 0;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    /* ── Hotel Cards ── */
+    .hcrd {
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 11px;
+      padding: 10px 12px;
+      margin-top: 6px;
+    }
+    .hcrd:first-of-type { margin-top: 2px; }
+    .h-tier { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+    .t-budget { color: var(--teal); }
+    .t-mid    { color: var(--gold); }
+    .t-lux    { color: #E879F9; }
+    .h-name { font-size: 12.5px; font-weight: 600; color: #fff; }
+    .h-stars { color: var(--gold); font-size: 10px; }
+    .h-price { font-size: 11.5px; color: var(--text60); margin-top: 1px; }
+    .h-loc   { font-size: 10.5px; color: var(--text40); }
+
+    /* ── Bottom Sheet ── */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.48);
+      z-index: 40;
+    }
+    .sheet {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: #171730;
+      border-top: 1px solid rgba(255,255,255,0.11);
+      border-radius: 22px 22px 0 0;
+      padding: 18px 18px 26px;
+      z-index: 50;
+    }
+    .sheet-handle {
+      width: 36px; height: 4px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+    .sheet-title {
+      font-size: 15px; font-weight: 700; color: #fff;
+      text-align: center; margin-bottom: 14px;
+    }
+    .srow {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.055);
+    }
+    .srow:last-of-type { border-bottom: none; }
+    .srow-lbl { font-size: 11.5px; color: var(--text60); }
+    .srow-val { font-size: 12.5px; font-weight: 600; color: #fff; }
+    .stotal {
+      display: flex; justify-content: space-between;
+      padding: 11px 0 0;
+      margin-top: 3px;
+      border-top: 1px solid rgba(255,255,255,0.11);
+    }
+    .stotal-lbl { font-size: 13.5px; font-weight: 700; color: #fff; }
+    .stotal-price { font-size: 17px; font-weight: 800; color: var(--indigo); }
+    .btn-pay {
+      display: block; width: 100%;
+      margin-top: 14px;
+      background: var(--indigo); color: #fff;
+      border: none; border-radius: 12px;
+      padding: 12px 0;
+      font-size: 13.5px; font-weight: 700;
+      text-align: center; font-family: inherit;
+    }
+    .btn-pay-alt {
+      display: block; width: 100%;
+      margin-top: 7px;
+      background: rgba(255,255,255,0.06); color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px; padding: 11px 0;
+      font-size: 12.5px; font-weight: 600;
+      text-align: center; font-family: inherit;
+    }
+    .sheet-note {
+      text-align: center; font-size: 9.5px;
+      color: rgba(255,255,255,0.28); margin-top: 9px;
+    }
+
+    /* ── Wallet Screen ── */
+    .wallet-header {
+      padding: 16px 18px 12px;
+      flex-shrink: 0;
+    }
+    .wallet-title { font-size: 19px; font-weight: 800; color: #fff; }
+    .wallet-sub { font-size: 11px; color: var(--text40); margin-top: 2px; }
+
+    .balance-card {
+      margin: 0 16px 14px;
+      background: linear-gradient(135deg, #3B31CC 0%, #1E7FAA 100%);
+      border-radius: 16px;
+      padding: 18px 20px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .balance-card::after {
+      content: '';
+      position: absolute;
+      right: -24px; top: -24px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+    }
+    .bal-label { font-size: 11px; color: rgba(255,255,255,0.65); margin-bottom: 4px; }
+    .bal-amount { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .bal-sub { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 3px; }
+
+    .crypto-list { padding: 0 16px; }
+    .crypto-item {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--glass);
+      border: 1px solid var(--glassbr);
+      border-radius: 13px;
+      padding: 11px 14px;
+      margin-bottom: 8px;
+    }
+    .crypto-ico {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .crypto-name { font-size: 13px; font-weight: 600; color: #fff; }
+    .crypto-ticker { font-size: 11px; color: var(--text40); }
+    .crypto-amount { margin-left: auto; text-align: right; }
+    .crypto-val { font-size: 13px; font-weight: 600; color: #fff; }
+    .crypto-usd { font-size: 11px; color: var(--text40); }
+    .crypto-change-up { font-size: 11px; color: #34D399; margin-top: 1px; }
+    .crypto-change-dn { font-size: 11px; color: #F87171; margin-top: 1px; }
+
+    /* ── Notifications Screen ── */
+    .notif-header {
+      padding: 14px 18px 11px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .notif-title { font-size: 19px; font-weight: 800; color: #fff; }
+    .notif-sub { font-size: 11px; color: var(--text40); margin-top: 2px; }
+
+    .notif-body { flex: 1; overflow: hidden; padding: 12px 16px 0; }
+    .notif-section-lbl {
+      font-size: 10.5px; font-weight: 600;
+      color: rgba(255,255,255,0.32);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 9px;
+    }
+
+    .alert-card {
+      background: var(--glass);
+      border: 1px solid var(--glassbr);
+      border-radius: 13px;
+      padding: 12px 14px;
+      margin-bottom: 9px;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .alert-ico {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .alert-ico-drop { background: rgba(52,211,153,0.15); }
+    .alert-ico-rise { background: rgba(248,113,113,0.15); }
+    .alert-ico-info { background: rgba(108,99,255,0.15); }
+    .alert-route { font-size: 12.5px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .alert-old { font-size: 11px; color: var(--text40); }
+    .alert-new-good { font-size: 14px; font-weight: 800; color: #34D399; }
+    .alert-new-bad  { font-size: 14px; font-weight: 800; color: #F87171; }
+    .alert-delta-good { font-size: 11px; color: #34D399; }
+    .alert-delta-bad  { font-size: 11px; color: #F87171; }
+    .alert-time { font-size: 10px; color: var(--text25); margin-top: 3px; }
+    .btn-book-alert {
+      margin-top: 8px;
+      display: inline-block;
+      background: rgba(52,211,153,0.15);
+      border: 1px solid rgba(52,211,153,0.3);
+      border-radius: 7px;
+      padding: 5px 12px;
+      font-size: 11px; font-weight: 600; color: #34D399;
+      font-family: inherit;
+    }
+
+    .notif-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--glass);
+      border: 1px solid var(--glassbr);
+      border-radius: 13px;
+      padding: 12px 14px;
+      margin-bottom: 9px;
+    }
+    .toggle-lbl { font-size: 12.5px; font-weight: 600; color: #fff; }
+    .toggle-sub { font-size: 11px; color: var(--text40); margin-top: 1px; }
+    .toggle-pill {
+      width: 42px; height: 24px;
+      border-radius: 12px;
+      background: var(--indigo);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .toggle-pill::after {
+      content: '';
+      position: absolute;
+      right: 3px; top: 3px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #fff;
+    }
+    .toggle-pill-off {
+      width: 42px; height: 24px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.12);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .toggle-pill-off::after {
+      content: '';
+      position: absolute;
+      left: 3px; top: 3px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+    }
+
+    /* ── Multilingual Screen ── */
+    .lang-header {
+      padding: 14px 18px 11px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .lang-flags {
+      display: flex; gap: 6px; margin-top: 6px;
+    }
+    .lang-pill {
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 11px; font-weight: 600;
+    }
+    .lang-active { background: rgba(108,99,255,0.25); border: 1px solid rgba(108,99,255,0.5); color: var(--indigo); }
+    .lang-off    { background: var(--glass); border: 1px solid var(--glassbr); color: var(--text40); }
+
+    /* Tab bar */
+    .tabbar {
+      display: flex;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 9px 0 18px;
+      background: rgba(6,11,24,0.97);
+      flex-shrink: 0;
+    }
+    .tab {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 3px;
+    }
+    .tab-ico { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+    .tab-lbl { font-size: 9.5px; color: var(--text40); font-family: inherit; }
+    .tab.active .tab-lbl { color: var(--indigo); }
+
+    /* Decorative glow blobs */
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(55px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Shared SVG logo inline ── */
+    .logo-svg { display: block; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 56px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer p { font-size: 12px; color: rgba(255,255,255,0.25); margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+<h1 class="page-title">SVIT — App Store Screenshots</h1>
+<p class="page-sub">7 экранов · iPhone 14 Pro · Dark Mode · CIS audience · v2.0</p>
+
+<!-- ════ ROW 1 — 4 screens ════ -->
+<div class="grid">
+
+  <!-- ───────────────────────────────────── -->
+  <!-- SCREEN 1 · Hero / Chat               -->
+  <!-- ───────────────────────────────────── -->
+  <div class="sw">
+    <div class="cap">
+      <h2>Весь мир в одном чате</h2>
+      <p>Пиши куда хочешь — SVIT найдёт рейс и отель</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="di"></div>
+        <!-- glow -->
+        <div class="glow" style="width:180px;height:180px;background:rgba(108,99,255,0.22);top:-50px;right:-50px;"></div>
+        <div class="glow" style="width:140px;height:140px;background:rgba(0,180,216,0.12);bottom:80px;left:-40px;"></div>
+        <!-- status -->
+        <div class="sbar">
+          <span class="sbar-time">9:41</span>
+          <div class="sbar-icons">
+            <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="6.5" width="2.5" height="4.5" rx="0.4"/><rect x="4" y="4" width="2.5" height="7" rx="0.4"/><rect x="8" y="2" width="2.5" height="9" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 8.8a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zm0-3.5c1.6 0 3 .65 4 1.7l1.3-1.3A8.4 8.4 0 0 0 7.5 3.7a8.4 8.4 0 0 0-5.3 2L3.5 7A6 6 0 0 1 7.5 5.3zm0-3.6c2.5 0 4.8 1 6.4 2.7L15.2 2A11.7 11.7 0 0 0 7.5 0C5 0 2.7.9 1 2.4l1.3 1.3A9.5 9.5 0 0 1 7.5 1.7z"/></svg>
+            <svg width="23" height="11" viewBox="0 0 23 11"><rect x="0" y="1" width="19" height="9" rx="2.2" stroke="white" stroke-width="0.9" fill="none" opacity="0.45"/><rect x="1.4" y="2.3" width="14" height="6.4" rx="1.3" fill="white"/><path d="M20.5 3.8v3.4a1.7 1.7 0 0 0 0-3.4z" fill="white" opacity="0.45"/></svg>
+          </div>
+        </div>
+        <div class="scontent">
+          <!-- App header -->
+          <div class="apphdr">
+            <div class="brand">
+              <svg class="brand-ico" viewBox="0 0 28 28" fill="none">
+                <circle cx="14" cy="14" r="12" stroke="#6C63FF" stroke-width="1.4"/>
+                <circle cx="14" cy="14" r="1.8" fill="#6C63FF"/>
+                <line x1="14" y1="2" x2="14" y2="6" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="14" y1="22" x2="14" y2="26" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="2" y1="14" x2="6" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="22" y1="14" x2="26" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M14 7C11.5 9 10 11 10 14C10 17 11.5 19 14 21C16.5 19 18 17 18 14C18 11 16.5 9 14 7Z" stroke="#6C63FF" stroke-width="1.1" fill="none"/>
+              </svg>
+              <span class="brand-name">SVIT</span>
+            </div>
+            <div class="hdr-btn">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <circle cx="7.5" cy="7.5" r="6.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.1"/>
+                <circle cx="7.5" cy="6.5" r="2.3" fill="rgba(255,255,255,0.55)"/>
+                <path d="M3 13c0-2.3 2-3.8 4.5-3.8S12 10.7 12 13" stroke="rgba(255,255,255,0.45)" stroke-width="1.1" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <!-- Chat -->
+          <div class="chatarea">
+            <div class="datesep">Сегодня</div>
+            <div class="msg-ai">
+              <div class="ai-ava">
+                <svg width="13" height="13" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="white" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="white"/><line x1="14" y1="2" x2="14" y2="6" stroke="white" stroke-width="1.4" stroke-linecap="round"/><line x1="14" y1="22" x2="14" y2="26" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <div class="ai-bbl">Привет! Куда летим? Пиши куда хочешь ✈️</div>
+            </div>
+            <div class="msg-u">Хочу в Барселону на выходные</div>
+            <div class="msg-ai">
+              <div class="ai-ava">
+                <svg width="13" height="13" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="white" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="white"/><line x1="14" y1="2" x2="14" y2="6" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <div class="ai-bbl">
+                <div style="margin-bottom:6px;color:rgba(255,255,255,0.65);">Отлично! Ищу рейсы WAW→BCN...</div>
+                <div style="display:flex;gap:5px;align-items:center;padding:3px 0;">
+                  <span style="width:7px;height:7px;border-radius:50%;background:#6C63FF;display:inline-block;"></span>
+                  <span style="width:7px;height:7px;border-radius:50%;background:#00B4D8;opacity:0.6;display:inline-block;"></span>
+                  <span style="width:7px;height:7px;border-radius:50%;background:#6C63FF;opacity:0.35;display:inline-block;"></span>
+                </div>
+              </div>
+            </div>
+            <!-- Hero call-to-action pill -->
+            <div style="margin-top:8px;background:linear-gradient(135deg,rgba(108,99,255,0.2),rgba(0,180,216,0.12));border:1px solid rgba(108,99,255,0.3);border-radius:14px;padding:12px 14px;">
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px;">Популярные направления</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <span style="background:rgba(108,99,255,0.22);border:1px solid rgba(108,99,255,0.35);border-radius:8px;padding:5px 10px;font-size:11.5px;color:#fff;">🗼 Париж</span>
+                <span style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 10px;font-size:11.5px;color:rgba(255,255,255,0.55);">🏖️ Дубай</span>
+                <span style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 10px;font-size:11.5px;color:rgba(255,255,255,0.55);">🏛️ Рим</span>
+              </div>
+            </div>
+          </div>
+          <!-- Input -->
+          <div class="chatinput">
+            <div class="chatinput-inner">
+              <span class="input-ph">Написать сообщение...</span>
+              <div class="ibtn ibtn-mic">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4" y="1" width="5" height="7" rx="2.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.1"/><path d="M1.5 7a5 5 0 0 0 10 0" stroke="rgba(255,255,255,0.45)" stroke-width="1.1" stroke-linecap="round"/><line x1="6.5" y1="12" x2="6.5" y2="13" stroke="rgba(255,255,255,0.45)" stroke-width="1.1" stroke-linecap="round"/></svg>
+              </div>
+              <div class="ibtn ibtn-send">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M11.5 6.5 L1.5 1.5 L4 6.5 L1.5 11.5 Z" fill="white"/><line x1="4" y1="6.5" x2="11.5" y2="6.5" stroke="white" stroke-width="1.1" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── -->
+  <!-- SCREEN 2 · Flights                   -->
+  <!-- ───────────────────────────────────── -->
+  <div class="sw">
+    <div class="cap">
+      <h2>Рейсы без форм и фильтров</h2>
+      <p>AI ищет среди сотен рейсов и выбирает лучший</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="di"></div>
+        <div class="glow" style="width:160px;height:160px;background:rgba(108,99,255,0.18);top:-40px;right:-40px;"></div>
+        <div class="sbar">
+          <span class="sbar-time">9:41</span>
+          <div class="sbar-icons">
+            <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="6.5" width="2.5" height="4.5" rx="0.4"/><rect x="4" y="4" width="2.5" height="7" rx="0.4"/><rect x="8" y="2" width="2.5" height="9" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 8.8a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zm0-3.5c1.6 0 3 .65 4 1.7l1.3-1.3A8.4 8.4 0 0 0 7.5 3.7a8.4 8.4 0 0 0-5.3 2L3.5 7A6 6 0 0 1 7.5 5.3zm0-3.6c2.5 0 4.8 1 6.4 2.7L15.2 2A11.7 11.7 0 0 0 7.5 0C5 0 2.7.9 1 2.4l1.3 1.3A9.5 9.5 0 0 1 7.5 1.7z"/></svg>
+            <svg width="23" height="11" viewBox="0 0 23 11"><rect x="0" y="1" width="19" height="9" rx="2.2" stroke="white" stroke-width="0.9" fill="none" opacity="0.45"/><rect x="1.4" y="2.3" width="14" height="6.4" rx="1.3" fill="white"/><path d="M20.5 3.8v3.4a1.7 1.7 0 0 0 0-3.4z" fill="white" opacity="0.45"/></svg>
+          </div>
+        </div>
+        <div class="scontent">
+          <div class="apphdr">
+            <div class="brand">
+              <svg class="brand-ico" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#6C63FF" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="#6C63FF"/><line x1="14" y1="2" x2="14" y2="6" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="14" y1="22" x2="14" y2="26" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="2" y1="14" x2="6" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="22" y1="14" x2="26" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><path d="M14 7C11.5 9 10 11 10 14C10 17 11.5 19 14 21C16.5 19 18 17 18 14C18 11 16.5 9 14 7Z" stroke="#6C63FF" stroke-width="1.1" fill="none"/></svg>
+              <span class="brand-name">SVIT</span>
+            </div>
+            <div class="hdr-btn"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.1"/><circle cx="7.5" cy="6.5" r="2.3" fill="rgba(255,255,255,0.55)"/><path d="M3 13c0-2.3 2-3.8 4.5-3.8S12 10.7 12 13" stroke="rgba(255,255,255,0.45)" stroke-width="1.1" stroke-linecap="round"/></svg></div>
+          </div>
+          <div class="chatarea">
+            <div class="datesep">Сегодня</div>
+            <div class="msg-u" style="font-size:11.5px;">Хочу в Барселону на выходные</div>
+            <div class="msg-ai">
+              <div class="ai-ava">
+                <svg width="13" height="13" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="white" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="white"/><line x1="14" y1="2" x2="14" y2="6" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <div class="ai-bbl" style="width:100%;">
+                <div style="margin-bottom:8px;color:rgba(255,255,255,0.65);">Нашёл лучшие рейсы WAW→BCN:</div>
+                <div class="fcrd">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
+                    <div class="f-route">✈️ WAW → BCN</div>
+                    <span style="background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;color:#34D399;">Лучший</span>
+                  </div>
+                  <div class="f-airline">Wizz Air · W6 1234</div>
+                  <div class="f-time">06:45 → 09:10 · 2ч 25м · прямой</div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:5px;">
+                    <span class="f-price">€67</span>
+                    <span style="font-size:10.5px;color:rgba(255,255,255,0.45);">эконом · ручная кладь</span>
+                  </div>
+                  <div class="btn-book">Забронировать</div>
+                </div>
+                <div class="fcrd-alt">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                      <div style="font-size:11.5px;color:rgba(255,255,255,0.6);">Ryanair · FR 5890</div>
+                      <div style="font-size:10.5px;color:rgba(255,255,255,0.38);">07:20 → 10:05 · 2ч 45м</div>
+                    </div>
+                    <span style="font-size:13.5px;font-weight:700;color:rgba(255,255,255,0.48);">€89</span>
+                  </div>
+                </div>
+                <div class="fcrd-alt">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                      <div style="font-size:11.5px;color:rgba(255,255,255,0.6);">Vueling · VY 1660</div>
+                      <div style="font-size:10.5px;color:rgba(255,255,255,0.38);">13:05 → 15:50 · 2ч 45м</div>
+                    </div>
+                    <span style="font-size:13.5px;font-weight:700;color:rgba(255,255,255,0.48);">€104</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="chatinput">
+            <div class="chatinput-inner">
+              <span class="input-ph">Написать сообщение...</span>
+              <div class="ibtn ibtn-mic"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4" y="1" width="5" height="7" rx="2.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.1"/><path d="M1.5 7a5 5 0 0 0 10 0" stroke="rgba(255,255,255,0.45)" stroke-width="1.1" stroke-linecap="round"/></svg></div>
+              <div class="ibtn ibtn-send"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M11.5 6.5 L1.5 1.5 L4 6.5 L1.5 11.5 Z" fill="white"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── -->
+  <!-- SCREEN 3 · Hotels                    -->
+  <!-- ───────────────────────────────────── -->
+  <div class="sw">
+    <div class="cap">
+      <h2>Отели под твой бюджет</h2>
+      <p>Бюджетный, стандарт или люкс — выбираешь ты</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="di"></div>
+        <div class="glow" style="width:140px;height:140px;background:rgba(0,180,216,0.14);bottom:100px;right:-30px;"></div>
+        <div class="sbar">
+          <span class="sbar-time">9:41</span>
+          <div class="sbar-icons">
+            <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="6.5" width="2.5" height="4.5" rx="0.4"/><rect x="4" y="4" width="2.5" height="7" rx="0.4"/><rect x="8" y="2" width="2.5" height="9" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 8.8a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zm0-3.5c1.6 0 3 .65 4 1.7l1.3-1.3A8.4 8.4 0 0 0 7.5 3.7a8.4 8.4 0 0 0-5.3 2L3.5 7A6 6 0 0 1 7.5 5.3zm0-3.6c2.5 0 4.8 1 6.4 2.7L15.2 2A11.7 11.7 0 0 0 7.5 0C5 0 2.7.9 1 2.4l1.3 1.3A9.5 9.5 0 0 1 7.5 1.7z"/></svg>
+            <svg width="23" height="11" viewBox="0 0 23 11"><rect x="0" y="1" width="19" height="9" rx="2.2" stroke="white" stroke-width="0.9" fill="none" opacity="0.45"/><rect x="1.4" y="2.3" width="14" height="6.4" rx="1.3" fill="white"/><path d="M20.5 3.8v3.4a1.7 1.7 0 0 0 0-3.4z" fill="white" opacity="0.45"/></svg>
+          </div>
+        </div>
+        <div class="scontent">
+          <div class="apphdr">
+            <div class="brand">
+              <svg class="brand-ico" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#6C63FF" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="#6C63FF"/><line x1="14" y1="2" x2="14" y2="6" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="14" y1="22" x2="14" y2="26" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="2" y1="14" x2="6" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="22" y1="14" x2="26" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><path d="M14 7C11.5 9 10 11 10 14C10 17 11.5 19 14 21C16.5 19 18 17 18 14C18 11 16.5 9 14 7Z" stroke="#6C63FF" stroke-width="1.1" fill="none"/></svg>
+              <span class="brand-name">SVIT</span>
+            </div>
+            <div class="hdr-btn"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.1"/><circle cx="7.5" cy="6.5" r="2.3" fill="rgba(255,255,255,0.55)"/><path d="M3 13c0-2.3 2-3.8 4.5-3.8S12 10.7 12 13" stroke="rgba(255,255,255,0.45)" stroke-width="1.1" stroke-linecap="round"/></svg></div>
+          </div>
+          <div class="chatarea">
+            <div class="datesep">Сегодня</div>
+            <div class="msg-u" style="font-size:11.5px;">Рейс выбрал. Покажи отели</div>
+            <div class="msg-ai">
+              <div class="ai-ava">
+                <svg width="13" height="13" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="white" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="white"/></svg>
+              </div>
+              <div class="ai-bbl" style="width:100%;">
+                <div style="margin-bottom:9px;color:rgba(255,255,255,0.65);">Три варианта под бюджет:</div>
+
+                <div class="hcrd">
+                  <div class="h-tier t-budget">💸 Бюджет</div>
+                  <div class="h-name">Generator Barcelona</div>
+                  <div class="h-stars">★★★</div>
+                  <div class="h-price">€28/ночь · 2 ночи = €56</div>
+                  <div class="h-loc">Gracia · центр</div>
+                </div>
+
+                <div class="hcrd" style="border-color:rgba(255,179,71,0.28);background:rgba(255,179,71,0.06);">
+                  <div class="h-tier t-mid">⚖️ Стандарт</div>
+                  <div class="h-name">Catalonia Ramblas</div>
+                  <div class="h-stars">★★★★</div>
+                  <div class="h-price">€95/ночь · 2 ночи = €190</div>
+                  <div class="h-loc">Las Ramblas · топ локация</div>
+                </div>
+
+                <div class="hcrd" style="border-color:rgba(232,121,249,0.28);background:rgba(232,121,249,0.05);">
+                  <div class="h-tier t-lux">👑 Люкс</div>
+                  <div class="h-name">Hotel Arts Barcelona</div>
+                  <div class="h-stars">★★★★★</div>
+                  <div class="h-price">€180/ночь · 2 ночи = €360</div>
+                  <div class="h-loc">Порт Олимпик · вид на море</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="chatinput">
+            <div class="chatinput-inner">
+              <span class="input-ph">Выбери вариант или напиши...</span>
+              <div class="ibtn ibtn-mic"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4" y="1" width="5" height="7" rx="2.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.1"/><path d="M1.5 7a5 5 0 0 0 10 0" stroke="rgba(255,255,255,0.45)" stroke-width="1.1" stroke-linecap="round"/></svg></div>
+              <div class="ibtn ibtn-send"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M11.5 6.5 L1.5 1.5 L4 6.5 L1.5 11.5 Z" fill="white"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── -->
+  <!-- SCREEN 4 · Booking Confirmation      -->
+  <!-- ───────────────────────────────────── -->
+  <div class="sw">
+    <div class="cap">
+      <h2>Бронируй в 2 клика</h2>
+      <p>Рейс и отель оплачены прямо в чате. Без форм.</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="di"></div>
+        <div class="glow" style="width:160px;height:160px;background:rgba(108,99,255,0.16);top:-30px;left:-30px;"></div>
+        <div class="sbar">
+          <span class="sbar-time">9:41</span>
+          <div class="sbar-icons">
+            <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="6.5" width="2.5" height="4.5" rx="0.4"/><rect x="4" y="4" width="2.5" height="7" rx="0.4"/><rect x="8" y="2" width="2.5" height="9" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 8.8a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zm0-3.5c1.6 0 3 .65 4 1.7l1.3-1.3A8.4 8.4 0 0 0 7.5 3.7a8.4 8.4 0 0 0-5.3 2L3.5 7A6 6 0 0 1 7.5 5.3zm0-3.6c2.5 0 4.8 1 6.4 2.7L15.2 2A11.7 11.7 0 0 0 7.5 0C5 0 2.7.9 1 2.4l1.3 1.3A9.5 9.5 0 0 1 7.5 1.7z"/></svg>
+            <svg width="23" height="11" viewBox="0 0 23 11"><rect x="0" y="1" width="19" height="9" rx="2.2" stroke="white" stroke-width="0.9" fill="none" opacity="0.45"/><rect x="1.4" y="2.3" width="14" height="6.4" rx="1.3" fill="white"/><path d="M20.5 3.8v3.4a1.7 1.7 0 0 0 0-3.4z" fill="white" opacity="0.45"/></svg>
+          </div>
+        </div>
+        <div class="scontent" style="position:relative;">
+          <!-- Dimmed background -->
+          <div class="apphdr" style="opacity:0.38;">
+            <div class="brand">
+              <svg class="brand-ico" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#6C63FF" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="#6C63FF"/></svg>
+              <span class="brand-name">SVIT</span>
+            </div>
+          </div>
+          <div style="padding:10px 14px;opacity:0.3;flex:1;">
+            <div class="msg-u" style="font-size:11.5px;max-width:82%;">Generator Barcelona. Бронируй оба!</div>
+          </div>
+
+          <div class="overlay"></div>
+
+          <!-- Bottom Sheet -->
+          <div class="sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-title">Подтвердить бронирование</div>
+
+            <!-- Confirm icon -->
+            <div style="text-align:center;margin-bottom:12px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:rgba(108,99,255,0.2);border:1px solid rgba(108,99,255,0.4);display:inline-flex;align-items:center;justify-content:center;font-size:20px;">✈️</div>
+            </div>
+
+            <div class="srow">
+              <span class="srow-lbl">✈️ WAW→BCN · Wizz Air</span>
+              <span class="srow-val">€67</span>
+            </div>
+            <div class="srow">
+              <span class="srow-lbl">🏨 Generator Barcelona · 2н</span>
+              <span class="srow-val">€56</span>
+            </div>
+            <div class="srow">
+              <span class="srow-lbl">🛡️ Страховка</span>
+              <span class="srow-val" style="color:rgba(255,255,255,0.38);">+ €12</span>
+            </div>
+            <div class="stotal">
+              <span class="stotal-lbl">Итого</span>
+              <span class="stotal-price">€135</span>
+            </div>
+
+            <div class="btn-pay">Оплатить картой</div>
+            <div class="btn-pay-alt">₿ Оплатить криптовалютой</div>
+            <div class="sheet-note">Бронирование через защищённых партнёров · SSL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 1 -->
+
+<!-- ════ ROW 2 — 3 screens, centred ════ -->
+<div style="margin-top:44px;">
+<div class="grid-row2">
+
+  <!-- ───────────────────────────────────── -->
+  <!-- SCREEN 5 · Wallet                    -->
+  <!-- ───────────────────────────────────── -->
+  <div class="sw">
+    <div class="cap">
+      <h2>Крипто и карта — всё внутри</h2>
+      <p>Оплачивай поездки картой или криптовалютой</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="di"></div>
+        <div class="glow" style="width:180px;height:180px;background:rgba(108,99,255,0.18);top:-40px;right:-50px;"></div>
+        <div class="glow" style="width:120px;height:120px;background:rgba(0,180,216,0.1);bottom:60px;left:-30px;"></div>
+        <div class="sbar">
+          <span class="sbar-time">9:41</span>
+          <div class="sbar-icons">
+            <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="6.5" width="2.5" height="4.5" rx="0.4"/><rect x="4" y="4" width="2.5" height="7" rx="0.4"/><rect x="8" y="2" width="2.5" height="9" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 8.8a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zm0-3.5c1.6 0 3 .65 4 1.7l1.3-1.3A8.4 8.4 0 0 0 7.5 3.7a8.4 8.4 0 0 0-5.3 2L3.5 7A6 6 0 0 1 7.5 5.3zm0-3.6c2.5 0 4.8 1 6.4 2.7L15.2 2A11.7 11.7 0 0 0 7.5 0C5 0 2.7.9 1 2.4l1.3 1.3A9.5 9.5 0 0 1 7.5 1.7z"/></svg>
+            <svg width="23" height="11" viewBox="0 0 23 11"><rect x="0" y="1" width="19" height="9" rx="2.2" stroke="white" stroke-width="0.9" fill="none" opacity="0.45"/><rect x="1.4" y="2.3" width="14" height="6.4" rx="1.3" fill="white"/><path d="M20.5 3.8v3.4a1.7 1.7 0 0 0 0-3.4z" fill="white" opacity="0.45"/></svg>
+          </div>
+        </div>
+        <div class="scontent">
+          <!-- Header -->
+          <div class="wallet-header">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div class="wallet-title">Кошелёк</div>
+                <div class="wallet-sub">Баланс и активы</div>
+              </div>
+              <svg class="brand-ico" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#6C63FF" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="#6C63FF"/><line x1="14" y1="2" x2="14" y2="6" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="14" y1="22" x2="14" y2="26" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="2" y1="14" x2="6" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="22" y1="14" x2="26" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+
+          <!-- Balance card -->
+          <div class="balance-card">
+            <div class="bal-label">Общий баланс</div>
+            <div class="bal-amount">$2 847.50</div>
+            <div class="bal-sub">≈ €2 611 · обновлено 2 мин назад</div>
+            <!-- Action buttons -->
+            <div style="display:flex;gap:8px;margin-top:14px;">
+              <div style="flex:1;background:rgba(255,255,255,0.15);border-radius:9px;padding:8px 0;text-align:center;font-size:12px;font-weight:600;color:#fff;">Пополнить</div>
+              <div style="flex:1;background:rgba(255,255,255,0.15);border-radius:9px;padding:8px 0;text-align:center;font-size:12px;font-weight:600;color:#fff;">Вывести</div>
+              <div style="flex:1;background:rgba(255,255,255,0.15);border-radius:9px;padding:8px 0;text-align:center;font-size:12px;font-weight:600;color:#fff;">Оплатить</div>
+            </div>
+          </div>
+
+          <!-- Crypto list -->
+          <div style="padding:0 16px 4px;font-size:10.5px;font-weight:600;color:rgba(255,255,255,0.32);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:6px;">Активы</div>
+          <div class="crypto-list">
+            <div class="crypto-item">
+              <div class="crypto-ico" style="background:rgba(247,147,26,0.15);">₿</div>
+              <div>
+                <div class="crypto-name">Bitcoin</div>
+                <div class="crypto-ticker">BTC</div>
+              </div>
+              <div class="crypto-amount">
+                <div class="crypto-val">0.034 BTC</div>
+                <div class="crypto-usd">≈ $1 940</div>
+                <div class="crypto-change-up">+2.4%</div>
+              </div>
+            </div>
+            <div class="crypto-item">
+              <div class="crypto-ico" style="background:rgba(108,99,255,0.15);">Ξ</div>
+              <div>
+                <div class="crypto-name">Ethereum</div>
+                <div class="crypto-ticker">ETH</div>
+              </div>
+              <div class="crypto-amount">
+                <div class="crypto-val">0.28 ETH</div>
+                <div class="crypto-usd">≈ $630</div>
+                <div class="crypto-change-dn">-0.8%</div>
+              </div>
+            </div>
+            <div class="crypto-item">
+              <div class="crypto-ico" style="background:rgba(0,180,216,0.15);">₮</div>
+              <div>
+                <div class="crypto-name">Tether</div>
+                <div class="crypto-ticker">USDT</div>
+              </div>
+              <div class="crypto-amount">
+                <div class="crypto-val">277 USDT</div>
+                <div class="crypto-usd">≈ $277</div>
+                <div class="crypto-change-up">+0.0%</div>
+              </div>
+            </div>
+            <!-- Card row -->
+            <div class="crypto-item" style="border-color:rgba(108,99,255,0.25);background:rgba(108,99,255,0.08);">
+              <div class="crypto-ico" style="background:rgba(108,99,255,0.2);">💳</div>
+              <div>
+                <div class="crypto-name">Visa · 4512</div>
+                <div class="crypto-ticker">Банковская карта</div>
+              </div>
+              <div class="crypto-amount">
+                <div class="crypto-val" style="color:#6C63FF;">Привязана</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── -->
+  <!-- SCREEN 6 · Notifications / Alerts    -->
+  <!-- ───────────────────────────────────── -->
+  <div class="sw">
+    <div class="cap">
+      <h2>Следи за ценами 24/7</h2>
+      <p>Уведомления о снижении цен на твои маршруты</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="di"></div>
+        <div class="glow" style="width:150px;height:150px;background:rgba(52,211,153,0.1);top:-30px;right:-30px;"></div>
+        <div class="sbar">
+          <span class="sbar-time">9:41</span>
+          <div class="sbar-icons">
+            <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="6.5" width="2.5" height="4.5" rx="0.4"/><rect x="4" y="4" width="2.5" height="7" rx="0.4"/><rect x="8" y="2" width="2.5" height="9" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 8.8a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zm0-3.5c1.6 0 3 .65 4 1.7l1.3-1.3A8.4 8.4 0 0 0 7.5 3.7a8.4 8.4 0 0 0-5.3 2L3.5 7A6 6 0 0 1 7.5 5.3zm0-3.6c2.5 0 4.8 1 6.4 2.7L15.2 2A11.7 11.7 0 0 0 7.5 0C5 0 2.7.9 1 2.4l1.3 1.3A9.5 9.5 0 0 1 7.5 1.7z"/></svg>
+            <svg width="23" height="11" viewBox="0 0 23 11"><rect x="0" y="1" width="19" height="9" rx="2.2" stroke="white" stroke-width="0.9" fill="none" opacity="0.45"/><rect x="1.4" y="2.3" width="14" height="6.4" rx="1.3" fill="white"/><path d="M20.5 3.8v3.4a1.7 1.7 0 0 0 0-3.4z" fill="white" opacity="0.45"/></svg>
+          </div>
+        </div>
+        <div class="scontent">
+          <!-- Notification header -->
+          <div class="notif-header">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div class="notif-title">Алерты цен</div>
+                <div class="notif-sub">3 новых уведомления</div>
+              </div>
+              <svg class="brand-ico" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#6C63FF" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="#6C63FF"/><line x1="14" y1="2" x2="14" y2="6" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="14" y1="22" x2="14" y2="26" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="2" y1="14" x2="6" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="22" y1="14" x2="26" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+
+          <div class="notif-body">
+            <div class="notif-section-lbl">Сегодня</div>
+
+            <!-- Price drop - good -->
+            <div class="alert-card" style="border-color:rgba(52,211,153,0.2);background:rgba(52,211,153,0.05);">
+              <div class="alert-ico alert-ico-drop">📉</div>
+              <div style="flex:1;">
+                <div class="alert-route">WAW → BCN</div>
+                <div style="display:flex;align-items:center;gap:8px;margin:3px 0;">
+                  <span style="font-size:11.5px;color:rgba(255,255,255,0.4);text-decoration:line-through;">€124</span>
+                  <span class="alert-new-good">€67</span>
+                  <span class="alert-delta-good">-46%</span>
+                </div>
+                <div class="alert-time">Wizz Air · 2 мин назад</div>
+                <div class="btn-book-alert">Забронировать сейчас</div>
+              </div>
+            </div>
+
+            <!-- Price drop - another -->
+            <div class="alert-card" style="border-color:rgba(52,211,153,0.15);background:rgba(52,211,153,0.04);">
+              <div class="alert-ico alert-ico-drop">📉</div>
+              <div style="flex:1;">
+                <div class="alert-route">KBP → DXB</div>
+                <div style="display:flex;align-items:center;gap:8px;margin:3px 0;">
+                  <span style="font-size:11.5px;color:rgba(255,255,255,0.4);text-decoration:line-through;">€310</span>
+                  <span class="alert-new-good">€218</span>
+                  <span class="alert-delta-good">-30%</span>
+                </div>
+                <div class="alert-time">FlyDubai · 18 мин назад</div>
+                <div class="btn-book-alert">Забронировать сейчас</div>
+              </div>
+            </div>
+
+            <div class="notif-section-lbl" style="margin-top:12px;">Настройки алертов</div>
+
+            <div class="notif-toggle">
+              <div>
+                <div class="toggle-lbl">WAW → BCN</div>
+                <div class="toggle-sub">Уведомлять при снижении</div>
+              </div>
+              <div class="toggle-pill"></div>
+            </div>
+            <div class="notif-toggle">
+              <div>
+                <div class="toggle-lbl">KBP → DXB</div>
+                <div class="toggle-sub">Уведомлять при снижении</div>
+              </div>
+              <div class="toggle-pill"></div>
+            </div>
+            <div class="notif-toggle">
+              <div>
+                <div class="toggle-lbl">MSQ → IST</div>
+                <div class="toggle-sub">Отслеживание приостановлено</div>
+              </div>
+              <div class="toggle-pill-off"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── -->
+  <!-- SCREEN 7 · Multilingual              -->
+  <!-- ───────────────────────────────────── -->
+  <div class="sw">
+    <div class="cap">
+      <h2>Для путешественников СНГ</h2>
+      <p>Русский, украинский, английский — пиши как удобно</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="di"></div>
+        <div class="glow" style="width:160px;height:160px;background:rgba(255,179,71,0.1);bottom:60px;right:-40px;"></div>
+        <div class="sbar">
+          <span class="sbar-time">9:41</span>
+          <div class="sbar-icons">
+            <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="6.5" width="2.5" height="4.5" rx="0.4"/><rect x="4" y="4" width="2.5" height="7" rx="0.4"/><rect x="8" y="2" width="2.5" height="9" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 8.8a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zm0-3.5c1.6 0 3 .65 4 1.7l1.3-1.3A8.4 8.4 0 0 0 7.5 3.7a8.4 8.4 0 0 0-5.3 2L3.5 7A6 6 0 0 1 7.5 5.3zm0-3.6c2.5 0 4.8 1 6.4 2.7L15.2 2A11.7 11.7 0 0 0 7.5 0C5 0 2.7.9 1 2.4l1.3 1.3A9.5 9.5 0 0 1 7.5 1.7z"/></svg>
+            <svg width="23" height="11" viewBox="0 0 23 11"><rect x="0" y="1" width="19" height="9" rx="2.2" stroke="white" stroke-width="0.9" fill="none" opacity="0.45"/><rect x="1.4" y="2.3" width="14" height="6.4" rx="1.3" fill="white"/><path d="M20.5 3.8v3.4a1.7 1.7 0 0 0 0-3.4z" fill="white" opacity="0.45"/></svg>
+          </div>
+        </div>
+        <div class="scontent">
+          <!-- Header with lang pills -->
+          <div class="lang-header">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-size:17px;font-weight:800;color:#fff;">SVIT</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px;">AI Travel Assistant</div>
+              </div>
+              <svg class="brand-ico" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#6C63FF" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="#6C63FF"/><line x1="14" y1="2" x2="14" y2="6" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="14" y1="22" x2="14" y2="26" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="2" y1="14" x2="6" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/><line x1="22" y1="14" x2="26" y2="14" stroke="#6C63FF" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <div class="lang-flags">
+              <span class="lang-pill lang-active">🇷🇺 RU</span>
+              <span class="lang-pill lang-off">🇺🇦 UA</span>
+              <span class="lang-pill lang-off">🇬🇧 EN</span>
+            </div>
+          </div>
+
+          <!-- Multi-language chat demo -->
+          <div class="chatarea">
+            <div class="datesep">Три языка — один чат</div>
+
+            <!-- Russian message -->
+            <div class="msg-u">Хочу в Барселону на выходные</div>
+            <div class="msg-ai">
+              <div class="ai-ava">
+                <svg width="13" height="13" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="white" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="white"/></svg>
+              </div>
+              <div class="ai-bbl">Нашёл рейс за €67 — Wizz Air. Бронировать?</div>
+            </div>
+
+            <!-- Ukrainian message -->
+            <div class="msg-u" style="background:rgba(0,180,216,0.7);">Хочу до Барселони на вихідні</div>
+            <div class="msg-ai">
+              <div class="ai-ava" style="background:linear-gradient(135deg,#1A6E94,#00B4D8);">
+                <svg width="13" height="13" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="white" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="white"/></svg>
+              </div>
+              <div class="ai-bbl">Знайшов рейс за €67 — Wizz Air. Бронювати?</div>
+            </div>
+
+            <!-- English message -->
+            <div class="msg-u" style="background:rgba(255,179,71,0.75);">I want to go to Barcelona this weekend</div>
+            <div class="msg-ai">
+              <div class="ai-ava" style="background:linear-gradient(135deg,#B07D20,#FFB347);">
+                <svg width="13" height="13" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="white" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="white"/></svg>
+              </div>
+              <div class="ai-bbl">Found a flight for €67 — Wizz Air. Shall I book it?</div>
+            </div>
+
+            <!-- Info pill -->
+            <div style="background:linear-gradient(135deg,rgba(108,99,255,0.15),rgba(0,180,216,0.1));border:1px solid rgba(108,99,255,0.25);border-radius:12px;padding:11px 13px;margin-top:4px;">
+              <div style="font-size:11px;font-weight:700;color:#fff;margin-bottom:5px;">Поддерживаемые языки</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                <span style="font-size:10.5px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:3px 8px;color:rgba(255,255,255,0.65);">🇷🇺 Русский</span>
+                <span style="font-size:10.5px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:3px 8px;color:rgba(255,255,255,0.65);">🇺🇦 Украинский</span>
+                <span style="font-size:10.5px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:3px 8px;color:rgba(255,255,255,0.65);">🇬🇧 English</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab bar -->
+          <div class="tabbar">
+            <div class="tab active">
+              <div class="tab-ico">
+                <svg width="21" height="21" viewBox="0 0 21 21" fill="none"><path d="M3 11 L10.5 4 L18 11 V18 H13 V13 H8 V18 H3 Z" stroke="#6C63FF" stroke-width="1.3" fill="none" stroke-linejoin="round"/></svg>
+              </div>
+              <span class="tab-lbl" style="color:#6C63FF;">Чат</span>
+            </div>
+            <div class="tab">
+              <div class="tab-ico">
+                <svg width="21" height="21" viewBox="0 0 21 21" fill="none"><rect x="3" y="4" width="15" height="14" rx="2" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"/><line x1="7" y1="2" x2="7" y2="6" stroke="rgba(255,255,255,0.3)" stroke-width="1.3" stroke-linecap="round"/><line x1="14" y1="2" x2="14" y2="6" stroke="rgba(255,255,255,0.3)" stroke-width="1.3" stroke-linecap="round"/><line x1="3" y1="9" x2="18" y2="9" stroke="rgba(255,255,255,0.3)" stroke-width="1.1"/></svg>
+              </div>
+              <span class="tab-lbl">Поездки</span>
+            </div>
+            <div class="tab">
+              <div class="tab-ico">
+                <svg width="21" height="21" viewBox="0 0 21 21" fill="none"><rect x="2" y="5" width="17" height="12" rx="2" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"/><path d="M6 9.5h4m0 0v4m0-4 4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.1" stroke-linecap="round"/></svg>
+              </div>
+              <span class="tab-lbl">Кошелёк</span>
+            </div>
+            <div class="tab">
+              <div class="tab-ico">
+                <svg width="21" height="21" viewBox="0 0 21 21" fill="none"><circle cx="10.5" cy="8" r="3.3" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"/><path d="M4 19c0-3.8 2.9-5.5 6.5-5.5S17 15.2 17 19" stroke="rgba(255,255,255,0.3)" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <span class="tab-lbl">Профиль</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 2 -->
+</div>
+
+<div class="footer">
+  <p>SVIT · AI Travel Assistant · App Store Screenshots v2.0</p>
+  <p>7 screens · iPhone 14 Pro · Dark Mode · CIS audience · May 2026</p>
+</div>
+
+</body>
+</html>

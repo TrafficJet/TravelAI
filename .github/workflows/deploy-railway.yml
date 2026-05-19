@@ -16,4 +16,7 @@ jobs:
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service backend
+        # IMPORTANT: run from repo root so railway.toml rootDirectory="apps/backend" resolves correctly.
+        # Running from apps/backend/ causes the builder to look for apps/backend/ inside the already-scoped
+        # snapshot and fail with "no such file or directory".
+        run: railway up --service travel-ai-backend --detach
