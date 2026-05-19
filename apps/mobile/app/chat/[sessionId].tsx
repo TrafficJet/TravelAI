@@ -409,11 +409,11 @@ export default function ChatScreen() {
 
   async function handleSend(content: string) {
     if (!sessionId) {
-      console.warn('[ChatScreen] handleSend blocked: no sessionId');
+      if (__DEV__) console.warn('[ChatScreen] handleSend blocked: no sessionId');
       return;
     }
     if (isStreaming) {
-      console.warn('[ChatScreen] handleSend blocked: isStreaming=true — waiting for previous response to finish');
+      if (__DEV__) console.warn('[ChatScreen] handleSend blocked: isStreaming=true — waiting for previous response to finish');
       return;
     }
 

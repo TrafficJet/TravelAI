@@ -21,43 +21,6 @@ import { Spacing } from '../../constants/spacing';
 import { SkeletonNotificationItem } from '../../components/ui/Skeleton';
 import type { AppNotification, NotificationType } from '../../types';
 
-// ── Mock notifications (shown when the list is empty after load) ───────────────
-
-const now = new Date();
-function hoursAgo(h: number): string {
-  return new Date(now.getTime() - h * 60 * 60 * 1000).toISOString();
-}
-function daysAgo(d: number): string {
-  return new Date(now.getTime() - d * 24 * 60 * 60 * 1000).toISOString();
-}
-
-const MOCK_NOTIFICATIONS: AppNotification[] = [
-  {
-    id: 'mock-1',
-    type: 'BOOKING_UPDATE',
-    title: 'Рейс WAW→BCN подтверждён',
-    body: 'Ваш рейс Варшава — Барселона успешно подтверждён. Вылет в 10:25.',
-    isRead: false,
-    createdAt: hoursAgo(1),
-  },
-  {
-    id: 'mock-2',
-    type: 'PRICE_ALERT',
-    title: 'Новые рейсы от €49 в Барселону',
-    body: 'Найдены дешёвые рейсы из Варшавы в Барселону. Успей купить!',
-    isRead: false,
-    createdAt: hoursAgo(3),
-  },
-  {
-    id: 'mock-3',
-    type: 'SYSTEM',
-    title: 'Специальное предложение: Hotel Arts',
-    body: 'Hotel Arts Barcelona — от €140 за ночь. Ограниченное предложение.',
-    isRead: true,
-    createdAt: daysAgo(1),
-  },
-];
-
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const SWIPE_THRESHOLD = 60;
@@ -291,9 +254,7 @@ export default function NotificationsScreen() {
 
   // Build grouped list rows with per-item indices for staggered animation
   const listData = useMemo<ListRow[]>(() => {
-    const source = !isLoading && notifications.length === 0
-      ? MOCK_NOTIFICATIONS
-      : notifications;
+    const source = notifications;
 
     const groups: Record<DateGroup, AppNotification[]> = {
       today: [],
@@ -348,25 +309,29 @@ export default function NotificationsScreen() {
     );
   }
 
-  // ── Resolve unread count for header button ────────────────────────────────
+  // ── Empty state ────────────────────────────────────────────────────────
 
-  const isMockMode = !isLoading && notifications.length === 0;
-  const effectiveUnreadCount = isMockMode
-    ? MOCK_NOTIFICATIONS.filter((n) => !n.isRead).length
-    : unreadCount;
+  if (!isLoading && notifications.length === 0) {
+    return (
+      <View style={[styles.container, styles.emptyContainer, { backgroundColor: colors.background }]}>
+        <Ionicons name="notifications-off-outline" size={56} color={colors.textSecondary} />
+        <Text style={[styles.emptyTitle, { color: colors.text }]}>Уведомлений пока нет</Text>
+      </View>
+    );
+  }
 
   // ── List ────────────────────────────────────────────────────────────────
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {effectiveUnreadCount > 0 && (
+      {unreadCount > 0 && (
         <TouchableOpacity
           style={[styles.markAllBtn, { borderBottomColor: colors.border }]}
           onPress={markAllRead}
           activeOpacity={0.7}
         >
           <Text style={styles.markAllText}>
-            Отметить все как прочитанные ({effectiveUnreadCount})
+            Отметить все как прочитанные ({unreadCount})
           </Text>
         </TouchableOpacity>
       )}
@@ -430,6 +395,16 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  emptyTitle: {
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
+    textAlign: 'center',
   },
   markAllBtn: {
     paddingHorizontal: 16,

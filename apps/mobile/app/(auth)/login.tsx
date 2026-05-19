@@ -121,8 +121,8 @@ export default function LoginScreen() {
             activeOpacity={0.75}
             disabled={isLoading}
           >
-            <Text style={styles.demoBtnTitle}>Try Demo</Text>
-            <Text style={styles.demoBtnHint}>No sign-up required</Text>
+            <Text style={styles.demoBtnTitle}>Попробовать демо</Text>
+            <Text style={styles.demoBtnHint}>Без регистрации</Text>
           </TouchableOpacity>
 
           <SocialAuthButtons mode="login" />

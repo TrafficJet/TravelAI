@@ -121,8 +121,8 @@ export function HotelCard({ hotel, onBook }: Props) {
     hotel.checkIn && hotel.checkOut ? nightsCount(hotel.checkIn, hotel.checkOut) : 0;
   const currencySymbol = formatCurrency(hotel.currency);
   const total = nights > 0 ? hotel.pricePerNight * nights : undefined;
-  const cityQuery = hotel.city || hotel.name || 'hotel';
-  const photoUri = `https://source.unsplash.com/400x200/?hotel,${encodeURIComponent(cityQuery)}`;
+  const cityQuery = encodeURIComponent(hotel.city || hotel.name || 'hotel');
+  const photoUri = `https://placehold.co/400x200/1a1a2e/ffffff?text=${cityQuery}`;
 
   function handlePress() {
     router.push({

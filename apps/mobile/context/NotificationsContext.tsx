@@ -112,7 +112,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
       );
       setUnreadCount((prev) => prev + 1);
     }
-  }, []);
+  }, [notifications]);
 
   // ── Mark all read ─────────────────────────────────────────────────────────
 

@@ -22,6 +22,7 @@ import { useTheme } from '../src/theme/ThemeContext';
 import { toast } from '../lib/toast';
 import i18n from '../src/i18n';
 import { useAuthStore } from '../stores/authStore';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../services/api';
 
 const SETTINGS_KEY = 'user_settings';
@@ -492,6 +493,7 @@ const optGroupStyles = StyleSheet.create({
 export default function SettingsScreen() {
   const { setTheme: applyTheme } = useTheme();
   const logout = useAuthStore((s) => s.logout);
+  const insets = useSafeAreaInsets();
 
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -516,7 +518,7 @@ export default function SettingsScreen() {
       }
 
       try {
-        const { data } = await api.get<PreferencesResponse>('/api/users/me/preferences');
+        const { data } = await api.get<PreferencesResponse>('/users/me/preferences');
         const loaded = prefsToSettings(data.preferences);
         setSettings(loaded);
         await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(loaded));
@@ -673,7 +675,7 @@ export default function SettingsScreen() {
       <StatusBar barStyle="light-content" />
 
       {/* Custom header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? 48 : insets.top + 16 }]}>
         <TouchableOpacity
           onPress={() => router.back()}
           style={styles.backBtn}
@@ -870,7 +872,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.background,
-    paddingTop: Platform.OS === 'android' ? 48 : 58,
     paddingBottom: 14,
     paddingHorizontal: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
