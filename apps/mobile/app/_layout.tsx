@@ -134,7 +134,6 @@ function ThemedStack({ fontsLoaded, showBrandSplash, onBrandSplashFinish }: Them
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="chat/[sessionId]" options={{ headerShown: false }} />
         <Stack.Screen
           name="bookings/[bookingId]"
           options={{ title: 'Детали брони', headerBackTitle: 'Назад' }}
