@@ -39,7 +39,6 @@ const FILTER_TABS: { key: FilterTab; label: string }[] = [
 // ── Transaction icon map ──────────────────────────────────────────────────────
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
-  RUB: '₽',
   USD: '$',
   EUR: '€',
   KZT: '₸',
@@ -587,7 +586,7 @@ export default function WalletScreen() {
               onTopUp={() => setTopUpVisible(true)}
             />
 
-            {/* Payment methods row (design: 4 tiles — Visa, Bitcoin, USDT, Mir) */}
+            {/* Payment methods row (design: 4 tiles — Visa, Bitcoin, USDT, Apple Pay) */}
             <View style={styles.pmRow}>
               <View style={[styles.pmTile]}>
                 <Text style={styles.pmIcon}>💳</Text>
@@ -601,10 +600,10 @@ export default function WalletScreen() {
                 <Text style={styles.pmIcon}>🪙</Text>
                 <Text style={[styles.pmLabel, { color: colors.textMuted }]}>USDT</Text>
               </View>
-              <View style={[styles.pmTile, styles.pmTileActive]}>
-                <Text style={[styles.pmIcon, { fontSize: 10, fontWeight: '700', color: '#F59E0B' }]}>МИР</Text>
-                <Text style={[styles.pmLabel, { color: '#F59E0B' }]}>Карта Мир</Text>
-              </View>
+              <TouchableOpacity style={[styles.pmTile]} activeOpacity={0.7} onPress={() => {}}>
+                <Ionicons name="logo-apple" size={16} color="#F4F4F8" />
+                <Text style={[styles.pmLabel, { color: colors.textMuted }]}>Apple Pay</Text>
+              </TouchableOpacity>
             </View>
 
             {/* Transaction section label */}

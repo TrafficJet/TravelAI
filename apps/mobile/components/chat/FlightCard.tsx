@@ -146,8 +146,9 @@ function formatDuration(minutes: number): string {
 function formatCurrency(currency: string): string {
   if (currency === 'USD') return '$';
   if (currency === 'EUR') return '€';
-  if (currency === 'RUB') return '₽';
-  return currency;
+  if (currency === 'KZT') return '₸';
+  if (currency === 'UAH') return '₴';
+  return '$';
 }
 
 function cabinLabel(cabin: string): string {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,8 +19,9 @@ interface Props {
 function formatCurrency(currency: string): string {
   if (currency === 'USD') return '$';
   if (currency === 'EUR') return '€';
-  if (currency === 'RUB') return '₽';
-  return currency;
+  if (currency === 'KZT') return '₸';
+  if (currency === 'UAH') return '₴';
+  return '$';
 }
 
 function formatDate(dateStr: string): string {
@@ -115,14 +116,18 @@ const amenityStyles = StyleSheet.create({
 
 // ── HotelCard ─────────────────────────────────────────────────────────────────
 
+const FALLBACK_HOTEL_IMAGE = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80';
+
 export function HotelCard({ hotel, onBook }: Props) {
   const { colors } = useTheme();
+  const [imgError, setImgError] = useState(false);
   const nights =
     hotel.checkIn && hotel.checkOut ? nightsCount(hotel.checkIn, hotel.checkOut) : 0;
   const currencySymbol = formatCurrency(hotel.currency);
   const total = nights > 0 ? hotel.pricePerNight * nights : undefined;
-  const cityQuery = encodeURIComponent(hotel.city || hotel.name || 'hotel');
-  const photoUri = `https://placehold.co/400x200/1a1a2e/ffffff?text=${cityQuery}`;
+  const photoUri = (!imgError && hotel.imageUrl)
+    ? hotel.imageUrl
+    : FALLBACK_HOTEL_IMAGE;
 
   function handlePress() {
     router.push({
@@ -158,6 +163,7 @@ export function HotelCard({ hotel, onBook }: Props) {
           source={{ uri: photoUri }}
           style={styles.photo}
           resizeMode="cover"
+          onError={() => setImgError(true)}
         />
 
         {/* Dark gradient overlay at the bottom of the photo */}
