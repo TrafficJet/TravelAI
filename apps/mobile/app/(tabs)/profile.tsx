@@ -635,6 +635,8 @@ const PLAN_LABELS: Record<string, string> = {
   PREMIUM: 'Премиум',
 };
 
+const SUBSCRIPTION_PRICE = 9.99;
+
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function ProfileScreen() {
@@ -1060,7 +1062,7 @@ export default function ProfileScreen() {
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Text style={{ color: Colors.success, fontFamily: 'Inter', fontSize: 13, fontWeight: '600' }}>
-                    $9.99/мес
+                    ${`${SUBSCRIPTION_PRICE}`}/мес
                   </Text>
                   <View style={styles.planBadgePremium}>
                     <Text style={styles.planBadgeTextPremium}>PREMIUM</Text>

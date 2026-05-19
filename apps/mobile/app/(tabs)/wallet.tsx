@@ -194,7 +194,7 @@ function TopUpModal({ visible, onClose }: TopUpModalProps) {
       } else {
         await load();
         await sendPaymentConfirmation(numAmount);
-        toast.success(`Кошелёк пополнен на $${numAmount.toLocaleString('ru-RU')}`);
+        toast.success(`Кошелёк пополнен на $${numAmount.toFixed(2)}`);
         setAmount('');
         onClose();
       }

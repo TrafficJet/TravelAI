@@ -14,6 +14,10 @@ import { Radius } from '../../constants/radius';
 import { Spacing } from '../../constants/spacing';
 import { useAuthStore } from '../../stores/authStore';
 
+// ── Subscription price constant ───────────────────────────────────────────────
+
+const SUBSCRIPTION_PRICE = 19.99;
+
 // ── Feature definitions ───────────────────────────────────────────────────────
 
 interface Feature {
@@ -129,7 +133,7 @@ function PremiumCard({ isActive }: { isActive: boolean }) {
             <View style={[cardStyles.divider, cardStyles.dividerAmber]} />
           </View>
           <View style={cardStyles.priceBlock}>
-            <Text style={cardStyles.priceAmount}>$19.99</Text>
+            <Text style={cardStyles.priceAmount}>${`${SUBSCRIPTION_PRICE}`}</Text>
             <Text style={cardStyles.pricePeriod}>/месяц</Text>
           </View>
         </View>
@@ -312,7 +316,7 @@ export default function SubscriptionPlansScreen() {
             activeOpacity={0.85}
           >
             <Text style={screenStyles.ctaBtnText}>
-              Оформить Premium — $19.99/мес
+              {`Оформить Premium — $${SUBSCRIPTION_PRICE}/мес`}
             </Text>
           </TouchableOpacity>
         </Animated.View>
