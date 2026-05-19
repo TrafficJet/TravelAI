@@ -28,16 +28,16 @@ export default function ChatEntryScreen() {
       await loadSessions();
       const current = useChatStore.getState().sessions[0];
       if (current) {
-        router.replace((`/(tabs)/chat/${current.id}`) as never);
+        router.replace((`/chat/${current.id}`) as never);
       } else {
         const id = await createSession();
-        router.replace((`/(tabs)/chat/${id}`) as never);
+        router.replace((`/chat/${id}`) as never);
       }
     } catch {
       // Fallback: try creating a fresh session
       try {
         const id = await createSession();
-        router.replace((`/(tabs)/chat/${id}`) as never);
+        router.replace((`/chat/${id}`) as never);
       } catch {
         setHasError(true);
       }
@@ -50,11 +50,11 @@ export default function ChatEntryScreen() {
       const { chatService } = await import('../../services/chatService');
       const response = await chatService.createSession();
       const id = response.session.id;
-      router.replace(`/(tabs)/chat/${id}` as never);
+      router.replace(`/chat/${id}` as never);
     } catch {
       // Backend unavailable — use local ID, session will be created lazily on first message
       const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-      router.replace(`/(tabs)/chat/${fallbackId}` as never);
+      router.replace(`/chat/${fallbackId}` as never);
     }
   }, []);
 
