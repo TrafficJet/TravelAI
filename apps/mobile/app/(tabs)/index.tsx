@@ -51,7 +51,9 @@ export default function ChatEntryScreen() {
       const id = response.session.id;
       router.replace(`/chat/${id}` as never);
     } catch {
-      setHasError(true);
+      // Backend unavailable — use local ID, session will be created lazily on first message
+      const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      router.replace(`/chat/${fallbackId}` as never);
     }
   }, []);
 
@@ -96,7 +98,7 @@ export default function ChatEntryScreen() {
         </Text>
         <TouchableOpacity
           style={styles.retryBtn}
-          onPress={() => void initAuthenticated()}
+          onPress={() => isAuthenticated ? void initAuthenticated() : void initGuest()}
           activeOpacity={0.8}
         >
           <Ionicons name="refresh-outline" size={18} color="#fff" />

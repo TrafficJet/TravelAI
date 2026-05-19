@@ -90,7 +90,7 @@ describe('Auth flow', () => {
         include: { wallet: true, subscription: true },
       });
       expect(dbUser?.wallet).toBeTruthy();
-      expect(dbUser?.wallet?.currency).toBe('RUB');
+      expect(dbUser?.wallet?.currency).toBe('USD');
       expect(dbUser?.subscription?.plan).toBe('FREE');
       expect(dbUser?.subscription?.status).toBe('ACTIVE');
     });

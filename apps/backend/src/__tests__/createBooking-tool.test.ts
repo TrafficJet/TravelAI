@@ -27,6 +27,9 @@ jest.mock('../lib/prisma', () => ({
     booking: {
       create: (...args: unknown[]) => mockBookingCreate(...args),
     },
+    user: {
+      findUnique: jest.fn().mockResolvedValue({ pushToken: null }),
+    },
   },
 }));
 
