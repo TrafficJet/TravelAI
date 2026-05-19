@@ -81,7 +81,7 @@
     },
     "extra": {
       "apiUrl": "$API_URL",
-      "sentryDsn": "",
+      "sentryDsn": "https://203439eb6d8b88caeda852db8bba5183@o4511415643078656.ingest.de.sentry.io/4511415732535376",
       "eas": {
         "projectId": "placeholder-replace-after-eas-init"
       }
