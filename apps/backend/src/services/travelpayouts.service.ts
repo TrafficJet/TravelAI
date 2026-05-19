@@ -8,8 +8,9 @@ import { cityToIata } from './amadeus.service.js';
 //   Flights: https://support.travelpayouts.com/hc/en-us/articles/360004731452
 //   Hotels:  https://support.travelpayouts.com/hc/en-us/articles/360004070052
 //
-// Required env var (one key for both APIs):
+// Required env vars:
 //   TRAVELPAYOUTS_API_KEY — from travelpayouts.com → Dashboard → API
+//   TRAVELPAYOUTS_MARKER  — affiliate partner/marker ID (default: 530860)
 
 // ---------------------------------------------------------------------------
 // Aviasales (flights) API types
@@ -275,6 +276,29 @@ async function searchFlightsTravelpayoutsReal(
 // GET https://engine.hotellook.com/api/v2/cache.json
 // ---------------------------------------------------------------------------
 
+/**
+ * Build a Hotellook affiliate search URL including the partner marker.
+ * Example: https://search.hotellook.com/?marker=530860&token=...&locationId=istanbul
+ */
+function buildHotellookAffiliateUrl(params: {
+  locationId: string;
+  checkIn: string;
+  checkOut: string;
+  adults: number;
+  apiKey: string;
+}): string {
+  const marker = process.env.TRAVELPAYOUTS_MARKER ?? '530860';
+  const url = new URL('https://search.hotellook.com/');
+  url.searchParams.set('marker', marker);
+  url.searchParams.set('token', params.apiKey);
+  url.searchParams.set('locationId', params.locationId);
+  url.searchParams.set('checkIn', params.checkIn);
+  url.searchParams.set('checkOut', params.checkOut);
+  url.searchParams.set('adults', String(params.adults));
+  url.searchParams.set('lang', 'ru');
+  return url.toString();
+}
+
 /** Map Hotellook hotel entry to our HotelOffer shape */
 function mapHotellookHotel(hotel: HotellookHotel, nights: number): HotelOffer | null {
   const rawPrice = hotel.price ?? hotel.priceFrom ?? hotel.minPrice ?? 0;
@@ -358,8 +382,23 @@ async function searchHotelsTravelpayoutsReal(
     throw new Error('[Travelpayouts/hotels] No hotels returned for this query');
   }
 
+  // Build Hotellook affiliate URL with partner marker
+  const affiliateUrl = buildHotellookAffiliateUrl({
+    locationId,
+    checkIn,
+    checkOut,
+    adults: guests.adults,
+    apiKey,
+  });
+
   let offers: HotelOffer[] = rawList
-    .map((h) => mapHotellookHotel(h, nights))
+    .map((h): HotelOffer | null => {
+      const offer = mapHotellookHotel(h, nights);
+      if (!offer) return null;
+      // Attach affiliate booking URL — includes marker=530860 for commission tracking
+      offer.bookingUrl = affiliateUrl;
+      return offer;
+    })
     .filter((o): o is HotelOffer => o !== null);
 
   // Apply star filter

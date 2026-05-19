@@ -4,6 +4,13 @@ import type { FlightOffer, FlightSegment, SearchFlightsParams } from './duffel.s
 // Aviasales service — CIS / domestic flight search.
 // Uses the real Travelpayouts v2 Partner API when AVIASALES_TOKEN is set in env.
 // Falls back to mock data when the token is absent or the API call fails.
+//
+// Affiliate link format (Aviasales via TravelPayouts):
+//   https://www.aviasales.ru/?marker={TRAVELPAYOUTS_MARKER}&...
+//
+// Env vars:
+//   TRAVELPAYOUTS_TOKEN  — API token for data requests.
+//   TRAVELPAYOUTS_MARKER — affiliate partner/marker ID (default: 530860).
 
 // ---------------------------------------------------------------------------
 // Mock data (kept as graceful fallback — do not remove)
@@ -117,6 +124,27 @@ interface TravelpayoutsCheapResponse {
 // Doc: https://support.travelpayouts.com/hc/en-us/articles/203956163
 // ---------------------------------------------------------------------------
 
+/**
+ * Build an Aviasales affiliate search URL including the partner marker.
+ * Example: https://www.aviasales.ru/search/MOW1206IST1?marker=530860
+ */
+function buildAviasalesAffiliateUrl(
+  origin: string,
+  destination: string,
+  departureDate: string,
+  adults: number,
+): string {
+  const marker = process.env.TRAVELPAYOUTS_MARKER ?? '530860';
+  // Short date format: DDMM (e.g. "1206" for 2026-06-12)
+  const [, month, day] = departureDate.slice(0, 10).split('-');
+  const shortDate = `${day}${month}`;
+  const url = new URL(
+    `https://www.aviasales.ru/search/${origin.toUpperCase()}${shortDate}${destination.toUpperCase()}${adults}`,
+  );
+  url.searchParams.set('marker', marker);
+  return url.toString();
+}
+
 async function searchFlightsCISReal(params: SearchFlightsParams): Promise<FlightOffer[]> {
   const token = process.env.TRAVELPAYOUTS_TOKEN ?? '';
   const { origin, destination, departureDate, passengers } = params;
@@ -176,6 +204,14 @@ async function searchFlightsCISReal(params: SearchFlightsParams): Promise<Flight
     const totalPrice = (ticket.price * passengerCount).toFixed(2);
     const baggageLabel = ticket.number_of_changes === 0 ? 'Только ручная кладь' : '1 место 23 кг';
 
+    // Affiliate booking URL — directs user to Aviasales with partner marker
+    const bookingUrl = buildAviasalesAffiliateUrl(
+      origin,
+      destination,
+      departureDate,
+      passengers.adults,
+    );
+
     return {
       offerId: uuidv4(),
       provider: 'AVIASALES',
@@ -195,6 +231,7 @@ async function searchFlightsCISReal(params: SearchFlightsParams): Promise<Flight
       ],
       baggage: baggageLabel,
       expiresAt,
+      bookingUrl,
     } satisfies FlightOffer;
   });
 }

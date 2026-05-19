@@ -25,6 +25,8 @@ export interface FlightOffer {
   segments: FlightSegment[];
   baggage: string;
   expiresAt: string;
+  /** Affiliate booking link (Aviasales via TravelPayouts). Optional — present when marker is set. */
+  bookingUrl?: string;
 }
 
 export interface FlightSegment {

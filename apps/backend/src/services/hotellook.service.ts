@@ -10,9 +10,12 @@ import type { HotelOffer, SearchHotelsParams } from './booking.service.js';
 //
 // Affiliate link format (TravelPayouts):
 //   https://www.hotellook.com/search?adults={adults}&checkIn={checkIn}
-//     &checkOut={checkOut}&cityId={city}&lang=ru&token={TRAVELPAYOUTS_TOKEN}
+//     &checkOut={checkOut}&cityId={city}&lang=ru
+//     &marker={TRAVELPAYOUTS_MARKER}&token={TRAVELPAYOUTS_TOKEN}
 //
-// Env var: TRAVELPAYOUTS_TOKEN — required for affiliate commissions.
+// Env vars:
+//   TRAVELPAYOUTS_TOKEN  — required for affiliate commissions.
+//   TRAVELPAYOUTS_MARKER — affiliate partner/marker ID (default: 530860).
 
 // ---------------------------------------------------------------------------
 // Helper: derive nights count from ISO date strings
@@ -33,6 +36,7 @@ function buildHotellookUrl(params: {
   checkOut: string;
   adults: number;
   token: string;
+  marker: string;
 }): string {
   const url = new URL('https://www.hotellook.com/search');
   url.searchParams.set('adults', String(params.adults));
@@ -41,6 +45,10 @@ function buildHotellookUrl(params: {
   // cityId can be a name string — Hotellook resolves it to ID internally
   url.searchParams.set('cityId', params.city);
   url.searchParams.set('lang', 'ru');
+  // Affiliate marker — identifies the partner for commission tracking
+  if (params.marker) {
+    url.searchParams.set('marker', params.marker);
+  }
   if (params.token) {
     url.searchParams.set('token', params.token);
   }
@@ -364,6 +372,7 @@ export async function searchHotelsHotellook(
 
   const nights  = getNights(checkIn, checkOut);
   const token   = process.env.TRAVELPAYOUTS_TOKEN ?? '';
+  const marker  = process.env.TRAVELPAYOUTS_MARKER ?? '530860';
 
   // Build one affiliate search URL that covers all offers in this search
   const affiliateUrl = buildHotellookUrl({
@@ -372,6 +381,7 @@ export async function searchHotelsHotellook(
     checkOut,
     adults: guests.adults,
     token,
+    marker,
   });
 
   console.log('[Hotellook] Generating affiliate offers for', city, checkIn, '->', checkOut);
