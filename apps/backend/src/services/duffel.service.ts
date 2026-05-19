@@ -189,12 +189,13 @@ export async function searchFlightsMock(params: SearchFlightsParams): Promise<Fl
   const route = getRouteData(origin, destination);
   const passengerCount = passengers.adults + (passengers.children ?? 0);
 
-  // Use EUR pricing when EITHER origin OR destination is a European/Ukrainian airport.
-  // Prevents RUB being returned for e.g. SVO→WAW (Moscow→Warsaw).
+  // All prices in USD or EUR — RUB is NEVER returned to Claude.
+  // European/Ukrainian routes → EUR; all others → USD.
   const isEurOrUkr = EUR_ORIGIN_AIRPORTS.has(origin.toUpperCase()) || EUR_ORIGIN_AIRPORTS.has(destination.toUpperCase());
-  const currency = isEurOrUkr ? 'EUR' : 'RUB';
+  const currency = isEurOrUkr ? 'EUR' : 'USD';
 
-  // Use route-specific price range when available, else fall back to generic ranges
+  // Use route-specific price range when available, else fall back to generic ranges.
+  // Non-EUR routes: realistic USD prices ($89–$599 range), NOT ruble amounts.
   let basePrice: number;
   if (isEurOrUkr) {
     if (route.priceRange) {
@@ -204,7 +205,8 @@ export async function searchFlightsMock(params: SearchFlightsParams): Promise<Fl
       basePrice = 49 + Math.floor(Math.random() * 300);
     }
   } else {
-    basePrice = 8000 + Math.floor(Math.random() * 20000);
+    // CIS/Asian routes: $89–$599 USD range
+    basePrice = 89 + Math.floor(Math.random() * 510);
   }
 
   // Stagger departure times: 07:00, 12:30, 18:45, 06:15, 15:00
