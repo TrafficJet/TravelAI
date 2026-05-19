@@ -8,10 +8,13 @@ import type {
   CreateOfferRequestSlice,
   CreateOfferRequestPassenger,
 } from '@duffel/api/types';
+import { searchFlightsAmadeus } from './amadeus.service.js';
 
 // Duffel service — international flight search.
-// Uses the real Duffel REST API when DUFFEL_API_KEY is set in env.
-// Falls back to mock data when the key is absent or the API call fails.
+// Priority: Duffel real API → Amadeus real API → mock.
+// Uses real Duffel when DUFFEL_API_KEY is set.
+// Falls back to Amadeus when AMADEUS_CLIENT_ID + AMADEUS_CLIENT_SECRET are set.
+// Falls back to mock data when no keys are present or all real calls fail.
 
 export interface FlightOffer {
   offerId: string;
@@ -380,21 +383,32 @@ async function searchFlightsDuffelReal(
 export async function searchFlights(params: SearchFlightsParams): Promise<FlightOffer[]> {
   const apiKey = process.env.DUFFEL_API_KEY;
 
-  if (!apiKey) {
-    console.log('[Duffel] API key not set, using mock');
-    return searchFlightsMock(params);
+  // --- Priority 1: Duffel real API ---
+  if (apiKey) {
+    console.log('[Duffel] Using real API');
+    const client = new Duffel({ token: apiKey });
+    try {
+      return await searchFlightsDuffelReal(params, client);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(`[Duffel] Fallback to Amadeus/mock: ${message}`);
+    }
   }
 
-  console.log('[Duffel] Using real API');
-  const client = new Duffel({ token: apiKey });
-
-  try {
-    return await searchFlightsDuffelReal(params, client);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.warn(`[Duffel] Fallback to mock: ${message}`);
-    return searchFlightsMock(params);
+  // --- Priority 2: Amadeus real API ---
+  if (process.env.AMADEUS_CLIENT_ID && process.env.AMADEUS_CLIENT_SECRET) {
+    console.log('[Amadeus] Duffel unavailable — trying Amadeus flights');
+    try {
+      return await searchFlightsAmadeus(params);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(`[Amadeus] Fallback to mock: ${message}`);
+    }
   }
+
+  // --- Priority 3: Mock ---
+  console.log('[Duffel] No real API available, using mock');
+  return searchFlightsMock(params);
 }
 
 // ---------------------------------------------------------------------------

@@ -155,9 +155,16 @@ async function getAccessToken(): Promise<string> {
     return tokenCache.accessToken;
   }
 
-  const clientId     = process.env.AMADEUS_CLIENT_ID!;
-  const clientSecret = process.env.AMADEUS_CLIENT_SECRET!;
-  const baseUrl      = getBaseUrl();
+  const clientId     = process.env.AMADEUS_CLIENT_ID;
+  const clientSecret = process.env.AMADEUS_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    throw new Error(
+      '[Amadeus] AMADEUS_CLIENT_ID and AMADEUS_CLIENT_SECRET must both be set in environment',
+    );
+  }
+
+  const baseUrl = getBaseUrl();
 
   const body = new URLSearchParams({
     grant_type:    'client_credentials',
