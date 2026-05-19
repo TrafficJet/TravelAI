@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { Platform, useColorScheme } from 'react-native';
 import { safeStorage } from '../../utils/safeStorage';
 import { lightColors, darkColors, Colors } from './colors';
 
@@ -20,7 +20,9 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const systemScheme = useColorScheme();
+  const rawSystemScheme = useColorScheme();
+  // On web, always treat as dark regardless of browser preference
+  const systemScheme = Platform.OS === 'web' ? 'dark' : rawSystemScheme;
   const [theme, setThemeState] = useState<Theme>('dark');
 
   useEffect(() => {

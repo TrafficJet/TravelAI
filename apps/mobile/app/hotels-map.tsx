@@ -22,11 +22,11 @@ import type { Hotel } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const MOSCOW_REGION: Region = {
-  latitude: 55.7558,
-  longitude: 37.6176,
-  latitudeDelta: 0.1,
-  longitudeDelta: 0.1,
+const DEFAULT_REGION: Region = {
+  latitude: 48.8566,   // Paris / centre of Europe
+  longitude: 2.3522,
+  latitudeDelta: 10.0,
+  longitudeDelta: 10.0,
 };
 
 // ── Price marker ──────────────────────────────────────────────────────────────
@@ -242,7 +242,7 @@ export default function HotelsMapScreen() {
   const raw = useLocalSearchParams();
   const mapRef = useRef<MapView>(null);
 
-  const [region, setRegion] = useState<Region>(MOSCOW_REGION);
+  const [region, setRegion] = useState<Region>(DEFAULT_REGION);
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
 
   // Parse hotels from params (JSON string) or use mock

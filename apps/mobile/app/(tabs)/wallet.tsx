@@ -563,7 +563,7 @@ function PaymentMethods() {
         activeOpacity={0.7}
         onPress={() => {}}
       >
-        <Text style={[pmStyles.icon, { color: colors.text }]}></Text>
+        <Text style={[pmStyles.icon, { color: colors.text, fontSize: 14, fontWeight: '700' }]}>Pay</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>Apple Pay</Text>
       </TouchableOpacity>
       <TouchableOpacity
