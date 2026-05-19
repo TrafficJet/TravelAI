@@ -261,6 +261,18 @@ export async function savePushToken(request: FastifyRequest, reply: FastifyReply
   return reply.send({ success: true });
 }
 
+// DELETE /api/users/me/push-token — clear push token on logout
+export async function deletePushToken(request: FastifyRequest, reply: FastifyReply) {
+  const userId = request.userId;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { pushToken: null },
+  });
+
+  return reply.send({ success: true });
+}
+
 // PATCH /api/users/me/preferences — update user preferences (partial merge)
 export async function updatePreferences(request: FastifyRequest, reply: FastifyReply) {
   const userId = request.userId;

@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { getMe, updateMe, getMeStats, deleteMe, getPreferences, updatePreferences, savePushToken } from '../handlers/users.handler';
+import { getMe, updateMe, getMeStats, deleteMe, getPreferences, updatePreferences, savePushToken, deletePushToken } from '../handlers/users.handler';
 import { authenticate } from '../middleware/auth.middleware';
 
 // Users routes — all require authentication
@@ -75,6 +75,9 @@ export async function usersRoutes(fastify: FastifyInstance) {
     },
     handler: savePushToken,
   });
+
+  // DELETE /api/users/me/push-token — clear push token on logout
+  fastify.delete('/me/push-token', { handler: deletePushToken });
 
   // DELETE /api/users/me — soft-delete account after password confirmation
   fastify.delete('/me', {

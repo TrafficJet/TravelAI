@@ -1,6 +1,7 @@
 import type Anthropic from '@anthropic-ai/sdk';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
+import { sendExpoPush } from '../services/push.service';
 
 // Claude tool definition for creating a booking (PENDING status, awaiting user confirmation)
 export const createBookingTool: Anthropic.Tool = {
@@ -109,6 +110,28 @@ export async function executeCreateBooking(input: CreateBookingInput, userId: st
       subtitle = `${checkIn} – ${checkOut}`;
     }
   }
+
+  // Fire-and-forget push notification — inform user that a booking draft was created
+  const origin = input.type === 'FLIGHT'
+    ? ((details.segments as Array<{ origin: string }> | undefined)?.[0]?.origin ?? (details.origin as string | undefined) ?? '')
+    : '';
+  const destination = input.type === 'FLIGHT'
+    ? ((details.segments as Array<{ destination: string }> | undefined)?.at(-1)?.destination ?? (details.destination as string | undefined) ?? '')
+    : '';
+
+  prisma.user.findUnique({ where: { id: userId }, select: { pushToken: true } }).then(async (u) => {
+    if (u?.pushToken) {
+      const pushBody = input.type === 'FLIGHT' && origin && destination
+        ? `Ваш рейс ${origin} → ${destination} забронирован`
+        : `Ваше бронирование создано. Подтвердите оплату.`;
+      await sendExpoPush({
+        pushToken: u.pushToken,
+        title: 'Бронирование подтверждено',
+        body: pushBody,
+        data: { bookingId: booking.id, type: 'booking_created' },
+      });
+    }
+  }).catch(() => {});
 
   return {
     bookingId: booking.id,

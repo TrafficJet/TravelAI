@@ -1,8 +1,11 @@
-// Stripe webhook route — public, no auth middleware, raw body required for signature verification
-// POST /api/stripe/webhook
+// Stripe routes:
+//   POST /api/stripe/webhook      — public, Stripe HMAC-verified
+//   POST /api/stripe/create-intent — auth required, creates PaymentIntent for wallet top-up
 
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { stripeWebhookHandler } from '../handlers/stripe-webhook.handler';
+import { createPaymentIntent } from '../handlers/stripe-topup.handler';
+import { authenticate } from '../middleware/auth.middleware';
 
 /**
  * Stripe routes plugin.
@@ -11,12 +14,15 @@ import { stripeWebhookHandler } from '../handlers/stripe-webhook.handler';
  * alongside the parsed JSON body.  Stripe's signature verification requires
  * the exact raw bytes — re-serialising the parsed object would cause a mismatch.
  *
- * NOTE: No authentication middleware is applied here — Stripe calls this
- * endpoint from their servers.  Security is handled by HMAC-SHA256 signature
- * verification inside stripeWebhookHandler.
+ * NOTE: The webhook route has no authentication middleware — Stripe calls it
+ * from their servers.  Security is handled by HMAC-SHA256 signature verification
+ * inside stripeWebhookHandler.
+ *
+ * The create-intent route uses JWT authenticate middleware.
  */
 export async function stripeRoutes(fastify: FastifyInstance) {
-  // Buffer the raw body so the webhook handler can verify the Stripe signature
+  // Buffer the raw body so the webhook handler can verify the Stripe signature.
+  // This parser is scoped to this plugin only.
   fastify.addContentTypeParser(
     'application/json',
     { parseAs: 'buffer' },
@@ -35,7 +41,30 @@ export async function stripeRoutes(fastify: FastifyInstance) {
    * Stripe notifies us of payment status changes.
    * Authentication is done via HMAC-SHA256 signature in the stripe-signature header.
    */
-  // Disable Fastify JSON schema validation — Stripe event shapes are complex and
-  // not worth duplicating here; the handler validates what it needs.
   fastify.post('/webhook', stripeWebhookHandler);
+
+  /**
+   * Protected sub-scope — requires valid JWT.
+   * POST /api/stripe/create-intent — create PaymentIntent for wallet top-up.
+   */
+  fastify.register(async (protectedScope) => {
+    protectedScope.addHook('preHandler', authenticate);
+
+    // POST /api/stripe/create-intent
+    // Body: { amount: number } — amount in USD (min 1, max 10 000)
+    // Returns: { clientSecret, publishableKey, transactionId }
+    protectedScope.post('/create-intent', {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['amount'],
+          properties: {
+            amount: { type: 'number', minimum: 1, maximum: 10000 },
+          },
+          additionalProperties: false,
+        },
+      },
+      handler: createPaymentIntent,
+    });
+  });
 }
