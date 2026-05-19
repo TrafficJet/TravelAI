@@ -135,35 +135,6 @@ const HOTELS_BY_CITY: Record<string, HotelMockEntry[]> = {
       currency: 'EUR',
     },
   ],
-  москва: [
-    {
-      hotelName: 'Marriott Royal Aurora',
-      address: 'ул. Петровка, 11/20, Москва',
-      starRating: 5,
-      rating: 9.0,
-      reviewCount: 2876,
-      roomType: 'Делюкс Кинг',
-      amenities: ['WiFi', 'Спа', 'Фитнес', 'Ресторан', 'Бар'],
-    },
-    {
-      hotelName: 'Radisson Collection Hotel',
-      address: 'Театральный проезд, 4, Москва',
-      starRating: 5,
-      rating: 8.8,
-      reviewCount: 1543,
-      roomType: 'Стандартный номер',
-      amenities: ['WiFi', 'Бассейн', 'Фитнес', 'Ресторан'],
-    },
-    {
-      hotelName: 'Holiday Inn Moscow Sokolniki',
-      address: 'Русаковская ул., 24, Москва',
-      starRating: 4,
-      rating: 8.2,
-      reviewCount: 2341,
-      roomType: 'Стандартный двухместный',
-      amenities: ['WiFi', 'Фитнес', 'Ресторан', 'Парковка'],
-    },
-  ],
   barcelona: [
     {
       hotelName: 'Hotel Arts Barcelona',
@@ -637,7 +608,6 @@ const CITY_ALIASES: Record<string, string> = {
   'прага':      'prague',
   'киев':       'kyiv',
   'киiв':       'kyiv',
-  'москва':     'москва',
   // English aliases
   'wien':       'vienna',
   'rome':       'rome',
