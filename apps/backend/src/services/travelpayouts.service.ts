@@ -427,7 +427,7 @@ async function searchHotelsTravelpayoutsReal(
 export async function searchFlightsTravelpayouts(
   params: SearchFlightsParams,
 ): Promise<FlightOffer[]> {
-  const apiKey = process.env.TRAVELPAYOUTS_API_KEY;
+  const apiKey = process.env.TRAVELPAYOUTS_TOKEN ?? process.env.TRAVELPAYOUTS_API_KEY;
 
   if (!apiKey) {
     console.log('[Travelpayouts/flights] API key not set, using mock data');
@@ -460,7 +460,7 @@ export async function searchFlightsTravelpayouts(
 export async function searchHotelsTravelpayouts(
   params: SearchHotelsParams,
 ): Promise<HotelOffer[]> {
-  const apiKey = process.env.TRAVELPAYOUTS_API_KEY;
+  const apiKey = process.env.TRAVELPAYOUTS_TOKEN ?? process.env.TRAVELPAYOUTS_API_KEY;
 
   if (!apiKey) {
     console.log('[Travelpayouts/hotels] API key not set, using mock data');

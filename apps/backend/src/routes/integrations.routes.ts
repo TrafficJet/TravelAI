@@ -33,7 +33,8 @@ function integrationStatus(...keys: string[]): IntegrationStatus {
 }
 
 function travelpayoutsStatus(): TravelpayoutsStatus {
-  const configured = Boolean(process.env.TRAVELPAYOUTS_API_KEY);
+  // Support both TRAVELPAYOUTS_TOKEN (primary) and TRAVELPAYOUTS_API_KEY (legacy)
+  const configured = Boolean(process.env.TRAVELPAYOUTS_TOKEN ?? process.env.TRAVELPAYOUTS_API_KEY);
 
   if (!configured) {
     return { configured: false, mode: 'mock' };
@@ -53,7 +54,7 @@ export async function integrationsRoutes(fastify: FastifyInstance) {
     const body: IntegrationsStatusResponse = {
       travelpayouts: travelpayoutsStatus(),
       duffel:        integrationStatus('DUFFEL_API_KEY'),
-      aviasales:     integrationStatus('TRAVELPAYOUTS_API_KEY'),
+      aviasales:     integrationStatus('TRAVELPAYOUTS_TOKEN'),
       yookassa:      integrationStatus('YOOKASSA_SHOP_ID', 'YOOKASSA_SECRET_KEY'),
       duffelLive: {
         note: 'Requires account verification at duffel.com',
