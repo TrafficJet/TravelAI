@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Tabs, router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -13,8 +12,6 @@ import { Typography } from '../../constants/typography';
 import { useTranslation } from 'react-i18next';
 import { useNotificationsContext } from '../../context/NotificationsContext';
 import { useTheme } from '../../src/theme/ThemeContext';
-
-type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 // ── Badge component ───────────────────────────────────────────────────────────
 
@@ -54,12 +51,11 @@ interface TabIconProps {
   focused: boolean;
   color: string;
   size: number;
-  icon: IoniconName;
-  iconFocused: IoniconName;
+  glyph: string;
   badge?: number;
 }
 
-function TabIcon({ focused, color, size, icon, iconFocused, badge }: TabIconProps) {
+function TabIcon({ focused, color, size, glyph, badge }: TabIconProps) {
   const focusedSV = useSharedValue(focused ? 1 : 0);
 
   useEffect(() => {
@@ -80,7 +76,7 @@ function TabIcon({ focused, color, size, icon, iconFocused, badge }: TabIconProp
 
   return (
     <Animated.View style={[{ position: 'relative' }, animatedStyle]}>
-      <Ionicons name={focused ? iconFocused : icon} size={size} color={color} />
+      <Text style={{ fontSize: size * 0.85, color, lineHeight: size }}>{glyph}</Text>
       {badge !== undefined && <TabBadge count={badge} />}
     </Animated.View>
   );
@@ -99,13 +95,13 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.text,
-        headerTitleStyle: { fontWeight: Typography.weights.bold, color: colors.text },
+        headerStyle: { backgroundColor: '#0E0C1C' },
+        headerTintColor: '#EEEEF4',
+        headerTitleStyle: { fontWeight: Typography.weights.bold, color: '#EEEEF4' },
         headerShadowVisible: false,
         tabBarStyle: {
-          // SVIT brand: bg surface #14121E, border-top #2E2B42, height 70px
-          backgroundColor: '#14121E',
+          // SVIT brand: bg #0E0C1C, border-top #2E2B42, height 70px
+          backgroundColor: '#0E0C1C',
           borderTopColor: '#2E2B42',
           borderTopWidth: 1,
           height: tabBarHeight,
@@ -113,7 +109,7 @@ export default function TabsLayout() {
           paddingTop: 10,
         },
         tabBarActiveTintColor: '#E8A020',
-        tabBarInactiveTintColor: '#8888A8',
+        tabBarInactiveTintColor: '#4A4A62',
         tabBarLabelStyle: {
           fontSize: 8.5,
           fontWeight: Typography.weights.medium,
@@ -134,7 +130,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Чат',
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="chatbubble-ellipses-outline" iconFocused="chatbubble-ellipses" />
+            <TabIcon {...props} glyph="💬" />
           ),
         }}
       />
@@ -146,7 +142,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Поездки',
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="airplane-outline" iconFocused="airplane" />
+            <TabIcon {...props} glyph="✈" />
           ),
         }}
       />
@@ -158,7 +154,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Кошелёк',
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="wallet-outline" iconFocused="wallet" />
+            <TabIcon {...props} glyph="💳" />
           ),
         }}
       />
@@ -170,7 +166,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Профиль',
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="person-circle-outline" iconFocused="person-circle" />
+            <TabIcon {...props} glyph="👤" />
           ),
         }}
       />
