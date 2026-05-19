@@ -6,15 +6,18 @@ import { toast } from '../lib/toast';
 let getAccessToken: (() => string | null) | null = null;
 let doRefresh: (() => Promise<void>) | null = null;
 let doLogout: (() => Promise<void>) | null = null;
+let getGuestId: (() => string | null) | null = null;
 
 export function initApiInterceptors(
   accessTokenGetter: () => string | null,
   refreshFn: () => Promise<void>,
   logoutFn: () => Promise<void>,
+  guestIdGetter?: () => string | null,
 ) {
   getAccessToken = accessTokenGetter;
   doRefresh = refreshFn;
   doLogout = logoutFn;
+  if (guestIdGetter) getGuestId = guestIdGetter;
 }
 
 const api = axios.create({
@@ -25,11 +28,16 @@ const api = axios.create({
   timeout: 30_000,
 });
 
-// Request interceptor — attach token
+// Request interceptor — attach token or guest ID
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = getAccessToken?.();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    const guestId = getGuestId?.();
+    if (guestId) {
+      config.headers['X-Guest-ID'] = guestId;
+    }
   }
   return config;
 });

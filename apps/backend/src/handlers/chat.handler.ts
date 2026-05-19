@@ -319,6 +319,7 @@ function extractTitleFromMessage(message: string): string | null {
 // POST /api/chat/sessions/:id/messages — SSE streaming with Claude
 export async function sendMessage(request: FastifyRequest, reply: FastifyReply) {
   const userId = request.userId;
+  const isGuest = request.isGuest ?? false;
   const { id: sessionId } = request.params as SessionParams;
   const { content: rawContent } = request.body as SendMessageBody;
   const content = sanitizeMessage(rawContent);
@@ -427,6 +428,7 @@ export async function sendMessage(request: FastifyRequest, reply: FastifyReply) 
       sessionHistory,
       userMessage: content,
       userId,
+      isGuest,
       ...(session.systemPrompt ? { systemPrompt: session.systemPrompt } : {}),
       onTextDelta: (delta) => {
         sendEvent({ type: 'text_delta', delta });
@@ -437,10 +439,17 @@ export async function sendMessage(request: FastifyRequest, reply: FastifyReply) 
       },
       onToolResult: (toolName, result, toolUseId) => {
         toolResultRecords.push({ name: toolName, result, toolUseId });
+
+        // If guest tried to use a booking tool → send needs_auth event so mobile shows auth modal
+        const r = result as Record<string, unknown>;
+        if (r?.error === 'REQUIRES_AUTH') {
+          sendEvent({ type: 'needs_auth', reason: 'booking' });
+        }
+
         sendEvent({ type: 'tool_result', toolUseId, result });
 
-        // Persist search results to SearchHistory (fire-and-forget)
-        if (toolName === 'search_flights' || toolName === 'search_hotels') {
+        // Persist search results to SearchHistory (fire-and-forget); skip for guests
+        if (!isGuest && (toolName === 'search_flights' || toolName === 'search_hotels')) {
           const type = toolName === 'search_flights' ? 'flight' : 'hotel';
           // Find the matching tool use input for the query string
           const tu = toolUseRecords.find((r) => r.toolUseId === toolUseId);

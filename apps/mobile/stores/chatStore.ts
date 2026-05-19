@@ -1,6 +1,12 @@
 import { create } from 'zustand';
+import { AxiosError } from 'axios';
 import { chatService } from '../services/chatService';
 import type { ChatSession, Message, BookingDraft } from '../types';
+
+/** Returns true when the error is an HTTP 401 Unauthorized response */
+function is401(err: unknown): boolean {
+  return err instanceof AxiosError && err.response?.status === 401;
+}
 
 interface ChatStore {
   sessions: ChatSession[];
@@ -32,8 +38,17 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   pendingBooking: null,
 
   loadSessions: async () => {
-    const response = await chatService.getSessions();
-    set({ sessions: response.data ?? [] });
+    try {
+      const response = await chatService.getSessions();
+      set({ sessions: response.data ?? [] });
+    } catch (err: unknown) {
+      // Guest (unauthenticated) users receive 401 — treat as empty list, not an error
+      if (is401(err)) {
+        set({ sessions: [] });
+        return;
+      }
+      throw err;
+    }
   },
 
   createSession: async (_initialMessage?: string) => {
@@ -55,8 +70,17 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   loadMessages: async (sessionId: string) => {
-    const response = await chatService.getMessages(sessionId);
-    set({ messages: response.data ?? [] });
+    try {
+      const response = await chatService.getMessages(sessionId);
+      set({ messages: response.data ?? [] });
+    } catch (err: unknown) {
+      // Guest users receive 401 — show empty messages rather than crashing
+      if (is401(err)) {
+        set({ messages: [] });
+        return;
+      }
+      throw err;
+    }
   },
 
   setCurrentSession: (session) => set({ currentSession: session }),

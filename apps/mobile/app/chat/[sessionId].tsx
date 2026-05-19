@@ -18,6 +18,8 @@ import { useLocalSearchParams, useNavigation, router } from 'expo-router';
 import { useChatStore } from '../../stores/chatStore';
 import { useWalletStore } from '../../stores/walletStore';
 import { useBookingStore } from '../../stores/bookingStore';
+import { useAuthStore } from '../../stores/authStore';
+import AuthModal from '../../components/auth/AuthModal';
 import { useSSE } from '../../hooks/useSSE';
 import { MessageBubble } from '../../components/chat/MessageBubble';
 import { ChatInput, type ChatInputHandle } from '../../components/chat/ChatInput';
@@ -193,6 +195,96 @@ const emptyStyles = StyleSheet.create({
   },
 });
 
+// ── Guest welcome ─────────────────────────────────────────────────────────────
+
+function GuestWelcomeState({ onSignIn }: { onSignIn: () => void }) {
+  return (
+    <View style={guestStyles.container}>
+      <Ionicons name="airplane" size={64} color={Colors.primary} style={{ opacity: 0.3, marginBottom: 24 }} />
+      <Text style={guestStyles.title}>Добро пожаловать в TravelAI</Text>
+      <Text style={guestStyles.subtitle}>
+        AI-ассистент поможет подобрать рейсы, отели и трансфер.{'\n'}
+        Войдите, чтобы начать планировать путешествие.
+      </Text>
+      <TouchableOpacity style={guestStyles.btn} onPress={onSignIn} activeOpacity={0.8}>
+        <Ionicons name="person-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
+        <Text style={guestStyles.btnText}>Войти / Зарегистрироваться</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const guestStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+    paddingBottom: 32,
+  },
+  title: {
+    color: Colors.text,
+    fontSize: 22,
+    fontWeight: '700' as const,
+    marginBottom: 12,
+    textAlign: 'center',
+    fontFamily: 'Sora',
+  },
+  subtitle: {
+    color: Colors.textMuted,
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 22,
+    maxWidth: 300,
+    marginBottom: 28,
+    fontFamily: 'Inter',
+  },
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 13,
+    borderRadius: 14,
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600' as const,
+    fontFamily: 'Inter',
+  },
+});
+
+// ── Guest input banner ─────────────────────────────────────────────────────────
+
+function GuestInputBanner({ onSignIn }: { onSignIn: () => void }) {
+  return (
+    <TouchableOpacity style={guestBannerStyles.container} onPress={onSignIn} activeOpacity={0.85}>
+      <Ionicons name="lock-closed-outline" size={16} color={Colors.primary} style={{ marginRight: 8 }} />
+      <Text style={guestBannerStyles.text}>Войдите чтобы общаться с AI-ассистентом</Text>
+    </TouchableOpacity>
+  );
+}
+
+const guestBannerStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    backgroundColor: Colors.surface,
+  },
+  text: {
+    color: Colors.primary,
+    fontSize: 14,
+    fontFamily: 'Inter',
+    fontWeight: '500' as const,
+  },
+});
+
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function ChatScreen() {
@@ -220,6 +312,10 @@ export default function ChatScreen() {
     updateSessionTitle,
     deleteSession,
   } = useChatStore();
+
+  const { isAuthenticated } = useAuthStore();
+  const [authModalVisible, setAuthModalVisible] = useState(false);
+  const [authReason, setAuthReason] = useState<'booking' | 'profile'>('profile');
 
   const { balance, currency: walletCurrency, load: loadWallet, isLoading: isWalletLoading } = useWalletStore();
   const { confirmBooking } = useBookingStore();
@@ -353,25 +449,31 @@ export default function ChatScreen() {
         <View style={chatHeaderStyles.rightGroup}>
           <TouchableOpacity
             style={chatHeaderStyles.profileBtn}
-            onPress={() => router.push('/(tabs)/profile')}
+            onPress={() => {
+              if (isAuthenticated) {
+                router.push('/(tabs)/profile');
+              } else {
+                setAuthReason('profile');
+                setAuthModalVisible(true);
+              }
+            }}
             activeOpacity={0.7}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="person-circle-outline" size={26} color={Colors.textMuted} />
+            <Ionicons name="person-circle-outline" size={22} color={Colors.textMuted} />
           </TouchableOpacity>
+          <View style={chatHeaderStyles.divider} />
           <TouchableOpacity
             style={chatHeaderStyles.menuBtn}
             onPress={handleHeaderMenu}
             activeOpacity={0.7}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="ellipsis-horizontal" size={20} color={Colors.textMuted} />
+            <Ionicons name="ellipsis-horizontal" size={22} color={Colors.textMuted} />
           </TouchableOpacity>
         </View>
       ),
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu, historyVisible]);
+  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu, historyVisible, isAuthenticated]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -474,6 +576,12 @@ export default function ChatScreen() {
             void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             Alert.alert('Ошибка чата', humanizeError(message));
           },
+          onNeedsAuth: (_reason: string) => {
+            commitStreamingMessage();
+            setStreaming(false);
+            setAuthReason('booking');
+            setAuthModalVisible(true);
+          },
         },
       );
       // Safety net: ensure streaming is reset even if onDone/onError weren't called
@@ -489,6 +597,11 @@ export default function ChatScreen() {
   }
 
   async function handleConfirmBooking() {
+    if (!isAuthenticated) {
+      setAuthReason('booking');
+      setAuthModalVisible(true);
+      return;
+    }
     if (!pendingBooking || !pendingBookingId) return;
     const bookingId = pendingBookingId;
     const bookingType = pendingBooking.type;
@@ -591,6 +704,7 @@ export default function ChatScreen() {
       {/* Offline banner */}
       <OfflineBanner visible={isOffline} />
 
+      {/* Чат: пустое состояние или список сообщений */}
       {displayMessages.length === 0 ? (
         <EmptyState />
       ) : (
@@ -622,6 +736,8 @@ export default function ChatScreen() {
         />
       )}
 
+      {/* Поле ввода — доступно всем, включая гостей */}
+      {/* Для гостей при попытке отправки открывается AuthModal */}
       <ChatInput
         ref={chatInputRef}
         onSend={handleSend}
@@ -655,6 +771,12 @@ export default function ChatScreen() {
           // navigation already handled inside ChatHistorySheet via onSelectSession
         }}
       />
+
+      <AuthModal
+        visible={authModalVisible}
+        onClose={() => setAuthModalVisible(false)}
+        reason={authReason}
+      />
     </KeyboardAvoidingView>
     </View>
   );
@@ -675,28 +797,28 @@ const chatHeaderStyles = StyleSheet.create({
     fontWeight: '500' as const,
     color: Colors.primary,
   },
-  // Right side group (pill container)
+  // Right side group
   rightGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 0,
-    backgroundColor: Colors.elevated,
-    borderRadius: 20,
-    paddingHorizontal: 6,
-    paddingVertical: 4,
     marginRight: 4,
+    height: 36,
   },
   // Profile button
   profileBtn: {
-    width: 36,
+    width: 40,
     height: 36,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // Divider (hidden — no background pill)
+  divider: {
+    width: 4,
+  },
   // Menu (•••) button
   menuBtn: {
-    width: 36,
+    width: 40,
     height: 36,
     alignItems: 'center',
     justifyContent: 'center',

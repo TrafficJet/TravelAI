@@ -13,6 +13,7 @@ interface SSEHandlers {
   onDone: () => void;
   onError: (message: string) => void;
   onSessionTitleUpdate?: (title: string) => void;
+  onNeedsAuth?: (reason: string) => void;
 }
 
 export interface StreamFilters {
@@ -77,6 +78,9 @@ function processSSEChunk(
         case 'session_title_update':
           handlers.onSessionTitleUpdate?.(event.title);
           break;
+        case 'needs_auth':
+          handlers.onNeedsAuth?.(event.reason);
+          break;
       }
     }
   }
@@ -125,6 +129,7 @@ function delay(ms: number): Promise<void> {
 
 export function useSSE() {
   const accessToken = useAuthStore((state) => state.accessToken);
+  const guestId = useAuthStore((state) => state.guestId);
   // Ref holds the active XHR so callers can abort it (e.g. on unmount)
   const xhrRef = useRef<XMLHttpRequest | null>(null);
 
@@ -157,6 +162,8 @@ export function useSSE() {
         xhr.setRequestHeader('Accept', 'text/event-stream');
         if (accessToken) {
           xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
+        } else if (guestId) {
+          xhr.setRequestHeader('X-Guest-ID', guestId);
         }
 
         // Carry-over buffer for incomplete SSE messages between onprogress calls
@@ -243,7 +250,7 @@ export function useSSE() {
         xhr.send(JSON.stringify(body));
       });
     },
-    [accessToken],
+    [accessToken, guestId],
   );
 
   const streamMessage = useCallback(

@@ -11,5 +11,7 @@ declare module 'fastify' {
     // Set by auth middleware after JWT verification
     userId: string;
     userEmail: string;
+    // True when the request is from a guest (no account), false when authenticated
+    isGuest?: boolean;
   }
 }

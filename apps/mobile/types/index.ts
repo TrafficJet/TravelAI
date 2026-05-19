@@ -124,7 +124,8 @@ export type SSEEvent =
   | { type: 'done' }
   | { type: 'error'; message: string }
   | { type: 'session_title_update'; title: string }
-  | { type: 'cache_status'; xCache: string };
+  | { type: 'cache_status'; xCache: string }
+  | { type: 'needs_auth'; reason: string };
 
 export interface PaginatedResponse<T> {
   data: T[];

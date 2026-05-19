@@ -240,6 +240,8 @@ export interface StreamMessageParams {
   systemPrompt?: string;
   /** Optional per-request user context (e.g. price alerts as a JSON string). */
   userContext?: { priceAlerts?: string };
+  /** True when the caller is a guest (no account). Booking tools are blocked for guests. */
+  isGuest?: boolean;
   onTextDelta: (delta: string) => void;
   onToolUse: (toolName: string, toolInput: unknown, toolUseId: string) => void;
   onToolResult: (toolName: string, result: unknown, toolUseId: string) => void;
@@ -256,7 +258,16 @@ async function executeTool(
   toolName: string,
   toolInput: unknown,
   userId: string,
+  isGuest?: boolean,
 ): Promise<unknown> {
+  // Guest gate: block booking tools and prompt the user to register
+  if (isGuest && (toolName === 'create_booking' || toolName === 'get_wallet_balance')) {
+    return {
+      error: 'REQUIRES_AUTH',
+      message: 'Для бронирования и проверки баланса необходимо зарегистрироваться. Нажми кнопку «Войти» в чате.',
+    };
+  }
+
   switch (toolName) {
     case 'search_flights':
       return executeSearchFlights(toolInput as Parameters<typeof executeSearchFlights>[0]);
@@ -306,6 +317,7 @@ export class ClaudeService {
       userId,
       systemPrompt,
       userContext,
+      isGuest,
       onTextDelta,
       onToolUse,
       onToolResult,
@@ -420,7 +432,7 @@ export class ClaudeService {
         if (block.type !== 'tool_use') continue;
 
         const toolInput = block.input as Record<string, unknown>;
-        const result = await executeTool(block.name, toolInput, userId);
+        const result = await executeTool(block.name, toolInput, userId, isGuest);
 
         // Track cache hits from search tools
         if (

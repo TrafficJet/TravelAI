@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,17 +10,21 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useChatStore } from '../../stores/chatStore';
+import { useAuthStore } from '../../stores/authStore';
 import { Colors, Spacing } from '../../constants';
+
+// ── Main entry screen ─────────────────────────────────────────────────────────
 
 export default function ChatEntryScreen() {
   const { sessions, loadSessions, createSession } = useChatStore();
+  const { isAuthenticated, guestId } = useAuthStore();
   const [hasError, setHasError] = useState(false);
 
-  async function init() {
+  // For authenticated users: load sessions and redirect into the last (or new) chat
+  const initAuthenticated = useCallback(async () => {
     setHasError(false);
     try {
       await loadSessions();
-      // After loadSessions the store is updated; read from zustand directly
       const current = useChatStore.getState().sessions[0];
       if (current) {
         router.replace((`/chat/${current.id}`) as never);
@@ -29,7 +33,7 @@ export default function ChatEntryScreen() {
         router.replace((`/chat/${id}`) as never);
       }
     } catch {
-      // If sessions fail to load, create a new session anyway
+      // Fallback: try creating a fresh session
       try {
         const id = await createSession();
         router.replace((`/chat/${id}`) as never);
@@ -37,15 +41,35 @@ export default function ChatEntryScreen() {
         setHasError(true);
       }
     }
-  }
+  }, [loadSessions, createSession]);
+
+  // For guests: create a real session (backend uses X-Guest-ID header)
+  const initGuest = useCallback(async () => {
+    try {
+      const { chatService } = await import('../../services/chatService');
+      const response = await chatService.createSession();
+      const id = response.session.id;
+      router.replace(`/chat/${id}` as never);
+    } catch {
+      setHasError(true);
+    }
+  }, []);
 
   useEffect(() => {
-    void init();
+    if (isAuthenticated) {
+      void initAuthenticated();
+    } else if (guestId !== null) {
+      // Wait until guestId is loaded from SecureStore before creating a guest session
+      // (avoids race: api interceptor needs guestId to send X-Guest-ID header)
+      void initGuest();
+    }
+    // guestId === null means it's still being loaded — effect will re-run when it's set
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isAuthenticated, guestId]);
 
   void sessions; // suppress unused warning
 
+  // ── Error state (only when authenticated user's session load failed) ───────
   if (hasError) {
     return (
       <View style={styles.container}>
@@ -67,10 +91,12 @@ export default function ChatEntryScreen() {
           style={styles.errorIcon}
         />
         <Text style={styles.errorTitle}>Не удалось загрузить чаты</Text>
-        <Text style={styles.errorSubtitle}>Проверьте подключение к интернету и повторите попытку</Text>
+        <Text style={styles.errorSubtitle}>
+          Проверьте подключение к интернету и повторите попытку
+        </Text>
         <TouchableOpacity
           style={styles.retryBtn}
-          onPress={() => void init()}
+          onPress={() => void initAuthenticated()}
           activeOpacity={0.8}
         >
           <Ionicons name="refresh-outline" size={18} color="#fff" />
@@ -80,6 +106,7 @@ export default function ChatEntryScreen() {
     );
   }
 
+  // ── Loading spinner while redirecting (guest or authenticated user) ─────────
   return (
     <View style={styles.container}>
       <View style={styles.logoWrap}>
@@ -101,6 +128,7 @@ export default function ChatEntryScreen() {
       />
     </View>
   );
+
 }
 
 const styles = StyleSheet.create({

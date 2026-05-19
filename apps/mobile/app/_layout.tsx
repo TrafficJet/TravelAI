@@ -245,11 +245,7 @@ export default function RootLayout() {
         // AsyncStorage failure — skip onboarding check, go to normal flow
       }
 
-      if (isAuthenticated) {
-        setTimeout(() => router.replace('/(tabs)'), 0);
-      } else {
-        setTimeout(() => router.replace('/(auth)/login'), 0);
-      }
+      setTimeout(() => router.replace('/(tabs)'), 0);
 
       // Handle cold-start deep link after navigation
       const initialUrl = await Linking.getInitialURL();

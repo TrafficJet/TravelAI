@@ -5,4 +5,5 @@ export const API_BASE_URL =
 export const SECURE_STORE_KEYS = {
   ACCESS_TOKEN: 'travel_ai_access_token',
   REFRESH_TOKEN: 'travel_ai_refresh_token',
+  GUEST_ID: 'guest_id',
 } as const;

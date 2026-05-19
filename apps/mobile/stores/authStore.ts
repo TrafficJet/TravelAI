@@ -36,6 +36,7 @@ interface AuthStore {
   accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  guestId: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   loginWithGoogle: (idToken: string) => Promise<void>;
@@ -43,6 +44,7 @@ interface AuthStore {
   logout: () => Promise<void>;
   refreshToken: () => Promise<void>;
   loadStoredAuth: () => Promise<void>;
+  loadGuestId: () => Promise<void>;
   setUser: (user: UserProfile) => void;
 }
 
@@ -52,6 +54,7 @@ export const useAuthStore = create<AuthStore>((set, get) => {
     () => get().accessToken,
     () => get().refreshToken(),
     () => get().logout(),
+    () => get().guestId,
   );
 
   return {
@@ -59,8 +62,27 @@ export const useAuthStore = create<AuthStore>((set, get) => {
     accessToken: null,
     isAuthenticated: false,
     isLoading: true,
+    guestId: null,
 
     setUser: (user: UserProfile) => set({ user }),
+
+    loadGuestId: async () => {
+      try {
+        let guestId = await storage.getItem(SECURE_STORE_KEYS.GUEST_ID);
+        if (!guestId) {
+          // Generate new UUID
+          guestId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+          await storage.setItem(SECURE_STORE_KEYS.GUEST_ID, guestId);
+        }
+        set({ guestId });
+      } catch {
+        set({ guestId: null });
+      }
+    },
 
     loadStoredAuth: async () => {
       try {
@@ -69,6 +91,7 @@ export const useAuthStore = create<AuthStore>((set, get) => {
 
         if (!accessToken || !refreshToken) {
           set({ isLoading: false, isAuthenticated: false });
+          await get().loadGuestId();
           return;
         }
 

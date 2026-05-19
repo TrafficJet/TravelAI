@@ -31,6 +31,7 @@ async function getImagePicker(): Promise<ImagePickerModule | null> {
   }
 }
 import { useAuthStore } from '../../stores/authStore';
+import AuthModal from '../../components/auth/AuthModal';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Radius } from '../../constants/radius';
@@ -637,13 +638,14 @@ const SUBSCRIPTION_PRICE = 9.99;
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function ProfileScreen() {
-  const { user, logout, setUser } = useAuthStore();
+  const { user, logout, setUser, isAuthenticated, isLoading: authLoading } = useAuthStore();
   const { colors, isDark, setTheme } = useTheme();
   const { unreadCount } = useNotificationsContext();
   const insets = useSafeAreaInsets();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isBookingModalVisible, setIsBookingModalVisible] = useState(false);
+  const [authModalVisible, setAuthModalVisible] = useState(false);
 
   // Document scanning
   const [isScanning, setIsScanning] = useState(false);
@@ -890,7 +892,7 @@ export default function ProfileScreen() {
           setIsLoggingOut(true);
           try {
             await logout();
-            router.replace('/(auth)/login');
+            // не редиректим — гостевой UI покажется автоматически
           } finally {
             setIsLoggingOut(false);
           }
@@ -899,11 +901,39 @@ export default function ProfileScreen() {
     ]);
   }
 
-  if (!user) {
+  // Пока грузится авторизация — показываем спиннер
+  if (authLoading) {
     return (
       <View style={styles.loadingScreen}>
         <ActivityIndicator color={Colors.primary} />
       </View>
+    );
+  }
+
+  // Гость — показываем экран входа
+  if (!user) {
+    return (
+      <>
+        <View style={[styles.guestScreen, { paddingTop: insets.top + 24 }]}>
+          <Ionicons name="person-circle-outline" size={80} color={Colors.textMuted} style={{ opacity: 0.4, marginBottom: 24 }} />
+          <Text style={styles.guestTitle}>Войдите в аккаунт</Text>
+          <Text style={styles.guestSubtitle}>
+            Чтобы видеть брони, кошелёк,{'\n'}историю поисков и сохранять маршруты
+          </Text>
+          <TouchableOpacity
+            style={styles.guestLoginBtn}
+            onPress={() => setAuthModalVisible(true)}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.guestLoginBtnText}>Войти / Зарегистрироваться</Text>
+          </TouchableOpacity>
+        </View>
+        <AuthModal
+          visible={authModalVisible}
+          onClose={() => setAuthModalVisible(false)}
+          reason="profile"
+        />
+      </>
     );
   }
 
@@ -1428,6 +1458,45 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  // ── Guest screen ──────────────────────────────────────────────────────────
+  guestScreen: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  guestTitle: {
+    color: Colors.text,
+    fontFamily: 'Sora',
+    fontSize: Typography.sizes.xl,
+    fontWeight: Typography.weights.bold,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
+  },
+  guestSubtitle: {
+    color: Colors.textMuted,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.base,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 32,
+  },
+  guestLoginBtn: {
+    backgroundColor: Colors.primary,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: Radius.button,
+    alignItems: 'center',
+    alignSelf: 'stretch',
+  },
+  guestLoginBtnText: {
+    color: Colors.textInverse,
+    fontFamily: 'Inter',
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
   },
   container: {
     flex: 1,
