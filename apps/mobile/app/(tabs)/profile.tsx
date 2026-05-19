@@ -77,9 +77,6 @@ interface ScannedDocumentData {
   expiryDate?: string;
 }
 
-// ── AsyncStorage keys for notification prefs ──────────────────────────────────
-const NOTIF_BOOKINGS_KEY = 'notif_bookings';
-const NOTIF_PRICES_KEY = 'notif_prices';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -653,10 +650,6 @@ export default function ProfileScreen() {
   const [scannedData, setScannedData] = useState<ScannedDocumentData | null>(null);
   const [showScanConfirmModal, setShowScanConfirmModal] = useState(false);
 
-  // Notification prefs
-  const [notifBookings, setNotifBookings] = useState(true);
-  const [notifPrices, setNotifPrices] = useState(true);
-
   // Theme / language
   const [language, setLanguageState] = useState<'ru' | 'en'>('ru');
 
@@ -675,13 +668,7 @@ export default function ProfileScreen() {
   useEffect(() => {
     async function loadAll() {
       try {
-        const [b, p, lang] = await Promise.all([
-          AsyncStorage.getItem(NOTIF_BOOKINGS_KEY),
-          AsyncStorage.getItem(NOTIF_PRICES_KEY),
-          AsyncStorage.getItem(LANGUAGE_KEY),
-        ]);
-        if (b !== null) setNotifBookings(b === 'true');
-        if (p !== null) setNotifPrices(p === 'true');
+        const lang = await AsyncStorage.getItem(LANGUAGE_KEY);
         if (lang === 'ru' || lang === 'en') setLanguageState(lang);
       } catch {
         // non-fatal
@@ -715,24 +702,6 @@ export default function ProfileScreen() {
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  async function handleNotifBookingsChange(value: boolean) {
-    setNotifBookings(value);
-    try {
-      await AsyncStorage.setItem(NOTIF_BOOKINGS_KEY, String(value));
-    } catch {
-      // ignore
-    }
-  }
-
-  async function handleNotifPricesChange(value: boolean) {
-    setNotifPrices(value);
-    try {
-      await AsyncStorage.setItem(NOTIF_PRICES_KEY, String(value));
-    } catch {
-      // ignore
-    }
-  }
 
   function handleDarkModeChange(value: boolean) {
     setTheme(value ? 'dark' : 'light');
@@ -1264,50 +1233,18 @@ export default function ProfileScreen() {
         {/* ── Notifications section ────────────────────────────────────── */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Уведомления</Text>
-          <View style={styles.card}>
-            <View style={styles.switchRow}>
-              <View style={styles.switchLabel}>
-                <Text style={styles.switchTitle}>Уведомления о бронированиях</Text>
-                <Text style={styles.switchSubtitle}>Статус и изменения по броням</Text>
-              </View>
-              <Switch
-                value={notifBookings}
-                onValueChange={handleNotifBookingsChange}
-                trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
-                thumbColor={notifBookings ? Colors.primary : Colors.textMuted}
-                style={{ transform: [{ scale: 0.82 }] }}
-              />
-            </View>
-
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => router.push('/settings')}
+            activeOpacity={0.75}
+          >
             <View style={[styles.switchRow, styles.switchRowNoBorder]}>
               <View style={styles.switchLabel}>
-                <Text style={styles.switchTitle}>Уведомления об изменении цен</Text>
-                <Text style={styles.switchSubtitle}>Снижение цен на рейсы и отели</Text>
+                <Text style={styles.switchTitle}>Настройки уведомлений</Text>
+                <Text style={styles.switchSubtitle}>Управление бронированиями и ценовыми алертами</Text>
               </View>
-              <Switch
-                value={notifPrices}
-                onValueChange={handleNotifPricesChange}
-                trackColor={{ false: Colors.border, true: `${Colors.primary}80` }}
-                thumbColor={notifPrices ? Colors.primary : Colors.textMuted}
-                style={{ transform: [{ scale: 0.82 }] }}
-              />
+              <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
             </View>
-          </View>
-
-          {/* Price Alerts shortcut */}
-          <TouchableOpacity
-            style={styles.priceAlertsBtn}
-            onPress={() => router.push('/price-alerts' as any)}
-            activeOpacity={0.8}
-          >
-            <View style={styles.priceAlertsBtnLeft}>
-              <Ionicons name="notifications-outline" size={18} color={Colors.primary} />
-              <View>
-                <Text style={styles.priceAlertsBtnTitle}>Ценовые алерты</Text>
-                <Text style={styles.priceAlertsBtnSub}>Слежка за ценами на рейсы и отели</Text>
-              </View>
-            </View>
-            <Text style={styles.priceAlertsBtnChevron}>›</Text>
           </TouchableOpacity>
         </View>
 

@@ -1,161 +1,174 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  Alert,
   Platform,
   StatusBar,
+  ActivityIndicator,
+  RefreshControl,
+  Animated,
+  PanResponder,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
+import api from '../services/api';
+import { useFocusEffect } from 'expo-router';
+import { toast } from '../lib/toast';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type NotificationType = 'booking_confirmed' | 'price_drop' | 'flight_reminder' | 'welcome';
+type NotificationType = 'PRICE_ALERT' | 'BOOKING_UPDATE' | 'BOOKING_CONFIRMED' | 'SYSTEM';
 
-interface MockNotification {
+interface Notification {
   id: string;
   type: NotificationType;
   title: string;
   body: string;
-  timeLabel: string;
   isRead: boolean;
+  createdAt: string;
 }
-
-// ── Mock data ─────────────────────────────────────────────────────────────────
-
-const MOCK_NOTIFICATIONS: MockNotification[] = [
-  {
-    id: '1',
-    type: 'booking_confirmed',
-    title: 'Бронь подтверждена',
-    body: 'Рейс WAW→BCN LO 100 на 31 мая. Электронный билет отправлен на email.',
-    timeLabel: '5м',
-    isRead: false,
-  },
-  {
-    id: '2',
-    type: 'price_drop',
-    title: 'Цена упала!',
-    body: 'Варшава → Барселона: €149 → €99. Успейте забронировать по выгодной цене.',
-    timeLabel: '2ч',
-    isRead: false,
-  },
-  {
-    id: '3',
-    type: 'flight_reminder',
-    title: 'Вылет через 24 часа',
-    body: 'Рейс LO 100, терминал 2. Регистрация открыта, онлайн-посадочный доступен.',
-    timeLabel: '1д',
-    isRead: false,
-  },
-  {
-    id: '4',
-    type: 'price_drop',
-    title: 'Специальное предложение',
-    body: 'Мадрид → Рим: €89. Билеты доступны только 48 часов.',
-    timeLabel: '3д',
-    isRead: true,
-  },
-  {
-    id: '5',
-    type: 'booking_confirmed',
-    title: 'Бронь отеля подтверждена',
-    body: 'Hotel Arts Barcelona, 31 мая – 5 июня. Номер с видом на море.',
-    timeLabel: '5д',
-    isRead: true,
-  },
-  {
-    id: '6',
-    type: 'flight_reminder',
-    title: 'Онлайн-регистрация открыта',
-    body: 'Рейс FR 1234 Варшава → Лондон, 10 июня. Зарегистрируйтесь заранее.',
-    timeLabel: '1н',
-    isRead: true,
-  },
-  {
-    id: '7',
-    type: 'welcome',
-    title: 'Добро пожаловать в TravelAI',
-    body: 'Планируйте путешествия с ИИ-ассистентом. Попробуйте спросить о рейсах в Барселону.',
-    timeLabel: '2н',
-    isRead: true,
-  },
-];
 
 // ── Icon / color maps ─────────────────────────────────────────────────────────
 
-const TYPE_EMOJI: Record<NotificationType, string> = {
-  booking_confirmed: '🎉',
-  price_drop: '💰',
-  flight_reminder: '✈️',
-  welcome: '👋',
+const TYPE_ICON: Record<NotificationType, string> = {
+  BOOKING_CONFIRMED: 'checkmark-circle-outline',
+  BOOKING_UPDATE: 'calendar-outline',
+  PRICE_ALERT: 'trending-down-outline',
+  SYSTEM: 'information-circle-outline',
 };
 
 const TYPE_COLOR: Record<NotificationType, string> = {
-  booking_confirmed: Colors.success,
-  price_drop: Colors.primary,
-  flight_reminder: Colors.info,
-  welcome: Colors.textMuted,
+  BOOKING_CONFIRMED: Colors.success,
+  BOOKING_UPDATE: Colors.info,
+  PRICE_ALERT: Colors.primary,
+  SYSTEM: Colors.textMuted,
 };
 
-// ── Notification item ─────────────────────────────────────────────────────────
+// ── Time formatting ───────────────────────────────────────────────────────────
 
-interface NotificationItemProps {
-  item: MockNotification;
-  onPress: (item: MockNotification) => void;
+function formatTimeLabel(createdAt: string): string {
+  const diff = Date.now() - new Date(createdAt).getTime();
+  const minutes = Math.floor(diff / 60_000);
+  if (minutes < 1) return 'только что';
+  if (minutes < 60) return `${minutes}м`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}ч`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}д`;
+  const weeks = Math.floor(days / 7);
+  return `${weeks}н`;
 }
 
-function NotificationItem({ item, onPress }: NotificationItemProps) {
-  const accentColor = TYPE_COLOR[item.type];
+// ── Swipeable notification item ───────────────────────────────────────────────
+
+interface NotificationItemProps {
+  item: Notification;
+  onPress: (item: Notification) => void;
+  onDelete: (item: Notification) => void;
+}
+
+function NotificationItem({ item, onPress, onDelete }: NotificationItemProps) {
+  const accentColor = TYPE_COLOR[item.type] ?? Colors.textMuted;
+  const iconName = TYPE_ICON[item.type] ?? 'notifications-outline';
+  const translateX = useRef(new Animated.Value(0)).current;
+  const deleteThreshold = -80;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 10 && Math.abs(g.dy) < 20,
+      onPanResponderMove: (_, g) => {
+        if (g.dx < 0) {
+          translateX.setValue(g.dx);
+        }
+      },
+      onPanResponderRelease: (_, g) => {
+        if (g.dx < deleteThreshold) {
+          Animated.timing(translateX, {
+            toValue: -400,
+            duration: 200,
+            useNativeDriver: true,
+          }).start(() => onDelete(item));
+        } else {
+          Animated.spring(translateX, {
+            toValue: 0,
+            useNativeDriver: true,
+            bounciness: 6,
+          }).start();
+        }
+      },
+    }),
+  ).current;
 
   return (
-    <TouchableOpacity
-      style={[
-        itemStyles.row,
-        !item.isRead && itemStyles.rowUnread,
-      ]}
-      onPress={() => onPress(item)}
-      activeOpacity={0.75}
-    >
-      {/* Unread dot */}
-      <View style={itemStyles.dotWrap}>
-        {!item.isRead && <View style={itemStyles.dot} />}
+    <View style={itemStyles.wrapper}>
+      {/* Delete hint behind the item */}
+      <View style={itemStyles.deleteHint}>
+        <Ionicons name="trash-outline" size={22} color="#fff" />
+        <Text style={itemStyles.deleteHintText}>Удалить</Text>
       </View>
+      <Animated.View style={{ transform: [{ translateX }] }} {...panResponder.panHandlers}>
+        <TouchableOpacity
+          style={[itemStyles.row, !item.isRead && itemStyles.rowUnread]}
+          onPress={() => onPress(item)}
+          activeOpacity={0.75}
+        >
+          {/* Unread dot */}
+          <View style={itemStyles.dotWrap}>
+            {!item.isRead && <View style={itemStyles.dot} />}
+          </View>
 
-      {/* Icon badge */}
-      <View style={[itemStyles.iconBadge, { backgroundColor: `${accentColor}18` }]}>
-        <Text style={itemStyles.emoji}>{TYPE_EMOJI[item.type]}</Text>
-      </View>
+          {/* Icon badge */}
+          <View style={[itemStyles.iconBadge, { backgroundColor: `${accentColor}18` }]}>
+            <Ionicons name={iconName as any} size={22} color={accentColor} />
+          </View>
 
-      {/* Content */}
-      <View style={itemStyles.content}>
-        <View style={itemStyles.headerRow}>
-          <Text
-            style={[
-              itemStyles.title,
-              !item.isRead && itemStyles.titleUnread,
-            ]}
-            numberOfLines={1}
-          >
-            {item.title}
-          </Text>
-          <Text style={itemStyles.time}>{item.timeLabel}</Text>
-        </View>
-        <Text style={itemStyles.body} numberOfLines={2}>
-          {item.body}
-        </Text>
-      </View>
-    </TouchableOpacity>
+          {/* Content */}
+          <View style={itemStyles.content}>
+            <View style={itemStyles.headerRow}>
+              <Text
+                style={[itemStyles.title, !item.isRead && itemStyles.titleUnread]}
+                numberOfLines={1}
+              >
+                {item.title}
+              </Text>
+              <Text style={itemStyles.time}>{formatTimeLabel(item.createdAt)}</Text>
+            </View>
+            <Text style={itemStyles.body} numberOfLines={2}>
+              {item.body}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
   );
 }
 
 const itemStyles = StyleSheet.create({
+  wrapper: {
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  deleteHint: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 80,
+    backgroundColor: Colors.error,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  deleteHintText: {
+    color: '#fff',
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.semibold,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -187,9 +200,6 @@ const itemStyles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 12,
     flexShrink: 0,
-  },
-  emoji: {
-    fontSize: 20,
   },
   content: {
     flex: 1,
@@ -270,24 +280,128 @@ const emptyStyles = StyleSheet.create({
   },
 });
 
+// ── Error state ───────────────────────────────────────────────────────────────
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <View style={emptyStyles.container}>
+      <View style={emptyStyles.iconWrap}>
+        <Ionicons name="cloud-offline-outline" size={48} color={Colors.textMuted} />
+      </View>
+      <Text style={emptyStyles.title}>Не удалось загрузить</Text>
+      <Text style={emptyStyles.subtitle}>Проверьте интернет-соединение и повторите попытку</Text>
+      <TouchableOpacity style={errorStyles.retryBtn} onPress={onRetry} activeOpacity={0.8}>
+        <Ionicons name="refresh-outline" size={16} color="#fff" />
+        <Text style={errorStyles.retryText}>Повторить</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const errorStyles = StyleSheet.create({
+  retryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 16,
+  },
+  retryText: {
+    color: '#fff',
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.semibold,
+  },
+});
+
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function NotificationsScreen() {
-  const [notifications, setNotifications] = useState<MockNotification[]>(MOCK_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
-  function handlePress(item: MockNotification) {
-    // Mark as read
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === item.id ? { ...n, isRead: true } : n)),
-    );
-    Alert.alert(item.title, item.body, [{ text: 'OK' }]);
+  async function fetchNotifications(silent = false) {
+    if (!silent) {
+      setIsLoading(true);
+      setHasError(false);
+    }
+    try {
+      const res = await api.get<{ data: Notification[]; meta: { total: number } }>(
+        '/notifications?page=1&limit=20',
+      );
+      setNotifications(res.data.data);
+      setHasError(false);
+    } catch {
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
   }
 
-  function handleMarkAllRead() {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  useFocusEffect(
+    useCallback(() => {
+      void fetchNotifications();
+    }, []),
+  );
+
+  async function handlePress(item: Notification) {
+    if (!item.isRead) {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === item.id ? { ...n, isRead: true } : n)),
+      );
+      try {
+        await api.patch(`/notifications/${item.id}/read`);
+      } catch {
+        // revert on error
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === item.id ? { ...n, isRead: false } : n)),
+        );
+        toast.error('Не удалось отметить как прочитанное');
+      }
+    }
   }
+
+  async function handleMarkAllRead() {
+    const prev = notifications;
+    setNotifications((list) => list.map((n) => ({ ...n, isRead: true })));
+    try {
+      await api.patch('/notifications/read-all');
+      toast.success('Все уведомления прочитаны');
+    } catch {
+      setNotifications(prev);
+      toast.error('Не удалось выполнить действие');
+    }
+  }
+
+  async function handleDelete(item: Notification) {
+    setNotifications((prev) => prev.filter((n) => n.id !== item.id));
+    try {
+      await api.delete(`/notifications/${item.id}`);
+    } catch {
+      setNotifications((prev) => [item, ...prev]);
+      toast.error('Не удалось удалить уведомление');
+    }
+  }
+
+  function handleRefresh() {
+    setIsRefreshing(true);
+    void fetchNotifications(true);
+  }
+
+  const renderItem = useCallback(
+    ({ item }: { item: Notification }) => (
+      <NotificationItem item={item} onPress={handlePress} onDelete={handleDelete} />
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <>
@@ -305,11 +419,7 @@ export default function NotificationsScreen() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Уведомления</Text>
         {unreadCount > 0 ? (
-          <TouchableOpacity
-            onPress={handleMarkAllRead}
-            activeOpacity={0.7}
-            style={styles.markAllBtn}
-          >
+          <TouchableOpacity onPress={handleMarkAllRead} activeOpacity={0.7} style={styles.markAllBtn}>
             <Text style={styles.markAllText}>Все прочитаны</Text>
           </TouchableOpacity>
         ) : (
@@ -329,7 +439,15 @@ export default function NotificationsScreen() {
         </View>
       )}
 
-      {notifications.length === 0 ? (
+      {isLoading ? (
+        <View style={[styles.container, styles.centered]}>
+          <ActivityIndicator color={Colors.primary} size="large" />
+        </View>
+      ) : hasError ? (
+        <View style={[styles.container, styles.flex]}>
+          <ErrorState onRetry={() => void fetchNotifications()} />
+        </View>
+      ) : notifications.length === 0 ? (
         <View style={[styles.container, styles.flex]}>
           <EmptyNotifications />
         </View>
@@ -338,11 +456,17 @@ export default function NotificationsScreen() {
           style={styles.container}
           data={notifications}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <NotificationItem item={item} onPress={handlePress} />
-          )}
+          renderItem={renderItem}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={Colors.primary}
+              colors={[Colors.primary]}
+            />
+          }
         />
       )}
     </>
@@ -354,6 +478,11 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
+  },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     flexDirection: 'row',

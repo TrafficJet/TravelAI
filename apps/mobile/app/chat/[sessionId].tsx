@@ -29,6 +29,7 @@ import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { analytics, Events } from '../../src/analytics';
 import { captureError } from '../../lib/sentry';
+import { toast } from '../../lib/toast';
 import * as Haptics from 'expo-haptics';
 import type { Message } from '../../types';
 
@@ -416,11 +417,9 @@ export default function ChatScreen() {
       return;
     }
 
-    // TEMP: disabled hard block — NetInfo may falsely report offline on some devices/web
-    // if (isOffline) {
-    //   Alert.alert('Нет интернета', 'Проверьте подключение и попробуйте снова.');
-    //   return;
-    // }
+    if (isOffline) {
+      toast.warning('Нет соединения — сообщение отправлено в очередь');
+    }
 
     const userMessage: Message = {
       id: `local-user-${Date.now()}`,
