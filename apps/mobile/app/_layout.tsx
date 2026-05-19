@@ -17,7 +17,8 @@ import type { EventSubscription } from 'expo-modules-core';
 import { useAuthStore } from '../stores/authStore';
 import { useWalletStore } from '../stores/walletStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
-import { setupNotificationHandlers, registerForPushNotifications } from '../services/notifications.service';
+import { setupNotificationHandlers } from '../services/push-notifications.service';
+import { registerForPushNotifications } from '../services/notifications.service';
 import { darkColors } from '../src/theme/colors';
 import api from '../services/api';
 import { ThemeProvider, useTheme } from '../src/theme/ThemeContext';
@@ -240,8 +241,15 @@ export default function RootLayout() {
           | Record<string, unknown>
           | undefined;
 
-        if (data?.screen === 'bookings') {
-          router.push('/(tabs)/bookings');
+        if (data?.type === 'booking_update' && typeof data.id === 'string') {
+          router.push(`/bookings/${data.id}` as Parameters<typeof router.push>[0]);
+        } else if (
+          data?.type === 'chat_message' &&
+          typeof data.sessionId === 'string'
+        ) {
+          router.push(`/chat/${data.sessionId}` as Parameters<typeof router.push>[0]);
+        } else {
+          router.push('/(tabs)');
         }
       });
 
@@ -328,7 +336,7 @@ export default function RootLayout() {
         // AsyncStorage failure — skip onboarding check, go to normal flow
       }
 
-      setTimeout(() => router.replace('/(tabs)'), 0);
+      setTimeout(() => router.replace(isAuthenticated ? '/(tabs)' : '/(auth)/login'), 0);
 
       // Handle cold-start deep link after navigation
       const initialUrl = await Linking.getInitialURL();

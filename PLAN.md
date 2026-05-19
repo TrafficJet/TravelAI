@@ -108,3 +108,23 @@ https://expo.dev/accounts/forza22/projects/travel-ai/builds/db0be556-550d-42c9-8
 - app.json настройка
 - eas.json конфиг
 - eas build
+
+## ✅ Фаза 28 — Analytics Service (19.05.2026)
+- `apps/mobile/src/services/analytics.service.ts` — singleton, батчинг 30сек/20 событий, оффлайн-буфер
+- `apps/mobile/src/constants/analytics-events.ts` — константы AUTH/CHAT/BOOKING/PAYMENT/ONBOARDING/NAVIGATION
+- `apps/mobile/hooks/useAnalytics.ts` — React hook
+- Tracking добавлен: onboarding, login, chat_message_sent, booking_started/completed/cancelled
+- Бэкенд: POST /api/analytics/events (уже был в schema.prisma)
+- tsc: 0 ошибок ✅
+
+## ✅ Фаза 29 — Landing page getsvit.com (19.05.2026)
+- `marketing/landing/index.html` — полный лендинг (hero + features + how-it-works + screenshots + social proof + footer)
+- Dark theme #060B18, акцент #7C5CFC, SVIT Gold #E8A020
+- APK ссылка, SEO мета-теги, IntersectionObserver анимации
+- Скриншот: Playwright fullPage ✅
+
+## 📋 Фаза 30 — iOS Build (заблокировано)
+Требует: Apple Developer Account ($99/год) → тогда запускаю eas build --platform ios
+
+## 📋 Фаза 31 — Amadeus sandbox (заблокировано)
+Требует: регистрация на developers.amadeus.com → AMADEUS_CLIENT_ID + CLIENT_SECRET → railway variables set

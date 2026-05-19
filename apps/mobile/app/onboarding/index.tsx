@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { safeStorage } from '../../utils/safeStorage';
+import { analyticsService } from '../../src/services/analytics.service';
+import { AnalyticsEvents } from '../../src/constants/analytics-events';
 
 // ─── Public constant (consumed by _layout.tsx) ────────────────────────────────
 
@@ -125,15 +127,27 @@ export default function OnboardingScreen() {
 
   const isLast = currentIndex === TOTAL - 1;
 
+  // Трекинг: onboarding_started при первом показе экрана
+  useEffect(() => {
+    analyticsService.track(AnalyticsEvents.ONBOARDING.STARTED);
+  }, []);
+
   // Save flag and navigate away
-  const finish = useCallback(async () => {
+  const finish = useCallback(async (skipped = false) => {
+    if (skipped) {
+      analyticsService.track(AnalyticsEvents.ONBOARDING.SKIPPED, {
+        slide_index: currentIndex,
+      });
+    } else {
+      analyticsService.track(AnalyticsEvents.ONBOARDING.COMPLETED);
+    }
     try {
       await safeStorage.setItem(ONBOARDING_KEY, 'true');
     } catch {
       // non-fatal
     }
     router.replace('/(auth)/login');
-  }, []);
+  }, [currentIndex]);
 
   // Advance to next slide or finish
   const goNext = useCallback(() => {
@@ -208,7 +222,7 @@ export default function OnboardingScreen() {
         {/* Skip link — only on slides 1 and 2 */}
         {!isLast ? (
           <TouchableOpacity
-            onPress={() => void finish()}
+            onPress={() => void finish(true)}
             activeOpacity={0.7}
             hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}
           >

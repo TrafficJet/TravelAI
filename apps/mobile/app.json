@@ -22,10 +22,9 @@
       "bundleIdentifier": "com.getsvit.app",
       "buildNumber": "1",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Для поиска отелей рядом с вами",
-        "NSCameraUsageDescription": "Для фото профиля и сканирования документов (паспорт, права)",
-        "NSUserNotificationUsageDescription": "Уведомления о статусе бронирований",
-        "NSPhotoLibraryUsageDescription": "Для фото профиля и выбора документа из галереи"
+        "NSLocationWhenInUseUsageDescription": "Используется для определения ближайших аэропортов",
+        "NSCameraUsageDescription": "Для загрузки фото документов",
+        "NSPhotoLibraryUsageDescription": "Для прикрепления фото к бронированию"
       },
       "config": {
         "usesNonExemptEncryption": false
@@ -83,7 +82,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "$API_URL",
+      "apiUrl": "https://travel-ai-backend-production-90a0.up.railway.app/api",
       "sentryDsn": "https://203439eb6d8b88caeda852db8bba5183@o4511415643078656.ingest.de.sentry.io/4511415732535376",
       "router": {},
       "eas": {

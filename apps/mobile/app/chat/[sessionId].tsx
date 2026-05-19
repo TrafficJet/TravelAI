@@ -29,7 +29,8 @@ import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { SkeletonChatMessage } from '../../components/ui/Skeleton';
 import { useTheme } from '../../src/theme/ThemeContext';
 import { Typography } from '../../constants/typography';
-import { analytics, Events } from '../../src/analytics';
+import { analyticsService } from '../../src/services/analytics.service';
+import { AnalyticsEvents } from '../../src/constants/analytics-events';
 import { captureError } from '../../lib/sentry';
 import { toast } from '../../lib/toast';
 import * as Haptics from 'expo-haptics';
@@ -493,6 +494,7 @@ export default function ChatScreen() {
       .catch(() => {})
       .finally(() => setIsLoading(false));
     loadWallet().catch(() => {});
+    analyticsService.page(AnalyticsEvents.NAVIGATION.SCREEN_VIEW, { name: 'Chat', sessionId });
   }, [sessionId, loadMessages, loadWallet, setStreaming]);
 
   const autoSentRef = useRef(false);
@@ -539,7 +541,7 @@ export default function ChatScreen() {
       createdAt: new Date().toISOString(),
     };
     addMessage(userMessage);
-    analytics.track(Events.MESSAGE_SENT, { sessionId });
+    analyticsService.track(AnalyticsEvents.CHAT.MESSAGE_SENT, { sessionId });
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setReplyTo(null);
     setStreaming(true);
@@ -626,8 +628,21 @@ export default function ChatScreen() {
     const checkIn = details?.checkIn || details?.check_in || '';
     const checkOut = details?.checkOut || details?.check_out || '';
 
+    analyticsService.track(AnalyticsEvents.BOOKING.STARTED, {
+      bookingId,
+      type: bookingType,
+      totalPrice,
+      currency,
+    });
+
     try {
       await confirmBooking(bookingId);
+      analyticsService.track(AnalyticsEvents.BOOKING.COMPLETED, {
+        bookingId,
+        type: bookingType,
+        totalPrice,
+        currency,
+      });
       setPendingBooking(null);
       setPendingBookingId(null);
       await loadWallet();
@@ -751,7 +766,13 @@ export default function ChatScreen() {
           walletBalance={balance}
           walletCurrency={walletCurrency}
           onConfirm={handleConfirmBooking}
-          onCancel={() => { setPendingBooking(null); setPendingBookingId(null); }}
+          onCancel={() => {
+            analyticsService.track(AnalyticsEvents.BOOKING.CANCELLED, {
+              bookingId: pendingBookingId,
+            });
+            setPendingBooking(null);
+            setPendingBookingId(null);
+          }}
           isWalletLoading={isWalletLoading}
         />
       )}

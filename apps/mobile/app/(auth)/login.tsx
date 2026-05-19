@@ -17,7 +17,8 @@ import { Button } from '../../components/ui/Button';
 import { useTheme } from '../../src/theme/ThemeContext';
 import { Typography, TextPresets } from '../../constants/typography';
 import { Spacing } from '../../constants/spacing';
-import { analytics, Events } from '../../src/analytics';
+import { analyticsService } from '../../src/services/analytics.service';
+import { AnalyticsEvents } from '../../src/constants/analytics-events';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 
 export default function LoginScreen() {
@@ -47,7 +48,7 @@ export default function LoginScreen() {
     setIsLoading(true);
     try {
       await login(loginEmail.trim().toLowerCase(), loginPassword);
-      analytics.track(Events.LOGGED_IN);
+      analyticsService.track(AnalyticsEvents.AUTH.LOGIN, { method: 'email' });
       router.replace('/(tabs)');
     } catch (err: unknown) {
       const message =
