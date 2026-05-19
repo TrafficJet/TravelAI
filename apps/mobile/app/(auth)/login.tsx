@@ -137,7 +137,7 @@ export default function LoginScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => Alert.alert('Скоро', 'Регистрация будет доступна в ближайшем обновлении.')}
+            onPress={() => router.push('/(auth)/register')}
             style={styles.registerLink}
           >
             <Text style={styles.registerText}>

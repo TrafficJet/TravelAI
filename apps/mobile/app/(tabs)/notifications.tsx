@@ -362,7 +362,7 @@ export default function NotificationsScreen() {
       {effectiveUnreadCount > 0 && (
         <TouchableOpacity
           style={[styles.markAllBtn, { borderBottomColor: colors.border }]}
-          onPress={!isMockMode ? markAllRead : undefined}
+          onPress={markAllRead}
           activeOpacity={0.7}
         >
           <Text style={styles.markAllText}>

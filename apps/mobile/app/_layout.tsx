@@ -16,12 +16,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { EventSubscription } from 'expo-modules-core';
 import { useAuthStore } from '../stores/authStore';
 import { useWalletStore } from '../stores/walletStore';
+import { useFavoritesStore } from '../stores/favoritesStore';
 import { Colors } from '../constants/colors';
 import { setupNotificationHandlers, registerForPushNotifications } from '../services/notifications.service';
 import api from '../services/api';
 import { ThemeProvider } from '../src/theme/ThemeContext';
 import { NotificationsProvider } from '../context/NotificationsContext';
 import { initSentry } from '../lib/sentry';
+import { toast } from '../lib/toast';
 import { handleDeepLink } from '../lib/deeplinks';
 import { ONBOARDING_KEY } from './onboarding';
 import i18n from '../src/i18n';
@@ -116,6 +118,7 @@ const splashStyles = StyleSheet.create({
 export default function RootLayout() {
   const { isAuthenticated, isLoading, loadStoredAuth } = useAuthStore();
   const loadWallet = useWalletStore((state) => state.load);
+  const loadFavorites = useFavoritesStore((state) => state.loadFavorites);
   const responseListenerRef = useRef<EventSubscription | null>(null);
   const prevAuthenticatedRef = useRef<boolean>(false);
 
@@ -127,14 +130,26 @@ export default function RootLayout() {
     'Sora_Medium':    Sora_500Medium,
     'Sora_SemiBold':  Sora_600SemiBold,
     'Sora_Bold':      Sora_700Bold,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
+    'Inter':          Inter_400Regular,
+    'Inter_Medium':   Inter_500Medium,
+    'Inter_SemiBold': Inter_600SemiBold,
   });
 
   // Set up notification handlers and the tap-response listener once on mount
   useEffect(() => {
     const cleanupHandlers = setupNotificationHandlers();
+
+    // Show a toast when a push notification arrives while the app is in foreground
+    const foregroundToastSub = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        const title = notification.request.content.title ?? '';
+        const body  = notification.request.content.body  ?? '';
+        const message = [title, body].filter(Boolean).join(' — ');
+        if (message) {
+          toast.info(message);
+        }
+      },
+    );
 
     responseListenerRef.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
@@ -149,6 +164,7 @@ export default function RootLayout() {
 
     return () => {
       cleanupHandlers();
+      foregroundToastSub.remove();
       responseListenerRef.current?.remove();
     };
   }, []);
@@ -163,6 +179,7 @@ export default function RootLayout() {
 
     if (isAuthenticated) {
       loadWallet().catch(() => {});
+      loadFavorites().catch(() => {});
 
       // Register push token and send it to the backend.
       // Graceful: on simulator / permission denied / web → returns null, nothing sent.
@@ -177,7 +194,7 @@ export default function RootLayout() {
       // User just logged out — clear push token from the backend.
       api.post('/users/me/push-token', { token: null }).catch(() => {});
     }
-  }, [isAuthenticated, loadWallet]);
+  }, [isAuthenticated, loadWallet, loadFavorites]);
 
   // Hide the native splash once fonts + auth are ready, then show brand splash
   useEffect(() => {

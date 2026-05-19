@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -89,7 +90,10 @@ function TabIcon({ focused, color, size, icon, iconFocused, badge }: TabIconProp
 
 export default function TabsLayout() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   useNotificationsContext(); // keep context subscribed for background badge updates
+
+  const tabBarHeight = 56 + (Platform.OS === 'ios' ? insets.bottom : 0);
 
   return (
     <Tabs
@@ -102,8 +106,8 @@ export default function TabsLayout() {
           backgroundColor: Colors.surface,
           borderTopColor: Colors.divider,
           borderTopWidth: StyleSheet.hairlineWidth,
-          height: 60,
-          paddingBottom: 8,
+          height: tabBarHeight,
+          paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
           paddingTop: 6,
         },
         tabBarActiveTintColor: Colors.primary,
@@ -126,7 +130,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: () => null,
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="arrow-back-outline" iconFocused="arrow-back" />
+            <TabIcon {...props} icon="chatbubble-outline" iconFocused="chatbubble" />
           ),
         }}
       />
@@ -137,6 +141,16 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarIcon: (props) => (
             <TabIcon {...props} icon="calendar-outline" iconFocused="calendar" />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="favorites"
+        options={{
+          title: t('tabs.favorites', { defaultValue: 'Избранное' }),
+          headerShown: false,
+          tabBarIcon: (props) => (
+            <TabIcon {...props} icon="heart-outline" iconFocused="heart" />
           ),
         }}
       />
@@ -171,10 +185,6 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="search-history"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="favorites"
         options={{ href: null }}
       />
     </Tabs>

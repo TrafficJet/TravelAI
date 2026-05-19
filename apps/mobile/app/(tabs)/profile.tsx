@@ -1092,7 +1092,7 @@ export default function ProfileScreen() {
                 }}
                 activeOpacity={0.8}
               >
-                <Text style={styles.upgradeBtnText}>Upgrade to Premium</Text>
+                <Text style={styles.upgradeBtnText}>Перейти на Premium</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -2113,7 +2113,7 @@ const scanModalStyles = StyleSheet.create({
   btnRow: {
     flexDirection: 'row',
     gap: 12,
-    marginTop: 'auto' as unknown as number,
+    marginTop: 16,
   },
   cancelPill: {
     flex: 1,

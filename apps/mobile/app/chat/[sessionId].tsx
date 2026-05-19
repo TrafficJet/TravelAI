@@ -452,11 +452,9 @@ export default function ChatScreen() {
             addMessage(toolMsg);
           },
           onToolResult: (toolUseId, result) => {
-            console.log('[SSE] tool_result received:', { toolUseId, resultKeys: result && typeof result === 'object' ? Object.keys(result as object) : result });
             // Attach result to the matching tool message so ChatToolResult can render cards
             const toolMsgId = `local-tool-${toolUseId}`;
             updateMessage(toolMsgId, { toolResult: result });
-            console.log('[SSE] updateMessage called for:', toolMsgId);
           },
           onBookingDraft: (booking, bookingId) => {
             commitStreamingMessage();
@@ -678,23 +676,29 @@ const chatHeaderStyles = StyleSheet.create({
     fontWeight: '500' as const,
     color: Colors.primary,
   },
-  // Right side group
+  // Right side group (pill container)
   rightGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    justifyContent: 'center',
+    gap: 0,
+    backgroundColor: Colors.elevated,
+    borderRadius: 20,
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    marginRight: 4,
   },
   // Profile button
   profileBtn: {
-    width: 34,
-    height: 34,
+    width: 36,
+    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
   },
   // Menu (•••) button
   menuBtn: {
-    width: 44,
-    height: 44,
+    width: 36,
+    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
   },
