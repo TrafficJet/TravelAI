@@ -55,7 +55,7 @@ function ToastItem({ config, onHide, bottomOffset }: ToastItemProps) {
       icon: 'ℹ',
     },
     warning: {
-      bg: 'rgba(245,158,11,0.15)',
+      bg: 'rgba(232,160,32,0.15)',
       borderColor: colors.warning,
       iconColor: colors.warning,
       textColor: colors.text,

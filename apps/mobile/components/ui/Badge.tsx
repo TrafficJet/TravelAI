@@ -17,7 +17,7 @@ export function Badge({ label, variant = 'default', size = 'md' }: BadgeProps) {
   const VARIANT_STYLES: Record<BadgeVariant, { bg: string; color: string }> = {
     default: { bg: colors.card, color: colors.textMuted },
     success: { bg: 'rgba(16,185,129,0.15)', color: colors.success },
-    warning: { bg: 'rgba(245,158,11,0.15)', color: colors.warning },
+    warning: { bg: 'rgba(232,160,32,0.15)', color: colors.warning },
     error:   { bg: 'rgba(244,63,94,0.15)',  color: colors.error },
     info:    { bg: colors.primary + '26',   color: colors.primary },
     primary: { bg: `${colors.primary}26`,   color: colors.primary },
