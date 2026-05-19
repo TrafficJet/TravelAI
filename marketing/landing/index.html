@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVIT — AI Travel App</title>
+  <meta name="description" content="SVIT — первый AI-агент для путешествий, который сам бронирует авиабилеты и отели. Просто напиши куда хочешь." />
+  <meta property="og:title" content="SVIT — AI Travel App" />
+  <meta property="og:description" content="Первый AI-агент который сам бронирует авиабилеты и отели. Просто в чате." />
+  <meta property="og:image" content="https://getsvit.com/og-image.png" />
+  <meta property="og:url" content="https://getsvit.com" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SVIT — AI Travel App" />
+  <meta name="twitter:description" content="Первый AI-агент который сам бронирует авиабилеты и отели. Просто в чате." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===== DESIGN TOKENS ===== */
+    :root {
+      --bg: #060B18;
+      --bg-deep: #0A0A14;
+      --surface: #12121F;
+      --card: #1C1C2E;
+      --elevated: #252538;
+      --border: #2A2A42;
+      --divider: #1E1E30;
+
+      --primary: #F59E0B;
+      --primary-light: #FCD34D;
+      --primary-dark: #B45309;
+      --secondary: #14B8A6;
+      --secondary-light: #5EEAD4;
+
+      --accent: #7C5CFC;
+      --gold: #E8A020;
+
+      --text: #F4F4F8;
+      --text-muted: #8B8BA7;
+      --text-disabled: #4A4A62;
+
+      --success: #10B981;
+      --gradient-hero: linear-gradient(135deg, #060B18 0%, #1A1A2E 100%);
+      --gradient-brand: linear-gradient(135deg, #F59E0B 0%, #14B8A6 100%);
+      --gradient-card: linear-gradient(135deg, #0A0A14 0%, #2D1A0A 100%);
+
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-2xl: 32px;
+      --radius-full: 9999px;
+
+      --font-display: 'Sora', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section { padding: 80px 0; }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 16px 0;
+      background: rgba(6, 11, 24, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(42, 42, 66, 0.5);
+      transition: background 0.3s ease;
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo-text {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--text);
+    }
+
+    .nav-logo-sub {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--gradient-brand);
+      border-radius: var(--radius-2xl);
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .nav-cta:hover {
+      transform: scale(1.04);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+    }
+
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: var(--gradient-hero);
+      padding-top: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      left: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(124, 92, 252, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(124, 92, 252, 0.15);
+      border: 1px solid rgba(124, 92, 252, 0.35);
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #a78bfa;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #a78bfa;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .hero-logo-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .hero-wordmark {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-wordmark-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .hero-wordmark-sub {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    h1 span {
+      background: var(--gradient-brand);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      max-width: 480px;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: var(--gradient-brand);
+      border-radius: var(--radius-2xl);
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 32px rgba(245, 158, 11, 0.35);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      cursor: default;
+    }
+
+    .btn-secondary:hover {
+      transform: scale(1.03);
+      border-color: rgba(124, 92, 252, 0.4);
+      color: var(--text);
+    }
+
+    .btn-soon-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      background: rgba(124, 92, 252, 0.2);
+      border-radius: var(--radius-sm);
+      color: #a78bfa;
+    }
+
+    /* ===== PHONE MOCKUP ===== */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .phone-mockup {
+      width: 280px;
+      height: 580px;
+      background: #0E0E1A;
+      border-radius: 40px;
+      border: 2px solid rgba(255,255,255,0.1);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.5),
+        0 40px 80px rgba(0,0,0,0.6),
+        0 0 60px rgba(124, 92, 252, 0.15),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      position: relative;
+      overflow: hidden;
+      transform: perspective(1200px) rotateY(-8deg) rotateX(2deg);
+      transition: transform 0.4s ease;
+    }
+
+    .phone-mockup:hover {
+      transform: perspective(1200px) rotateY(-3deg) rotateX(1deg) translateY(-4px);
+    }
+
+    /* Notch */
+    .phone-notch {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 28px;
+      background: #000;
+      border-radius: 14px;
+      z-index: 10;
+    }
+
+    .phone-screen {
+      position: absolute;
+      inset: 0;
+      background: var(--gradient-card);
+      display: flex;
+      flex-direction: column;
+      padding: 52px 0 0;
+    }
+
+    /* Chat header */
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .chat-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--gradient-brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      font-family: var(--font-display);
+      flex-shrink: 0;
+    }
+
+    .chat-header-info {}
+    .chat-header-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .chat-header-status {
+      font-size: 10px;
+      color: var(--success);
+    }
+
+    /* Messages */
+    .chat-messages {
+      flex: 1;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 10px 12px;
+      border-radius: 16px;
+      font-size: 11.5px;
+      line-height: 1.45;
+    }
+
+    .msg-user {
+      align-self: flex-end;
+      background: rgba(124, 92, 252, 0.25);
+      border: 1px solid rgba(124, 92, 252, 0.3);
+      color: var(--text);
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-ai {
+      align-self: flex-start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+    }
+
+    .flight-card {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      font-size: 10.5px;
+    }
+
+    .flight-card-route {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .flight-card-city {
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .flight-card-arrow {
+      color: var(--primary);
+      font-size: 14px;
+    }
+
+    .flight-card-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+    }
+
+    .flight-card-price {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .chat-book-btn {
+      display: block;
+      text-align: center;
+      margin-top: 8px;
+      padding: 8px;
+      background: var(--gradient-brand);
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Chat input */
+    .chat-input-bar {
+      padding: 10px 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-input-field {
+      flex: 1;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 8px 14px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+    }
+
+    .chat-send-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--gradient-brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .chat-send-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: #fff;
+    }
+
+    /* Glow behind phone */
+    .hero-glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(124,92,252,0.2) 0%, transparent 65%);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== FEATURES ===== */
+    #features {
+      background: var(--surface);
+      border-top: 1px solid var(--divider);
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .section-overline {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .section-sub {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.65;
+      margin-bottom: 56px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-brand);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(124, 92, 252, 0.3);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.4);
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .feature-icon-1 { background: rgba(124, 92, 252, 0.15); }
+    .feature-icon-2 { background: rgba(245, 158, 11, 0.15); }
+    .feature-icon-3 { background: rgba(20, 184, 166, 0.15); }
+
+    .feature-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    #how {
+      background: var(--bg);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      position: relative;
+    }
+
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: calc(50% / 3 + 16.67%);
+      right: calc(50% / 3 + 16.67%);
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      opacity: 0.4;
+    }
+
+    .step {
+      text-align: center;
+      padding: 0 24px;
+      position: relative;
+    }
+
+    .step-number {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 auto 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-number-1 {
+      background: rgba(124, 92, 252, 0.2);
+      border: 2px solid rgba(124, 92, 252, 0.5);
+      color: #a78bfa;
+    }
+
+    .step-number-2 {
+      background: rgba(245, 158, 11, 0.15);
+      border: 2px solid rgba(245, 158, 11, 0.4);
+      color: var(--primary);
+    }
+
+    .step-number-3 {
+      background: rgba(20, 184, 166, 0.15);
+      border: 2px solid rgba(20, 184, 166, 0.4);
+      color: var(--secondary);
+    }
+
+    .step-title {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ===== APP SCREENSHOTS ===== */
+    #screenshots {
+      background: var(--surface);
+      border-top: 1px solid var(--divider);
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      justify-items: center;
+    }
+
+    .iphone-mockup {
+      width: 220px;
+      height: 440px;
+      background: #0E0E1A;
+      border-radius: 32px;
+      border: 2px solid rgba(255,255,255,0.08);
+      box-shadow:
+        0 32px 64px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .iphone-mockup:hover {
+      transform: translateY(-8px);
+      box-shadow:
+        0 48px 80px rgba(0,0,0,0.6),
+        0 0 40px rgba(124, 92, 252, 0.12);
+    }
+
+    .iphone-notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 22px;
+      background: #000;
+      border-radius: 11px;
+      z-index: 10;
+    }
+
+    .iphone-screen {
+      position: absolute;
+      inset: 0;
+      background: var(--gradient-card);
+      display: flex;
+      flex-direction: column;
+      padding-top: 42px;
+    }
+
+    /* Screenshot 1 — Chat */
+    .ss-chat-header {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--divider);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ss-chat-av {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gradient-brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      font-family: var(--font-display);
+    }
+
+    .ss-chat-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .ss-chat-status {
+      font-size: 9px;
+      color: var(--success);
+    }
+
+    .ss-messages {
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .ss-msg {
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 9.5px;
+      line-height: 1.4;
+      max-width: 85%;
+    }
+
+    .ss-msg-user {
+      align-self: flex-end;
+      background: rgba(124, 92, 252, 0.25);
+      border: 1px solid rgba(124, 92, 252, 0.3);
+      color: var(--text);
+      border-bottom-right-radius: 3px;
+    }
+
+    .ss-msg-ai {
+      align-self: flex-start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-bottom-left-radius: 3px;
+    }
+
+    .ss-input {
+      padding: 8px 10px 14px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .ss-input-field {
+      flex: 1;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 6px 10px;
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    /* Screenshot 2 — Flights */
+    .ss-screen-title {
+      padding: 10px 14px 6px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: var(--font-display);
+      color: var(--text);
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .ss-screen-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-weight: 400;
+      padding: 2px 14px 8px;
+    }
+
+    .ss-flight-list {
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ss-flight-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .ss-fl-route {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .ss-fl-city {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .ss-fl-arrow {
+      font-size: 10px;
+      color: var(--primary);
+    }
+
+    .ss-fl-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .ss-fl-price {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .ss-fl-tag {
+      font-size: 8px;
+      padding: 2px 6px;
+      background: rgba(20,184,166,0.15);
+      color: var(--secondary);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+    }
+
+    .ss-fl-btn {
+      display: block;
+      text-align: center;
+      padding: 5px;
+      background: var(--gradient-brand);
+      border-radius: 7px;
+      font-size: 9px;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 6px;
+    }
+
+    /* Screenshot 3 — Hotels */
+    .ss-hotel-list {
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ss-hotel-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .ss-hotel-img {
+      height: 50px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(20,184,166,0.1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .ss-hotel-body {
+      padding: 8px;
+    }
+
+    .ss-hotel-name {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .ss-hotel-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ss-hotel-stars {
+      font-size: 8px;
+      color: var(--primary);
+    }
+
+    .ss-hotel-price {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Screenshot labels */
+    .screenshot-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .screenshot-label {
+      text-align: center;
+    }
+
+    .screenshot-label-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .screenshot-label-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ===== SOCIAL PROOF ===== */
+    #social-proof {
+      background: var(--bg);
+      text-align: center;
+    }
+
+    .partners-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .partners-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .partner-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .partner-badge:hover {
+      transform: scale(1.04);
+      border-color: rgba(124, 92, 252, 0.3);
+    }
+
+    .partner-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .partner-icon-amadeus { background: rgba(0, 100, 200, 0.2); }
+    .partner-icon-duffel  { background: rgba(124, 92, 252, 0.2); }
+
+    .partner-name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .partner-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .sandbox-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .sandbox-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      opacity: 0.7;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--divider);
+      padding: 40px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-wordmark {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--text);
+    }
+
+    .footer-copyright {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .footer-link {
+      font-size: 13px;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--text);
+    }
+
+    .footer-email {
+      font-size: 13px;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+    }
+
+    .footer-email:hover {
+      color: var(--primary);
+    }
+
+    /* ===== SVG LOGO ===== */
+    .svit-logo-svg {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .svit-logo-sm {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+        text-align: center;
+      }
+
+      .hero-logo-group { justify-content: center; }
+      .hero-cta-group { justify-content: center; }
+      .hero-sub { margin: 0 auto 40px; }
+      .hero-badge { margin-left: auto; margin-right: auto; }
+
+      .hero-visual { order: -1; }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        max-width: 440px;
+        margin: 0 auto;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .steps-grid::before { display: none; }
+
+      .screenshots-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .section-sub { margin: 0 auto 40px; }
+    }
+
+    @media (max-width: 600px) {
+      section { padding: 60px 0; }
+
+      .phone-mockup {
+        width: 240px;
+        height: 500px;
+        transform: none;
+      }
+
+      .phone-mockup:hover {
+        transform: translateY(-4px);
+      }
+
+      .partners-row { gap: 16px; }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .footer-links {
+        gap: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <nav>
+    <div class="container">
+      <a href="#" class="nav-logo">
+        <!-- S-Horizon Symbol -->
+        <svg class="svit-logo-sm" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="SVIT Logo">
+          <defs>
+            <linearGradient id="g-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#14B8A6"/>
+              <stop offset="100%" stop-color="#F59E0B"/>
+            </linearGradient>
+          </defs>
+          <!-- Upper arc of S (teal) -->
+          <path d="M22 8C22 8 24 8 24 11C24 14 20 14 16 14C12 14 8 14 8 17" stroke="url(#g-nav)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <!-- Lower arc of S (amber) -->
+          <path d="M10 24C10 24 8 24 8 21C8 18 12 18 16 18C20 18 24 18 24 15" stroke="url(#g-nav)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <!-- Center dot -->
+          <circle cx="16" cy="16" r="2" fill="url(#g-nav)"/>
+        </svg>
+        <div>
+          <div class="nav-logo-text">SVIT</div>
+          <div class="nav-logo-sub">AI Travel</div>
+        </div>
+      </a>
+
+      <a href="https://expo.dev/artifacts/eas/nPn26eQJrY2bGSHE59zAv7.apk" class="nav-cta">
+        Скачать APK
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <!-- Left: Content -->
+        <div class="hero-content">
+          <div class="hero-badge reveal">
+            Первый в СНГ AI travel agent
+          </div>
+
+          <div class="hero-logo-group reveal reveal-delay-1">
+            <!-- S-Horizon Symbol Large -->
+            <svg class="svit-logo-svg" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="SVIT Symbol">
+              <defs>
+                <linearGradient id="g-hero" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#14B8A6"/>
+                  <stop offset="100%" stop-color="#F59E0B"/>
+                </linearGradient>
+              </defs>
+              <!-- Upper arc teal -->
+              <path d="M30 10C30 10 33 10 33 14.5C33 19 28 19 22 19C16 19 11 19 11 23.5" stroke="url(#g-hero)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+              <!-- Lower arc amber -->
+              <path d="M14 34C14 34 11 34 11 29.5C11 25 16 25 22 25C28 25 33 25 33 20.5" stroke="url(#g-hero)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+              <!-- Center dot -->
+              <circle cx="22" cy="22" r="2.5" fill="url(#g-hero)"/>
+            </svg>
+            <div class="hero-wordmark">
+              <div class="hero-wordmark-title">SVIT</div>
+              <div class="hero-wordmark-sub">AI Travel Assistant</div>
+            </div>
+          </div>
+
+          <h1 class="reveal reveal-delay-1">
+            Путешествуй.<br/>
+            <span>Просто напиши куда.</span>
+          </h1>
+
+          <p class="hero-sub reveal reveal-delay-2">
+            SVIT — первый AI-агент который сам бронирует авиабилеты и отели. Просто в чате.
+          </p>
+
+          <div class="hero-cta-group reveal reveal-delay-3">
+            <a href="https://expo.dev/artifacts/eas/nPn26eQJrY2bGSHE59zAv7.apk" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.84v4h5.66V9h3.84L12 2z"/></svg>
+              Скачать APK
+            </a>
+            <span class="btn-secondary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              App Store
+              <span class="btn-soon-badge">скоро</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Right: Phone mockup -->
+        <div class="hero-visual reveal reveal-delay-2">
+          <div class="hero-glow"></div>
+          <div class="phone-mockup">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <!-- Chat header -->
+              <div class="chat-header">
+                <div class="chat-avatar">S</div>
+                <div class="chat-header-info">
+                  <div class="chat-header-name">SVIT AI</div>
+                  <div class="chat-header-status">● онлайн</div>
+                </div>
+              </div>
+
+              <!-- Messages -->
+              <div class="chat-messages">
+                <div class="msg msg-user">
+                  Барселона 5 дней, €500 бюджет
+                </div>
+
+                <div class="msg msg-ai">
+                  Нашёл рейс и три отеля. Смотри:
+
+                  <div class="flight-card">
+                    <div class="flight-card-route">
+                      <span class="flight-card-city">МСК</span>
+                      <span class="flight-card-arrow">✈</span>
+                      <span class="flight-card-city">BCN</span>
+                    </div>
+                    <div class="flight-card-meta">
+                      <span>Прямой · 5ч 15м</span>
+                      <span class="flight-card-price">€187</span>
+                    </div>
+                    <div class="flight-card-meta">
+                      <span>Vueling · 14:20</span>
+                      <span style="color: var(--secondary); font-size: 10px;">✓ Лучшая цена</span>
+                    </div>
+                    <div class="chat-book-btn">Забронировать</div>
+                  </div>
+                </div>
+
+                <div class="msg msg-user" style="font-size: 10.5px;">
+                  Отличный вариант, бронируй
+                </div>
+
+                <div class="msg msg-ai">
+                  Готово. Рейс и отель забронированы. Детали в разделе Брони.
+                </div>
+              </div>
+
+              <!-- Input bar -->
+              <div class="chat-input-bar">
+                <div class="chat-input-field">Куда летим дальше?</div>
+                <div class="chat-send-btn">
+                  <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section id="features">
+    <div class="container">
+      <span class="section-overline reveal">Возможности</span>
+      <h2 class="section-title reveal">Всё, что нужно для поездки —<br/>в одном чате</h2>
+      <p class="section-sub reveal">Никаких форм, никаких фильтров, никаких вкладок. Пиши как думаешь.</p>
+
+      <div class="features-grid">
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon feature-icon-1">💬</div>
+          <h3 class="feature-title">Пиши — AI сам ищет</h3>
+          <p class="feature-desc">Просто напиши запрос в свободной форме. SVIT поймёт контекст, подберёт рейсы и отели под твой бюджет и стиль.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon feature-icon-2">✈️</div>
+          <h3 class="feature-title">Бронирование в чате</h3>
+          <p class="feature-desc">Выбрал вариант — AI бронирует прямо здесь. Без переходов на сторонние сайты, без форм, без ожиданий.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="feature-icon feature-icon-3">💳</div>
+          <h3 class="feature-title">Visa, Мир, Crypto</h3>
+          <p class="feature-desc">Оплачивай любым удобным способом: картой, криптовалютой или популярными платёжными системами СНГ.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section id="how">
+    <div class="container">
+      <span class="section-overline reveal" style="text-align:center;display:block;">Как это работает</span>
+      <h2 class="section-title reveal" style="text-align:center;">Три шага до забронированной поездки</h2>
+      <p class="section-sub reveal" style="text-align:center;margin:0 auto 56px;">Планирование займёт пять минут, а не весь вечер.</p>
+
+      <div class="steps-grid">
+        <div class="step reveal reveal-delay-1">
+          <div class="step-number step-number-1">1</div>
+          <h3 class="step-title">Напиши запрос</h3>
+          <p class="step-desc">Пиши как другу — «Хочу в Барселону на 5 дней, бюджет €500». Никаких форм и фильтров.</p>
+        </div>
+
+        <div class="step reveal reveal-delay-2">
+          <div class="step-number step-number-2">2</div>
+          <h3 class="step-title">AI предложит варианты</h3>
+          <p class="step-desc">Через секунды: лучший рейс, три варианта отеля и маршрут на каждый день. Выбираешь ты.</p>
+        </div>
+
+        <div class="step reveal reveal-delay-3">
+          <div class="step-number step-number-3">3</div>
+          <h3 class="step-title">Подтверди — готово</h3>
+          <p class="step-desc">Одно сообщение «Бронируй» — и всё готово. Детали и документы сразу в разделе Брони.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== APP SCREENSHOTS ===== -->
+  <section id="screenshots">
+    <div class="container">
+      <span class="section-overline reveal" style="text-align:center;display:block;">Приложение</span>
+      <h2 class="section-title reveal" style="text-align:center;">Интерфейс, который не мешает</h2>
+      <p class="section-sub reveal" style="text-align:center;margin:0 auto 56px;">Тёмная тема, минимализм, всё под рукой.</p>
+
+      <div class="screenshots-grid">
+
+        <!-- Screenshot 1: Chat -->
+        <div class="screenshot-wrap reveal reveal-delay-1">
+          <div class="iphone-mockup">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen">
+              <div class="ss-chat-header">
+                <div class="ss-chat-av">S</div>
+                <div>
+                  <div class="ss-chat-name">SVIT AI</div>
+                  <div class="ss-chat-status">● онлайн</div>
+                </div>
+              </div>
+              <div class="ss-messages">
+                <div class="ss-msg ss-msg-user">Хочу в Барселону</div>
+                <div class="ss-msg ss-msg-ai">Нашёл рейс МСК→BCN за €187. Прямой, 14:20. Бронировать?</div>
+                <div class="ss-msg ss-msg-user">Да, бронируй</div>
+                <div class="ss-msg ss-msg-ai">Готово. Рейс забронирован.</div>
+              </div>
+              <div class="ss-input">
+                <div class="ss-input-field">Куда летим?</div>
+              </div>
+            </div>
+          </div>
+          <div class="screenshot-label">
+            <div class="screenshot-label-title">Напиши — и всё готово</div>
+            <div class="screenshot-label-sub">Скажи куда хочешь. SVIT найдёт рейс и отель.</div>
+          </div>
+        </div>
+
+        <!-- Screenshot 2: Flights -->
+        <div class="screenshot-wrap reveal reveal-delay-2">
+          <div class="iphone-mockup">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen">
+              <div class="ss-screen-title">Рейсы</div>
+              <div class="ss-screen-sub">МСК → Барселона · 5 авг</div>
+              <div class="ss-flight-list">
+                <div class="ss-flight-item">
+                  <div class="ss-fl-route">
+                    <span class="ss-fl-city">МСК</span>
+                    <span class="ss-fl-arrow">✈</span>
+                    <span class="ss-fl-city">BCN</span>
+                  </div>
+                  <div class="ss-fl-meta">
+                    <span>Vueling · 14:20</span>
+                    <span>5ч 15м · прямой</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span class="ss-fl-price">€187</span>
+                    <span class="ss-fl-tag">Лучшая цена</span>
+                  </div>
+                  <div class="ss-fl-btn">Выбрать</div>
+                </div>
+                <div class="ss-flight-item">
+                  <div class="ss-fl-route">
+                    <span class="ss-fl-city">МСК</span>
+                    <span class="ss-fl-arrow">✈</span>
+                    <span class="ss-fl-city">BCN</span>
+                  </div>
+                  <div class="ss-fl-meta">
+                    <span>Iberia · 07:45</span>
+                    <span>5ч 50м · прямой</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span class="ss-fl-price">€214</span>
+                    <span class="ss-fl-tag" style="background:rgba(124,92,252,0.15);color:#a78bfa;">Бизнес</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="screenshot-label">
+            <div class="screenshot-label-title">Билеты за секунды</div>
+            <div class="screenshot-label-sub">AI ищет среди сотен рейсов и выбирает лучший.</div>
+          </div>
+        </div>
+
+        <!-- Screenshot 3: Hotels -->
+        <div class="screenshot-wrap reveal reveal-delay-3">
+          <div class="iphone-mockup">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen">
+              <div class="ss-screen-title">Отели</div>
+              <div class="ss-screen-sub">Барселона · 5-10 авг · 1 гость</div>
+              <div class="ss-hotel-list">
+                <div class="ss-hotel-item">
+                  <div class="ss-hotel-img">🏖️</div>
+                  <div class="ss-hotel-body">
+                    <div class="ss-hotel-name">Hotel Arts Barcelona</div>
+                    <div class="ss-hotel-meta">
+                      <span class="ss-hotel-stars">★★★★★</span>
+                      <span class="ss-hotel-price">€89/ночь</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="ss-hotel-item">
+                  <div class="ss-hotel-img">🏙️</div>
+                  <div class="ss-hotel-body">
+                    <div class="ss-hotel-name">Barceló Raval</div>
+                    <div class="ss-hotel-meta">
+                      <span class="ss-hotel-stars">★★★★</span>
+                      <span class="ss-hotel-price">€54/ночь</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="ss-hotel-item">
+                  <div class="ss-hotel-img">🌿</div>
+                  <div class="ss-hotel-body">
+                    <div class="ss-hotel-name">Generator Hostel</div>
+                    <div class="ss-hotel-meta">
+                      <span class="ss-hotel-stars">★★★</span>
+                      <span class="ss-hotel-price">€28/ночь</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="screenshot-label">
+            <div class="screenshot-label-title">Три варианта отеля</div>
+            <div class="screenshot-label-sub">Бюджетный, стандарт или люкс — выбираешь ты.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SOCIAL PROOF ===== -->
+  <section id="social-proof">
+    <div class="container">
+      <p class="partners-label reveal">Работает с</p>
+
+      <div class="partners-row reveal">
+        <div class="partner-badge">
+          <div class="partner-icon partner-icon-amadeus">
+            <!-- Amadeus placeholder icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#0064C8"><circle cx="12" cy="12" r="10" fill="none" stroke="#0064C8" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="#0064C8" stroke-width="2"/></svg>
+          </div>
+          <div>
+            <div class="partner-name">Amadeus</div>
+            <div class="partner-sub">GDS · Авиация</div>
+          </div>
+        </div>
+
+        <div class="partner-badge">
+          <div class="partner-icon partner-icon-duffel">
+            <!-- Duffel placeholder icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="13" rx="3" stroke="#7C5CFC" stroke-width="2"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="#7C5CFC" stroke-width="2"/><path d="M12 11v4M10 13h4" stroke="#7C5CFC" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="partner-name">Duffel</div>
+            <div class="partner-sub">API · Бронирование</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sandbox-note reveal">
+        <span class="sandbox-dot"></span>
+        Sandbox demo · реальное бронирование — скоро
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <svg class="svit-logo-sm" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g-footer" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#14B8A6"/>
+                <stop offset="100%" stop-color="#F59E0B"/>
+              </linearGradient>
+            </defs>
+            <path d="M22 8C22 8 24 8 24 11C24 14 20 14 16 14C12 14 8 14 8 17" stroke="url(#g-footer)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M10 24C10 24 8 24 8 21C8 18 12 18 16 18C20 18 24 18 24 15" stroke="url(#g-footer)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <circle cx="16" cy="16" r="2" fill="url(#g-footer)"/>
+          </svg>
+          <div>
+            <div class="footer-wordmark">SVIT</div>
+            <div class="footer-copyright">© 2026 SVIT Travel AI</div>
+          </div>
+        </div>
+
+        <div class="footer-links">
+          <a href="mailto:hello@getsvit.com" class="footer-email">hello@getsvit.com</a>
+          <a href="#" class="footer-link">Privacy Policy</a>
+          <a href="#" class="footer-link">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    // Intersection Observer for scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealEls.forEach(el => observer.observe(el));
+
+    // Nav background intensity on scroll
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) {
+        nav.style.background = 'rgba(6, 11, 24, 0.97)';
+      } else {
+        nav.style.background = 'rgba(6, 11, 24, 0.85)';
+      }
+    }, { passive: true });
+  </script>
+
+</body>
+</html>
