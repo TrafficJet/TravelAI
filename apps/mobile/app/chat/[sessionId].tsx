@@ -454,7 +454,6 @@ export default function ChatScreen() {
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="time-outline" size={18} color={colors.primary} style={{ marginRight: 4 }} />
           <Text style={[chatHeaderStyles.historyBtnText, { color: colors.primary }]}>История</Text>
         </TouchableOpacity>
       ),
@@ -472,7 +471,7 @@ export default function ChatScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Ionicons name="person-circle-outline" size={22} color={colors.textMuted} />
+            <Text style={{ fontSize: 22, color: colors.textMuted }}>{'●'}</Text>
           </TouchableOpacity>
           <View style={chatHeaderStyles.divider} />
           <TouchableOpacity
@@ -480,7 +479,7 @@ export default function ChatScreen() {
             onPress={handleHeaderMenu}
             activeOpacity={0.7}
           >
-            <Ionicons name="ellipsis-horizontal" size={22} color={colors.textMuted} />
+            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.textMuted, letterSpacing: 2 }}>{'···'}</Text>
           </TouchableOpacity>
         </View>
       ),

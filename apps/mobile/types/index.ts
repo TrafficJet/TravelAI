@@ -211,6 +211,7 @@ export interface Hotel {
   guests?: number;
   latitude?: number;
   longitude?: number;
+  imageUrl?: string;
 }
 
 export type FlightProvider = 'AVIASALES' | 'DUFFEL';

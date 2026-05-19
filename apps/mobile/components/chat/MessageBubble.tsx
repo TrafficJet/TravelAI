@@ -221,88 +221,137 @@ const typingStyles = StyleSheet.create({
   },
 });
 
-// ── Rich text renderer (bold, lists, headings, price highlighting) ────────────
+// ── Markdown styles for AI bubble (dark SVIT theme) ───────────────────────────
 
-const PRICE_PATTERN = /([€$]?\d[\d\s]*[€$]?(?:\.\d+)?(?:\s*[€$€])?)/g;
-
-interface Segment {
-  text: string;
-  isPrice: boolean;
-}
-
-function splitPrices(raw: string): Segment[] {
-  const segments: Segment[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  PRICE_PATTERN.lastIndex = 0;
-
-  // Only highlight if the match looks like a real price (has a currency symbol)
-  const REAL_PRICE = /[€$€]/;
-
-  while ((match = PRICE_PATTERN.exec(raw)) !== null) {
-    if (!REAL_PRICE.test(match[0])) continue;
-    if (match.index > lastIndex) {
-      segments.push({ text: raw.slice(lastIndex, match.index), isPrice: false });
-    }
-    segments.push({ text: match[0], isPrice: true });
-    lastIndex = match.index + match[0].length;
-  }
-  if (lastIndex < raw.length) {
-    segments.push({ text: raw.slice(lastIndex), isPrice: false });
-  }
-  return segments;
-}
-
-interface RichLineProps {
-  text: string;
-  baseStyle: object;
-  priceColor: string;
-}
-
-function RichLine({ text, baseStyle, priceColor }: RichLineProps) {
-  // Split on **bold** markers
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  return (
-    <Text style={baseStyle}>
-      {parts.map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          const inner = part.slice(2, -2);
-          const priceSegs = splitPrices(inner);
-          return (
-            <Text key={i} style={richStyles.bold}>
-              {priceSegs.map((seg, j) =>
-                seg.isPrice ? (
-                  <Text key={j} style={[richStyles.price, { color: priceColor }]}>{seg.text}</Text>
-                ) : (
-                  <Text key={j}>{seg.text}</Text>
-                ),
-              )}
-            </Text>
-          );
-        }
-        const priceSegs = splitPrices(part);
-        return priceSegs.map((seg, j) =>
-          seg.isPrice ? (
-            <Text key={`${i}-${j}`} style={[richStyles.price, { color: priceColor }]}>{seg.text}</Text>
-          ) : (
-            <Text key={`${i}-${j}`}>{seg.text}</Text>
-          ),
-        );
-      })}
-    </Text>
-  );
-}
-
-const richStyles = StyleSheet.create({
-  bold: {
+const markdownStyles = StyleSheet.create({
+  // react-native-markdown-display keys
+  body: {
+    color: '#E8E8F0',
+    fontSize: 15,
+    lineHeight: 22,
     fontFamily: 'Inter',
-    fontWeight: '700',
   },
-  price: {
+  strong: {
+    color: '#F59E0B',
+    fontWeight: '700',
     fontFamily: 'Inter',
+  },
+  em: {
+    color: '#E8E8F0',
+    fontStyle: 'italic',
+    fontFamily: 'Inter',
+  },
+  bullet_list: {
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  bullet_list_item: {
+    marginBottom: 6,
+    flexDirection: 'row',
+  },
+  bullet_list_icon: {
+    color: '#F59E0B',
+    marginRight: 8,
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  ordered_list: {
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  ordered_list_item: {
+    marginBottom: 6,
+    flexDirection: 'row',
+  },
+  ordered_list_icon: {
+    color: '#F59E0B',
+    marginRight: 6,
+    fontSize: 15,
+    lineHeight: 22,
+    fontFamily: 'Inter',
+  },
+  paragraph: {
+    marginTop: 0,
+    marginBottom: 8,
+    color: '#E8E8F0',
+  },
+  heading1: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 8,
+    marginTop: 4,
+    fontFamily: 'Sora',
+    lineHeight: 24,
+  },
+  heading2: {
+    color: '#F59E0B',
+    fontSize: 15,
     fontWeight: '600',
+    marginBottom: 6,
+    marginTop: 4,
+    fontFamily: 'Sora',
+    lineHeight: 22,
+  },
+  heading3: {
+    color: '#F59E0B',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4,
+    marginTop: 4,
+    fontFamily: 'Inter',
+    lineHeight: 20,
+  },
+  code_inline: {
+    backgroundColor: '#2A2A42',
+    color: '#F59E0B',
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    fontFamily: 'Inter',
+    fontSize: 13,
+  },
+  code_block: {
+    backgroundColor: '#2A2A42',
+    color: '#E8E8F0',
+    borderRadius: 6,
+    padding: 10,
+    fontFamily: 'Inter',
+    fontSize: 13,
+    marginBottom: 8,
+  },
+  fence: {
+    backgroundColor: '#2A2A42',
+    color: '#E8E8F0',
+    borderRadius: 6,
+    padding: 10,
+    fontFamily: 'Inter',
+    fontSize: 13,
+    marginBottom: 8,
+  },
+  blockquote: {
+    backgroundColor: '#2A2A42',
+    borderLeftColor: '#F59E0B',
+    borderLeftWidth: 3,
+    paddingLeft: 10,
+    marginBottom: 8,
+  },
+  hr: {
+    backgroundColor: '#2A2A42',
+    height: 1,
+    marginVertical: 8,
+  },
+  text: {
+    color: '#E8E8F0',
+    fontFamily: 'Inter',
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  softbreak: {
+    width: '100%' as const,
   },
 });
+
+// ── Message content renderer ──────────────────────────────────────────────────
 
 interface RichTextProps {
   content: string;
@@ -310,147 +359,30 @@ interface RichTextProps {
 }
 
 function RichText({ content, isUser }: RichTextProps) {
-  const { colors } = useTheme();
-
   if (isUser) {
     // User bubble is amber gradient — always use dark text for contrast
     return (
-      <Text style={[contentStyles.base, { color: '#0A0A14', fontFamily: 'Inter', lineHeight: 21, fontWeight: '500' }]}>
+      <Text style={contentStyles.userText}>
         {content}
       </Text>
     );
   }
 
-  const lines = content.split('\n');
-
+  // AI message — render through Markdown for full formatting support
   return (
-    <View>
-      {lines.map((line, index) => {
-        const key = index;
-
-        // Heading # (H1)
-        if (/^# /.test(line) && !line.startsWith('## ')) {
-          const text = line.replace(/^#\s+/, '');
-          return (
-            <RichLine
-              key={key}
-              text={text}
-              baseStyle={[contentStyles.headingH1, { color: colors.text }]}
-              priceColor={colors.primary}
-            />
-          );
-        }
-
-        // Heading ## or ###
-        if (line.startsWith('## ') || line.startsWith('### ')) {
-          const text = line.replace(/^#{2,3}\s+/, '');
-          return (
-            <RichLine
-              key={key}
-              text={text}
-              baseStyle={[contentStyles.heading, { color: colors.text }]}
-              priceColor={colors.primary}
-            />
-          );
-        }
-
-        // Bullet list
-        if (/^[-*•]\s/.test(line)) {
-          const text = line.replace(/^[-*•]\s+/, '');
-          return (
-            <View key={key} style={contentStyles.listRow}>
-              <Text style={[contentStyles.bullet, { color: colors.primary }]}>•</Text>
-              <RichLine
-                text={text}
-                baseStyle={[contentStyles.listItem, { color: colors.text }]}
-                priceColor={colors.primary}
-              />
-            </View>
-          );
-        }
-
-        // Numbered list
-        if (/^\d+\.\s/.test(line)) {
-          const numMatch = line.match(/^(\d+)\.\s+(.*)$/);
-          if (numMatch) {
-            return (
-              <View key={key} style={contentStyles.listRow}>
-                <Text style={[contentStyles.bullet, { color: colors.primary }]}>{numMatch[1]}.</Text>
-                <RichLine
-                  text={numMatch[2]}
-                  baseStyle={[contentStyles.listItem, { color: colors.text }]}
-                  priceColor={colors.primary}
-                />
-              </View>
-            );
-          }
-        }
-
-        // Empty line — add spacing
-        if (line.trim() === '') {
-          return <View key={key} style={contentStyles.spacer} />;
-        }
-
-        // Regular paragraph
-        return (
-          <RichLine
-            key={key}
-            text={line}
-            baseStyle={[contentStyles.paragraph, { color: colors.text }]}
-            priceColor={colors.primary}
-          />
-        );
-      })}
-    </View>
+    <Markdown style={markdownStyles}>
+      {content}
+    </Markdown>
   );
 }
 
 const contentStyles = StyleSheet.create({
-  base: {
+  userText: {
     fontSize: Typography.sizes.base,
-    lineHeight: 22,
-  },
-  headingH1: {
-    fontFamily: 'Sora',
-    fontSize: (Typography.sizes['2xl'] as number | undefined) ?? 22,
-    fontWeight: '700',
-    lineHeight: 30,
-    marginBottom: 6,
-    marginTop: 8,
-  },
-  heading: {
-    fontFamily: 'Sora',
-    fontSize: Typography.sizes.lg,
-    fontWeight: '700',
-    lineHeight: 26,
-    marginBottom: 4,
-    marginTop: 6,
-  },
-  paragraph: {
+    lineHeight: 21,
+    color: '#0A0A14',
     fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    lineHeight: 22,
-  },
-  listRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginVertical: 1,
-  },
-  bullet: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    lineHeight: 22,
-    width: 18,
-    flexShrink: 0,
-  },
-  listItem: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    lineHeight: 22,
-    flex: 1,
-  },
-  spacer: {
-    height: 6,
+    fontWeight: '500',
   },
 });
 
