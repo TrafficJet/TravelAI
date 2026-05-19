@@ -6,13 +6,11 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
-  Switch,
   Modal,
   TextInput,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Linking,
 } from 'react-native';
 import { safeStorage as AsyncStorage } from '../../utils/safeStorage';
 import { router } from 'expo-router';
@@ -55,16 +53,6 @@ interface BookingData {
   emergencyName: string;
   emergencyPhone: string;
 }
-
-const EMPTY_BOOKING_DATA: BookingData = {
-  phone: '',
-  dateOfBirth: '',
-  nationality: '',
-  passportNumber: '',
-  passportExpiry: '',
-  emergencyName: '',
-  emergencyPhone: '',
-};
 
 // ── Scanned document data type ────────────────────────────────────────────────
 
@@ -128,7 +116,7 @@ function Avatar({ name, size = 90 }: { name?: string; size?: number }) {
 
   return (
     <LinearGradient
-      colors={['#F59E0B', '#D97706']}
+      colors={['#F59E0B', '#14B8A6']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[
@@ -541,7 +529,7 @@ function BookingDataModal({ visible, initial, onClose, onSaved }: BookingDataMod
               style={bmStyles.input}
               value={form.nationality}
               onChangeText={field('nationality')}
-              placeholder="Польша / Украина / Россия"
+              placeholder="Польша / Украина / Грузия"
               placeholderTextColor={colors.textMuted}
               returnKeyType="next"
             />
@@ -641,7 +629,7 @@ const SUBSCRIPTION_PRICE = 9.99;
 
 export default function ProfileScreen() {
   const { user, logout, setUser, isAuthenticated, isLoading: authLoading } = useAuthStore();
-  const { colors, isDark, setTheme } = useTheme();
+  const { colors } = useTheme();
   const { unreadCount } = useNotificationsContext();
   const insets = useSafeAreaInsets();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -1023,9 +1011,6 @@ export default function ProfileScreen() {
       marginTop: Spacing.sm,
       marginBottom: Spacing.xl,
       paddingVertical: 14,
-      borderRadius: Radius.input,
-      borderWidth: 1.5,
-      borderColor: colors.error,
       alignItems: 'center',
     },
     logoutBtnDisabled: {
@@ -1405,11 +1390,6 @@ export default function ProfileScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function handleDarkModeChange(value: boolean) {
-    setTheme(value ? 'dark' : 'light');
-    toast.info(value ? 'Тёмная тема включена' : 'Светлая тема включена');
-  }
-
   async function handleLanguageToggle() {
     const next: 'ru' | 'en' = language === 'ru' ? 'en' : 'ru';
     setLanguageState(next);
@@ -1615,7 +1595,7 @@ export default function ProfileScreen() {
     return (
       <>
         <View style={[styles.guestScreen, { paddingTop: insets.top + 24 }]}>
-          <Ionicons name="person-circle-outline" size={80} color={colors.textMuted} style={{ opacity: 0.4, marginBottom: 24 }} />
+          <Text style={{ fontSize: 80, opacity: 0.4, marginBottom: 24 }}>{'👤'}</Text>
           <Text style={styles.guestTitle}>Войдите в аккаунт</Text>
           <Text style={styles.guestSubtitle}>
             Чтобы видеть брони, кошелёк,{'\n'}историю поисков и сохранять маршруты
@@ -1641,21 +1621,16 @@ export default function ProfileScreen() {
 
   // ── render helpers ──────────────────────────────────────────────────────────
 
-  function renderInfoRow(icon: string, label: string, value: string, isLast = false) {
-    // Map emoji strings to Ionicon names to avoid [?] squares on iOS
-    const iconMap: Record<string, string> = {
-      '📞': 'call-outline',
-      '🎂': 'calendar-outline',
-      '🌍': 'earth-outline',
-      '🛂': 'card-outline',
-      '📅': 'today-outline',
-      '👤': 'person-outline',
-    };
-    const ionName = iconMap[icon] || 'information-circle-outline';
+  function renderInfoRow(
+    glyph: string,
+    label: string,
+    value: string,
+    isLast = false,
+  ) {
     return (
       <View style={[styles.infoRow, isLast && styles.infoRowNoBorder]} key={label}>
         <View style={styles.infoRowLeft}>
-          <Ionicons name={ionName as any} size={16} color={colors.primary} style={{ marginRight: 6 }} />
+          <Text style={{ fontSize: 14, color: colors.primary, marginRight: 6 }}>{glyph}</Text>
           <Text style={styles.infoLabel}>{label}</Text>
         </View>
         <Text style={value ? styles.infoValue : styles.infoValueMuted}>
@@ -1688,7 +1663,7 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.quickLinkIconWrap}>
-                <Ionicons name="notifications-outline" size={20} color={colors.primary} />
+                <Text style={{ fontSize: 20, color: colors.primary }}>{'🔔'}</Text>
                 {unreadCount > 0 && (
                   <View style={styles.quickLinkBadge}>
                     <Text style={styles.quickLinkBadgeText}>{unreadCount > 9 ? '9+' : String(unreadCount)}</Text>
@@ -1696,7 +1671,7 @@ export default function ProfileScreen() {
                 )}
               </View>
               <Text style={styles.quickLinkText}>Уведомления</Text>
-              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              <Text style={{ fontSize: 16, color: colors.textMuted }}>{'›'}</Text>
             </TouchableOpacity>
 
             <View style={styles.quickLinkDivider} />
@@ -1707,10 +1682,10 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.quickLinkIconWrap}>
-                <Ionicons name="settings-outline" size={20} color={colors.primary} />
+                <Text style={{ fontSize: 20, color: colors.primary }}>{'⚙'}</Text>
               </View>
               <Text style={styles.quickLinkText}>Настройки</Text>
-              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              <Text style={{ fontSize: 16, color: colors.textMuted }}>{'›'}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1840,7 +1815,7 @@ export default function ProfileScreen() {
               ) : (
                 <>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                    <Ionicons name="scan-outline" size={16} color={colors.primary} />
+                    <Text style={{ fontSize: 16, color: colors.primary }}>{'⌖'}</Text>
                     <Text style={styles.scanCardTitle}>Сканировать документ</Text>
                   </View>
                   <Text style={styles.scanCardSub}>Паспорт · Загранпаспорт · Права</Text>
@@ -1868,15 +1843,15 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <View style={styles.card}>
-            {renderInfoRow('📞', 'Телефон', bookingData.phone)}
-            {renderInfoRow('🎂', 'Дата рождения', bookingData.dateOfBirth)}
-            {renderInfoRow('🌍', 'Гражданство', bookingData.nationality)}
+            {renderInfoRow('call-outline', 'Телефон', bookingData.phone)}
+            {renderInfoRow('calendar-outline', 'Дата рождения', bookingData.dateOfBirth)}
+            {renderInfoRow('earth-outline', 'Гражданство', bookingData.nationality)}
             {renderInfoRow(
-              '🛂',
+              'card-outline',
               'Номер паспорта',
               bookingData.passportNumber ? maskPassport(bookingData.passportNumber) : '',
             )}
-            {renderInfoRow('📅', 'Срок действия паспорта', bookingData.passportExpiry, true)}
+            {renderInfoRow('today-outline', 'Срок действия паспорта', bookingData.passportExpiry, true)}
           </View>
         </View>
 
@@ -1884,22 +1859,6 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Настройки</Text>
           <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <View style={styles.switchRow}>
-              <View style={styles.switchLabel}>
-                <Text style={[styles.switchTitle, { color: colors.text }]}>Тёмная тема</Text>
-                <Text style={[styles.switchSubtitle, { color: colors.textSecondary }]}>
-                  Переключить внешний вид приложения
-                </Text>
-              </View>
-              <Switch
-                value={isDark}
-                onValueChange={handleDarkModeChange}
-                trackColor={{ false: colors.border, true: `${colors.primary}80` }}
-                thumbColor={isDark ? colors.primary : colors.textMuted}
-                style={{ transform: [{ scale: 0.82 }] }}
-              />
-            </View>
-
             <View style={[styles.switchRow, styles.switchRowNoBorder]}>
               <View style={styles.switchLabel}>
                 <Text style={[styles.switchTitle, { color: colors.text }]}>Язык</Text>
@@ -1937,7 +1896,7 @@ export default function ProfileScreen() {
                 <Text style={styles.switchTitle}>Настройки уведомлений</Text>
                 <Text style={styles.switchSubtitle}>Управление бронированиями и ценовыми алертами</Text>
               </View>
-              <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+              <Text style={{ fontSize: 18, color: colors.textMuted }}>{'›'}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -1952,7 +1911,7 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
             >
               <Text style={styles.legalRowText}>Политика конфиденциальности</Text>
-              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              <Text style={{ fontSize: 16, color: colors.textMuted }}>{'›'}</Text>
             </TouchableOpacity>
 
             <View style={styles.legalDivider} />
@@ -1963,7 +1922,7 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
             >
               <Text style={styles.legalRowText}>Условия использования</Text>
-              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              <Text style={{ fontSize: 16, color: colors.textMuted }}>{'›'}</Text>
             </TouchableOpacity>
 
             <View style={styles.legalDivider} />
@@ -1977,7 +1936,7 @@ export default function ProfileScreen() {
 
         {/* ── About app ───────────────────────────────────────────────── */}
         <View style={styles.aboutSection}>
-          <Ionicons name="airplane" size={32} color={colors.primary} />
+          <Text style={{ fontSize: 32, color: colors.primary }}>{'✈'}</Text>
           <Text style={styles.aboutName}>SVIT</Text>
           <Text style={styles.aboutVersion}>Версия 1.0.0</Text>
           <Text style={styles.aboutCopy}>Ваш AI-ассистент для путешествий</Text>

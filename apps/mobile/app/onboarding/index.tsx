@@ -24,13 +24,13 @@ export const ONBOARDING_KEY = 'onboarding_done';
 // ─── Brand tokens (design screen 07) ─────────────────────────────────────────
 
 const COLORS = {
-  background: '#0A0A14',
-  primary: '#F59E0B',
-  secondary: '#14B8A6',
-  white: '#F4F4F8',
-  subtitle: '#8B8BA7',
-  dotInactive: '#2A2A42',
-  textInverse: '#0A0A14',
+  background: '#0E0C1C',
+  primary: '#E8A020',
+  secondary: '#7C5CFC',
+  white: '#EEEEF4',
+  subtitle: '#8888A8',
+  dotInactive: '#2E2B42',
+  textInverse: '#0E0C1C',
 } as const;
 
 // ─── Slide data ───────────────────────────────────────────────────────────────
@@ -44,13 +44,13 @@ interface Slide {
 const SLIDES: Slide[] = [
   {
     id: '1',
-    headline: 'Весь мир\nв одном чате',
+    headline: 'Твой мир.\nТвой маршрут.',
     body: 'Напиши куда хочешь — SVIT найдёт рейс, отель и маршрут. Без форм, без вкладок.',
   },
   {
     id: '2',
     headline: 'Бронируй\nпрямо в чате',
-    body: 'Без редиректов. Оплачивай картой, Мир или крипто — как удобно.',
+    body: 'Без редиректов. Оплачивай картой или крипто — как удобно.',
   },
   {
     id: '3',

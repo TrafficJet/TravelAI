@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '../../constants/typography';
 import { FavoriteButton } from '../ui/FavoriteButton';
 import { useTheme } from '../../src/theme/ThemeContext';
@@ -23,10 +22,10 @@ const PROVIDER_CONFIG: Record<FlightProvider, { label: string; bg: string; color
   DUFFEL:    { label: 'Duffel',    bg: 'rgba(59,  130, 246, 0.15)', color: '#3B82F6' },
 };
 
-const BADGE_CONFIG: Record<BadgeType, { label: string; icon: React.ComponentProps<typeof Ionicons>['name']; bg: string; color: string }> = {
-  budget:  { label: 'Дешевле',       icon: 'flash-outline',  bg: 'rgba(16, 185, 129, 0.15)', color: '#10B981' },
-  value:   { label: 'Лучший выбор',  icon: 'ribbon-outline', bg: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B' },
-  premium: { label: 'Премиум',       icon: 'star-outline',   bg: 'rgba(139, 92, 246, 0.15)', color: '#8B5CF6' },
+const BADGE_CONFIG: Record<BadgeType, { label: string; glyph: string; bg: string; color: string }> = {
+  budget:  { label: 'Дешевле',       glyph: '⚡',  bg: 'rgba(16, 185, 129, 0.15)', color: '#10B981' },
+  value:   { label: 'Лучший выбор',  glyph: '★', bg: 'rgba(232, 160, 32, 0.15)', color: '#E8A020' },
+  premium: { label: 'Премиум',       glyph: '✦',   bg: 'rgba(124, 92, 252, 0.15)', color: '#7C5CFC' },
 };
 
 // ── Airline logo helpers ───────────────────────────────────────────────────────
@@ -257,7 +256,7 @@ export function FlightCard({ flight, onBook, badge, provider }: Props) {
           ]}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Ionicons name={BADGE_CONFIG[badge].icon} size={11} color={BADGE_CONFIG[badge].color} />
+            <Text style={{ fontSize: 11, color: BADGE_CONFIG[badge].color }}>{BADGE_CONFIG[badge].glyph}</Text>
             <Text style={[styles.badgeText, { color: BADGE_CONFIG[badge].color }]}>
               {BADGE_CONFIG[badge].label}
             </Text>

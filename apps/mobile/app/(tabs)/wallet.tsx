@@ -36,7 +36,7 @@ const FILTER_TABS: { key: FilterTab; label: string }[] = [
   { key: 'expense', label: 'Расходы' },
 ];
 
-// ── Transaction icon map ──────────────────────────────────────────────────────
+// ── Currency symbols ──────────────────────────────────────────────────────────
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: '$',
@@ -45,25 +45,23 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   UAH: '₴',
 };
 
-function getTransactionIconName(type: TransactionType, description: string): React.ComponentProps<typeof Ionicons>['name'] {
+// ── Transaction icon (unicode) ────────────────────────────────────────────────
+
+function getTransactionIcon(type: TransactionType, description: string): string {
   const lower = description.toLowerCase();
-  if (type === 'TOPUP') return 'arrow-down-circle-outline';
-  if (lower.includes('возврат') || lower.includes('refund')) return 'refresh-outline';
-  if (lower.includes('отель') || lower.includes('hotel')) return 'bed-outline';
+  if (type === 'TOPUP') return '↓';
+  if (lower.includes('возврат') || lower.includes('refund')) return '↻';
+  if (lower.includes('отель') || lower.includes('hotel')) return '▧';
   if (
     lower.includes('рейс') ||
     lower.includes('flight') ||
     lower.includes('авиа') ||
     lower.includes('билет')
-  ) return 'airplane-outline';
-  return 'card-outline';
+  ) return '✈';
+  return '▤';
 }
 
-// ── Transaction item ──────────────────────────────────────────────────────────
-
-interface TransactionItemProps {
-  transaction: WalletTransaction;
-}
+// ── Transaction icon colors ───────────────────────────────────────────────────
 
 function getTransactionIconBg(type: TransactionType, description: string): string {
   const lower = description.toLowerCase();
@@ -78,11 +76,17 @@ function getTransactionIconBg(type: TransactionType, description: string): strin
 function getTransactionIconColor(type: TransactionType, description: string): string {
   const lower = description.toLowerCase();
   if (type === 'TOPUP') return '#10B981';
-  if (lower.includes('отель') || lower.includes('hotel')) return '#F59E0B';
+  if (lower.includes('отель') || lower.includes('hotel')) return '#E8A020';
   if (lower.includes('рейс') || lower.includes('flight') || lower.includes('авиа') || lower.includes('билет')) {
     return '#14B8A6';
   }
   return '#F43F5E';
+}
+
+// ── Transaction item ──────────────────────────────────────────────────────────
+
+interface TransactionItemProps {
+  transaction: WalletTransaction;
 }
 
 function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
@@ -103,9 +107,10 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
 
   const iconBg = getTransactionIconBg(transaction.type, transaction.description);
   const iconColor = getTransactionIconColor(transaction.type, transaction.description);
+  const iconGlyph = getTransactionIcon(transaction.type, transaction.description);
 
   return (
-    <View style={[txStyles.row, { backgroundColor: colors.card, borderColor: colors.border }]}>
+    <View style={[txStyles.row, { backgroundColor: '#1E1C2C', borderColor: '#2E2B42' }]}>
       <View style={{
         width: 40,
         height: 40,
@@ -114,7 +119,7 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <Ionicons name={getTransactionIconName(transaction.type, transaction.description)} size={18} color={iconColor} />
+        <Text style={{ fontSize: 18, color: iconColor, lineHeight: 22 }}>{iconGlyph}</Text>
       </View>
       <View style={txStyles.info}>
         <Text style={[txStyles.label, { color: colors.text }]} numberOfLines={1}>{transaction.description}</Text>
@@ -387,7 +392,7 @@ const modalStyles = StyleSheet.create({
     opacity: 0.6,
   },
   confirmBtnText: {
-    color: '#fff',
+    color: '#0E0C1C',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
@@ -412,7 +417,7 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
 
   return (
     <LinearGradient
-      colors={['#E8A020', '#7C5CFC']}
+      colors={['#E8A020', '#B87518']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={heroStyles.card}
@@ -420,19 +425,20 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
       {/* Label */}
       <Text style={heroStyles.balanceLabel}>БАЛАНС SVIT</Text>
 
-      {/* Amount */}
+      {/* Amount — 40px bold */}
       <Text style={heroStyles.amount}>
         <Text style={heroStyles.currencySymbol}>{symbol}</Text>
         {formatted}
       </Text>
 
-      {/* Action buttons */}
+      {/* 4 action buttons */}
       <View style={heroStyles.actionsRow}>
         <TouchableOpacity
           style={heroStyles.actionBtn}
           onPress={onTopUp}
           activeOpacity={0.8}
         >
+          <Text style={heroStyles.actionIcon}>↓</Text>
           <Text style={heroStyles.actionBtnText}>Пополнить</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -440,6 +446,7 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
           activeOpacity={0.8}
           onPress={() => {}}
         >
+          <Text style={heroStyles.actionIcon}>↑</Text>
           <Text style={heroStyles.actionBtnText}>Вывести</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -447,7 +454,16 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
           activeOpacity={0.8}
           onPress={() => {}}
         >
-          <Text style={heroStyles.actionBtnText}>Перевод</Text>
+          <Text style={heroStyles.actionIcon}>↻</Text>
+          <Text style={heroStyles.actionBtnText}>Конвертировать</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={heroStyles.actionBtn}
+          activeOpacity={0.8}
+          onPress={() => {}}
+        >
+          <Text style={heroStyles.actionIcon}>≡</Text>
+          <Text style={heroStyles.actionBtnText}>История</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -461,7 +477,7 @@ const heroStyles = StyleSheet.create({
     marginBottom: Spacing.lg,
     borderRadius: 20,
     paddingHorizontal: 20,
-    paddingVertical: 18,
+    paddingVertical: 20,
   },
   balanceLabel: {
     fontFamily: 'Inter',
@@ -469,38 +485,117 @@ const heroStyles = StyleSheet.create({
     fontWeight: '600' as const,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    color: 'rgba(10,10,20,0.5)',
+    color: 'rgba(14,12,28,0.55)',
     marginBottom: 6,
   },
   amount: {
     fontFamily: 'Sora',
-    fontSize: 30,
+    fontSize: 40,
     fontWeight: '700' as const,
-    color: '#0A0A14',
-    letterSpacing: -0.5,
-    marginBottom: 16,
+    color: '#0E0C1C',
+    letterSpacing: -1,
+    marginBottom: 20,
+    lineHeight: 48,
   },
   currencySymbol: {
-    fontSize: 30,
+    fontSize: 40,
     fontWeight: '700' as const,
-    color: '#0A0A14',
+    color: '#0E0C1C',
   },
   actionsRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
   },
   actionBtn: {
-    backgroundColor: 'rgba(10,10,20,0.15)',
-    borderRadius: 18,
-    paddingHorizontal: 13,
-    paddingVertical: 6,
+    flex: 1,
+    backgroundColor: 'rgba(14,12,28,0.15)',
+    borderRadius: 12,
+    paddingVertical: 8,
     alignItems: 'center',
+    gap: 4,
+  },
+  actionIcon: {
+    fontSize: 16,
+    color: '#0E0C1C',
+    lineHeight: 20,
   },
   actionBtnText: {
     fontFamily: 'Inter',
-    fontSize: 10.5,
+    fontSize: 8.5,
     fontWeight: '600' as const,
-    color: '#0A0A14',
+    color: '#0E0C1C',
+    textAlign: 'center',
+  },
+});
+
+// ── Payment methods row ───────────────────────────────────────────────────────
+
+function PaymentMethods() {
+  const { colors } = useTheme();
+
+  return (
+    <View style={pmStyles.row}>
+      <TouchableOpacity
+        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
+        activeOpacity={0.7}
+        onPress={() => {}}
+      >
+        <Text style={[pmStyles.icon, { color: '#3B82F6' }]}>▤</Text>
+        <Text style={[pmStyles.label, { color: colors.textMuted }]}>Visa ••4821</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
+        activeOpacity={0.7}
+        onPress={() => {}}
+      >
+        <Text style={[pmStyles.icon, { color: '#F7931A' }]}>₿</Text>
+        <Text style={[pmStyles.label, { color: colors.textMuted }]}>Bitcoin</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
+        activeOpacity={0.7}
+        onPress={() => {}}
+      >
+        <Text style={[pmStyles.icon, { color: '#26A17B' }]}>$</Text>
+        <Text style={[pmStyles.label, { color: colors.textMuted }]}>USDT</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
+        activeOpacity={0.7}
+        onPress={() => {}}
+      >
+        <Text style={[pmStyles.icon, { color: colors.text }]}></Text>
+        <Text style={[pmStyles.label, { color: colors.textMuted }]}>Apple Pay</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const pmStyles = StyleSheet.create({
+  row: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+    flexDirection: 'row',
+    gap: 7,
+  },
+  tile: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 11,
+    paddingVertical: 9,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    gap: 4,
+  },
+  icon: {
+    fontSize: 18,
+    lineHeight: 22,
+    fontWeight: '600' as const,
+  },
+  label: {
+    fontSize: 8.5,
+    textAlign: 'center',
+    fontFamily: 'Inter',
   },
 });
 
@@ -540,12 +635,12 @@ export default function WalletScreen() {
 
   if (isLoading && (transactions ?? []).length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      <View style={[styles.container, { backgroundColor: '#0E0C1C', paddingTop: insets.top }]}>
         <SkeletonWalletCard />
         <Skeleton width="40%" height={44} borderRadius={12} style={styles.skeletonBtn} />
         <Skeleton width="60%" height={12} borderRadius={6} style={styles.skeletonLabel} />
         {Array.from({ length: 4 }).map((_, i) => (
-          <View key={i} style={[styles.skeletonRow, { borderBottomColor: colors.border }]}>
+          <View key={i} style={[styles.skeletonRow, { borderBottomColor: '#2E2B42' }]}>
             <Skeleton width={44} height={44} borderRadius={22} />
             <View style={styles.skeletonRowContent}>
               <Skeleton width="55%" height={13} borderRadius={6} />
@@ -559,7 +654,7 @@ export default function WalletScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: '#0E0C1C', paddingTop: insets.top }]}>
       <FlatList
         data={filteredTransactions}
         keyExtractor={(item) => item.id}
@@ -568,58 +663,41 @@ export default function WalletScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.primary}
+            tintColor="#F59E0B"
           />
         }
         ListHeaderComponent={
           <View>
-            {/* Design header: "Кошелёк" Sora bold 22px */}
+            {/* Screen header */}
             <View style={styles.screenHeader}>
               <Text style={styles.screenTitle}>Кошелёк</Text>
-              <Text style={[styles.screenSub, { color: colors.textMuted }]}>Оплачивай поездки прямо здесь</Text>
+              <Text style={styles.screenSub}>Оплачивай поездки прямо здесь</Text>
             </View>
 
-            {/* Hero gradient balance card + payment methods */}
+            {/* Hero gradient balance card */}
             <HeroBalanceCard
               balance={balance}
               currency={currency}
               onTopUp={() => setTopUpVisible(true)}
             />
 
-            {/* Payment methods row (design: 4 tiles — Visa, Bitcoin, USDT, Apple Pay) */}
-            <View style={styles.pmRow}>
-              <View style={[styles.pmTile]}>
-                <Ionicons name="card" size={18} color={colors.textMuted} />
-                <Text style={[styles.pmLabel, { color: colors.textMuted }]}>Visa ••4821</Text>
-              </View>
-              <View style={styles.pmTile}>
-                <Ionicons name="logo-bitcoin" size={18} color="#F7931A" />
-                <Text style={[styles.pmLabel, { color: colors.textMuted }]}>Bitcoin</Text>
-              </View>
-              <View style={styles.pmTile}>
-                <Ionicons name="cash-outline" size={18} color="#26A17B" />
-                <Text style={[styles.pmLabel, { color: colors.textMuted }]}>USDT</Text>
-              </View>
-              <TouchableOpacity style={[styles.pmTile]} activeOpacity={0.7} onPress={() => {}}>
-                <Ionicons name="logo-apple" size={18} color={colors.text} />
-                <Text style={[styles.pmLabel, { color: colors.textMuted }]}>Apple Pay</Text>
-              </TouchableOpacity>
-            </View>
+            {/* Payment methods row */}
+            <PaymentMethods />
 
             {/* Transaction section label */}
             {filteredTransactions.length > 0 && (
-              <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>История транзакций</Text>
+              <Text style={styles.sectionTitle}>История транзакций</Text>
             )}
 
             {/* Filter tabs */}
-            <View style={[styles.tabsContainer, { backgroundColor: colors.card }]}>
+            <View style={[styles.tabsContainer, { backgroundColor: '#14121E' }]}>
               {FILTER_TABS.map((tab) => (
                 <TouchableOpacity
                   key={tab.key}
                   style={[
                     styles.tabBtn,
                     activeFilter === tab.key && styles.tabBtnActive,
-                    activeFilter === tab.key && { backgroundColor: colors.surface },
+                    activeFilter === tab.key && { backgroundColor: '#1E1C2C' },
                   ]}
                   onPress={() => setActiveFilter(tab.key)}
                   activeOpacity={0.7}
@@ -627,8 +705,8 @@ export default function WalletScreen() {
                   <Text
                     style={[
                       styles.tabText,
-                      { color: colors.textMuted },
-                      activeFilter === tab.key && { color: colors.primary, fontWeight: Typography.weights.semibold },
+                      { color: '#8888A8' },
+                      activeFilter === tab.key && { color: '#E8A020', fontWeight: Typography.weights.semibold },
                     ]}
                   >
                     {tab.label}
@@ -640,7 +718,7 @@ export default function WalletScreen() {
         }
         ListEmptyComponent={
           <View style={styles.emptyTransactions}>
-            <Ionicons name="card-outline" size={64} color={colors.textMuted} />
+            <Text style={styles.emptyIcon}>▤</Text>
             <Text style={[styles.emptyText, { color: colors.text }]}>Транзакций пока нет</Text>
             <Text style={[styles.emptySubtext, { color: colors.textMuted }]}>
               Пополните кошелёк, чтобы начать бронировать
@@ -661,7 +739,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  // Design header
   screenHeader: {
     paddingHorizontal: 20,
     paddingBottom: 14,
@@ -671,36 +748,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 22,
     fontWeight: '700' as const,
-    color: '#F4F4F8',
+    color: '#EEEEF4',
   },
   screenSub: {
     fontSize: 10,
     marginTop: 2,
-  },
-  // Payment methods row (4 tiles)
-  pmRow: {
-    marginHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
-    flexDirection: 'row',
-    gap: 7,
-  },
-  pmTile: {
-    flex: 1,
-    backgroundColor: '#1E1C2C',
-    borderWidth: 1,
-    borderColor: '#2E2B42',
-    borderRadius: 11,
-    paddingVertical: 9,
-    paddingHorizontal: 4,
-    alignItems: 'center',
-    gap: 4,
-  },
-  pmTileActive: {
-    borderColor: 'rgba(232,160,32,0.4)',
-  },
-  pmLabel: {
-    fontSize: 8.5,
-    textAlign: 'center',
+    color: '#8888A8',
   },
   tabsContainer: {
     flexDirection: 'row',
@@ -736,11 +789,18 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.sm,
     textTransform: 'uppercase',
+    color: '#8888A8',
   },
   emptyTransactions: {
     alignItems: 'center',
     paddingVertical: Spacing['2xl'],
     paddingHorizontal: Spacing.lg,
+  },
+  emptyIcon: {
+    fontSize: 56,
+    color: '#8888A8',
+    marginBottom: 12,
+    lineHeight: 64,
   },
   emptyText: {
     fontFamily: 'Inter',

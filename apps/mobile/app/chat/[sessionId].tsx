@@ -12,7 +12,6 @@ import {
   ScrollView,
   PanResponder,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import NetInfo from '@react-native-community/netinfo';
 import { useLocalSearchParams, useNavigation, router } from 'expo-router';
 import { useChatStore } from '../../stores/chatStore';
@@ -99,7 +98,7 @@ function EmptyState() {
   const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
-      <Ionicons name="airplane" size={64} color={colors.primary} style={{ opacity: 0.25, marginBottom: 24 }} />
+      <Text style={{ fontSize: 64, opacity: 0.25, marginBottom: 24 }}>{'✈'}</Text>
       <Text style={[emptyStyles.title, { color: colors.text }]}>Куда летим?</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
         Напишите маршрут, даты и бюджет — {'\n'}я подберу рейсы, отели и трансфер
@@ -196,14 +195,14 @@ function GuestWelcomeState({ onSignIn }: { onSignIn: () => void }) {
   const { colors } = useTheme();
   return (
     <View style={guestStyles.container}>
-      <Ionicons name="airplane" size={64} color={colors.primary} style={{ opacity: 0.3, marginBottom: 24 }} />
+      <Text style={{ fontSize: 64, opacity: 0.3, marginBottom: 24 }}>{'✈'}</Text>
       <Text style={[guestStyles.title, { color: colors.text }]}>Добро пожаловать в SVIT</Text>
       <Text style={[guestStyles.subtitle, { color: colors.textMuted }]}>
         AI-ассистент поможет подобрать рейсы, отели и трансфер.{'\n'}
         Войдите, чтобы начать планировать путешествие.
       </Text>
       <TouchableOpacity style={[guestStyles.btn, { backgroundColor: colors.primary }]} onPress={onSignIn} activeOpacity={0.8}>
-        <Ionicons name="person-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
+        <Text style={{ fontSize: 18, color: '#fff', marginRight: 8 }}>{'👤'}</Text>
         <Text style={guestStyles.btnText}>Войти / Зарегистрироваться</Text>
       </TouchableOpacity>
     </View>
@@ -258,7 +257,7 @@ function GuestInputBanner({ onSignIn }: { onSignIn: () => void }) {
       onPress={onSignIn}
       activeOpacity={0.85}
     >
-      <Ionicons name="lock-closed-outline" size={16} color={colors.primary} style={{ marginRight: 8 }} />
+      <Text style={{ fontSize: 16, color: colors.primary, marginRight: 8 }}>{'🔒'}</Text>
       <Text style={[guestBannerStyles.text, { color: colors.primary }]}>Войдите чтобы общаться с AI-ассистентом</Text>
     </TouchableOpacity>
   );
@@ -838,11 +837,9 @@ export default function ChatScreen() {
         accessibilityLabel="Новый чат"
         accessibilityRole="button"
       >
-        <Ionicons
-          name={isCreatingNewChat ? 'hourglass-outline' : 'add'}
-          size={28}
-          color="#fff"
-        />
+        <Text style={{ fontSize: 28, color: '#fff', lineHeight: 32 }}>
+          {isCreatingNewChat ? '⏳' : '+'}
+        </Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
     </View>
@@ -921,11 +918,11 @@ const fabStyles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#4F7FFF',
+    backgroundColor: '#E8A020',
     alignItems: 'center',
     justifyContent: 'center',
     // Shadow iOS
-    shadowColor: '#4F7FFF',
+    shadowColor: '#E8A020',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.45,
     shadowRadius: 10,

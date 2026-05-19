@@ -104,16 +104,16 @@ export default function TabsLayout() {
         headerTitleStyle: { fontWeight: Typography.weights.bold, color: colors.text },
         headerShadowVisible: false,
         tabBarStyle: {
-          // Design spec: bg #12121F, border-top #2A2A42, height 70px
-          backgroundColor: '#12121F',
-          borderTopColor: '#2A2A42',
+          // SVIT brand: bg surface #14121E, border-top #2E2B42, height 70px
+          backgroundColor: '#14121E',
+          borderTopColor: '#2E2B42',
           borderTopWidth: 1,
           height: tabBarHeight,
           paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
           paddingTop: 10,
         },
-        tabBarActiveTintColor: '#F59E0B',
-        tabBarInactiveTintColor: '#4A4A62',
+        tabBarActiveTintColor: '#E8A020',
+        tabBarInactiveTintColor: '#8888A8',
         tabBarLabelStyle: {
           fontSize: 8.5,
           fontWeight: Typography.weights.medium,
@@ -130,10 +130,11 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Чат',
+          title: t('tabs.chat', { defaultValue: 'Чат' }),
           headerShown: false,
+          tabBarLabel: 'Чат',
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="chatbubble-outline" iconFocused="chatbubble" />
+            <TabIcon {...props} icon="chatbubble-ellipses-outline" iconFocused="chatbubble-ellipses" />
           ),
         }}
       />
@@ -141,8 +142,9 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="bookings"
         options={{
-          title: 'Поездки',
+          title: t('tabs.trips', { defaultValue: 'Поездки' }),
           headerShown: false,
+          tabBarLabel: 'Поездки',
           tabBarIcon: (props) => (
             <TabIcon {...props} icon="airplane-outline" iconFocused="airplane" />
           ),
@@ -152,10 +154,11 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="wallet"
         options={{
-          title: 'Кошелёк',
+          title: t('tabs.wallet', { defaultValue: 'Кошелёк' }),
           headerShown: false,
+          tabBarLabel: 'Кошелёк',
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="card-outline" iconFocused="card" />
+            <TabIcon {...props} icon="wallet-outline" iconFocused="wallet" />
           ),
         }}
       />
@@ -163,8 +166,9 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Профиль',
+          title: t('tabs.profile', { defaultValue: 'Профиль' }),
           headerShown: false,
+          tabBarLabel: 'Профиль',
           tabBarIcon: (props) => (
             <TabIcon {...props} icon="person-circle-outline" iconFocused="person-circle" />
           ),
@@ -183,14 +187,14 @@ export default function TabsLayout() {
         name="notifications"
         options={{
           href: null,
-          title: 'Уведомления',
+          title: t('tabs.notifications', { defaultValue: 'Уведомления' }),
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
               style={{ marginLeft: 8, padding: 6 }}
               activeOpacity={0.7}
             >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
+              <Text style={{ fontSize: 22, color: colors.text }}>{'←'}</Text>
             </TouchableOpacity>
           ),
         }}

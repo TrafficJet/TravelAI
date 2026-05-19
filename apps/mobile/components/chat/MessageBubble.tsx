@@ -6,9 +6,9 @@ import {
   Animated,
   Easing,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import Markdown from 'react-native-markdown-display';
 import { Typography } from '../../constants/typography';
 import { ChatToolResult } from './ToolResultCard';
@@ -118,7 +118,7 @@ function ToolLoadingChip({ toolName }: { toolName?: string }) {
   return (
     <View style={toolChipStyles.row}>
       <Animated.View style={{ opacity: blinkAnim }}>
-        <Ionicons name="search-outline" size={13} color={colors.textMuted} />
+        <Text style={{ fontSize: 13, color: colors.textMuted }}>{'⌕'}</Text>
       </Animated.View>
       <Text style={[toolChipStyles.text, { color: colors.textMuted }]}>{getToolLabel(toolName)}</Text>
       <View style={toolChipStyles.dots}>
@@ -226,18 +226,18 @@ const typingStyles = StyleSheet.create({
 const markdownStyles = StyleSheet.create({
   // react-native-markdown-display keys
   body: {
-    color: '#E8E8F0',
+    color: '#EEEEF4',
     fontSize: 15,
     lineHeight: 22,
     fontFamily: 'Inter',
   },
   strong: {
-    color: '#F59E0B',
+    color: '#E8A020',
     fontWeight: '700',
     fontFamily: 'Inter',
   },
   em: {
-    color: '#E8E8F0',
+    color: '#EEEEF4',
     fontStyle: 'italic',
     fontFamily: 'Inter',
   },
@@ -250,7 +250,7 @@ const markdownStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   bullet_list_icon: {
-    color: '#F59E0B',
+    color: '#E8A020',
     marginRight: 8,
     fontSize: 15,
     lineHeight: 22,
@@ -264,7 +264,7 @@ const markdownStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   ordered_list_icon: {
-    color: '#F59E0B',
+    color: '#E8A020',
     marginRight: 6,
     fontSize: 15,
     lineHeight: 22,
@@ -273,7 +273,7 @@ const markdownStyles = StyleSheet.create({
   paragraph: {
     marginTop: 0,
     marginBottom: 8,
-    color: '#E8E8F0',
+    color: '#EEEEF4',
   },
   heading1: {
     color: '#FFFFFF',
@@ -285,7 +285,7 @@ const markdownStyles = StyleSheet.create({
     lineHeight: 24,
   },
   heading2: {
-    color: '#F59E0B',
+    color: '#E8A020',
     fontSize: 15,
     fontWeight: '600',
     marginBottom: 6,
@@ -294,8 +294,8 @@ const markdownStyles = StyleSheet.create({
     lineHeight: 22,
   },
   heading3: {
-    color: '#F59E0B',
-    fontSize: 14,
+    color: '#E8A020',
+    fontSize: 15,
     fontWeight: '600',
     marginBottom: 4,
     marginTop: 4,
@@ -303,16 +303,16 @@ const markdownStyles = StyleSheet.create({
     lineHeight: 20,
   },
   code_inline: {
-    backgroundColor: '#2A2A42',
-    color: '#F59E0B',
+    backgroundColor: '#28263A',
+    color: '#E8A020',
     borderRadius: 4,
     paddingHorizontal: 4,
     fontFamily: 'Inter',
     fontSize: 13,
   },
   code_block: {
-    backgroundColor: '#2A2A42',
-    color: '#E8E8F0',
+    backgroundColor: '#28263A',
+    color: '#EEEEF4',
     borderRadius: 6,
     padding: 10,
     fontFamily: 'Inter',
@@ -320,8 +320,8 @@ const markdownStyles = StyleSheet.create({
     marginBottom: 8,
   },
   fence: {
-    backgroundColor: '#2A2A42',
-    color: '#E8E8F0',
+    backgroundColor: '#28263A',
+    color: '#EEEEF4',
     borderRadius: 6,
     padding: 10,
     fontFamily: 'Inter',
@@ -329,19 +329,19 @@ const markdownStyles = StyleSheet.create({
     marginBottom: 8,
   },
   blockquote: {
-    backgroundColor: '#2A2A42',
-    borderLeftColor: '#F59E0B',
+    backgroundColor: '#28263A',
+    borderLeftColor: '#E8A020',
     borderLeftWidth: 3,
     paddingLeft: 10,
     marginBottom: 8,
   },
   hr: {
-    backgroundColor: '#2A2A42',
+    backgroundColor: '#28263A',
     height: 1,
     marginVertical: 8,
   },
   text: {
-    color: '#E8E8F0',
+    color: '#EEEEF4',
     fontFamily: 'Inter',
     fontSize: 15,
     lineHeight: 22,
@@ -380,7 +380,7 @@ const contentStyles = StyleSheet.create({
   userText: {
     fontSize: Typography.sizes.base,
     lineHeight: 21,
-    color: '#0A0A14',
+    color: '#0E0C1C',
     fontFamily: 'Inter',
     fontWeight: '500',
   },
@@ -470,7 +470,7 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
           delayLongPress={350}
           style={styles.bubbleWrapper}
         >
-          {/* AI bubble: bg #1C1C2E, border #2A2A42, radius 4px 16px 16px 16px */}
+          {/* AI bubble: bg #1E1C2C, border #28263A, radius 4px 16px 16px 16px */}
           <View style={styles.bubbleAssistant}>
             {isStreaming && !streamingText ? (
               <TypingIndicator />
@@ -495,9 +495,9 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
         delayLongPress={350}
         style={styles.bubbleWrapper}
       >
-        {/* User bubble: gradient amber #F59E0B → #E8890A */}
+        {/* User bubble: gradient amber #E8A020 → #E8890A */}
         <LinearGradient
-          colors={['#F59E0B', '#E8890A']}
+          colors={['#E8A020', '#E8890A']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.bubbleUser}
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#14B8A6', // fallback; gradient simulated via layered bg
+    backgroundColor: '#7C5CFC', // fallback; gradient simulated via layered bg
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 6,
@@ -542,7 +542,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#E8A020',
     alignItems: 'center',
     justifyContent: 'center',
     // gradient approach: top border in teal via shadow
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
   avatarLetter: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#0A0A14',
+    color: '#0E0C1C',
     lineHeight: 11,
   },
 
@@ -560,7 +560,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
 
-  // User bubble: gradient amber #F59E0B → #E8890A, radius 16 16 4 16
+  // User bubble: gradient amber #E8A020 → #E8890A, radius 16 16 4 16
   bubbleUser: {
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
@@ -570,11 +570,11 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
 
-  // AI bubble: bg #1C1C2E, border 1px #2A2A42, radius 4 16 16 16
+  // AI bubble: bg #1E1C2C, border 1px #28263A, radius 4 16 16 16
   bubbleAssistant: {
-    backgroundColor: '#1C1C2E',
+    backgroundColor: '#1E1C2C',
     borderWidth: 1,
-    borderColor: '#2A2A42',
+    borderColor: '#28263A',
     borderTopLeftRadius: 4,
     borderTopRightRadius: 16,
     borderBottomLeftRadius: 16,

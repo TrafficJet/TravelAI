@@ -45,10 +45,10 @@ function StarRow({ count, rating }: { count: number; rating?: number }) {
   return (
     <View style={starStyles.row}>
       {Array.from({ length: n }).map((_, i) => (
-        <Ionicons key={`f${i}`} name="star" size={12} color={colors.primary} />
+        <Text key={`f${i}`} style={{ fontSize: 12, color: colors.primary }}>{'★'}</Text>
       ))}
       {Array.from({ length: empty }).map((_, i) => (
-        <Ionicons key={`e${i}`} name="star-outline" size={12} color={colors.border} />
+        <Text key={`e${i}`} style={{ fontSize: 12, color: colors.border }}>{'☆'}</Text>
       ))}
       {rating !== undefined && (
         <Text style={[starStyles.rating, { color: colors.primary }]}>{rating.toFixed(1)}/10</Text>
@@ -178,7 +178,7 @@ export function HotelCard({ hotel, onBook }: Props) {
             <View style={styles.overlayBottom}>
               {(hotel.address || hotel.city) && (
                 <View style={styles.locationRow}>
-                  <Ionicons name="location-outline" size={11} color="rgba(255,255,255,0.9)" />
+                  <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)' }}>{'📍'}</Text>
                   <Text style={styles.locationText} numberOfLines={1}>
                     {[hotel.address, hotel.city].filter(Boolean).join(' · ')}
                   </Text>
@@ -212,7 +212,7 @@ export function HotelCard({ hotel, onBook }: Props) {
         {/* ── Dates row ── */}
         {hotel.checkIn && hotel.checkOut && (
           <View style={styles.datesRow}>
-            <Ionicons name="calendar-outline" size={13} color={colors.textMuted} style={{ marginRight: 4 }} />
+            <Text style={{ fontSize: 13, color: colors.textMuted, marginRight: 4 }}>{'📅'}</Text>
             <Text style={[styles.datesText, { color: colors.text }]}>
               {formatDate(hotel.checkIn)} — {formatDate(hotel.checkOut)}
             </Text>

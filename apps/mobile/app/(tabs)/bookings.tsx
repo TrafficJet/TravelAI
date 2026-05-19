@@ -41,9 +41,9 @@ const FILTER_TABS: FilterTabConfig[] = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function getTypeIconName(booking: Booking): React.ComponentProps<typeof Ionicons>['name'] {
-  if (booking.type === 'HOTEL') return 'bed-outline';
-  return 'airplane-outline';
+function getTypeIconGlyph(booking: Booking): string {
+  if (booking.type === 'HOTEL') return '▧';
+  return '✈';
 }
 
 function formatPrice(price: number | string, currency: string): string {
@@ -180,7 +180,7 @@ function StatusBadge({ status }: { status: BookingStatus }) {
   const { bg, color, label, showCheck } = STATUS_BADGE_CONFIG[status];
   return (
     <View style={[badgeStyles.wrap, { backgroundColor: bg, flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
-      {showCheck && <Ionicons name="checkmark" size={10} color={color} />}
+      {showCheck && <Text style={{ fontSize: 10, color, lineHeight: 14 }}>{'✓'}</Text>}
       <Text style={[badgeStyles.label, { color }]}>
         {label}
       </Text>
@@ -229,7 +229,7 @@ function FlightCardContent({ booking }: { booking: Booking }) {
       {/* Top row: icon + route + price */}
       <View style={cardStyles.topRow}>
         <View style={[cardStyles.iconCircle, { backgroundColor: `${colors.primary}15` }]}>
-          <Ionicons name="airplane-outline" size={18} color={colors.primary} />
+          <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'✈'}</Text>
         </View>
         <View style={cardStyles.routeBlock}>
           <Text style={[cardStyles.route, { color: colors.text }]} numberOfLines={1}>
@@ -249,6 +249,13 @@ function FlightCardContent({ booking }: { booking: Booking }) {
       <View style={cardStyles.metaRow}>
         <StatusBadge status={booking.status} />
         <Text style={[cardStyles.metaText, { color: colors.textMuted }]}>{dateLabel}</Text>
+      </View>
+
+      {/* Details button */}
+      <View style={cardStyles.detailsRow}>
+        <View style={cardStyles.detailsBtn}>
+          <Text style={cardStyles.detailsBtnText}>Детали</Text>
+        </View>
       </View>
     </View>
   );
@@ -293,6 +300,13 @@ function HotelCardContent({ booking }: { booking: Booking }) {
         <StatusBadge status={booking.status} />
         <Text style={[cardStyles.metaText, { color: colors.textMuted }]}>{datesLabel}</Text>
       </View>
+
+      {/* Details button */}
+      <View style={cardStyles.detailsRow}>
+        <View style={cardStyles.detailsBtn}>
+          <Text style={cardStyles.detailsBtnText}>Детали</Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -300,9 +314,11 @@ function HotelCardContent({ booking }: { booking: Booking }) {
 function BookingCard({ booking, onPress, index }: BookingCardProps) {
   const { colors } = useTheme();
 
+  // Active (upcoming confirmed/pending) trips get the Void Plum accent stripe per SVIT Design System
+  const isActive = (booking.status === 'CONFIRMED' || booking.status === 'PENDING') && !isBookingPast(booking);
   const STATUS_STRIPE_COLOR: Record<BookingStatus, string> = {
-    CONFIRMED: colors.success,
-    PENDING:   colors.warning,
+    CONFIRMED: isActive ? colors.secondary : colors.success,
+    PENDING:   colors.secondary,
     CANCELLED: colors.error,
     FAILED:    colors.error,
   };
@@ -316,7 +332,7 @@ function BookingCard({ booking, onPress, index }: BookingCardProps) {
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.85}
-        style={[cardStyles.card, { backgroundColor: colors.card }]}
+        style={[cardStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
       >
         {/* Left status stripe */}
         <View style={[cardStyles.statusStripe, { backgroundColor: stripeColor }]} />
@@ -338,6 +354,7 @@ const cardStyles = StyleSheet.create({
   },
   card: {
     borderRadius: Radius.card,
+    borderWidth: 1,
     overflow: 'hidden',
     flexDirection: 'row',
   },
@@ -399,6 +416,24 @@ const cardStyles = StyleSheet.create({
     flex: 1,
     textAlign: 'right',
   },
+  detailsRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 4,
+  },
+  detailsBtn: {
+    borderWidth: 1,
+    borderColor: '#7C5CFC',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  detailsBtnText: {
+    fontFamily: 'Inter',
+    fontSize: 11,
+    fontWeight: '600' as const,
+    color: '#7C5CFC',
+  },
 });
 
 // ── Active Trip Card — "СЛЕДУЮЩАЯ ПОЕЗДКА" ────────────────────────────────────
@@ -428,7 +463,7 @@ function ActiveTripCard({ booking, onPress }: ActiveTripCardProps) {
       style={activeTripStyles.card}
     >
       <LinearGradient
-        colors={['rgba(245,158,11,0.11)', 'rgba(20,184,166,0.07)']}
+        colors={['rgba(232,160,32,0.11)', 'rgba(124,92,252,0.07)']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={activeTripStyles.gradient}
@@ -468,7 +503,9 @@ const activeTripStyles = StyleSheet.create({
     marginBottom: Spacing.sm,
     borderRadius: 13,
     borderWidth: 1,
-    borderColor: 'rgba(245,158,11,0.28)',
+    borderColor: 'rgba(124,92,252,0.35)',
+    borderLeftWidth: 3,
+    borderLeftColor: '#7C5CFC',
     overflow: 'hidden',
   },
   gradient: {
@@ -479,7 +516,7 @@ const activeTripStyles = StyleSheet.create({
     fontWeight: '600' as const,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    color: '#F59E0B',
+    color: '#E8A020',
     marginBottom: 10,
     fontFamily: 'Inter',
   },
@@ -510,7 +547,7 @@ const activeTripStyles = StyleSheet.create({
     fontSize: 11,
   },
   confirmedBadge: {
-    backgroundColor: 'rgba(16,185,129,0.1)',
+    backgroundColor: 'rgba(16,185,129,0.15)',
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -531,10 +568,12 @@ interface PastTripCardProps {
   index: number;
 }
 
-const TRIP_EMOJIS: Record<string, string> = {
-  FLIGHT: '✈️',
-  HOTEL: '🏨',
-};
+type BookingType = 'FLIGHT' | 'HOTEL';
+
+function getTripIconName(type: BookingType): React.ComponentProps<typeof Ionicons>['name'] {
+  if (type === 'HOTEL') return 'bed-outline';
+  return 'airplane-outline';
+}
 
 function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
   const { colors } = useTheme();
@@ -545,7 +584,7 @@ function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
     : (details.name ?? 'Отель');
   const dateStr = isFlight ? (details.departureDate ?? '') : (details.checkIn ?? '');
   const dateLabel = dateStr ? formatDepartureDate(dateStr) : '';
-  const emoji = TRIP_EMOJIS[booking.type] ?? '🗺️';
+  const iconName = getTripIconName(booking.type as BookingType);
 
   return (
     <Animated.View
@@ -555,10 +594,10 @@ function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.85}
-        style={[pastCardStyles.card, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
+        style={[pastCardStyles.card, { backgroundColor: '#1E1C2C', borderColor: '#2E2B42' }]}
       >
-        <View style={pastCardStyles.emojiBlock}>
-          <Text style={pastCardStyles.emoji}>{emoji}</Text>
+        <View style={[pastCardStyles.iconBlock, { backgroundColor: `${colors.primary}15` }]}>
+          <Ionicons name={iconName} size={24} color={colors.primary} />
         </View>
 
         <View style={pastCardStyles.content}>
@@ -602,17 +641,13 @@ const pastCardStyles = StyleSheet.create({
     padding: 12,
     gap: 12,
   },
-  emojiBlock: {
+  iconBlock: {
     width: 52,
     height: 52,
     borderRadius: 10,
-    backgroundColor: 'rgba(255,255,255,0.05)',
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-  },
-  emoji: {
-    fontSize: 24,
   },
   content: {
     flex: 1,
@@ -657,13 +692,13 @@ const pastCardStyles = StyleSheet.create({
     fontFamily: 'Inter',
   },
   tagAmber: {
-    backgroundColor: 'rgba(245,158,11,0.12)',
+    backgroundColor: 'rgba(232,160,32,0.12)',
     borderRadius: 4,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   tagAmberText: {
-    color: '#F59E0B',
+    color: '#E8A020',
     fontSize: 9,
     fontWeight: '600' as const,
     fontFamily: 'Inter',
@@ -672,7 +707,7 @@ const pastCardStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 13,
     fontWeight: '700' as const,
-    color: '#F4F4F8',
+    color: '#EEEEF4',
     flexShrink: 0,
   },
 });
@@ -684,7 +719,7 @@ function BookingsEmptyState() {
   return (
     <View style={emptyStyles.container}>
       <LinearGradient
-        colors={['rgba(245,158,11,0.20)', 'rgba(245,158,11,0.05)']}
+        colors={['rgba(232,160,32,0.20)', 'rgba(232,160,32,0.05)']}
         style={[emptyStyles.iconWrap, { borderColor: `${colors.primary}40` }]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -692,9 +727,9 @@ function BookingsEmptyState() {
         <Ionicons name="ticket-outline" size={38} color={colors.primary} />
       </LinearGradient>
 
-      <Text style={[emptyStyles.title, { color: colors.text }]}>Пока нет бронирований</Text>
+      <Text style={[emptyStyles.title, { color: colors.text }]}>Здесь будут твои поездки</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
-        Запросите рейс или отель в чате
+        Запросите рейс или отель в чате — всё сохранится здесь
       </Text>
 
       <TouchableOpacity
@@ -703,14 +738,14 @@ function BookingsEmptyState() {
         activeOpacity={0.8}
       >
         <LinearGradient
-          colors={[colors.primary, colors.primaryDark]}
+          colors={[colors.primary, colors.secondary]}
           style={emptyStyles.btnGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Ionicons name="arrow-back" size={18} color={colors.textInverse} />
-            <Text style={[emptyStyles.btnText, { color: colors.textInverse }]}>В чат</Text>
+            <Ionicons name="chatbubble-ellipses-outline" size={18} color={colors.textInverse} />
+            <Text style={[emptyStyles.btnText, { color: colors.textInverse }]}>Начать планировать</Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -959,7 +994,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 22,
     fontWeight: '700',
-    color: '#F4F4F8',
+    color: '#EEEEF4',
   },
   headerSub: {
     fontSize: 10,
