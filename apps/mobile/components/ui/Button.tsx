@@ -75,7 +75,7 @@ export function Button({
     },
     primary: {
       backgroundColor: colors.primary,
-      shadowColor: '#F59E0B',
+      shadowColor: '#E8A020',
       shadowOffset: { width: 0, height: 0 },
       shadowRadius: 16,
       shadowOpacity: 0.25,

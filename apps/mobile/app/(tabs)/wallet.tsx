@@ -65,7 +65,7 @@ function getTransactionIcon(type: TransactionType, description: string): string 
 function getTransactionIconBg(type: TransactionType, description: string): string {
   const lower = description.toLowerCase();
   if (type === 'TOPUP') return 'rgba(16,185,129,0.1)';
-  if (lower.includes('отель') || lower.includes('hotel')) return 'rgba(245,158,11,0.1)';
+  if (lower.includes('отель') || lower.includes('hotel')) return 'rgba(232,160,32,0.1)';
   if (lower.includes('рейс') || lower.includes('flight') || lower.includes('авиа') || lower.includes('билет')) {
     return 'rgba(20,184,166,0.1)';
   }
@@ -670,7 +670,7 @@ export default function WalletScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor="#F59E0B"
+            tintColor="#E8A020"
           />
         }
         ListHeaderComponent={

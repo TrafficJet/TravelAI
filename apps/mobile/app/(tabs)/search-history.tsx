@@ -215,7 +215,7 @@ export default function SearchHistoryScreen() {
     try {
       const sessionId = await createSession(item.query);
       router.push({
-        pathname: '/(tabs)/chat/[sessionId]',
+        pathname: '/chat/[sessionId]',
         params: { sessionId, initialMessage: item.query },
       });
     } catch {

@@ -11,7 +11,7 @@ import { Platform, ViewStyle } from 'react-native';
 
 // Цвета теней
 const SHADOW_BLACK  = '#000000';
-const SHADOW_PRIMARY = '#F59E0B'; // amber-500 — основной акцент
+const SHADOW_PRIMARY = '#E8A020'; // SVIT Gold — основной акцент
 const SHADOW_CYAN    = '#14B8A6'; // teal-500 — вторичный акцент
 const SHADOW_ERROR   = '#F43F5E'; // rose-500 — для destructive actions
 

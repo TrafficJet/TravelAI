@@ -452,7 +452,7 @@ export default function ExploreScreen() {
       try {
         const sessionId = await createSession(message);
         router.push({
-          pathname: '/(tabs)/chat/[sessionId]',
+          pathname: '/chat/[sessionId]',
           params: { sessionId, initialMessage: message },
         });
       } catch {

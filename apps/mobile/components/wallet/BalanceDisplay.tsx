@@ -9,7 +9,6 @@ interface Props {
 }
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
-  RUB: '₽',
   USD: '$',
   EUR: '€',
   KZT: '₸',

@@ -459,7 +459,7 @@ export function ChatHistorySheet({
             disabled={isCreating}
           >
             <LinearGradient
-              colors={['#F59E0B', '#D97706']}
+              colors={['#E8A020', '#B87518']}
               style={sheetStyles.newChatGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}

@@ -659,8 +659,8 @@ const timingStyles = StyleSheet.create({
     borderWidth: 1,
   },
   cardWarning: {
-    borderColor: '#F59E0B66',
-    backgroundColor: '#F59E0B11',
+    borderColor: '#E8A02066',
+    backgroundColor: '#E8A02011',
   },
   row: {
     flexDirection: 'row',

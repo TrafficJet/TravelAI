@@ -8,7 +8,7 @@ export const lightColors = {
 
   // Primary — Amber, dark enough for white backgrounds
   primary: '#D97706',
-  primaryLight: '#F59E0B',
+  primaryLight: '#E8A020',
   primaryDark: '#B45309',
   primaryMuted: 'rgba(217,119,6,0.12)',
 
