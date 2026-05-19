@@ -69,6 +69,7 @@ interface HotelMockTemplate {
   amenities: string[];
   pricePerNight: number; // in currency below
   currency: string;
+  photoUrl?: string;
 }
 
 const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
@@ -79,7 +80,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 8.7, reviewCount: 3241,
       roomType: 'Стандартный двухместный',
       amenities: ['WiFi', 'Бассейн', 'Спа', 'Фитнес', 'Ресторан', 'Бар'],
-      pricePerNight: 18500, currency: 'RUB',
+      pricePerNight: 206, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80',
     },
     {
       hotelName: 'The Marmara Taksim',
@@ -87,7 +89,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 8.4, reviewCount: 1892,
       roomType: 'Делюкс с видом на Босфор',
       amenities: ['WiFi', 'Бассейн', 'Фитнес', 'Ресторан'],
-      pricePerNight: 15200, currency: 'RUB',
+      pricePerNight: 169, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80',
     },
     {
       hotelName: 'Novotel Istanbul Bosphorus',
@@ -95,7 +98,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 4, rating: 8.1, reviewCount: 2105,
       roomType: 'Стандартный номер',
       amenities: ['WiFi', 'Фитнес', 'Ресторан', 'Парковка'],
-      pricePerNight: 9800, currency: 'RUB',
+      pricePerNight: 109, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80',
     },
     {
       hotelName: 'ibis Istanbul Zeytinburnu',
@@ -103,7 +107,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 3, rating: 7.8, reviewCount: 4312,
       roomType: 'Стандартный номер',
       amenities: ['WiFi', 'Ресторан', 'Парковка'],
-      pricePerNight: 4500, currency: 'RUB',
+      pricePerNight: 50, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80',
     },
     {
       hotelName: 'Grand Bazaar Hotel',
@@ -111,7 +116,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 3, rating: 7.5, reviewCount: 1876,
       roomType: 'Стандарт',
       amenities: ['WiFi', 'Завтрак', 'Кондиционер'],
-      pricePerNight: 3800, currency: 'RUB',
+      pricePerNight: 42, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80',
     },
   ],
   москва: [
@@ -121,7 +127,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 9.0, reviewCount: 2876,
       roomType: 'Делюкс Кинг',
       amenities: ['WiFi', 'Спа', 'Фитнес', 'Ресторан', 'Бар'],
-      pricePerNight: 22000, currency: 'RUB',
+      pricePerNight: 244, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=800&q=80',
     },
     {
       hotelName: 'Radisson Collection Hotel Moscow',
@@ -129,7 +136,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 8.8, reviewCount: 1543,
       roomType: 'Стандартный номер',
       amenities: ['WiFi', 'Бассейн', 'Фитнес', 'Ресторан'],
-      pricePerNight: 18500, currency: 'RUB',
+      pricePerNight: 206, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=800&q=80',
     },
     {
       hotelName: 'Holiday Inn Moscow Sokolniki',
@@ -137,7 +145,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 4, rating: 8.2, reviewCount: 2341,
       roomType: 'Стандартный двухместный',
       amenities: ['WiFi', 'Фитнес', 'Ресторан', 'Парковка'],
-      pricePerNight: 9500, currency: 'RUB',
+      pricePerNight: 106, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=800&q=80',
     },
     {
       hotelName: 'ibis Moscow Centre Bakhrushina',
@@ -145,7 +154,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 3, rating: 7.9, reviewCount: 5432,
       roomType: 'Стандарт',
       amenities: ['WiFi', 'Ресторан'],
-      pricePerNight: 5800, currency: 'RUB',
+      pricePerNight: 64, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=800&q=80',
     },
     {
       hotelName: 'Гостиница Москва',
@@ -153,7 +163,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 4, rating: 8.0, reviewCount: 3109,
       roomType: 'Улучшенный номер',
       amenities: ['WiFi', 'Ресторан', 'Кондиционер', 'Бар'],
-      pricePerNight: 11000, currency: 'RUB',
+      pricePerNight: 122, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=800&q=80',
     },
   ],
   dubai: [
@@ -163,7 +174,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 9.1, reviewCount: 8734,
       roomType: 'Номер с видом на лагуну',
       amenities: ['WiFi', 'Аквапарк', 'Бассейн', 'Пляж', 'Спа', 'Ресторан', 'Фитнес'],
-      pricePerNight: 34000, currency: 'RUB',
+      pricePerNight: 378, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80',
     },
     {
       hotelName: 'JW Marriott Marquis Dubai',
@@ -171,7 +183,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 8.9, reviewCount: 5621,
       roomType: 'Делюкс Кинг',
       amenities: ['WiFi', 'Бассейн', 'Спа', 'Фитнес', 'Ресторан', 'Бар'],
-      pricePerNight: 26000, currency: 'RUB',
+      pricePerNight: 289, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80',
     },
     {
       hotelName: 'Rove Downtown Dubai',
@@ -179,7 +192,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 3, rating: 8.5, reviewCount: 9823,
       roomType: 'Стандартный номер',
       amenities: ['WiFi', 'Бассейн', 'Фитнес', 'Ресторан', 'Кондиционер'],
-      pricePerNight: 9000, currency: 'RUB',
+      pricePerNight: 100, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80',
     },
     {
       hotelName: 'Premier Inn Dubai Al Jaddaf',
@@ -187,7 +201,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 3, rating: 8.3, reviewCount: 3109,
       roomType: 'Стандартный номер',
       amenities: ['WiFi', 'Бассейн', 'Ресторан', 'Кондиционер'],
-      pricePerNight: 7000, currency: 'RUB',
+      pricePerNight: 78, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80',
     },
     {
       hotelName: 'Burj Al Arab Jumeirah',
@@ -195,7 +210,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 9.6, reviewCount: 4312,
       roomType: 'Дипломатический люкс',
       amenities: ['WiFi', 'Частный пляж', 'Бассейн', 'Спа', 'Ресторан', 'Дворецкий'],
-      pricePerNight: 65000, currency: 'RUB',
+      pricePerNight: 722, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80',
     },
   ],
   barcelona: [
@@ -205,7 +221,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 9.1, reviewCount: 4521,
       roomType: 'Делюкс с видом на море',
       amenities: ['WiFi', 'Бассейн', 'Спа', 'Фитнес', 'Ресторан', 'Бар'],
-      pricePerNight: 14700, currency: 'RUB',
+      pricePerNight: 163, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=800&q=80',
     },
     {
       hotelName: 'Majestic Hotel & Spa Barcelona',
@@ -213,7 +230,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 8.9, reviewCount: 3201,
       roomType: 'Классический номер',
       amenities: ['WiFi', 'Спа', 'Фитнес', 'Ресторан', 'Бар'],
-      pricePerNight: 16400, currency: 'RUB',
+      pricePerNight: 182, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=800&q=80',
     },
     {
       hotelName: 'Catalonia Barcelona Plaza',
@@ -221,7 +239,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 4, rating: 8.4, reviewCount: 3102,
       roomType: 'Стандартный с видом на площадь',
       amenities: ['WiFi', 'Бассейн на крыше', 'Фитнес', 'Ресторан', 'Кондиционер'],
-      pricePerNight: 7800, currency: 'RUB',
+      pricePerNight: 87, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=800&q=80',
     },
     {
       hotelName: 'Hotel 1898',
@@ -229,7 +248,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 4, rating: 8.6, reviewCount: 2876,
       roomType: 'Стандартный с балконом',
       amenities: ['WiFi', 'Бассейн', 'Ресторан', 'Бар', 'Терраса'],
-      pricePerNight: 9000, currency: 'RUB',
+      pricePerNight: 100, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=800&q=80',
     },
     {
       hotelName: 'Generator Barcelona',
@@ -237,7 +257,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 2, rating: 8.0, reviewCount: 6234,
       roomType: 'Стандартный номер',
       amenities: ['WiFi', 'Бар', 'Общая кухня'],
-      pricePerNight: 2300, currency: 'RUB',
+      pricePerNight: 26, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=800&q=80',
     },
   ],
   paris: [
@@ -247,7 +268,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 9.5, reviewCount: 1432,
       roomType: 'Делюкс',
       amenities: ['WiFi', 'Спа', 'Ресторан', 'Бар', 'Консьерж', 'Дворецкий'],
-      pricePerNight: 39400, currency: 'RUB',
+      pricePerNight: 438, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&q=80',
     },
     {
       hotelName: 'Hotel Malte - Astotel',
@@ -255,7 +277,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 4, rating: 8.6, reviewCount: 2341,
       roomType: 'Классический',
       amenities: ['WiFi', 'Ресторан', 'Кондиционер', 'Консьерж'],
-      pricePerNight: 12300, currency: 'RUB',
+      pricePerNight: 137, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&q=80',
     },
     {
       hotelName: 'ibis Paris Gare du Nord',
@@ -263,7 +286,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 3, rating: 7.7, reviewCount: 8901,
       roomType: 'Стандартный номер',
       amenities: ['WiFi', 'Ресторан', 'Кондиционер'],
-      pricePerNight: 7400, currency: 'RUB',
+      pricePerNight: 82, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&q=80',
     },
   ],
   london: [
@@ -273,7 +297,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 5, rating: 9.3, reviewCount: 3201,
       roomType: 'Делюкс',
       amenities: ['WiFi', 'Бассейн', 'Спа', 'Ресторан', 'Бар', 'Фитнес', 'Консьерж'],
-      pricePerNight: 36900, currency: 'RUB',
+      pricePerNight: 410, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
     },
     {
       hotelName: 'Premier Inn London City (Tower Hill)',
@@ -281,7 +306,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 3, rating: 8.0, reviewCount: 7654,
       roomType: 'Стандарт',
       amenities: ['WiFi', 'Ресторан', 'Кондиционер'],
-      pricePerNight: 7800, currency: 'RUB',
+      pricePerNight: 87, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
     },
     {
       hotelName: 'Travelodge London Central',
@@ -289,7 +315,8 @@ const CITY_HOTELS: Record<string, HotelMockTemplate[]> = {
       starRating: 2, rating: 7.6, reviewCount: 12431,
       roomType: 'Стандартный номер',
       amenities: ['WiFi', 'Кондиционер'],
-      pricePerNight: 6200, currency: 'RUB',
+      pricePerNight: 69, currency: 'USD',
+      photoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
     },
   ],
 };
@@ -317,7 +344,8 @@ const DEFAULT_HOTELS: HotelMockTemplate[] = [
     starRating: 4, rating: 8.3, reviewCount: 1200,
     roomType: 'Стандартный двухместный',
     amenities: ['WiFi', 'Завтрак', 'Фитнес'],
-    pricePerNight: 7500, currency: 'RUB',
+    pricePerNight: 83, currency: 'USD',
+    photoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
   },
   {
     hotelName: 'Business Hotel Premier',
@@ -325,7 +353,8 @@ const DEFAULT_HOTELS: HotelMockTemplate[] = [
     starRating: 3, rating: 7.9, reviewCount: 890,
     roomType: 'Стандартный номер',
     amenities: ['WiFi', 'Ресторан'],
-    pricePerNight: 4200, currency: 'RUB',
+    pricePerNight: 47, currency: 'USD',
+    photoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
   },
   {
     hotelName: 'Comfort Inn & Suites',
@@ -333,7 +362,8 @@ const DEFAULT_HOTELS: HotelMockTemplate[] = [
     starRating: 3, rating: 7.5, reviewCount: 654,
     roomType: 'Улучшенный номер',
     amenities: ['WiFi', 'Завтрак', 'Парковка'],
-    pricePerNight: 3500, currency: 'RUB',
+    pricePerNight: 39, currency: 'USD',
+    photoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
   },
 ];
 
@@ -419,7 +449,7 @@ export async function searchHotelsHotellook(
       pricePerNight: t.pricePerNight.toFixed(2),
       currency:      t.currency,
       amenities:     t.amenities,
-      imageUrl:      null,
+      imageUrl:      t.photoUrl ?? 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
       expiresAt:     new Date(Date.now() + 60 * 60 * 1000).toISOString(),
       bookingUrl:    affiliateUrl,
     };
