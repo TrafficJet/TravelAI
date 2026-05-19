@@ -246,7 +246,7 @@ export default function FlightDetailScreen() {
               onPress={() => router.back()}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Text style={{ fontSize: 24, color: {colors.text}, lineHeight: 28 }}>{'‹'}</Text>
+              <Text style={{ fontSize: 24, color: colors.text, lineHeight: 28  }}>{'‹'}</Text>
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: colors.text }]}>Детали рейса</Text>
             <View style={styles.headerRight}>
@@ -256,7 +256,7 @@ export default function FlightDetailScreen() {
                 onPress={handleShare}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'⇪'}</Text>
+                <Text style={{ fontSize: 22, color: colors.text, lineHeight: 26  }}>{'⇪'}</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -323,7 +323,7 @@ export default function FlightDetailScreen() {
 
           {departureDate ? (
             <View style={styles.dateRow}>
-              <Text style={{ fontSize: 13, color: {colors.textMuted}, lineHeight: 17 }}>{'📅'}</Text>
+              <Text style={{ fontSize: 13, color: colors.textMuted, lineHeight: 17  }}>{'📅'}</Text>
               <Text style={[styles.dateText, { color: colors.textMuted }]}>{formatDate(departureDate)}</Text>
             </View>
           ) : null}

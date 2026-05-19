@@ -130,7 +130,7 @@ function NotificationItem({ item, onPress, onDelete }: NotificationItemProps) {
 
           {/* Icon badge */}
           <View style={[itemStyles.iconBadge, { backgroundColor: `${accentColor}18` }]}>
-            <Text style={{ fontSize: 22, color: {accentColor}, lineHeight: 26 }}>{'•'}</Text>
+            <Text style={{ fontSize: 22, color: accentColor, lineHeight: 26  }}>{'•'}</Text>
           </View>
 
           {/* Content */}
@@ -235,7 +235,7 @@ function EmptyNotifications() {
   return (
     <View style={emptyStyles.container}>
       <View style={[emptyStyles.iconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Text style={{ fontSize: 48, color: {colors.textMuted}, lineHeight: 52 }}>{'🔕'}</Text>
+        <Text style={{ fontSize: 48, color: colors.textMuted, lineHeight: 52  }}>{'🔕'}</Text>
       </View>
       <Text style={[emptyStyles.title, { color: colors.text }]}>Нет уведомлений</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
@@ -281,7 +281,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <View style={emptyStyles.container}>
       <View style={[emptyStyles.iconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Text style={{ fontSize: 48, color: {colors.textMuted}, lineHeight: 52 }}>{'☁'}</Text>
+        <Text style={{ fontSize: 48, color: colors.textMuted, lineHeight: 52  }}>{'☁'}</Text>
       </View>
       <Text style={[emptyStyles.title, { color: colors.text }]}>Не удалось загрузить</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>Проверьте интернет-соединение и повторите попытку</Text>
@@ -414,7 +414,7 @@ export default function NotificationsScreen() {
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'←'}</Text>
+          <Text style={{ fontSize: 22, color: colors.text, lineHeight: 26  }}>{'←'}</Text>
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Уведомления</Text>
         {unreadCount > 0 ? (

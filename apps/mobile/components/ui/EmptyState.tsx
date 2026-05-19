@@ -53,7 +53,7 @@ export function EmptyState({ icon, title, subtitle, onAction, actionLabel }: Emp
   return (
     <View style={styles.container}>
       <View style={styles.iconWrap}>
-        <Text style={{ fontSize: 56, color: {colors.textMuted}, lineHeight: 60 }}>{'•'}</Text>
+        <Text style={{ fontSize: 56, color: colors.textMuted, lineHeight: 60  }}>{'•'}</Text>
       </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>

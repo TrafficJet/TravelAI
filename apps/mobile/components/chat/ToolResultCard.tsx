@@ -21,7 +21,7 @@ export function FlightSearchSummary({ count, minPrice, maxPrice, currency }: Fli
   return (
     <View style={[summaryStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={summaryStyles.iconRow}>
-        <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'✈'}</Text>
+        <Text style={{ fontSize: 20, color: colors.primary, lineHeight: 24  }}>{'✈'}</Text>
         <Text style={[summaryStyles.label, { color: colors.textMuted }]}>Найдено рейсов</Text>
       </View>
       <Text style={[summaryStyles.count, { color: colors.text }]}>{count}</Text>
@@ -56,7 +56,7 @@ export function HotelSearchSummary({ count, minPrice, maxPrice, currency }: Hote
   return (
     <View style={[summaryStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={summaryStyles.iconRow}>
-        <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'🛏'}</Text>
+        <Text style={{ fontSize: 20, color: colors.primary, lineHeight: 24  }}>{'🛏'}</Text>
         <Text style={[summaryStyles.label, { color: colors.textMuted }]}>Найдено отелей</Text>
       </View>
       <Text style={[summaryStyles.count, { color: colors.text }]}>{count}</Text>
@@ -632,7 +632,7 @@ function JourneyTimingCard({ data }: { data: JourneyTimingResult }) {
       isTight && timingStyles.cardWarning,
     ]}>
       <View style={timingStyles.row}>
-        <Text style={{ fontSize: 14, color: {isTight ? colors.warning : colors.textMuted}, lineHeight: 18 }}>{'•'}</Text>
+        <Text style={{ fontSize: 14, color: isTight ? colors.warning : colors.textMuted, lineHeight: 18  }}>{'•'}</Text>
         <Text style={[timingStyles.title, { color: colors.text }, isTight && { color: colors.primary }]}>
           {isTight ? 'Стыковка под угрозой' : 'Время в пути'}
         </Text>
@@ -813,7 +813,7 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
   if (isFlight && offers !== null && offers.length === 0) {
     return (
       <View style={[chatResultStyles.fallback, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'✈'}</Text>
+        <Text style={{ fontSize: 20, color: colors.primary, lineHeight: 24  }}>{'✈'}</Text>
         <Text style={[chatResultStyles.fallbackText, { color: colors.textMuted }]}>Рейсов не найдено по вашему запросу</Text>
       </View>
     );
@@ -822,7 +822,7 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
   if (isHotel && offers !== null && offers.length === 0) {
     return (
       <View style={[chatResultStyles.fallback, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'🛏'}</Text>
+        <Text style={{ fontSize: 20, color: colors.primary, lineHeight: 24  }}>{'🛏'}</Text>
         <Text style={[chatResultStyles.fallbackText, { color: colors.textMuted }]}>Отелей не найдено по вашему запросу</Text>
       </View>
     );
@@ -849,7 +849,7 @@ export function ChatToolResult({ toolName, result }: ChatToolResultProps) {
     : 'search-outline';
   return (
     <View style={[chatResultStyles.fallback, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'•'}</Text>
+      <Text style={{ fontSize: 20, color: colors.primary, lineHeight: 24  }}>{'•'}</Text>
       <Text style={[chatResultStyles.fallbackText, { color: colors.textMuted }]}>{fallbackText}</Text>
     </View>
   );

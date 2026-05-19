@@ -130,7 +130,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Чат',
           tabBarIcon: (props) => (
-            <TabIcon {...props} glyph="💬" />
+            <TabIcon {...props} glyph="⊙" />
           ),
         }}
       />
@@ -142,7 +142,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Поездки',
           tabBarIcon: (props) => (
-            <TabIcon {...props} glyph="✈" />
+            <TabIcon {...props} glyph="⊳" />
           ),
         }}
       />
@@ -154,7 +154,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Кошелёк',
           tabBarIcon: (props) => (
-            <TabIcon {...props} glyph="💳" />
+            <TabIcon {...props} glyph="⊡" />
           ),
         }}
       />
@@ -166,7 +166,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Профиль',
           tabBarIcon: (props) => (
-            <TabIcon {...props} glyph="👤" />
+            <TabIcon {...props} glyph="⊚" />
           ),
         }}
       />
@@ -198,6 +198,10 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="search-history"
         options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="chat/[sessionId]"
+        options={{ href: null, headerShown: false }}
       />
     </Tabs>
   );

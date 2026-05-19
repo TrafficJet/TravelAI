@@ -71,7 +71,7 @@ export default function RegisterScreen() {
         options={{
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()} style={{ paddingLeft: 4 }}>
-              <Text style={{ fontSize: 24, color: {colors.text}, lineHeight: 28 }}>{'←'}</Text>
+              <Text style={{ fontSize: 24, color: colors.text, lineHeight: 28  }}>{'←'}</Text>
             </TouchableOpacity>
           ),
         }}
@@ -85,7 +85,7 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={{ fontSize: 48, color: {colors.primary}, lineHeight: 52 }}>{'✈'}</Text>
+          <Text style={{ fontSize: 48, color: colors.primary, lineHeight: 52  }}>{'✈'}</Text>
           <Text style={styles.title}>Создать аккаунт</Text>
           <Text style={styles.subtitle}>Начните планировать путешествия</Text>
         </View>

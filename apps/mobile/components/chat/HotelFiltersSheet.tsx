@@ -196,7 +196,7 @@ export function HotelFiltersSheet({
           <View style={[staticStyles.header, { borderBottomColor: colors.border }]}>
             <Text style={[staticStyles.headerTitle, { color: colors.text }]}>Фильтры отелей</Text>
             <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'×'}</Text>
+              <Text style={{ fontSize: 22, color: colors.text, lineHeight: 26  }}>{'×'}</Text>
             </TouchableOpacity>
           </View>
 

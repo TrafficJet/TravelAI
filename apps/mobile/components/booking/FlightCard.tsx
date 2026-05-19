@@ -188,7 +188,7 @@ export function FlightCard({ booking, onPress }: Props) {
           </View>
           <View style={styles.headerRight}>
             <TouchableOpacity onPress={handleShare} style={styles.shareBtn}>
-              <Text style={{ fontSize: 18, color: {colors.textMuted}, lineHeight: 22 }}>{'⇪'}</Text>
+              <Text style={{ fontSize: 18, color: colors.textMuted, lineHeight: 22  }}>{'⇪'}</Text>
             </TouchableOpacity>
             <View style={[styles.statusBadge, { backgroundColor: `${statusColor}20` }]}>
               <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
@@ -204,7 +204,7 @@ export function FlightCard({ booking, onPress }: Props) {
           </View>
 
           <View style={styles.routeCenter}>
-            <Text style={{ fontSize: 18, color: {colors.primary}, lineHeight: 22 }}>{'✈'}</Text>
+            <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22  }}>{'✈'}</Text>
             {durationMin !== undefined && (
               <Text style={[styles.duration, { color: colors.textMuted }]}>{formatDuration(durationMin)}</Text>
             )}

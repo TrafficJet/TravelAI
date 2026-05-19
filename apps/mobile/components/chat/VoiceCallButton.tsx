@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import { useTheme } from '../../src/theme/ThemeContext';
 
 // ── VoiceCallButton ───────────────────────────────────────────────────────────
@@ -51,7 +51,7 @@ export function VoiceCallButton({ size = 56 }: VoiceCallButtonProps) {
       accessibilityLabel="AI Голосовой ассистент"
       accessibilityRole="button"
     >
-      <Text style={{ fontSize: 22, color: {colors.primary}, lineHeight: 26 }}>{'📞'}</Text>
+      <Text style={{ fontSize: 22, color: colors.primary, lineHeight: 26  }}>{'📞'}</Text>
     </TouchableOpacity>
   );
 }

@@ -38,28 +38,28 @@ function ToastItem({ config, onHide, bottomOffset }: ToastItemProps) {
       borderColor: colors.success,
       iconColor: colors.success,
       textColor: colors.text,
-      icon: 'checkmark-circle',
+      icon: '✓',
     },
     error: {
       bg: 'rgba(244,63,94,0.15)',
       borderColor: colors.error,
       iconColor: colors.error,
       textColor: colors.text,
-      icon: 'close-circle',
+      icon: '×',
     },
     info: {
       bg: `${colors.primary}26`,
       borderColor: colors.primary,
       iconColor: colors.primary,
       textColor: colors.text,
-      icon: 'information-circle',
+      icon: 'ℹ',
     },
     warning: {
       bg: 'rgba(245,158,11,0.15)',
       borderColor: colors.warning,
       iconColor: colors.warning,
       textColor: colors.text,
-      icon: 'warning',
+      icon: '⚠',
     },
   };
 
@@ -119,7 +119,7 @@ function ToastItem({ config, onHide, bottomOffset }: ToastItemProps) {
         },
       ]}
     >
-      <Text style={{ fontSize: 20, color: {iconColor}, lineHeight: 24, styles.icon }}>{'•'}</Text>
+      <Text style={[styles.icon, { fontSize: 20, color: iconColor }]}>{icon}</Text>
       <Text style={[styles.message, { color: textColor }]} numberOfLines={3}>
         {config.message}
       </Text>

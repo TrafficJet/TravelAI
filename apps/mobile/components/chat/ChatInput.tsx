@@ -200,6 +200,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           editable={!disabled}
           returnKeyType="default"
           blurOnSubmit={false}
+          onSubmitEditing={Platform.OS === 'web' ? handleSend : undefined}
         />
 
         {/* Send button — gradient circle */}

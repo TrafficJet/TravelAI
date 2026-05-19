@@ -92,7 +92,7 @@ function FlightDetailsBlock({ details }: { details: FlightDetails }) {
   return (
     <View style={[detailStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={detailStyles.sectionHeader}>
-        <Text style={{ fontSize: 16, color: {colors.primary}, lineHeight: 20 }}>{'✈'}</Text>
+        <Text style={{ fontSize: 16, color: colors.primary, lineHeight: 20  }}>{'✈'}</Text>
         <Text style={[detailStyles.sectionTitle, { color: colors.primary }]}>РЕЙС</Text>
       </View>
       <View style={detailStyles.row}>
@@ -127,7 +127,7 @@ function HotelDetailsBlock({ details, currency }: { details: HotelDetails; curre
   return (
     <View style={[detailStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={detailStyles.sectionHeader}>
-        <Text style={{ fontSize: 16, color: {colors.primary}, lineHeight: 20 }}>{'🛏'}</Text>
+        <Text style={{ fontSize: 16, color: colors.primary, lineHeight: 20  }}>{'🛏'}</Text>
         <Text style={[detailStyles.sectionTitle, { color: colors.primary }]}>ОТЕЛЬ</Text>
       </View>
       <Text style={[detailStyles.hotelName, { color: colors.text }]}>{details.name}</Text>
@@ -515,7 +515,7 @@ export default function BookingDetailScreen() {
               disabled={isCancelling}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 18, color: {colors.error}, lineHeight: 22 }}>{'⊗'}</Text>
+              <Text style={{ fontSize: 18, color: colors.error, lineHeight: 22  }}>{'⊗'}</Text>
               <Text style={[styles.cancelBtnText, { color: colors.error }]}>
                 {isCancelling ? 'Отменяем...' : 'Отменить бронирование'}
               </Text>
@@ -525,7 +525,7 @@ export default function BookingDetailScreen() {
 
         <View style={[styles.secondaryActions, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <TouchableOpacity style={styles.secondaryBtn} onPress={handleShare} activeOpacity={0.7}>
-            <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'⇪'}</Text>
+            <Text style={{ fontSize: 20, color: colors.primary, lineHeight: 24  }}>{'⇪'}</Text>
             <Text style={[styles.secondaryBtnText, { color: colors.primary }]}>Поделиться</Text>
           </TouchableOpacity>
 
@@ -536,7 +536,7 @@ export default function BookingDetailScreen() {
             onPress={handleDownloadTicket}
             activeOpacity={0.7}
           >
-            <Text style={{ fontSize: 20, color: {colors.primary}, lineHeight: 24 }}>{'↓'}</Text>
+            <Text style={{ fontSize: 20, color: colors.primary, lineHeight: 24  }}>{'↓'}</Text>
             <Text style={[styles.secondaryBtnText, { color: colors.primary }]}>Скачать билет</Text>
           </TouchableOpacity>
         </View>

@@ -184,7 +184,7 @@ function SwipeableRow({
           onPress={() => onDelete(notification.id)}
           activeOpacity={0.8}
         >
-          <Text style={{ fontSize: 22, color: {trashColor}, lineHeight: 26 }}>{'🗑'}</Text>
+          <Text style={{ fontSize: 22, color: trashColor, lineHeight: 26  }}>{'🗑'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -199,7 +199,7 @@ function SwipeableRow({
           activeOpacity={0.75}
         >
           <View style={[styles.iconBadge, { backgroundColor: `${iconColor}20` }]}>
-            <Text style={{ fontSize: 20, color: {iconColor}, lineHeight: 24 }}>{'•'}</Text>
+            <Text style={{ fontSize: 20, color: iconColor, lineHeight: 24  }}>{'•'}</Text>
           </View>
 
           <View style={styles.rowContent}>
@@ -327,7 +327,7 @@ export default function NotificationsScreen() {
   if (!isLoading && notifications.length === 0) {
     return (
       <View style={[styles.container, styles.emptyContainer, { backgroundColor: colors.background }]}>
-        <Text style={{ fontSize: 56, color: {colors.textSecondary}, lineHeight: 60 }}>{'🔕'}</Text>
+        <Text style={{ fontSize: 56, color: colors.textSecondary, lineHeight: 60  }}>{'🔕'}</Text>
         <Text style={[styles.emptyTitle, { color: colors.text }]}>Уведомлений пока нет</Text>
       </View>
     );

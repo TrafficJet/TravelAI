@@ -228,7 +228,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
                   onPress={() => removeSegment(index)}
                   hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                 >
-                  <Text style={{ fontSize: 18, color: {colors.error}, lineHeight: 22 }}>{'•'}</Text>
+                  <Text style={{ fontSize: 18, color: colors.error, lineHeight: 22  }}>{'•'}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -236,7 +236,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
             {/* Fields row */}
             <View style={styles.fieldsRow}>
               <View style={styles.fieldWrap}>
-                <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18, styles.fieldIcon }}>{'✈'}</Text>
+                <Text style={[styles.fieldIcon, { fontSize: 14, color: colors.textMuted }]}>{'✈'}</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Откуда"
@@ -249,10 +249,10 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
                 />
               </View>
 
-              <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18 }}>{'→'}</Text>
+              <Text style={{ fontSize: 14, color: colors.textMuted, lineHeight: 18  }}>{'→'}</Text>
 
               <View style={styles.fieldWrap}>
-                <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18, styles.fieldIcon }}>{'📍'}</Text>
+                <Text style={[styles.fieldIcon, { fontSize: 14, color: colors.textMuted }]}>{'📍'}</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Куда"
@@ -267,7 +267,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
             </View>
 
             <View style={styles.dateFieldWrap}>
-              <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18, styles.fieldIcon }}>{'📅'}</Text>
+              <Text style={[styles.fieldIcon, { fontSize: 14, color: colors.textMuted }]}>{'📅'}</Text>
               <TextInput
                 style={[styles.input, styles.dateInput]}
                 placeholder="Дата (напр. 1 июня)"
@@ -290,7 +290,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
           disabled={disabled}
           activeOpacity={0.75}
         >
-          <Text style={{ fontSize: 18, color: {colors.primary}, lineHeight: 22 }}>{'•'}</Text>
+          <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22  }}>{'•'}</Text>
           <Text style={styles.addBtnText}>Добавить перелёт</Text>
         </TouchableOpacity>
       )}

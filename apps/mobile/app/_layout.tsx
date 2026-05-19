@@ -248,7 +248,7 @@ export default function RootLayout() {
           data?.type === 'chat_message' &&
           typeof data.sessionId === 'string'
         ) {
-          router.push(`/chat/${data.sessionId}` as Parameters<typeof router.push>[0]);
+          router.push(`/(tabs)/chat/${data.sessionId}` as Parameters<typeof router.push>[0]);
         } else {
           router.push('/(tabs)');
         }

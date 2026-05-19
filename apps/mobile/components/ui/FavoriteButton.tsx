@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -56,7 +56,9 @@ export function FavoriteButton({ type, item, size = 22 }: FavoriteButtonProps) {
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       activeOpacity={0.7}
     >
-      <Text style={{ fontSize: 16, color: {isFav ? colors.error : colors.textMuted}, lineHeight: 20 }}>{'•'}</Text>
+      <Text style={{ fontSize: size, color: isFav ? colors.error : colors.textMuted, lineHeight: size + 4 }}>
+        {isFav ? '♥' : '♡'}
+      </Text>
     </AnimatedTouchable>
   );
 }

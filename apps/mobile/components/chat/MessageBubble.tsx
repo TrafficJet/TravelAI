@@ -221,135 +221,53 @@ const typingStyles = StyleSheet.create({
   },
 });
 
-// ── Markdown styles for AI bubble (dark SVIT theme) ───────────────────────────
+// ── Markdown styles for AI bubble (SVIT brand theme) ─────────────────────────
+// Note: react-native-markdown-display requires plain objects, not StyleSheet.create
 
-const markdownStyles = StyleSheet.create({
-  // react-native-markdown-display keys
-  body: {
+const markdownStyles = {
+  body: { color: '#EEEEF4', fontSize: 15, lineHeight: 22, fontFamily: 'Inter' },
+  heading1: { color: '#E8A020', fontWeight: 'bold' as const, fontSize: 18, marginBottom: 8, fontFamily: 'Sora' },
+  heading2: { color: '#F2B84B', fontWeight: '600' as const, fontSize: 16, marginBottom: 6, fontFamily: 'Sora' },
+  heading3: { color: '#EEEEF4', fontWeight: '600' as const, fontSize: 15, marginBottom: 4, fontFamily: 'Inter' },
+  paragraph: { marginBottom: 10, color: '#EEEEF4' },
+  strong: { color: '#F2B84B', fontWeight: 'bold' as const },
+  em: { color: '#EEEEF4', fontStyle: 'italic' as const },
+  bullet_list: { marginBottom: 8 },
+  ordered_list: { marginBottom: 8 },
+  bullet_list_item: { marginBottom: 4 },
+  ordered_list_item: { marginBottom: 4 },
+  bullet_list_icon: { color: '#E8A020', marginRight: 8, fontSize: 15, lineHeight: 22 },
+  ordered_list_icon: { color: '#E8A020', marginRight: 6, fontSize: 15, lineHeight: 22, fontFamily: 'Inter' },
+  hr: { backgroundColor: '#2E2B42', height: 1, marginVertical: 12 },
+  blockquote: {
+    borderLeftColor: '#E8A020',
+    borderLeftWidth: 3,
+    paddingLeft: 12,
+    backgroundColor: '#1E1C2C',
+    borderRadius: 4,
+    marginVertical: 6,
+  },
+  code_block: {
+    backgroundColor: '#1E1C2C',
+    borderRadius: 8,
+    padding: 12,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     color: '#EEEEF4',
-    fontSize: 15,
-    lineHeight: 22,
-    fontFamily: 'Inter',
-  },
-  strong: {
-    color: '#E8A020',
-    fontWeight: '700',
-    fontFamily: 'Inter',
-  },
-  em: {
-    color: '#EEEEF4',
-    fontStyle: 'italic',
-    fontFamily: 'Inter',
-  },
-  bullet_list: {
-    marginTop: 4,
-    marginBottom: 4,
-  },
-  bullet_list_item: {
-    marginBottom: 6,
-    flexDirection: 'row',
-  },
-  bullet_list_icon: {
-    color: '#E8A020',
-    marginRight: 8,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  ordered_list: {
-    marginTop: 4,
-    marginBottom: 4,
-  },
-  ordered_list_item: {
-    marginBottom: 6,
-    flexDirection: 'row',
-  },
-  ordered_list_icon: {
-    color: '#E8A020',
-    marginRight: 6,
-    fontSize: 15,
-    lineHeight: 22,
-    fontFamily: 'Inter',
-  },
-  paragraph: {
-    marginTop: 0,
+    fontSize: 13,
     marginBottom: 8,
-    color: '#EEEEF4',
-  },
-  heading1: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 8,
-    marginTop: 4,
-    fontFamily: 'Sora',
-    lineHeight: 24,
-  },
-  heading2: {
-    color: '#E8A020',
-    fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 6,
-    marginTop: 4,
-    fontFamily: 'Sora',
-    lineHeight: 22,
-  },
-  heading3: {
-    color: '#E8A020',
-    fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 4,
-    marginTop: 4,
-    fontFamily: 'Inter',
-    lineHeight: 20,
   },
   code_inline: {
     backgroundColor: '#28263A',
-    color: '#E8A020',
-    borderRadius: 4,
+    color: '#7C5CFC',
+    borderRadius: 3,
     paddingHorizontal: 4,
-    fontFamily: 'Inter',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     fontSize: 13,
   },
-  code_block: {
-    backgroundColor: '#28263A',
-    color: '#EEEEF4',
-    borderRadius: 6,
-    padding: 10,
-    fontFamily: 'Inter',
-    fontSize: 13,
-    marginBottom: 8,
-  },
-  fence: {
-    backgroundColor: '#28263A',
-    color: '#EEEEF4',
-    borderRadius: 6,
-    padding: 10,
-    fontFamily: 'Inter',
-    fontSize: 13,
-    marginBottom: 8,
-  },
-  blockquote: {
-    backgroundColor: '#28263A',
-    borderLeftColor: '#E8A020',
-    borderLeftWidth: 3,
-    paddingLeft: 10,
-    marginBottom: 8,
-  },
-  hr: {
-    backgroundColor: '#28263A',
-    height: 1,
-    marginVertical: 8,
-  },
-  text: {
-    color: '#EEEEF4',
-    fontFamily: 'Inter',
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  softbreak: {
-    width: '100%' as const,
-  },
-});
+  fence: { backgroundColor: '#1E1C2C', borderRadius: 8, padding: 12, color: '#EEEEF4', fontSize: 13, marginBottom: 8 },
+  text: { color: '#EEEEF4', fontFamily: 'Inter', fontSize: 15, lineHeight: 22 },
+  softbreak: { width: '100%' as const },
+};
 
 // ── Message content renderer ──────────────────────────────────────────────────
 

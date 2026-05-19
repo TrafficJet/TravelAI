@@ -76,7 +76,7 @@ export default function LoginScreen() {
       >
         <View style={styles.header}>
           <View style={styles.logoWrap}>
-            <Text style={{ fontSize: 48, color: {colors.primary}, lineHeight: 52 }}>{'✈'}</Text>
+            <Text style={{ fontSize: 48, color: colors.primary, lineHeight: 52  }}>{'✈'}</Text>
           </View>
           <Text style={styles.title}>SVIT</Text>
           <Text style={styles.subtitle}>AI-ассистент для путешествий</Text>

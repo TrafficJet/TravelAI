@@ -67,7 +67,7 @@ function StaticRouteCard({ item, onPress, index }: StaticRouteCardProps) {
             <Text style={[routeCardStyles.separator, { color: colors.primary }]}> → </Text>
             <Text style={[routeCardStyles.iata, { color: colors.text }]}>{item.destination}</Text>
           </View>
-          <Text style={{ fontSize: 14, color: {colors.textMuted}, lineHeight: 18 }}>{'›'}</Text>
+          <Text style={{ fontSize: 14, color: colors.textMuted, lineHeight: 18  }}>{'›'}</Text>
         </View>
 
         {/* City name */}
@@ -205,7 +205,7 @@ function FlightCard({ item, onPress, index }: FlightCardProps) {
           <Text style={[flightStyles.route, { color: colors.textMuted }]}>
             {item.origin}
           </Text>
-          <Text style={{ fontSize: 12, color: {colors.textMuted}, lineHeight: 16, flightStyles.arrow }}>{'→'}</Text>
+          <Text style={[flightStyles.arrow, { fontSize: 12, color: colors.textMuted }]}>{'→'}</Text>
           <Text style={[flightStyles.route, { color: colors.textMuted }]}>
             {item.destination}
           </Text>
@@ -452,7 +452,7 @@ export default function ExploreScreen() {
       try {
         const sessionId = await createSession(message);
         router.push({
-          pathname: '/chat/[sessionId]',
+          pathname: '/(tabs)/chat/[sessionId]',
           params: { sessionId, initialMessage: message },
         });
       } catch {
@@ -487,7 +487,7 @@ export default function ExploreScreen() {
       {/* Search bar + map button */}
       <Animated.View entering={FadeIn.duration(400)} style={styles.searchRow}>
         <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={{ fontSize: 16, color: {colors.textMuted}, lineHeight: 20, styles.searchIcon }}>{'⌕'}</Text>
+          <Text style={[styles.searchIcon, { fontSize: 16, color: colors.textMuted }]}>{'⌕'}</Text>
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
             placeholder="Куда летим?"

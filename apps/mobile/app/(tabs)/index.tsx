@@ -28,16 +28,16 @@ export default function ChatEntryScreen() {
       await loadSessions();
       const current = useChatStore.getState().sessions[0];
       if (current) {
-        router.replace((`/chat/${current.id}`) as never);
+        router.replace((`/(tabs)/chat/${current.id}`) as never);
       } else {
         const id = await createSession();
-        router.replace((`/chat/${id}`) as never);
+        router.replace((`/(tabs)/chat/${id}`) as never);
       }
     } catch {
       // Fallback: try creating a fresh session
       try {
         const id = await createSession();
-        router.replace((`/chat/${id}`) as never);
+        router.replace((`/(tabs)/chat/${id}`) as never);
       } catch {
         setHasError(true);
       }
@@ -50,11 +50,11 @@ export default function ChatEntryScreen() {
       const { chatService } = await import('../../services/chatService');
       const response = await chatService.createSession();
       const id = response.session.id;
-      router.replace(`/chat/${id}` as never);
+      router.replace(`/(tabs)/chat/${id}` as never);
     } catch {
       // Backend unavailable — use local ID, session will be created lazily on first message
       const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-      router.replace(`/chat/${fallbackId}` as never);
+      router.replace(`/(tabs)/chat/${fallbackId}` as never);
     }
   }, []);
 
@@ -83,11 +83,11 @@ export default function ChatEntryScreen() {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <Text style={{ fontSize: 48, color: {colors.primary}, lineHeight: 52 }}>{'✈'}</Text>
+            <Text style={{ fontSize: 48, color: colors.primary, lineHeight: 52  }}>{'✈'}</Text>
           </LinearGradient>
         </View>
         <Text style={[styles.brand, { color: colors.text }]}>SVIT</Text>
-        <Text style={{ fontSize: 40, color: {colors.textMuted}, lineHeight: 44, styles.errorIcon }}>{'☁'}</Text>
+        <Text style={[styles.errorIcon, { fontSize: 40, color: colors.textMuted }]}>{'☁'}</Text>
         <Text style={[styles.errorTitle, { color: colors.text }]}>Не удалось загрузить чаты</Text>
         <Text style={[styles.errorSubtitle, { color: colors.textMuted }]}>
           Проверьте подключение к интернету и повторите попытку
@@ -114,7 +114,7 @@ export default function ChatEntryScreen() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Text style={{ fontSize: 48, color: {colors.primary}, lineHeight: 52 }}>{'✈'}</Text>
+          <Text style={{ fontSize: 48, color: colors.primary, lineHeight: 52  }}>{'✈'}</Text>
         </LinearGradient>
       </View>
       <Text style={[styles.brand, { color: colors.text }]}>SVIT</Text>

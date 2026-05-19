@@ -122,14 +122,14 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               style={staticStyles.closeBtn}
             >
-              <Text style={{ fontSize: 22, color: {colors.textMuted}, lineHeight: 26 }}>{'×'}</Text>
+              <Text style={{ fontSize: 22, color: colors.textMuted, lineHeight: 26  }}>{'×'}</Text>
             </TouchableOpacity>
           </View>
 
           {/* Reason banner */}
           {reason === 'booking' && (
             <View style={[staticStyles.reasonBanner, { backgroundColor: `${colors.primary}26`, borderColor: colors.primary }]}>
-              <Text style={{ fontSize: 16, color: {colors.primary}, lineHeight: 20, marginRight: 6 }}>{'ℹ'}</Text>
+              <Text style={{ fontSize: 16, color: colors.primary, lineHeight: 20, marginRight: 6  }}>{'ℹ'}</Text>
               <Text style={[staticStyles.reasonBannerText, { color: colors.primary }]}>Для бронирования нужен аккаунт</Text>
             </View>
           )}

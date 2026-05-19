@@ -245,7 +245,7 @@ function SettingsRow({
       disabled={disabled || !onPress}
     >
       <View style={[rowStyles.iconWrap, { backgroundColor: `${resolvedIconColor}18` }]}>
-        <Text style={{ fontSize: 18, color: {resolvedIconColor}, lineHeight: 22 }}>{'•'}</Text>
+        <Text style={{ fontSize: 18, color: resolvedIconColor, lineHeight: 22  }}>{'•'}</Text>
       </View>
       <View style={rowStyles.labelBlock}>
         <Text style={[rowStyles.label, { color: labelColor ?? colors.text }]}>
@@ -258,7 +258,7 @@ function SettingsRow({
       <View style={rowStyles.right}>
         {rightElement ?? (
           onPress ? (
-            <Text style={{ fontSize: 16, color: {colors.textMuted}, lineHeight: 20 }}>{'›'}</Text>
+            <Text style={{ fontSize: 16, color: colors.textMuted, lineHeight: 20  }}>{'›'}</Text>
           ) : null
         )}
       </View>
@@ -435,7 +435,7 @@ function OptionGroupRow<T extends string>({
     ]}>
       <View style={optGroupStyles.header}>
         <View style={[optGroupStyles.iconWrap, { backgroundColor: `${resolvedIconColor}18` }]}>
-          <Text style={{ fontSize: 18, color: {resolvedIconColor}, lineHeight: 22 }}>{'•'}</Text>
+          <Text style={{ fontSize: 18, color: resolvedIconColor, lineHeight: 22  }}>{'•'}</Text>
         </View>
         <Text style={[optGroupStyles.label, { color: colors.text }]}>{label}</Text>
       </View>
@@ -665,7 +665,7 @@ export default function SettingsScreen() {
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={{ fontSize: 22, color: {colors.text}, lineHeight: 26 }}>{'←'}</Text>
+          <Text style={{ fontSize: 22, color: colors.text, lineHeight: 26  }}>{'←'}</Text>
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Настройки</Text>
         <View style={styles.headerRight} />
