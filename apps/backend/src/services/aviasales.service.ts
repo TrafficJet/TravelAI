@@ -89,115 +89,103 @@ export async function searchFlightsCISMock(params: SearchFlightsParams): Promise
 }
 
 // ---------------------------------------------------------------------------
-// Aviasales / Travelpayouts Partner API v3 types
+// Travelpayouts v1/prices/cheap API types
+// Response shape: { success: true, data: { [dest]: { [idx]: ticket } }, currency: "rub" }
 // ---------------------------------------------------------------------------
 
-interface AviasalesV3Ticket {
-  origin: string;
-  destination: string;
+interface TravelpayoutsCheapTicket {
   airline: string;
   flight_number: number;
-  departure_at: string;  // ISO 8601 datetime string or YYYY-MM-DD
+  departure_at: string;   // ISO 8601 e.g. "2026-06-01T05:55:00+03:00"
   return_at?: string;
-  expires_at: string;
   number_of_changes: number;
-  price: number;
-  found_at: string;     // ISO 8601 datetime string
-  transfers: number;
-  duration?: number;    // flight duration in minutes, may be absent
+  price: number;          // price in requested currency (rub)
+  duration?: number;      // total flight duration in minutes
   duration_to?: number;
   duration_back?: number;
 }
 
-interface AviasalesV3Response {
+interface TravelpayoutsCheapResponse {
   success: boolean;
-  data: AviasalesV3Ticket[];
+  data: Record<string, Record<string, TravelpayoutsCheapTicket>>;
   currency: string;
 }
 
 // ---------------------------------------------------------------------------
-// Real Aviasales / Travelpayouts v3 API call
-// Doc: https://support.travelpayouts.com/hc/en-us/articles/360004731452
+// Real Travelpayouts v1/prices/cheap API call
+// Endpoint: GET https://api.travelpayouts.com/v1/prices/cheap
+// Doc: https://support.travelpayouts.com/hc/en-us/articles/203956163
 // ---------------------------------------------------------------------------
 
 async function searchFlightsCISReal(params: SearchFlightsParams): Promise<FlightOffer[]> {
-  const token = process.env.AVIASALES_TOKEN ?? '';
-  const marker = process.env.AVIASALES_MARKER ?? '728401';
+  const token = process.env.TRAVELPAYOUTS_TOKEN ?? '';
   const { origin, destination, departureDate, passengers } = params;
 
-  // Travelpayouts v3 "best prices" endpoint — returns the cheapest ticket per
-  // each number of transfers for the given route / departure month.
-  const url = new URL('https://api.travelpayouts.com/v3/prices/best');
+  // v1/prices/cheap returns cheapest tickets for each number of stops
+  const url = new URL('https://api.travelpayouts.com/v1/prices/cheap');
   url.searchParams.set('origin', origin.toUpperCase());
   url.searchParams.set('destination', destination.toUpperCase());
-  // v3 accepts YYYY-MM or YYYY-MM-DD
-  url.searchParams.set('departure_at', departureDate.slice(0, 7));
+  url.searchParams.set('depart_date', departureDate.slice(0, 10)); // YYYY-MM-DD
   url.searchParams.set('currency', 'rub');
-  url.searchParams.set('limit', '10');
-  url.searchParams.set('sorting', 'price');
-  url.searchParams.set('marker', marker);
   url.searchParams.set('token', token);
 
+  console.log('[Aviasales] Calling v1/prices/cheap:', url.toString().replace(token, '***'));
+
   const res = await fetch(url.toString(), {
-    headers: {
-      'X-Access-Token': token,
-      'Accept': 'application/json',
-    },
+    headers: { 'Accept': 'application/json' },
   });
 
   if (!res.ok) {
     const body = await res.text();
-    throw new Error(`Aviasales API returned HTTP ${res.status}: ${body}`);
+    throw new Error(`Travelpayouts API returned HTTP ${res.status}: ${body}`);
   }
 
-  const json = (await res.json()) as AviasalesV3Response;
+  const json = (await res.json()) as TravelpayoutsCheapResponse;
 
-  if (!json.success || !Array.isArray(json.data)) {
-    throw new Error('Aviasales API unexpected response shape');
+  if (!json.success) {
+    throw new Error('Travelpayouts API returned success:false');
   }
 
-  if (json.data.length === 0) {
-    // No data for the route — fall through to mock
-    throw new Error('Aviasales API returned empty data array');
+  // data is a dict: { "IST": { "0": ticket, "1": ticket, ... } }
+  const destData = json.data?.[destination.toUpperCase()];
+
+  if (!destData || Object.keys(destData).length === 0) {
+    throw new Error(`Travelpayouts API returned empty data for destination ${destination}`);
   }
 
   const passengerCount = passengers.adults + (passengers.children ?? 0);
   const currency = json.currency?.toUpperCase() ?? 'RUB';
 
-  return json.data.slice(0, 5).map((ticket): FlightOffer => {
-    // departure_at may be full ISO or just YYYY-MM-DD
+  // Convert dict entries to array, sorted by price ascending
+  const tickets = Object.values(destData).sort((a, b) => a.price - b.price);
+
+  return tickets.slice(0, 5).map((ticket): FlightOffer => {
+    // departure_at is full ISO with timezone offset
     const departureAt = ticket.departure_at.includes('T')
       ? ticket.departure_at
       : `${ticket.departure_at}T00:00:00`;
 
-    // Arrival = departure + duration (or fallback to +2 h)
+    // Arrival = departure + duration (fallback 2 h)
     const durationMinutes = ticket.duration ?? ticket.duration_to ?? 120;
-    const departureDate_ = new Date(departureAt);
-    const arrivalAt = new Date(
-      departureDate_.getTime() + durationMinutes * 60 * 1000,
-    ).toISOString();
+    const departureMs = new Date(departureAt).getTime();
+    const arrivalAt = new Date(departureMs + durationMinutes * 60 * 1000).toISOString();
 
-    // expiresAt = found_at + 30 minutes
-    const foundAt = new Date(ticket.found_at);
-    const expiresAt = new Date(foundAt.getTime() + 30 * 60 * 1000).toISOString();
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
     const airlineName = AIRLINE_NAMES[ticket.airline] ?? ticket.airline;
     const totalPrice = (ticket.price * passengerCount).toFixed(2);
-
-    const baggageLabel =
-      ticket.transfers === 0 ? 'Только ручная кладь' : '1 место 23 кг';
+    const baggageLabel = ticket.number_of_changes === 0 ? 'Только ручная кладь' : '1 место 23 кг';
 
     return {
       offerId: uuidv4(),
       provider: 'AVIASALES',
       totalPrice,
       currency,
-      // Travelpayouts API does not return cabin class; default to economy
       cabinClass: 'economy' as const,
       segments: [
         {
-          origin: ticket.origin.toUpperCase(),
-          destination: ticket.destination.toUpperCase(),
+          origin: origin.toUpperCase(),
+          destination: destination.toUpperCase(),
           departureAt,
           arrivalAt,
           airline: airlineName,
@@ -212,18 +200,18 @@ async function searchFlightsCISReal(params: SearchFlightsParams): Promise<Flight
 }
 
 // ---------------------------------------------------------------------------
-// Public entry point — selects real API when AVIASALES_TOKEN is set
+// Public entry point — uses real API when TRAVELPAYOUTS_TOKEN is set
 // ---------------------------------------------------------------------------
 
 export async function searchFlightsCIS(params: SearchFlightsParams): Promise<FlightOffer[]> {
-  const token = process.env.AVIASALES_TOKEN;
+  const token = process.env.TRAVELPAYOUTS_TOKEN;
 
   if (!token) {
-    console.log('[Aviasales] API token not set, using mock');
+    console.log('[Aviasales] TRAVELPAYOUTS_TOKEN not set, using mock');
     return searchFlightsCISMock(params);
   }
 
-  console.log('[Aviasales] Using real API');
+  console.log('[Aviasales] TRAVELPAYOUTS_TOKEN present — calling real API');
 
   try {
     return await searchFlightsCISReal(params);

@@ -19,6 +19,8 @@ export interface HotelOffer {
   amenities: string[];
   imageUrl: string | null;
   expiresAt: string;
+  /** Affiliate booking link (Hotellook or direct). Optional — present when generated. */
+  bookingUrl?: string;
 }
 
 export interface SearchHotelsParams {
