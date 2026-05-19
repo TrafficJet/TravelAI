@@ -15,7 +15,6 @@ import {
 import { safeStorage as AsyncStorage } from '../../utils/safeStorage';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 // expo-image-picker loaded lazily to avoid crash when native module not compiled in
 type ImagePickerModule = typeof import('expo-image-picker');
 let _ImagePicker: ImagePickerModule | null = null;
@@ -114,19 +113,21 @@ function Avatar({ name, size = 90 }: { name?: string; size?: number }) {
     },
   });
 
+  // Placeholder (no name): elevated circle + person icon per SVIT Design System
+  if (initials === '?') {
+    return (
+      <View style={[avatarStyles.container, { width: size, height: size, borderRadius: size / 2, backgroundColor: '#28263A' }]}>
+        <Text style={{ fontSize: Math.round(size * 0.46), color: "#8888A8", lineHeight: Math.round(size * 0.46) + 4 }}>{"◯"}</Text>
+      </View>
+    );
+  }
+
   return (
     <LinearGradient
-      colors={['#F59E0B', '#14B8A6']}
+      colors={['#E8A020', '#7C5CFC']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[
-        avatarStyles.container,
-        {
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-        },
-      ]}
+      style={[avatarStyles.container, { width: size, height: size, borderRadius: size / 2 }]}
     >
       <Text style={[avatarStyles.initials, { fontSize: size * 0.33 }]}>{initials}</Text>
     </LinearGradient>
@@ -1843,15 +1844,15 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <View style={styles.card}>
-            {renderInfoRow('call-outline', 'Телефон', bookingData.phone)}
-            {renderInfoRow('calendar-outline', 'Дата рождения', bookingData.dateOfBirth)}
-            {renderInfoRow('earth-outline', 'Гражданство', bookingData.nationality)}
+            {renderInfoRow('📞', 'Телефон', bookingData.phone)}
+            {renderInfoRow('📅', 'Дата рождения', bookingData.dateOfBirth)}
+            {renderInfoRow('🌍', 'Гражданство', bookingData.nationality)}
             {renderInfoRow(
-              'card-outline',
+              '🪪',
               'Номер паспорта',
               bookingData.passportNumber ? maskPassport(bookingData.passportNumber) : '',
             )}
-            {renderInfoRow('today-outline', 'Срок действия паспорта', bookingData.passportExpiry, true)}
+            {renderInfoRow('📆', 'Срок действия паспорта', bookingData.passportExpiry, true)}
           </View>
         </View>
 
@@ -1996,7 +1997,7 @@ export default function ProfileScreen() {
             {scannedData?.firstName || scannedData?.lastName ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="person-outline" size={16} color={colors.primary} />
+                  <Text style={{ fontSize: 16, color: colors.primary }}>{'👤'}</Text>
                   <Text style={scanModalStyles.dataLabel}>ФИО</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>
@@ -2008,7 +2009,7 @@ export default function ProfileScreen() {
             {scannedData?.dateOfBirth ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="calendar-outline" size={16} color={colors.primary} />
+                  <Text style={{ fontSize: 16, color: colors.primary }}>{'📅'}</Text>
                   <Text style={scanModalStyles.dataLabel}>Дата рождения</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.dateOfBirth}</Text>
@@ -2018,7 +2019,7 @@ export default function ProfileScreen() {
             {scannedData?.nationality ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="earth-outline" size={16} color={colors.primary} />
+                  <Text style={{ fontSize: 16, color: colors.primary }}>{'🌍'}</Text>
                   <Text style={scanModalStyles.dataLabel}>Гражданство</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.nationality}</Text>
@@ -2028,7 +2029,7 @@ export default function ProfileScreen() {
             {scannedData?.documentNumber ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="card-outline" size={16} color={colors.primary} />
+                  <Text style={{ fontSize: 16, color: colors.primary }}>{'🪪'}</Text>
                   <Text style={scanModalStyles.dataLabel}>Номер документа</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.documentNumber}</Text>
@@ -2038,7 +2039,7 @@ export default function ProfileScreen() {
             {scannedData?.expiryDate ? (
               <View style={[scanModalStyles.dataRow, scanModalStyles.dataRowLast]}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Ionicons name="today-outline" size={16} color={colors.primary} />
+                  <Text style={{ fontSize: 16, color: colors.primary }}>{'📆'}</Text>
                   <Text style={scanModalStyles.dataLabel}>Срок действия</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.expiryDate}</Text>
