@@ -12,7 +12,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { useBookingStore } from '../../stores/bookingStore';
 import { bookingService } from '../../services/bookingService';
 import { SkeletonBookingItem } from '../../components/ui/Skeleton';
@@ -278,7 +277,7 @@ function HotelCardContent({ booking }: { booking: Booking }) {
       {/* Top row: icon + name + price */}
       <View style={cardStyles.topRow}>
         <View style={[cardStyles.iconCircle, { backgroundColor: `${colors.primary}15` }]}>
-          <Ionicons name="bed-outline" size={18} color={colors.primary} />
+          <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'▧'}</Text>
         </View>
         <View style={cardStyles.routeBlock}>
           <Text style={[cardStyles.route, { color: colors.text }]} numberOfLines={1}>
@@ -471,12 +470,9 @@ function ActiveTripCard({ booking, onPress }: ActiveTripCardProps) {
         <Text style={activeTripStyles.nextLabel}>СЛЕДУЮЩАЯ ПОЕЗДКА</Text>
 
         <View style={activeTripStyles.titleRow}>
-          <Ionicons
-            name={isFlight ? 'airplane-outline' : 'bed-outline'}
-            size={18}
-            color={colors.primary}
-            style={{ marginRight: 8 }}
-          />
+          <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22, marginRight: 8 }}>
+            {isFlight ? '✈' : '▧'}
+          </Text>
           <Text style={[activeTripStyles.title, { color: colors.text }]} numberOfLines={1}>{title}</Text>
         </View>
 
@@ -570,9 +566,9 @@ interface PastTripCardProps {
 
 type BookingType = 'FLIGHT' | 'HOTEL';
 
-function getTripIconName(type: BookingType): React.ComponentProps<typeof Ionicons>['name'] {
-  if (type === 'HOTEL') return 'bed-outline';
-  return 'airplane-outline';
+function getTripIconGlyph(type: BookingType): string {
+  if (type === 'HOTEL') return '▧';
+  return '✈';
 }
 
 function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
@@ -584,7 +580,7 @@ function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
     : (details.name ?? 'Отель');
   const dateStr = isFlight ? (details.departureDate ?? '') : (details.checkIn ?? '');
   const dateLabel = dateStr ? formatDepartureDate(dateStr) : '';
-  const iconName = getTripIconName(booking.type as BookingType);
+  const iconGlyph = getTripIconGlyph(booking.type as BookingType);
 
   return (
     <Animated.View
@@ -594,10 +590,10 @@ function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.85}
-        style={[pastCardStyles.card, { backgroundColor: '#1E1C2C', borderColor: '#2E2B42' }]}
+        style={[pastCardStyles.card, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
       >
         <View style={[pastCardStyles.iconBlock, { backgroundColor: `${colors.primary}15` }]}>
-          <Ionicons name={iconName} size={24} color={colors.primary} />
+          <Text style={{ fontSize: 24, color: colors.primary, lineHeight: 28 }}>{iconGlyph}</Text>
         </View>
 
         <View style={pastCardStyles.content}>
@@ -724,7 +720,7 @@ function BookingsEmptyState() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <Ionicons name="ticket-outline" size={38} color={colors.primary} />
+        <Text style={{ fontSize: 38, color: colors.primary }}>{'🎫'}</Text>
       </LinearGradient>
 
       <Text style={[emptyStyles.title, { color: colors.text }]}>Здесь будут твои поездки</Text>
@@ -744,7 +740,7 @@ function BookingsEmptyState() {
           end={{ x: 1, y: 0 }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Ionicons name="chatbubble-ellipses-outline" size={18} color={colors.textInverse} />
+            <Text style={{ fontSize: 18, color: colors.textInverse }}>{'💬'}</Text>
             <Text style={[emptyStyles.btnText, { color: colors.textInverse }]}>Начать планировать</Text>
           </View>
         </LinearGradient>
