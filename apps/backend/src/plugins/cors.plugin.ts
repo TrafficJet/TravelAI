@@ -22,8 +22,13 @@ const corsPlugin: FastifyPluginAsync = fp(async (fastify: FastifyInstance) => {
         cb(null, true);
         return;
       }
-      // Allow Railway production deployment (self-referencing internal requests)
-      if (/\.railway\.app$/.test(origin)) {
+      // Allow only the specific Railway production URL for this service.
+      // A wildcard *.railway.app would let any app on Railway make credentialed
+      // requests to our API — CORS bypass risk (HIGH security issue, fixed here).
+      const railwayProductionUrl = process.env.RAILWAY_PUBLIC_DOMAIN
+        ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+        : null;
+      if (railwayProductionUrl && origin === railwayProductionUrl) {
         cb(null, true);
         return;
       }

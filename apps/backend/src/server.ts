@@ -30,7 +30,7 @@ import { integrationsRoutes } from './routes/integrations.routes';
 import { favoritesRoutes } from './routes/favorites.routes';
 import { stripeRoutes } from './routes/stripe.routes';
 import { documentsRoutes } from './routes/documents.routes';
-import { nowpaymentsWebhook } from './handlers/crypto-deposit.handler';
+import { nowpaymentsRoutes } from './routes/nowpayments.routes';
 
 // Workers
 import { registerPriceAlertWorker } from './workers/priceAlert.worker';
@@ -141,7 +141,8 @@ async function buildServer() {
   await fastify.register(documentsRoutes, { prefix: '/api/documents' });
 
   // NOWPayments IPN webhook — public route, no auth, HMAC-verified inside handler
-  fastify.post('/api/webhooks/nowpayments', nowpaymentsWebhook);
+  // Uses a scoped plugin so rawBody is captured for signature verification (security fix).
+  await fastify.register(nowpaymentsRoutes, { prefix: '/api/webhooks' });
 
   // Health check — registered WITHOUT auth middleware
   await fastify.register(healthRoutes, { prefix: '/health' });
