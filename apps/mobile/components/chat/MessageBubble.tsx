@@ -7,6 +7,7 @@ import {
   Easing,
   TouchableOpacity,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '../../constants/typography';
 import { ChatToolResult } from './ToolResultCard';
@@ -301,10 +302,9 @@ function RichText({ content, isUser }: RichTextProps) {
   const { colors } = useTheme();
 
   if (isUser) {
-    // For user messages just render plain text — no markdown.
-    // Always use dark text (textInverse) on the amber bubble for sufficient contrast.
+    // User bubble is amber gradient — always use dark text for contrast
     return (
-      <Text style={[contentStyles.base, { color: colors.textInverse, fontFamily: 'Inter', lineHeight: 22 }]}>
+      <Text style={[contentStyles.base, { color: '#0A0A14', fontFamily: 'Inter', lineHeight: 21, fontWeight: '500' }]}>
         {content}
       </Text>
     );
@@ -506,15 +506,17 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
     );
   }
 
-  // ── Assistant row (with plane icon) ──────────────────────────────────────
+  // ── Assistant row ────────────────────────────────────────────────────────
   if (!isUser) {
     return (
       <Animated.View
         style={[styles.row, styles.rowAssistant, { opacity, transform: [{ translateY }] }]}
       >
-        {/* Avatar */}
-        <View style={[styles.avatar, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Ionicons name="airplane" size={16} color={colors.primary} />
+        {/* Avatar: gradient circle teal→amber with "S" letter */}
+        <View style={styles.avatarGradientWrap}>
+          <View style={styles.avatarGradientInner}>
+            <Text style={styles.avatarLetter}>S</Text>
+          </View>
         </View>
 
         <TouchableOpacity
@@ -523,7 +525,8 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
           delayLongPress={350}
           style={styles.bubbleWrapper}
         >
-          <View style={[styles.bubble, styles.bubbleAssistant, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          {/* AI bubble: bg #1C1C2E, border #2A2A42, radius 4px 16px 16px 16px */}
+          <View style={styles.bubbleAssistant}>
             {isStreaming && !streamingText ? (
               <TypingIndicator />
             ) : (
@@ -547,10 +550,16 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
         delayLongPress={350}
         style={styles.bubbleWrapper}
       >
-        <View style={[styles.bubble, styles.bubbleUser, { backgroundColor: colors.primary }]}>
+        {/* User bubble: gradient amber #F59E0B → #E8890A */}
+        <LinearGradient
+          colors={['#F59E0B', '#E8890A']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.bubbleUser}
+        >
           <RichText content={displayContent} isUser={true} />
-          <Text style={[styles.timeUser, { color: `${colors.textInverse}88` }]}>{formatTime(message.createdAt)}</Text>
-        </View>
+          <Text style={styles.timeUser}>{formatTime(message.createdAt)}</Text>
+        </LinearGradient>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -559,8 +568,8 @@ export function MessageBubble({ message, isStreaming, streamingText, onLongPress
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    marginVertical: 6,
-    paddingHorizontal: 16,
+    marginVertical: 5,
+    paddingHorizontal: 14,
     alignItems: 'flex-end',
   },
   rowUser: {
@@ -570,39 +579,63 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
 
-  // Avatar
-  avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 1,
+  // Avatar: gradient teal→amber circle with "S"
+  avatarGradientWrap: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#14B8A6', // fallback; gradient simulated via layered bg
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
+    marginRight: 6,
     marginBottom: 2,
     flexShrink: 0,
+    // We use a simple split background trick: top half teal, bottom half amber
+    overflow: 'hidden',
+  },
+  avatarGradientInner: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#F59E0B',
+    alignItems: 'center',
+    justifyContent: 'center',
+    // gradient approach: top border in teal via shadow
+  },
+  avatarLetter: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#0A0A14',
+    lineHeight: 11,
   },
 
   // Bubbles — wrapper limits width so TouchableOpacity doesn't stretch full row
   bubbleWrapper: {
-    maxWidth: '88%',
+    maxWidth: '90%',
     flexShrink: 1,
   },
-  bubble: {
-    borderRadius: 18,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
+
+  // User bubble: gradient amber #F59E0B → #E8890A, radius 16 16 4 16
   bubbleUser: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderBottomLeftRadius: 16,
     borderBottomRightRadius: 4,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
   },
+
+  // AI bubble: bg #1C1C2E, border 1px #2A2A42, radius 4 16 16 16
   bubbleAssistant: {
-    borderBottomLeftRadius: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 3,
-    elevation: 1,
+    backgroundColor: '#1C1C2E',
+    borderWidth: 1,
+    borderColor: '#2A2A42',
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 16,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    paddingHorizontal: 13,
+    paddingVertical: 10,
   },
 
   // Timestamps
@@ -611,6 +644,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.xs,
     textAlign: 'right',
     marginTop: 4,
+    color: 'rgba(10,10,20,0.55)',
   },
   timeAssistant: {
     fontFamily: 'Inter',

@@ -17,6 +17,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Typography } from '../../constants/typography';
 import { Ionicons } from '@expo/vector-icons';
 import { ChatSuggestions } from './ChatSuggestions';
@@ -202,27 +203,30 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           blurOnSubmit={false}
         />
 
-        {/* Send button — always amber circle */}
-        <Animated.View style={{ transform: [{ scale: sendScale }] }}>
+        {/* Send button — gradient circle */}
+        <Animated.View style={[styles.sendButtonWrap, { transform: [{ scale: sendScale }] }]}>
           <TouchableOpacity
             onPress={hasText ? handleSend : handleVoice}
             disabled={disabled && hasText}
-            style={[
-              styles.sendButton,
-              { backgroundColor: colors.primary, shadowColor: colors.primary },
-              disabled && hasText && [styles.sendButtonDisabled, { backgroundColor: colors.primaryDark }],
-            ]}
             activeOpacity={0.8}
+            style={disabled && hasText ? styles.sendButtonDisabledWrap : undefined}
           >
-            {disabled && hasText ? (
-              <ActivityIndicator size="small" color={colors.textInverse} />
-            ) : (
-              <Ionicons
-                name={hasText ? 'arrow-up' : 'mic'}
-                size={18}
-                color={colors.textInverse}
-              />
-            )}
+            <LinearGradient
+              colors={['#F59E0B', '#14B8A6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.sendButton}
+            >
+              {disabled && hasText ? (
+                <ActivityIndicator size="small" color="#0A0A14" />
+              ) : (
+                <Ionicons
+                  name={hasText ? 'arrow-up' : 'mic'}
+                  size={18}
+                  color="#0A0A14"
+                />
+              )}
+            </LinearGradient>
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -284,22 +288,23 @@ const styles = StyleSheet.create({
     maxHeight: 120,
     borderWidth: 1,
   },
+  sendButtonWrap: {
+    flexShrink: 0,
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
+  },
   sendButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    flexShrink: 0,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 4,
   },
-  sendButtonDisabled: {
+  sendButtonDisabledWrap: {
     opacity: 0.65,
-    shadowOpacity: 0,
-    elevation: 0,
   },
   attachBtn: {
     width: 36,

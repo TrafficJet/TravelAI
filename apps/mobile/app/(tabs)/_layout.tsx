@@ -94,7 +94,7 @@ export default function TabsLayout() {
   const { colors } = useTheme();
   useNotificationsContext(); // keep context subscribed for background badge updates
 
-  const tabBarHeight = 56 + (Platform.OS === 'ios' ? insets.bottom : 0);
+  const tabBarHeight = 70 + (Platform.OS === 'ios' ? insets.bottom : 0);
 
   return (
     <Tabs
@@ -104,71 +104,66 @@ export default function TabsLayout() {
         headerTitleStyle: { fontWeight: Typography.weights.bold, color: colors.text },
         headerShadowVisible: false,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          borderTopWidth: StyleSheet.hairlineWidth,
+          // Design spec: bg #12121F, border-top #1E1E30, height 70px
+          backgroundColor: '#12121F',
+          borderTopColor: '#1E1E30',
+          borderTopWidth: 1,
           height: tabBarHeight,
           paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
-          paddingTop: 6,
+          paddingTop: 10,
         },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
+        tabBarActiveTintColor: '#F59E0B',
+        tabBarInactiveTintColor: '#4A4A62',
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: 8.5,
           fontWeight: Typography.weights.medium,
           includeFontPadding: false,
-          letterSpacing: 0,
+          letterSpacing: 0.2,
+          marginTop: 3,
         },
         tabBarItemStyle: {
           paddingHorizontal: 0,
         },
       }}
     >
+      {/* 1 — Чат */}
       <Tabs.Screen
         name="index"
         options={{
-          title: '',
+          title: 'Чат',
           headerShown: false,
-          tabBarLabel: () => null,
           tabBarIcon: (props) => (
             <TabIcon {...props} icon="chatbubble-outline" iconFocused="chatbubble" />
           ),
         }}
       />
+      {/* 2 — Поездки */}
       <Tabs.Screen
         name="bookings"
         options={{
-          title: t('tabs.bookings'),
+          title: 'Поездки',
           headerShown: false,
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="calendar-outline" iconFocused="calendar" />
+            <TabIcon {...props} icon="location-outline" iconFocused="location" />
           ),
         }}
       />
-      <Tabs.Screen
-        name="favorites"
-        options={{
-          title: t('tabs.favorites', { defaultValue: 'Избранное' }),
-          headerShown: false,
-          tabBarIcon: (props) => (
-            <TabIcon {...props} icon="heart-outline" iconFocused="heart" />
-          ),
-        }}
-      />
+      {/* 3 — Кошелёк */}
       <Tabs.Screen
         name="wallet"
         options={{
-          title: t('tabs.wallet'),
+          title: 'Кошелёк',
           headerShown: false,
           tabBarIcon: (props) => (
-            <TabIcon {...props} icon="wallet-outline" iconFocused="wallet" />
+            <TabIcon {...props} icon="card-outline" iconFocused="card" />
           ),
         }}
       />
+      {/* 4 — Профиль */}
       <Tabs.Screen
         name="profile"
         options={{
-          title: t('tabs.profile'),
+          title: 'Профиль',
           headerShown: false,
           tabBarIcon: (props) => (
             <TabIcon {...props} icon="person-outline" iconFocused="person" />
@@ -176,6 +171,10 @@ export default function TabsLayout() {
         }}
       />
       {/* Hidden tabs — kept for routing but not shown in tab bar */}
+      <Tabs.Screen
+        name="favorites"
+        options={{ href: null }}
+      />
       <Tabs.Screen
         name="explore"
         options={{ href: null }}

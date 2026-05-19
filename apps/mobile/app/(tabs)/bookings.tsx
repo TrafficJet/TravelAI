@@ -401,6 +401,282 @@ const cardStyles = StyleSheet.create({
   },
 });
 
+// ── Active Trip Card — "СЛЕДУЮЩАЯ ПОЕЗДКА" ────────────────────────────────────
+
+interface ActiveTripCardProps {
+  booking: Booking;
+  onPress: () => void;
+}
+
+function ActiveTripCard({ booking, onPress }: ActiveTripCardProps) {
+  const { colors } = useTheme();
+  const isFlight = booking.type === 'FLIGHT';
+  const details = (booking.details ?? {}) as Partial<FlightDetails> & Partial<HotelDetails>;
+  const title = isFlight
+    ? `${details.origin ?? '—'} → ${details.destination ?? '—'}`
+    : (details.name ?? 'Отель');
+  const subtitle = isFlight
+    ? [details.airline, details.flightNumber].filter(Boolean).join(' ')
+    : (details.address ?? '');
+  const dateStr = isFlight ? (details.departureDate ?? '') : (details.checkIn ?? '');
+  const dateLabel = dateStr ? formatDepartureDate(dateStr) : '';
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.85}
+      style={activeTripStyles.card}
+    >
+      <LinearGradient
+        colors={['rgba(245,158,11,0.11)', 'rgba(20,184,166,0.07)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={activeTripStyles.gradient}
+      >
+        <Text style={activeTripStyles.nextLabel}>СЛЕДУЮЩАЯ ПОЕЗДКА</Text>
+
+        <View style={activeTripStyles.titleRow}>
+          <Ionicons
+            name={isFlight ? 'airplane-outline' : 'bed-outline'}
+            size={18}
+            color={colors.primary}
+            style={{ marginRight: 8 }}
+          />
+          <Text style={[activeTripStyles.title, { color: colors.text }]} numberOfLines={1}>{title}</Text>
+        </View>
+
+        {subtitle ? (
+          <Text style={[activeTripStyles.subtitle, { color: colors.textMuted }]} numberOfLines={1}>{subtitle}</Text>
+        ) : null}
+
+        <View style={activeTripStyles.footerRow}>
+          {dateLabel ? (
+            <Text style={[activeTripStyles.date, { color: colors.textMuted }]}>{dateLabel}</Text>
+          ) : null}
+          <View style={activeTripStyles.confirmedBadge}>
+            <Text style={activeTripStyles.confirmedText}>Подтверждено</Text>
+          </View>
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+}
+
+const activeTripStyles = StyleSheet.create({
+  card: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
+    borderRadius: 13,
+    borderWidth: 1,
+    borderColor: 'rgba(245,158,11,0.28)',
+    overflow: 'hidden',
+  },
+  gradient: {
+    padding: 16,
+  },
+  nextLabel: {
+    fontSize: 9,
+    fontWeight: '600' as const,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    color: '#F59E0B',
+    marginBottom: 10,
+    fontFamily: 'Inter',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  title: {
+    fontFamily: 'Sora',
+    fontSize: 16,
+    fontWeight: '700' as const,
+    flex: 1,
+  },
+  subtitle: {
+    fontFamily: 'Inter',
+    fontSize: 12,
+    marginBottom: 12,
+  },
+  footerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  date: {
+    fontFamily: 'Inter',
+    fontSize: 11,
+  },
+  confirmedBadge: {
+    backgroundColor: 'rgba(16,185,129,0.1)',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  confirmedText: {
+    color: '#10B981',
+    fontSize: 10,
+    fontWeight: '600' as const,
+    fontFamily: 'Inter',
+  },
+});
+
+// ── Past Trip Card ────────────────────────────────────────────────────────────
+
+interface PastTripCardProps {
+  booking: Booking & { _section?: string };
+  onPress: () => void;
+  index: number;
+}
+
+const TRIP_EMOJIS: Record<string, string> = {
+  FLIGHT: '✈️',
+  HOTEL: '🏨',
+};
+
+function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
+  const { colors } = useTheme();
+  const isFlight = booking.type === 'FLIGHT';
+  const details = (booking.details ?? {}) as Partial<FlightDetails> & Partial<HotelDetails>;
+  const title = isFlight
+    ? `${details.origin ?? '—'} → ${details.destination ?? '—'}`
+    : (details.name ?? 'Отель');
+  const dateStr = isFlight ? (details.departureDate ?? '') : (details.checkIn ?? '');
+  const dateLabel = dateStr ? formatDepartureDate(dateStr) : '';
+  const emoji = TRIP_EMOJIS[booking.type] ?? '🗺️';
+
+  return (
+    <Animated.View
+      entering={FadeInDown.delay(Math.min(index * 80, 400)).springify()}
+      style={pastCardStyles.wrap}
+    >
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={0.85}
+        style={[pastCardStyles.card, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
+      >
+        <View style={pastCardStyles.emojiBlock}>
+          <Text style={pastCardStyles.emoji}>{emoji}</Text>
+        </View>
+
+        <View style={pastCardStyles.content}>
+          <Text style={[pastCardStyles.title, { color: colors.text }]} numberOfLines={1}>{title}</Text>
+          {dateLabel ? (
+            <Text style={[pastCardStyles.date, { color: colors.textMuted }]}>{dateLabel}</Text>
+          ) : null}
+          <View style={pastCardStyles.tagsRow}>
+            <View style={pastCardStyles.tagGreen}>
+              <Text style={pastCardStyles.tagGreenText}>Завершено</Text>
+            </View>
+            {isFlight && (
+              <View style={pastCardStyles.tagBlue}>
+                <Text style={pastCardStyles.tagBlueText}>Рейс</Text>
+              </View>
+            )}
+            {!isFlight && (
+              <View style={pastCardStyles.tagAmber}>
+                <Text style={pastCardStyles.tagAmberText}>Отель</Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        <Text style={pastCardStyles.price}>{formatPrice(booking.totalPrice, booking.currency)}</Text>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+const pastCardStyles = StyleSheet.create({
+  wrap: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
+  },
+  card: {
+    borderRadius: 13,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    gap: 12,
+  },
+  emojiBlock: {
+    width: 52,
+    height: 52,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  emoji: {
+    fontSize: 24,
+  },
+  content: {
+    flex: 1,
+    gap: 3,
+  },
+  title: {
+    fontFamily: 'Inter',
+    fontSize: 14,
+    fontWeight: '600' as const,
+  },
+  date: {
+    fontFamily: 'Inter',
+    fontSize: 11,
+  },
+  tagsRow: {
+    flexDirection: 'row',
+    gap: 6,
+    marginTop: 4,
+  },
+  tagGreen: {
+    backgroundColor: 'rgba(16,185,129,0.12)',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  tagGreenText: {
+    color: '#10B981',
+    fontSize: 9,
+    fontWeight: '600' as const,
+    fontFamily: 'Inter',
+  },
+  tagBlue: {
+    backgroundColor: 'rgba(56,189,248,0.12)',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  tagBlueText: {
+    color: '#38BDF8',
+    fontSize: 9,
+    fontWeight: '600' as const,
+    fontFamily: 'Inter',
+  },
+  tagAmber: {
+    backgroundColor: 'rgba(245,158,11,0.12)',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  tagAmberText: {
+    color: '#F59E0B',
+    fontSize: 9,
+    fontWeight: '600' as const,
+    fontFamily: 'Inter',
+  },
+  price: {
+    fontFamily: 'Inter',
+    fontSize: 13,
+    fontWeight: '700' as const,
+    color: '#F4F4F8',
+    flexShrink: 0,
+  },
+});
+
 // ── Empty State ───────────────────────────────────────────────────────────────
 
 function BookingsEmptyState() {
@@ -563,14 +839,36 @@ export default function BookingsScreen() {
     router.push(`/bookings/${booking.id}`);
   }
 
+  const allBookings = bookings ?? [];
   const filtered = useMemo(
-    () => filterBookings(bookings ?? [], filter),
-    [bookings, filter],
+    () => filterBookings(allBookings, filter),
+    [allBookings, filter],
   );
 
-  if (isLoading && (bookings ?? []).length === 0) {
+  // Split into active (upcoming confirmed) and past
+  const activeBookings = useMemo(
+    () => filtered.filter((b) => (b.status === 'CONFIRMED' || b.status === 'PENDING') && !isBookingPast(b)),
+    [filtered],
+  );
+  const pastBookings = useMemo(
+    () => filtered.filter((b) => b.status === 'CONFIRMED' && isBookingPast(b)),
+    [filtered],
+  );
+  const otherBookings = useMemo(
+    () => filtered.filter(
+      (b) => !(activeBookings.includes(b)) && !(pastBookings.includes(b)),
+    ),
+    [filtered, activeBookings, pastBookings],
+  );
+
+  if (isLoading && allBookings.length === 0) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Мои поездки</Text>
+          <Text style={[styles.headerSub, { color: colors.textMuted }]}>Загрузка...</Text>
+        </View>
         <FilterTabs active={filter} onChange={setFilter} />
         <SkeletonList />
       </View>
@@ -579,13 +877,26 @@ export default function BookingsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      {/* Design header: "Мои поездки" in Sora bold 22px */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Мои поездки</Text>
+        <Text style={[styles.headerSub, { color: colors.textMuted }]}>
+          {allBookings.length} {allBookings.length === 1 ? 'поездка' : allBookings.length < 5 ? 'поездки' : 'поездок'}
+          {activeBookings.length > 0 ? ` · ${activeBookings.length} активная` : ''}
+        </Text>
+      </View>
+
       <FilterTabs active={filter} onChange={setFilter} />
 
       <FlatList
-        data={filtered}
+        data={[
+          // Active trips rendered via ListHeaderComponent
+          ...pastBookings.map((b) => ({ ...b, _section: 'past' as const })),
+          ...otherBookings.map((b) => ({ ...b, _section: 'other' as const })),
+        ]}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
-          <BookingCard
+          <PastTripCard
             booking={item}
             index={index}
             onPress={() => handleBookingPress(item)}
@@ -604,7 +915,24 @@ export default function BookingsScreen() {
         }
         onEndReached={() => { void handleLoadMore(); }}
         onEndReachedThreshold={0.3}
-        ListHeaderComponent={<View style={{ height: Spacing.sm }} />}
+        ListHeaderComponent={
+          <View>
+            {/* Active trip cards */}
+            {activeBookings.map((b) => (
+              <ActiveTripCard
+                key={b.id}
+                booking={b}
+                onPress={() => handleBookingPress(b)}
+              />
+            ))}
+            {/* Section label for past trips */}
+            {pastBookings.length > 0 && (
+              <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>
+                Прошлые поездки
+              </Text>
+            )}
+          </View>
+        }
         ListFooterComponent={
           isLoadingMore ? (
             <View style={styles.loadingMore}>
@@ -612,7 +940,7 @@ export default function BookingsScreen() {
             </View>
           ) : null
         }
-        ListEmptyComponent={<BookingsEmptyState />}
+        ListEmptyComponent={activeBookings.length === 0 ? <BookingsEmptyState /> : null}
       />
     </View>
   );
@@ -621,6 +949,29 @@ export default function BookingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingBottom: 14,
+    paddingTop: 4,
+  },
+  headerTitle: {
+    fontFamily: 'Sora',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#F4F4F8',
+  },
+  headerSub: {
+    fontSize: 10,
+    marginTop: 2,
+  },
+  sectionLabel: {
+    fontSize: 9,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    paddingHorizontal: 20,
+    paddingBottom: 8,
   },
   listContent: {
     paddingBottom: 24,

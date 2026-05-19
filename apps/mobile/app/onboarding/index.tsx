@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { safeStorage } from '../../utils/safeStorage';
@@ -20,63 +21,124 @@ import { AnalyticsEvents } from '../../src/constants/analytics-events';
 
 export const ONBOARDING_KEY = 'onboarding_done';
 
-// ─── Brand tokens ─────────────────────────────────────────────────────────────
+// ─── Brand tokens (design screen 07) ─────────────────────────────────────────
 
 const COLORS = {
-  background: '#060B18',
-  gold: '#E8A020',
-  aiPurple: '#7C5CFC',
-  white: '#F5F5FA',
-  subtitle: '#A0A0B0',
-  dotInactive: '#333333',
+  background: '#0A0A14',
+  primary: '#F59E0B',
+  secondary: '#14B8A6',
+  white: '#F4F4F8',
+  subtitle: '#8B8BA7',
+  dotInactive: '#2A2A42',
+  textInverse: '#0A0A14',
 } as const;
 
 // ─── Slide data ───────────────────────────────────────────────────────────────
 
 interface Slide {
   id: string;
-  emoji: string;
-  title: string;
-  subtitle: string;
+  headline: string;
+  body: string;
 }
 
 const SLIDES: Slide[] = [
   {
     id: '1',
-    emoji: '\u{1F4AC}',
-    title: 'Просто напиши куда хочешь',
-    subtitle:
-      'SVIT сам найдёт рейсы, отели и составит маршрут — как умный друг-трэвел-агент',
+    headline: 'Весь мир\nв одном чате',
+    body: 'Напиши куда хочешь — SVIT найдёт рейс, отель и маршрут. Без форм, без вкладок.',
   },
   {
     id: '2',
-    emoji: '✈️',
-    title: 'Бронируй прямо в чате',
-    subtitle:
-      'Без редиректов и вкладок. Оплачивай картой, Mir или крипто — как удобно',
+    headline: 'Бронируй\nпрямо в чате',
+    body: 'Без редиректов. Оплачивай картой, Мир или крипто — как удобно.',
   },
   {
     id: '3',
-    emoji: '\u{1F5FA}️',
-    title: 'Маршрут по дням — в подарок',
-    subtitle:
-      'AI составит план поездки: куда идти, что смотреть, где есть — локальные инсайды',
+    headline: 'Маршрут\nна каждый день',
+    body: 'AI составит план поездки: куда идти, что смотреть, где есть — локальные инсайды.',
   },
 ];
 
 const TOTAL = SLIDES.length;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// ─── Single slide ─────────────────────────────────────────────────────────────
+// ─── SVIT Logo SVG-style (approximated in RN) ─────────────────────────────────
+
+function SvitLogo() {
+  return (
+    <View style={logoStyles.wrap}>
+      {/* Outer ring */}
+      <View style={logoStyles.ring} />
+      {/* Upper S-arc in teal */}
+      <View style={logoStyles.arcTop} />
+      {/* Lower S-arc in amber */}
+      <View style={logoStyles.arcBottom} />
+      {/* Center dot */}
+      <LinearGradient
+        colors={[COLORS.secondary, COLORS.primary]}
+        style={logoStyles.centerDot}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      />
+    </View>
+  );
+}
+
+const logoStyles = StyleSheet.create({
+  wrap: {
+    width: 72,
+    height: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  ring: {
+    position: 'absolute',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 1.5,
+    borderColor: COLORS.secondary,
+    opacity: 0.3,
+  },
+  arcTop: {
+    position: 'absolute',
+    top: 10,
+    left: 18,
+    width: 28,
+    height: 20,
+    borderTopWidth: 3,
+    borderLeftWidth: 3,
+    borderColor: COLORS.secondary,
+    borderRadius: 14,
+    opacity: 0.9,
+  },
+  arcBottom: {
+    position: 'absolute',
+    bottom: 10,
+    right: 18,
+    width: 28,
+    height: 20,
+    borderBottomWidth: 3,
+    borderRightWidth: 3,
+    borderColor: COLORS.primary,
+    borderRadius: 14,
+    opacity: 0.9,
+  },
+  centerDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+});
+
+// ─── Single slide (middle content area) ──────────────────────────────────────
 
 function SlideItem({ item }: { item: Slide }) {
   return (
     <View style={[slideStyles.container, { width: SCREEN_WIDTH }]}>
-      <View style={slideStyles.iconCircle}>
-        <Text style={slideStyles.emoji}>{item.emoji}</Text>
-      </View>
-      <Text style={slideStyles.title}>{item.title}</Text>
-      <Text style={slideStyles.subtitle}>{item.subtitle}</Text>
+      <Text style={slideStyles.headline}>{item.headline}</Text>
+      <Text style={slideStyles.body}>{item.body}</Text>
     </View>
   );
 }
@@ -86,35 +148,23 @@ const slideStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 36,
+    paddingHorizontal: 24,
   },
-  iconCircle: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 48,
-  },
-  emoji: {
-    fontSize: 64,
-    lineHeight: 76,
-  },
-  title: {
-    fontSize: 28,
+  headline: {
+    fontFamily: 'Sora',
+    fontSize: 23,
     fontWeight: '700',
     color: COLORS.white,
     textAlign: 'center',
-    lineHeight: 36,
-    marginBottom: 18,
-    letterSpacing: -0.3,
+    lineHeight: 32,
+    marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 16,
+  body: {
+    fontSize: 12,
     color: COLORS.subtitle,
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 20,
+    maxWidth: 280,
   },
 });
 
@@ -127,17 +177,13 @@ export default function OnboardingScreen() {
 
   const isLast = currentIndex === TOTAL - 1;
 
-  // Трекинг: onboarding_started при первом показе экрана
   useEffect(() => {
     analyticsService.track(AnalyticsEvents.ONBOARDING.STARTED);
   }, []);
 
-  // Save flag and navigate away
   const finish = useCallback(async (skipped = false) => {
     if (skipped) {
-      analyticsService.track(AnalyticsEvents.ONBOARDING.SKIPPED, {
-        slide_index: currentIndex,
-      });
+      analyticsService.track(AnalyticsEvents.ONBOARDING.SKIPPED, { slide_index: currentIndex });
     } else {
       analyticsService.track(AnalyticsEvents.ONBOARDING.COMPLETED);
     }
@@ -149,7 +195,6 @@ export default function OnboardingScreen() {
     router.replace('/(auth)/login');
   }, [currentIndex]);
 
-  // Advance to next slide or finish
   const goNext = useCallback(() => {
     if (currentIndex < TOTAL - 1) {
       const next = currentIndex + 1;
@@ -160,7 +205,6 @@ export default function OnboardingScreen() {
     }
   }, [currentIndex, finish]);
 
-  // Sync index with manual swipe
   const onMomentumScrollEnd = useCallback(
     (e: { nativeEvent: { contentOffset: { x: number } } }) => {
       const idx = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
@@ -173,7 +217,23 @@ export default function OnboardingScreen() {
     <View style={styles.root}>
       <StatusBar style="light" />
 
-      {/* Slides */}
+      {/* Radial gradient background (teal top, amber bottom) */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        {/* teal radial top */}
+        <View style={styles.bgTeal} />
+        {/* amber radial bottom */}
+        <View style={styles.bgAmber} />
+      </View>
+
+      {/* Logo area — fixed at top */}
+      <View style={[styles.logoArea, { paddingTop: Math.max(insets.top + 28, 76) }]}>
+        <SvitLogo />
+        {/* "SVIT" with gradient text effect (approximated via shadow tint) */}
+        <Text style={styles.brandText}>SVIT</Text>
+        <Text style={styles.brandTag}>AI Travel</Text>
+      </View>
+
+      {/* Slides — swipeable headline + body area */}
       <FlatList<Slide>
         ref={flatListRef}
         data={SLIDES}
@@ -195,43 +255,70 @@ export default function OnboardingScreen() {
         })}
       />
 
-      {/* Bottom zone — shared across all slides */}
-      <View style={[styles.bottom, { paddingBottom: Math.max(insets.bottom, 16) + 24 }]}>
-        {/* Paginator dots */}
+      {/* Bottom zone */}
+      <View style={[styles.bottom, { paddingBottom: Math.max(insets.bottom, 16) + 16 }]}>
+        {/* Pagination dots: active = wide 20px gradient, inactive = 6px circle */}
         <View style={styles.dots}>
-          {SLIDES.map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.dot,
-                i === currentIndex ? styles.dotActive : styles.dotInactive,
-              ]}
-            />
-          ))}
+          {SLIDES.map((_, i) => {
+            const isActive = i === currentIndex;
+            if (isActive) {
+              return (
+                <LinearGradient
+                  key={i}
+                  colors={[COLORS.secondary, COLORS.primary]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.dotActive}
+                />
+              );
+            }
+            return <View key={i} style={styles.dotInactive} />;
+          })}
         </View>
 
-        {/* CTA button */}
+        {/* CTA: gradient amber→teal, border-radius 28px */}
         <TouchableOpacity
-          style={styles.ctaButton}
           onPress={goNext}
           activeOpacity={0.85}
+          style={[
+            styles.ctaWrapper,
+            Platform.select({
+              ios: {
+                shadowColor: COLORS.primary,
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.4,
+                shadowRadius: 14,
+              },
+              android: { elevation: 6 },
+            }),
+          ]}
         >
-          <Text style={styles.ctaText}>{isLast ? 'Начать' : 'Далее'}</Text>
+          <LinearGradient
+            colors={[COLORS.primary, COLORS.secondary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.ctaGradient}
+          >
+            <Text style={styles.ctaText}>
+              {isLast ? 'Начать путешествие' : 'Далее'}
+            </Text>
+          </LinearGradient>
         </TouchableOpacity>
 
-        {/* Skip link — only on slides 1 and 2 */}
-        {!isLast ? (
-          <TouchableOpacity
-            onPress={() => void finish(true)}
-            activeOpacity={0.7}
-            hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}
-          >
-            <Text style={styles.skipText}>Пропустить</Text>
-          </TouchableOpacity>
-        ) : (
-          // Reserve the same vertical space so the layout does not shift
-          <View style={styles.skipPlaceholder} />
-        )}
+        {/* Secondary action */}
+        <TouchableOpacity
+          onPress={() => void finish(true)}
+          activeOpacity={0.7}
+          hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}
+        >
+          <Text style={styles.secondaryText}>
+            Уже есть аккаунт?{' '}
+            <Text style={{ color: COLORS.secondary, fontWeight: '500' }}>Войти</Text>
+          </Text>
+        </TouchableOpacity>
+
+        {/* Powered by */}
+        <Text style={styles.poweredBy}>Powered by Claude AI</Text>
       </View>
     </View>
   );
@@ -243,65 +330,119 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: COLORS.background,
-  },
-  flatList: {
-    flex: 1,
-  },
-  bottom: {
-    paddingHorizontal: 24,
-    gap: 16,
     alignItems: 'center',
   },
-  // Paginator
+
+  // Radial gradient background layers
+  bgTeal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '55%',
+    // Approximated: elliptical teal glow at top
+    borderBottomLeftRadius: 500,
+    borderBottomRightRadius: 500,
+    opacity: 0.08,
+    backgroundColor: COLORS.secondary,
+  },
+  bgAmber: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '40%',
+    borderTopLeftRadius: 500,
+    borderTopRightRadius: 500,
+    opacity: 0.07,
+    backgroundColor: COLORS.primary,
+  },
+
+  // Logo area
+  logoArea: {
+    alignItems: 'center',
+    paddingBottom: 16,
+    width: '100%',
+  },
+  brandText: {
+    fontFamily: 'Sora',
+    fontSize: 34,
+    fontWeight: '700',
+    letterSpacing: 7,
+    color: COLORS.secondary, // teal tint; gradient-clip not available in RN without SVG
+    marginTop: 14,
+    marginBottom: 4,
+  },
+  brandTag: {
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 3.5,
+    textTransform: 'uppercase',
+    color: COLORS.subtitle,
+  },
+
+  flatList: {
+    flex: 1,
+    width: '100%',
+  },
+
+  // Bottom area
+  bottom: {
+    width: '100%',
+    paddingHorizontal: 24,
+    gap: 10,
+    alignItems: 'center',
+  },
+
+  // Pagination dots
   dots: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  dot: {
-    height: 8,
-    borderRadius: 4,
+    gap: 6,
+    marginBottom: 4,
   },
   dotActive: {
-    width: 28,
-    backgroundColor: COLORS.gold,
+    width: 20,
+    height: 6,
+    borderRadius: 3,
   },
   dotInactive: {
-    width: 8,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: COLORS.dotInactive,
   },
+
   // CTA button
-  ctaButton: {
+  ctaWrapper: {
     width: '100%',
-    paddingVertical: 16,
-    borderRadius: 14,
-    backgroundColor: COLORS.gold,
+    borderRadius: 28,
+    overflow: 'hidden',
+  },
+  ctaGradient: {
+    paddingVertical: 14,
     alignItems: 'center',
-    justifyContent: 'center',
-    // Shadow
-    ...Platform.select({
-      ios: {
-        shadowColor: COLORS.gold,
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.45,
-        shadowRadius: 14,
-      },
-      android: { elevation: 6 },
-    }),
+    borderRadius: 28,
   },
   ctaText: {
-    fontSize: 17,
+    fontFamily: 'Inter',
+    fontSize: 14,
     fontWeight: '700',
-    color: '#000',
+    color: COLORS.textInverse,
     letterSpacing: 0.2,
   },
-  // Skip
-  skipText: {
-    fontSize: 15,
+
+  // Secondary link
+  secondaryText: {
+    fontSize: 11,
     color: COLORS.subtitle,
-    fontWeight: '500',
+    textAlign: 'center',
   },
-  skipPlaceholder: {
-    height: 22, // approx line height of skip text
+  poweredBy: {
+    fontSize: 8.5,
+    color: '#4A4A62',
+    letterSpacing: 1,
+    textAlign: 'center',
+    paddingBottom: 2,
   },
 });

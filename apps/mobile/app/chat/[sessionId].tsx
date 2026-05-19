@@ -307,6 +307,7 @@ export default function ChatScreen() {
     sessions,
     updateSessionTitle,
     deleteSession,
+    createSession,
   } = useChatStore();
 
   const { isAuthenticated } = useAuthStore();
@@ -322,6 +323,7 @@ export default function ChatScreen() {
   const [pendingBookingId, setPendingBookingId] = React.useState<string | null>(null);
   const [historyVisible, setHistoryVisible] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
+  const [isCreatingNewChat, setIsCreatingNewChat] = useState(false);
 
   // ── Swipe left → bookings ─────────────────────────────────────────────────
   const swipePanResponder = useRef(
@@ -438,14 +440,13 @@ export default function ChatScreen() {
       setCurrentSession(session);
     }
     navigation.setOptions({
-      title,
       headerBackTitle: '',
-      headerTitleStyle: {
-        fontFamily: 'Sora',
-        fontSize: 16,
-        fontWeight: '600' as const,
-        color: colors.text,
-      },
+      headerTitle: () => (
+        <View style={{ alignItems: 'center' }}>
+          <Text style={{ fontFamily: 'Sora', fontSize: 17, fontWeight: '700', color: colors.text }}>{title}</Text>
+          <Text style={{ fontSize: 10, color: '#10B981' }}>{'● На связи · отвечает мгновенно'}</Text>
+        </View>
+      ),
       headerLeft: () => (
         <TouchableOpacity
           style={chatHeaderStyles.historyBtn}
@@ -520,6 +521,20 @@ export default function ChatScreen() {
     scrollToBottom();
   }, [safeMessages.length, streamingText, scrollToBottom]);
 
+  const handleNewChat = useCallback(async () => {
+    if (isCreatingNewChat || isStreaming) return;
+    setIsCreatingNewChat(true);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      const id = await createSession();
+      router.replace(`/chat/${id}` as never);
+    } catch {
+      Alert.alert('Ошибка', 'Не удалось создать новый чат. Попробуйте снова.');
+    } finally {
+      setIsCreatingNewChat(false);
+    }
+  }, [isCreatingNewChat, isStreaming, createSession]);
+
   async function handleSend(content: string) {
     if (!sessionId) {
       if (__DEV__) console.warn('[ChatScreen] handleSend blocked: no sessionId');
@@ -578,7 +593,14 @@ export default function ChatScreen() {
           onSessionTitleUpdate: (title: string) => {
             if (!sessionId) return;
             updateSessionTitle(sessionId, title);
-            navigation.setOptions({ title });
+            navigation.setOptions({
+              headerTitle: () => (
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={{ fontFamily: 'Sora', fontSize: 17, fontWeight: '700', color: colors.text }}>{title}</Text>
+                  <Text style={{ fontSize: 10, color: '#10B981' }}>{'● На связи · отвечает мгновенно'}</Text>
+                </View>
+              ),
+            });
           },
           onError: (message) => {
             setStreaming(false);
@@ -794,6 +816,22 @@ export default function ChatScreen() {
         onClose={() => setAuthModalVisible(false)}
         reason={authReason}
       />
+
+      {/* FAB — new chat */}
+      <TouchableOpacity
+        style={[fabStyles.fab, isCreatingNewChat && fabStyles.fabDisabled]}
+        onPress={() => void handleNewChat()}
+        activeOpacity={0.8}
+        disabled={isCreatingNewChat || isStreaming}
+        accessibilityLabel="Новый чат"
+        accessibilityRole="button"
+      >
+        <Ionicons
+          name={isCreatingNewChat ? 'hourglass-outline' : 'add'}
+          size={28}
+          color="#fff"
+        />
+      </TouchableOpacity>
     </KeyboardAvoidingView>
     </View>
   );
@@ -860,5 +898,30 @@ const styles = StyleSheet.create({
     width: '55%',
     height: 44,
     borderRadius: 18,
+  },
+});
+
+const fabStyles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    bottom: 96,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#4F7FFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    // Shadow iOS
+    shadowColor: '#4F7FFF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    // Shadow Android
+    elevation: 8,
+    zIndex: 50,
+  },
+  fabDisabled: {
+    opacity: 0.55,
   },
 });

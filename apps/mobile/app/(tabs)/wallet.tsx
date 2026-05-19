@@ -66,6 +66,26 @@ interface TransactionItemProps {
   transaction: WalletTransaction;
 }
 
+function getTransactionIconBg(type: TransactionType, description: string): string {
+  const lower = description.toLowerCase();
+  if (type === 'TOPUP') return 'rgba(16,185,129,0.1)';
+  if (lower.includes('отель') || lower.includes('hotel')) return 'rgba(245,158,11,0.1)';
+  if (lower.includes('рейс') || lower.includes('flight') || lower.includes('авиа') || lower.includes('билет')) {
+    return 'rgba(20,184,166,0.1)';
+  }
+  return 'rgba(244,63,94,0.15)';
+}
+
+function getTransactionIconColor(type: TransactionType, description: string): string {
+  const lower = description.toLowerCase();
+  if (type === 'TOPUP') return '#10B981';
+  if (lower.includes('отель') || lower.includes('hotel')) return '#F59E0B';
+  if (lower.includes('рейс') || lower.includes('flight') || lower.includes('авиа') || lower.includes('билет')) {
+    return '#14B8A6';
+  }
+  return '#F43F5E';
+}
+
 function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
   const { colors } = useTheme();
   const isIncoming = transaction.type === 'TOPUP';
@@ -82,17 +102,20 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
     });
   }
 
+  const iconBg = getTransactionIconBg(transaction.type, transaction.description);
+  const iconColor = getTransactionIconColor(transaction.type, transaction.description);
+
   return (
     <View style={[txStyles.row, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={{
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: isIncoming ? `${colors.success}20` : `${colors.error}15`,
+        backgroundColor: iconBg,
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <Ionicons name={getTransactionIconName(transaction.type, transaction.description)} size={18} color={isIncoming ? colors.success : colors.error} />
+        <Ionicons name={getTransactionIconName(transaction.type, transaction.description)} size={18} color={iconColor} />
       </View>
       <View style={txStyles.info}>
         <Text style={[txStyles.label, { color: colors.text }]} numberOfLines={1}>{transaction.description}</Text>
@@ -381,7 +404,6 @@ interface HeroCardProps {
 }
 
 function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
-  const { colors } = useTheme();
   const symbol = CURRENCY_SYMBOLS[currency] ?? currency;
 
   const formatted = balance.toLocaleString('en-US', {
@@ -391,34 +413,42 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
 
   return (
     <LinearGradient
-      colors={[colors.card, colors.elevated]}
+      colors={['#F59E0B', '#14B8A6']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[heroStyles.card, { borderColor: `${colors.primary}40` }]}
+      style={heroStyles.card}
     >
-      {/* Wallet icon — top right */}
-      <View style={[heroStyles.walletIconWrap, {
-        backgroundColor: `${colors.primary}20`,
-        borderColor: `${colors.primary}40`,
-      }]}>
-        <Ionicons name="wallet-outline" size={22} color={colors.primary} />
-      </View>
+      {/* Label */}
+      <Text style={heroStyles.balanceLabel}>БАЛАНС SVIT</Text>
 
-      {/* Balance */}
-      <Text style={[heroStyles.amount, { color: colors.primary }]}>
-        <Text style={[heroStyles.currencySymbol, { color: colors.primary }]}>{symbol}</Text>
+      {/* Amount */}
+      <Text style={heroStyles.amount}>
+        <Text style={heroStyles.currencySymbol}>{symbol}</Text>
         {formatted}
       </Text>
-      <Text style={[heroStyles.availableLabel, { color: colors.textMuted }]}>Доступный баланс</Text>
 
       {/* Action buttons */}
       <View style={heroStyles.actionsRow}>
         <TouchableOpacity
-          style={[heroStyles.topUpBtn, { flex: 1, backgroundColor: colors.primary }]}
+          style={heroStyles.actionBtn}
           onPress={onTopUp}
           activeOpacity={0.8}
         >
-          <Text style={heroStyles.topUpBtnText}>+ Пополнить</Text>
+          <Text style={heroStyles.actionBtnText}>Пополнить</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={heroStyles.actionBtn}
+          activeOpacity={0.8}
+          onPress={() => {}}
+        >
+          <Text style={heroStyles.actionBtnText}>Вывести</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={heroStyles.actionBtn}
+          activeOpacity={0.8}
+          onPress={() => {}}
+        >
+          <Text style={heroStyles.actionBtnText}>Перевод</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -430,56 +460,48 @@ const heroStyles = StyleSheet.create({
     marginHorizontal: Spacing.md,
     marginTop: Spacing.md,
     marginBottom: Spacing.lg,
-    borderRadius: Radius.cardLg,
-    padding: Spacing.lg,
-    paddingTop: 20,
-    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 18,
   },
-  walletIconWrap: {
-    position: 'absolute',
-    top: 18,
-    right: 18,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  balanceLabel: {
+    fontFamily: 'Inter',
+    fontSize: 9,
+    fontWeight: '600' as const,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    color: 'rgba(10,10,20,0.5)',
+    marginBottom: 6,
   },
   amount: {
     fontFamily: 'Sora',
-    fontSize: 42,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: -1,
-    marginBottom: 4,
-    marginRight: 52,
+    fontSize: 30,
+    fontWeight: '700' as const,
+    color: '#0A0A14',
+    letterSpacing: -0.5,
+    marginBottom: 16,
   },
   currencySymbol: {
-    fontSize: 42,
-    fontWeight: Typography.weights.bold,
-    lineHeight: 52,
-  },
-  availableLabel: {
-    fontFamily: 'Inter',
-    fontSize: Typography.sizes.sm,
-    marginBottom: Spacing.lg,
+    fontSize: 30,
+    fontWeight: '700' as const,
+    color: '#0A0A14',
   },
   actionsRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 8,
   },
-  topUpBtn: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 24,
+  actionBtn: {
+    backgroundColor: 'rgba(10,10,20,0.15)',
+    borderRadius: 18,
+    paddingHorizontal: 13,
+    paddingVertical: 6,
     alignItems: 'center',
   },
-  topUpBtnText: {
-    // Тёмный текст на янтарной кнопке — обеспечивает контраст в обеих темах
-    color: '#0A0A14',
+  actionBtnText: {
     fontFamily: 'Inter',
-    fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.bold,
+    fontSize: 10.5,
+    fontWeight: '600' as const,
+    color: '#0A0A14',
   },
 });
 
@@ -552,12 +574,43 @@ export default function WalletScreen() {
         }
         ListHeaderComponent={
           <View>
-            {/* Hero balance card */}
+            {/* Design header: "Кошелёк" Sora bold 22px */}
+            <View style={styles.screenHeader}>
+              <Text style={styles.screenTitle}>Кошелёк</Text>
+              <Text style={[styles.screenSub, { color: colors.textMuted }]}>Оплачивай поездки прямо здесь</Text>
+            </View>
+
+            {/* Hero gradient balance card + payment methods */}
             <HeroBalanceCard
               balance={balance}
               currency={currency}
               onTopUp={() => setTopUpVisible(true)}
             />
+
+            {/* Payment methods row (design: 4 tiles — Visa, Bitcoin, USDT, Mir) */}
+            <View style={styles.pmRow}>
+              <View style={[styles.pmTile]}>
+                <Text style={styles.pmIcon}>💳</Text>
+                <Text style={[styles.pmLabel, { color: colors.textMuted }]}>Visa ••4821</Text>
+              </View>
+              <View style={styles.pmTile}>
+                <Text style={styles.pmIcon}>₿</Text>
+                <Text style={[styles.pmLabel, { color: colors.textMuted }]}>Bitcoin</Text>
+              </View>
+              <View style={styles.pmTile}>
+                <Text style={styles.pmIcon}>🪙</Text>
+                <Text style={[styles.pmLabel, { color: colors.textMuted }]}>USDT</Text>
+              </View>
+              <View style={[styles.pmTile, styles.pmTileActive]}>
+                <Text style={[styles.pmIcon, { fontSize: 10, fontWeight: '700', color: '#F59E0B' }]}>МИР</Text>
+                <Text style={[styles.pmLabel, { color: '#F59E0B' }]}>Карта Мир</Text>
+              </View>
+            </View>
+
+            {/* Transaction section label */}
+            {filteredTransactions.length > 0 && (
+              <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>История транзакций</Text>
+            )}
 
             {/* Filter tabs */}
             <View style={[styles.tabsContainer, { backgroundColor: colors.card }]}>
@@ -584,10 +637,6 @@ export default function WalletScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-
-            {filteredTransactions.length > 0 && (
-              <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>История транзакций</Text>
-            )}
           </View>
         }
         ListEmptyComponent={
@@ -612,6 +661,50 @@ export default function WalletScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  // Design header
+  screenHeader: {
+    paddingHorizontal: 20,
+    paddingBottom: 14,
+    paddingTop: 4,
+  },
+  screenTitle: {
+    fontFamily: 'Sora',
+    fontSize: 22,
+    fontWeight: '700' as const,
+    color: '#F4F4F8',
+  },
+  screenSub: {
+    fontSize: 10,
+    marginTop: 2,
+  },
+  // Payment methods row (4 tiles)
+  pmRow: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+    flexDirection: 'row',
+    gap: 7,
+  },
+  pmTile: {
+    flex: 1,
+    backgroundColor: '#1C1C2E',
+    borderWidth: 1,
+    borderColor: '#2A2A42',
+    borderRadius: 11,
+    paddingVertical: 9,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    gap: 4,
+  },
+  pmTileActive: {
+    borderColor: 'rgba(245,158,11,0.4)',
+  },
+  pmIcon: {
+    fontSize: 16,
+  },
+  pmLabel: {
+    fontSize: 8.5,
+    textAlign: 'center',
   },
   tabsContainer: {
     flexDirection: 'row',
