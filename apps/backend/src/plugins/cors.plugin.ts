@@ -7,7 +7,7 @@ import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 const corsPlugin: FastifyPluginAsync = fp(async (fastify: FastifyInstance) => {
   await fastify.register(cors, {
     origin: (origin: string | undefined, cb: (err: Error | null, allow: boolean) => void) => {
-      // Allow requests with no origin (mobile apps, curl, Postman)
+      // Allow requests with no origin (mobile apps, curl, Postman, React Native)
       if (!origin) {
         cb(null, true);
         return;
@@ -17,15 +17,30 @@ const corsPlugin: FastifyPluginAsync = fp(async (fastify: FastifyInstance) => {
         cb(null, true);
         return;
       }
+      // Allow Expo Go and Expo dev client (exp://, exps://, expo://)
+      if (/^exp[os]?:\/\//i.test(origin)) {
+        cb(null, true);
+        return;
+      }
+      // Allow Railway production deployment (self-referencing internal requests)
+      if (/\.railway\.app$/.test(origin)) {
+        cb(null, true);
+        return;
+      }
       // Allow production domain
-      if (origin === 'https://travel-ai.app') {
+      if (origin === 'https://travel-ai.app' || origin === 'https://getsvit.com') {
+        cb(null, true);
+        return;
+      }
+      // Allow Expo web preview and hosted apps
+      if (/\.expo\.dev$/.test(origin) || /\.expo\.io$/.test(origin)) {
         cb(null, true);
         return;
       }
       cb(new Error('Not allowed by CORS'), false);
     },
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'X-Guest-ID'],
     credentials: true,
   });
 });
