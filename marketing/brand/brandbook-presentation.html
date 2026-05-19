@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVIT — Brandbook v2.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ---- RESET & BASE ---- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:            #0E0C1C;
+      --surface:       #14121E;
+      --card:          #1E1C2C;
+      --elevated:      #28263A;
+      --primary:       #E8A020;
+      --primaryLight:  #F2B84B;
+      --primaryDark:   #B87518;
+      --secondary:     #7C5CFC;
+      --secondaryLight:#A98EFD;
+      --secondaryDark: #5A3DD4;
+      --text:          #EEEEF4;
+      --textMuted:     #8888A8;
+      --textDisabled:  #4E4E68;
+      --success:       #10B981;
+      --warning:       #E8A020;
+      --error:         #F43F5E;
+      --info:          #38BDF8;
+      --border:        #2E2B42;
+      --divider:       #1E1C2C;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, 'SF Pro Display', sans-serif;
+      background: #080614;
+      color: var(--text);
+      padding: 40px 0;
+    }
+
+    /* ---- SLIDE BASE ---- */
+    .slide {
+      width: 1280px;
+      min-height: 720px;
+      margin: 0 auto 48px;
+      padding: 64px 72px;
+      background: var(--bg);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+    }
+
+    .slide-number {
+      position: absolute;
+      top: 28px;
+      right: 36px;
+      font-size: 12px;
+      color: var(--textDisabled);
+      letter-spacing: 2px;
+      font-weight: 500;
+    }
+
+    .slide-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    h1.slide-title {
+      font-size: 52px;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    h2.slide-title {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    /* ---- DECORATIVE STARS ---- */
+    .stars {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    /* ---- PHONE FRAME ---- */
+    .phone-frame {
+      width: 260px;
+      height: 520px;
+      border: 2.5px solid var(--border);
+      border-radius: 36px;
+      background: var(--bg);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .phone-notch {
+      width: 80px;
+      height: 22px;
+      background: #0a0814;
+      border-radius: 0 0 14px 14px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+    }
+    .phone-screen {
+      height: calc(100% - 22px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- GRADIENT UTILITIES ---- */
+    .grad-gold { background: linear-gradient(135deg, var(--primary) 0%, var(--primaryDark) 100%); }
+    .grad-plum { background: linear-gradient(135deg, var(--secondary) 0%, var(--secondaryDark) 100%); }
+    .grad-bg   { background: linear-gradient(135deg, var(--bg) 0%, #1E1428 100%); }
+    .grad-wallet { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); }
+
+    /* ---- DIVIDER ---- */
+    hr.sep {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* ============================================================
+       SLIDE 1 — COVER
+    ============================================================ */
+    #s1 {
+      justify-content: center;
+      align-items: flex-start;
+      background: linear-gradient(135deg, #0E0C1C 60%, #1a1030 100%);
+    }
+    #s1 .cover-logo {
+      font-size: 120px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 28px;
+    }
+    #s1 .cover-logo .s-gold { color: var(--primary); }
+    #s1 .cover-logo .s-white { color: var(--text); }
+    #s1 .cover-tagline {
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--textMuted);
+      margin-bottom: 12px;
+      max-width: 580px;
+      line-height: 1.4;
+    }
+    #s1 .cover-meta {
+      font-size: 14px;
+      color: var(--textDisabled);
+      letter-spacing: 2px;
+      font-weight: 500;
+    }
+    #s1 .cover-accent-line {
+      width: 64px;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 2px;
+      margin-bottom: 32px;
+    }
+    #s1 .cover-compass {
+      position: absolute;
+      right: 80px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* ============================================================
+       SLIDE 2 — MISSION
+    ============================================================ */
+    #s2 .mission-slogan {
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+    #s2 .mission-slogan span { color: var(--primary); }
+    #s2 .mission-desc {
+      font-size: 17px;
+      color: var(--textMuted);
+      max-width: 780px;
+      line-height: 1.7;
+      margin-bottom: 52px;
+    }
+    #s2 .pillars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    #s2 .pillar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+    }
+    #s2 .pillar-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+    #s2 .pillar h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    #s2 .pillar p {
+      font-size: 14px;
+      color: var(--textMuted);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       SLIDE 3 — COLOR PALETTE
+    ============================================================ */
+    #s3 .palette-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    #s3 .color-swatch {
+      flex: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    #s3 .swatch-color {
+      height: 72px;
+    }
+    #s3 .swatch-info {
+      background: var(--card);
+      padding: 10px 14px;
+    }
+    #s3 .swatch-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    #s3 .swatch-hex {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--textMuted);
+    }
+
+    /* ============================================================
+       SLIDE 4 — TYPOGRAPHY
+    ============================================================ */
+    #s4 .type-samples {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    #s4 .type-row {
+      display: flex;
+      align-items: baseline;
+      gap: 32px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    #s4 .type-meta {
+      width: 160px;
+      flex-shrink: 0;
+    }
+    #s4 .type-meta-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--textMuted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    #s4 .type-meta-spec {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--textDisabled);
+      margin-top: 4px;
+    }
+    #s4 .type-sample-text { flex: 1; }
+
+    /* ============================================================
+       SLIDE 5 — LOGO
+    ============================================================ */
+    #s5 .logo-variations {
+      display: flex;
+      gap: 24px;
+      margin-top: 16px;
+    }
+    #s5 .logo-var {
+      flex: 1;
+      border-radius: 16px;
+      padding: 40px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    #s5 .logo-var-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    #s5 .zone-box {
+      border: 1.5px dashed var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      position: relative;
+      display: inline-block;
+    }
+    #s5 .zone-label {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--textMuted);
+      background: var(--card);
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    #s5 .rules-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    #s5 .rule-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--textMuted);
+      line-height: 1.5;
+    }
+    #s5 .rule-ok { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); }
+    #s5 .rule-no { background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.2); }
+    #s5 .rule-icon { font-size: 16px; flex-shrink: 0; }
+
+    /* ============================================================
+       SLIDE 6–10 — PHONE MOCKUPS (layout shared)
+    ============================================================ */
+    .mockup-slide {
+      flex-direction: row;
+      gap: 56px;
+      align-items: center;
+    }
+    .mockup-desc { flex: 1; }
+    .mockup-desc h2 { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .mockup-desc p  { font-size: 16px; color: var(--textMuted); line-height: 1.7; margin-bottom: 24px; }
+    .mockup-features { display: flex; flex-direction: column; gap: 12px; }
+    .mockup-feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--textMuted);
+    }
+    .feature-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       SLIDE 11 — BUTTONS
+    ============================================================ */
+    #s11 .buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-top: 8px;
+    }
+    #s11 .btn-showcase {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    #s11 .btn-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--textMuted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 52px;
+      padding: 0 32px;
+      border-radius: 32px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primaryDark) 100%);
+      color: #0E0C1C;
+      box-shadow: 0 0 24px rgba(232,160,32,0.30);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1.5px solid var(--secondary);
+      color: var(--secondary);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--primary);
+      color: var(--primary);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--textMuted);
+    }
+    .btn-danger {
+      background: rgba(244,63,94,0.12);
+      border: 1px solid var(--error);
+      color: var(--error);
+    }
+    .btn-loading {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primaryDark) 100%);
+      color: #0E0C1C;
+      gap: 12px;
+    }
+    .btn-spec {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--textDisabled);
+      line-height: 1.6;
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       SLIDE 12 — CHIPS & BADGES
+    ============================================================ */
+    #s12 .chips-section { margin-bottom: 36px; }
+    #s12 .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--textMuted);
+      margin-bottom: 16px;
+    }
+    #s12 .chips-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--textMuted);
+      gap: 6px;
+    }
+    .chip-active {
+      background: var(--primary);
+      color: #0E0C1C;
+      border-color: transparent;
+      font-weight: 600;
+    }
+    .chip-plum {
+      background: rgba(124,92,252,0.15);
+      color: var(--secondaryLight);
+      border-color: rgba(124,92,252,0.3);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
+    .badge-warning { background: rgba(232,160,32,0.15); color: var(--warning); }
+    .badge-error   { background: rgba(244,63,94,0.15); color: var(--error); }
+    .badge-muted   { background: rgba(136,136,168,0.15); color: var(--textMuted); }
+    .badge-info    { background: rgba(56,189,248,0.15); color: var(--info); }
+
+    /* ============================================================
+       SLIDE 13 — TONE OF VOICE
+    ============================================================ */
+    #s13 .tov-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    #s13 .tov-table th {
+      text-align: left;
+      padding: 12px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--textMuted);
+      border-bottom: 1px solid var(--border);
+    }
+    #s13 .tov-table td {
+      padding: 16px 20px;
+      font-size: 14px;
+      color: var(--text);
+      border-bottom: 1px solid rgba(46,43,66,0.5);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    #s13 .tov-table tr:last-child td { border-bottom: none; }
+    #s13 .tov-quality {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+    }
+    #s13 .td-ok { color: var(--success); }
+    #s13 .td-no { color: var(--error); }
+    #s13 .td-ok-cell { background: rgba(16,185,129,0.04); }
+    #s13 .td-no-cell { background: rgba(244,63,94,0.04); }
+
+    /* ============================================================
+       SLIDE 14 — FINAL
+    ============================================================ */
+    #s14 {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(135deg, #0E0C1C 0%, #18102C 50%, #0E0C1C 100%);
+    }
+    #s14 .final-logo { font-size: 96px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; margin-bottom: 24px; }
+    #s14 .final-slogan { font-size: 28px; color: var(--textMuted); margin-bottom: 40px; font-weight: 400; }
+    #s14 .final-domain {
+      font-size: 20px;
+      color: var(--primary);
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 48px;
+    }
+    #s14 .final-contacts {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+    }
+    #s14 .contact-item {
+      padding: 16px 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      color: var(--textMuted);
+    }
+    #s14 .contact-item strong {
+      display: block;
+      color: var(--text);
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    /* ---- SPINNER ---- */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(14,12,28,0.3);
+      border-top-color: #0E0C1C;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    /* ---- STARS ANIMATION ---- */
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50%       { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     SLIDE 1 — COVER
+================================================================ -->
+<div class="slide" id="s1">
+  <span class="slide-number">01 / 14</span>
+
+  <!-- Stars -->
+  <div class="stars" aria-hidden="true">
+    <div class="star" style="width:1.5px;height:1.5px;top:8%;left:15%;opacity:.5;animation:twinkle 3s 0.2s infinite"></div>
+    <div class="star" style="width:2px;height:2px;top:15%;left:72%;opacity:.7;animation:twinkle 4s 1s infinite"></div>
+    <div class="star" style="width:1px;height:1px;top:25%;left:40%;opacity:.4;animation:twinkle 2.5s 0.5s infinite"></div>
+    <div class="star" style="width:2px;height:2px;top:60%;left:82%;opacity:.6;animation:twinkle 3.5s 0.8s infinite"></div>
+    <div class="star" style="width:1.5px;height:1.5px;top:80%;left:20%;opacity:.5;animation:twinkle 4.2s 0.3s infinite"></div>
+    <div class="star" style="width:1px;height:1px;top:35%;left:91%;opacity:.4;animation:twinkle 2.8s 1.5s infinite"></div>
+    <div class="star" style="width:2px;height:2px;top:70%;left:55%;opacity:.6;animation:twinkle 3.8s 0.6s infinite"></div>
+    <div class="star" style="width:1px;height:1px;top:48%;left:28%;opacity:.3;animation:twinkle 5s 0.9s infinite"></div>
+    <div class="star" style="width:1.5px;height:1.5px;top:88%;left:65%;opacity:.5;animation:twinkle 3.2s 1.2s infinite"></div>
+    <div class="star" style="width:1px;height:1px;top:12%;left:55%;opacity:.35;animation:twinkle 4.5s 0.1s infinite"></div>
+  </div>
+
+  <!-- Compass SVG — decorative background element -->
+  <div class="cover-compass" aria-hidden="true">
+    <svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Outer ring -->
+      <circle cx="160" cy="160" r="150" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+      <!-- Middle ring -->
+      <circle cx="160" cy="160" r="120" stroke="rgba(255,255,255,0.04)" stroke-width="1.5"/>
+      <!-- Inner ring -->
+      <circle cx="160" cy="160" r="80" stroke="rgba(232,160,32,0.12)" stroke-width="1.5"/>
+      <!-- Cardinal ticks -->
+      <line x1="160" y1="10" x2="160" y2="30" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+      <line x1="160" y1="290" x2="160" y2="310" stroke="rgba(255,255,255,0.10)" stroke-width="2"/>
+      <line x1="10" y1="160" x2="30" y2="160" stroke="rgba(255,255,255,0.10)" stroke-width="2"/>
+      <line x1="290" y1="160" x2="310" y2="160" stroke="rgba(255,255,255,0.10)" stroke-width="2"/>
+      <!-- Diagonal ticks -->
+      <line x1="54" y1="54" x2="68" y2="68" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+      <line x1="266" y1="54" x2="252" y2="68" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+      <line x1="54" y1="266" x2="68" y2="252" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+      <line x1="266" y1="266" x2="252" y2="252" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+      <!-- S-needle (gold) -->
+      <path d="M160 80 C180 120 140 140 160 160 C180 180 140 200 160 240"
+            stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.5"/>
+      <!-- Center dot -->
+      <circle cx="160" cy="160" r="5" fill="#E8A020" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <!-- Logo wordmark -->
+  <div class="cover-logo">
+    <span class="s-gold">S</span><span class="s-white">VIT</span>
+  </div>
+
+  <div class="cover-accent-line"></div>
+
+  <p class="cover-tagline">Travel AI для нового поколения путешественников<br>из СНГ — умный ассистент с реальным бронированием</p>
+  <p class="cover-meta">BRANDBOOK v2.0 &nbsp;·&nbsp; МАЙ 2026 &nbsp;·&nbsp; SVIT.TRAVEL</p>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 2 — MISSION & VALUES
+================================================================ -->
+<div class="slide" id="s2">
+  <span class="slide-number">02 / 14</span>
+  <span class="slide-tag">Миссия и ценности</span>
+
+  <div class="mission-slogan">
+    Твой мир.<br><span>Твой маршрут.</span>
+  </div>
+  <p class="mission-desc">
+    SVIT убирает трение между желанием путешествовать и реальной поездкой.
+    Не агрегатор — умный собеседник, который понимает контекст, помнит предпочтения
+    и действует вместо пользователя. Архетип: <strong style="color:var(--text)">Sage + Explorer (70/30)</strong>.
+  </p>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="pillar-icon" style="background: rgba(232,160,32,0.12);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#E8A020" stroke-width="1.8"/>
+          <path d="M12 3 L12 5 M12 19 L12 21 M3 12 L5 12 M19 12 L21 12" stroke="#E8A020" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M12 8 C13.5 10 10.5 11 12 12 C13.5 13 10.5 14 12 16" stroke="#E8A020" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+          <circle cx="12" cy="12" r="1.5" fill="#E8A020"/>
+        </svg>
+      </div>
+      <h3>Мудрость</h3>
+      <p>SVIT знает больше пользователя о тарифах, маршрутах, рисках и возможностях. Он советует, предупреждает и объясняет — не просто выполняет запросы.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon" style="background: rgba(124,92,252,0.12);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M3 12 C3 12 7 5 12 5 C17 5 21 12 21 12" stroke="#A98EFD" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M3 12 C3 12 7 19 12 19 C17 19 21 12 21 12" stroke="#A98EFD" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="3" stroke="#A98EFD" stroke-width="1.8"/>
+          <path d="M19 5 L22 3 M19 5 L17 2" stroke="#A98EFD" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Исследование</h3>
+      <p>Приложение само вдохновляет на новые направления, а не просто обслуживает принятые решения. Каждый маршрут — новое открытие.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon" style="background: rgba(16,185,129,0.10);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M13 2 L4.5 13.5 H11 L10 22 L20.5 10.5 H14 L13 2Z" stroke="#10B981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>Скорость</h3>
+      <p>Рейсы за секунды. Бронирование в одном чате. Уведомления в реальном времени. Ноль лишних шагов между идеей и посадочным талоном.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 3 — COLOR PALETTE
+================================================================ -->
+<div class="slide" id="s3">
+  <span class="slide-number">03 / 14</span>
+  <span class="slide-tag">Цветовая палитра</span>
+  <h2 class="slide-title" style="margin-bottom:28px;">Система цветов SVIT</h2>
+
+  <!-- Row 1: Gold family -->
+  <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--textMuted);margin-bottom:10px;">Primary — SVIT Gold</div>
+  <div class="palette-row">
+    <div class="color-swatch">
+      <div class="swatch-color" style="background:#E8A020;"></div>
+      <div class="swatch-info"><div class="swatch-name">primary</div><div class="swatch-hex">#E8A020</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-color" style="background:#F2B84B;"></div>
+      <div class="swatch-info"><div class="swatch-name">primaryLight</div><div class="swatch-hex">#F2B84B</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-color" style="background:#B87518;"></div>
+      <div class="swatch-info"><div class="swatch-name">primaryDark</div><div class="swatch-hex">#B87518</div></div>
+    </div>
+    <div class="color-swatch" style="flex:2;">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#E8A020,#B87518);"></div>
+      <div class="swatch-info"><div class="swatch-name">Градиент Gold</div><div class="swatch-hex">CTA, Splash, Hero</div></div>
+    </div>
+  </div>
+
+  <!-- Row 2: Plum family -->
+  <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--textMuted);margin-bottom:10px;">Secondary — Void Plum</div>
+  <div class="palette-row">
+    <div class="color-swatch">
+      <div class="swatch-color" style="background:#7C5CFC;"></div>
+      <div class="swatch-info"><div class="swatch-name">secondary</div><div class="swatch-hex">#7C5CFC</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-color" style="background:#A98EFD;"></div>
+      <div class="swatch-info"><div class="swatch-name">secondaryLight</div><div class="swatch-hex">#A98EFD</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-color" style="background:#5A3DD4;"></div>
+      <div class="swatch-info"><div class="swatch-name">secondaryDark</div><div class="swatch-hex">#5A3DD4</div></div>
+    </div>
+    <div class="color-swatch" style="flex:2;">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#7C5CFC,#5A3DD4);"></div>
+      <div class="swatch-info"><div class="swatch-name">Градиент Plum</div><div class="swatch-hex">AI-индикатор, Secondary</div></div>
+    </div>
+  </div>
+
+  <!-- Row 3 + Row 4 side by side -->
+  <div style="display:flex;gap:32px;">
+    <div style="flex:1;">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--textMuted);margin-bottom:10px;">Фоны и поверхности</div>
+      <div class="palette-row" style="margin-bottom:0">
+        <div class="color-swatch">
+          <div class="swatch-color" style="background:#0E0C1C;border:1px solid var(--border);border-bottom:none;"></div>
+          <div class="swatch-info"><div class="swatch-name">background</div><div class="swatch-hex">#0E0C1C</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-color" style="background:#14121E;border:1px solid var(--border);border-bottom:none;"></div>
+          <div class="swatch-info"><div class="swatch-name">surface</div><div class="swatch-hex">#14121E</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-color" style="background:#1E1C2C;border:1px solid var(--border);border-bottom:none;"></div>
+          <div class="swatch-info"><div class="swatch-name">card</div><div class="swatch-hex">#1E1C2C</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-color" style="background:#28263A;border:1px solid var(--border);border-bottom:none;"></div>
+          <div class="swatch-info"><div class="swatch-name">elevated</div><div class="swatch-hex">#28263A</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--textMuted);margin-bottom:10px;">Семантические цвета</div>
+      <div class="palette-row" style="margin-bottom:0">
+        <div class="color-swatch">
+          <div class="swatch-color" style="background:#10B981;"></div>
+          <div class="swatch-info"><div class="swatch-name">success</div><div class="swatch-hex">#10B981</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-color" style="background:#E8A020;"></div>
+          <div class="swatch-info"><div class="swatch-name">warning</div><div class="swatch-hex">#E8A020</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-color" style="background:#F43F5E;"></div>
+          <div class="swatch-info"><div class="swatch-name">error</div><div class="swatch-hex">#F43F5E</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-color" style="background:#38BDF8;"></div>
+          <div class="swatch-info"><div class="swatch-name">info</div><div class="swatch-hex">#38BDF8</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 4 — TYPOGRAPHY
+================================================================ -->
+<div class="slide" id="s4">
+  <span class="slide-number">04 / 14</span>
+  <span class="slide-tag">Типографика</span>
+  <h2 class="slide-title" style="margin-bottom:28px;">Шрифтовая система</h2>
+
+  <div class="type-samples">
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Display</div>
+        <div class="type-meta-spec">DM Sans 700<br>48px / 48px<br>−0.04em</div>
+      </div>
+      <div class="type-sample-text" style="font-family:'DM Sans',sans-serif;font-size:48px;font-weight:700;letter-spacing:-0.04em;line-height:1;color:var(--text);">$2,450.00</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">H1</div>
+        <div class="type-meta-spec">DM Sans 700<br>34px / 40px<br>−0.03em</div>
+      </div>
+      <div class="type-sample-text" style="font-family:'DM Sans',sans-serif;font-size:34px;font-weight:700;letter-spacing:-0.03em;line-height:40px;color:var(--text);">Мои путешествия</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">H2</div>
+        <div class="type-meta-spec">DM Sans 600<br>26px / 32px<br>−0.02em</div>
+      </div>
+      <div class="type-sample-text" style="font-family:'DM Sans',sans-serif;font-size:26px;font-weight:600;letter-spacing:-0.02em;color:var(--primary);">Киев — Барселона</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">H3</div>
+        <div class="type-meta-spec">DM Sans 600<br>20px / 26px<br>−0.01em</div>
+      </div>
+      <div class="type-sample-text" style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:600;letter-spacing:-0.01em;color:var(--text);">Hotel Arts Barcelona 5*</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Body</div>
+        <div class="type-meta-spec">System 400<br>16px / 25px</div>
+      </div>
+      <div class="type-sample-text" style="font-size:16px;font-weight:400;line-height:25px;color:var(--textMuted);">Нашёл 3 рейса Киев — Барселона на ваши даты. Лучший вариант — Vueling, 09:40, $189. Прямой рейс, 3ч 35м. Добавить отель?</div>
+    </div>
+    <div class="type-row" style="border-bottom:none;">
+      <div class="type-meta">
+        <div class="type-meta-name">Mono / Caption</div>
+        <div class="type-meta-spec">DM Mono 400<br>14px + System 12px</div>
+      </div>
+      <div class="type-sample-text" style="display:flex;align-items:baseline;gap:32px;">
+        <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--text);">KBP &nbsp;→&nbsp; BCN &nbsp;·&nbsp; VY 7822</span>
+        <span style="font-size:12px;color:var(--textMuted);">Рейс на 40 мин. задерживается</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 5 — LOGO
+================================================================ -->
+<div class="slide" id="s5">
+  <span class="slide-number">05 / 14</span>
+  <span class="slide-tag">Логотип</span>
+  <h2 class="slide-title" style="margin-bottom:24px;">Компас-марка SVIT</h2>
+
+  <div class="logo-variations">
+    <!-- Dark version (main) -->
+    <div class="logo-var" style="background:var(--bg);border:1px solid var(--border);">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="28" stroke="rgba(255,255,255,0.88)" stroke-width="2.5"/>
+        <line x1="32" y1="4" x2="32" y2="10" stroke="rgba(255,255,255,0.88)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="32" y1="54" x2="32" y2="60" stroke="rgba(255,255,255,0.88)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="4" y1="32" x2="10" y2="32" stroke="rgba(255,255,255,0.88)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="54" y1="32" x2="60" y2="32" stroke="rgba(255,255,255,0.88)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M32 18 C36 24 28 28 32 32 C36 36 28 40 32 46"
+              stroke="#E8A020" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <circle cx="32" cy="32" r="2.5" fill="#E8A020"/>
+      </svg>
+      <div style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;color:var(--text);">SVIT</div>
+      <div style="font-size:11px;color:var(--textMuted);letter-spacing:1px;text-align:center;">Твой мир. Твой маршрут.</div>
+      <div class="logo-var-label" style="color:var(--textMuted);">Dark (основная)</div>
+    </div>
+
+    <!-- Light version -->
+    <div class="logo-var" style="background:#F2F2F6;border:1px solid rgba(0,0,0,0.08);">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="28" stroke="#1A1A1A" stroke-width="2.5"/>
+        <line x1="32" y1="4" x2="32" y2="10" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="32" y1="54" x2="32" y2="60" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="4" y1="32" x2="10" y2="32" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="54" y1="32" x2="60" y2="32" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M32 18 C36 24 28 28 32 32 C36 36 28 40 32 46"
+              stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <circle cx="32" cy="32" r="2.5" fill="#1A1A1A"/>
+      </svg>
+      <div style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;color:#1A1A1A;">SVIT</div>
+      <div class="logo-var-label" style="color:#666;">Light (маркетинг)</div>
+    </div>
+
+    <!-- Gold on dark -->
+    <div class="logo-var" style="background:linear-gradient(135deg,#0E0C1C,#1E1428);border:1px solid var(--border);">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="2.5" opacity="0.7"/>
+        <line x1="32" y1="4" x2="32" y2="10" stroke="#E8A020" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="32" y1="54" x2="32" y2="60" stroke="#E8A020" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="4" y1="32" x2="10" y2="32" stroke="#E8A020" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="54" y1="32" x2="60" y2="32" stroke="#E8A020" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+        <path d="M32 18 C36 24 28 28 32 32 C36 36 28 40 32 46"
+              stroke="#E8A020" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <circle cx="32" cy="32" r="2.5" fill="#E8A020"/>
+      </svg>
+      <div style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;color:#E8A020;">SVIT</div>
+      <div class="logo-var-label" style="color:var(--textMuted);">Gold Accent (Hero)</div>
+    </div>
+
+    <!-- Monochrome -->
+    <div class="logo-var" style="background:var(--elevated);border:1px solid var(--border);">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="28" stroke="rgba(238,238,244,0.4)" stroke-width="2.5"/>
+        <line x1="32" y1="4" x2="32" y2="10" stroke="rgba(238,238,244,0.4)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="32" y1="54" x2="32" y2="60" stroke="rgba(238,238,244,0.4)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="4" y1="32" x2="10" y2="32" stroke="rgba(238,238,244,0.4)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="54" y1="32" x2="60" y2="32" stroke="rgba(238,238,244,0.4)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M32 18 C36 24 28 28 32 32 C36 36 28 40 32 46"
+              stroke="rgba(238,238,244,0.4)" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <circle cx="32" cy="32" r="2.5" fill="rgba(238,238,244,0.4)"/>
+      </svg>
+      <div style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;color:rgba(238,238,244,0.4);">SVIT</div>
+      <div class="logo-var-label" style="color:var(--textDisabled);">Monochrome (watermark)</div>
+    </div>
+  </div>
+
+  <div class="rules-grid">
+    <div class="rule-item rule-ok">
+      <span class="rule-icon" style="color:var(--success);">+</span>
+      <span>Охранная зона: 50% высоты символа со всех сторон</span>
+    </div>
+    <div class="rule-item rule-no">
+      <span class="rule-icon" style="color:var(--error);">−</span>
+      <span>Нельзя поворачивать кольцо компаса</span>
+    </div>
+    <div class="rule-item rule-ok">
+      <span class="rule-icon" style="color:var(--success);">+</span>
+      <span>Минимальный размер символа: 16px (ниже детали нечитаемы)</span>
+    </div>
+    <div class="rule-item rule-no">
+      <span class="rule-icon" style="color:var(--error);">−</span>
+      <span>Нельзя добавлять тени, обводки, градиенты к символу</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 6 — ONBOARDING SCREEN
+================================================================ -->
+<div class="slide mockup-slide" id="s6">
+  <span class="slide-number">06 / 14</span>
+
+  <div class="mockup-desc">
+    <span class="slide-tag">Экран — онбординг</span>
+    <h2>Первое впечатление</h2>
+    <p>Splash и онбординг — точка входа в бренд. Минимум текста, максимум атмосферы. Компас-марка + слоган на глубоком космическом фоне.</p>
+    <div class="mockup-features">
+      <div class="mockup-feature"><div class="feature-dot"></div>Градиентный фон 135deg: #0E0C1C → #1E1428</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>CTA-кнопка: Gold gradient, radius-2xl (32px)</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Pagination dots: активная — gold, остальные — border</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Ghost-ссылка "Войти" — textMuted, без рамки</div>
+    </div>
+  </div>
+
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen" style="background:linear-gradient(160deg,#0E0C1C 0%,#18102C 60%,#1E1428 100%);padding:0 20px;justify-content:space-between;padding-bottom:24px;padding-top:16px;">
+
+      <!-- Stars bg -->
+      <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+        <div style="width:1.5px;height:1.5px;background:#fff;border-radius:50%;position:absolute;top:10%;left:20%;opacity:.5;"></div>
+        <div style="width:1px;height:1px;background:#fff;border-radius:50%;position:absolute;top:18%;left:70%;opacity:.4;"></div>
+        <div style="width:2px;height:2px;background:#fff;border-radius:50%;position:absolute;top:30%;left:85%;opacity:.6;"></div>
+        <div style="width:1px;height:1px;background:#fff;border-radius:50%;position:absolute;top:42%;left:10%;opacity:.3;"></div>
+        <div style="width:1.5px;height:1.5px;background:#fff;border-radius:50%;position:absolute;top:55%;left:55%;opacity:.45;"></div>
+      </div>
+
+      <!-- Top spacer -->
+      <div style="height:24px;"></div>
+
+      <!-- Logo area -->
+      <div style="display:flex;flex-direction:column;align-items:center;flex:1;justify-content:center;gap:0;">
+        <svg width="72" height="72" viewBox="0 0 64 64" fill="none" style="margin-bottom:12px;">
+          <circle cx="32" cy="32" r="28" stroke="rgba(255,255,255,0.85)" stroke-width="2.5"/>
+          <line x1="32" y1="4" x2="32" y2="10" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="32" y1="54" x2="32" y2="60" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="4" y1="32" x2="10" y2="32" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="54" y1="32" x2="60" y2="32" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M32 18 C36 24 28 28 32 32 C36 36 28 40 32 46" stroke="#E8A020" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <circle cx="32" cy="32" r="2.5" fill="#E8A020"/>
+        </svg>
+        <div style="font-family:'DM Sans',sans-serif;font-size:32px;font-weight:700;letter-spacing:3px;color:#EEEEF4;margin-bottom:16px;">SVIT</div>
+        <div style="font-size:15px;font-weight:600;color:#EEEEF4;text-align:center;line-height:1.4;margin-bottom:8px;">Твой мир. Твой маршрут.</div>
+        <div style="font-size:11px;color:#8888A8;text-align:center;line-height:1.5;padding:0 8px;">AI-ассистент, который бронирует<br>путешествия в одном чате</div>
+      </div>
+
+      <!-- Bottom section -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+        <!-- Dots -->
+        <div style="display:flex;gap:6px;margin-bottom:4px;">
+          <div style="width:20px;height:5px;border-radius:3px;background:#E8A020;"></div>
+          <div style="width:6px;height:5px;border-radius:3px;background:#2E2B42;"></div>
+          <div style="width:6px;height:5px;border-radius:3px;background:#2E2B42;"></div>
+        </div>
+        <!-- CTA -->
+        <button style="width:100%;height:48px;border-radius:28px;border:none;background:linear-gradient(135deg,#E8A020,#B87518);color:#0E0C1C;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 0 20px rgba(232,160,32,0.35);">Начать путешествие</button>
+        <button style="background:none;border:none;color:#8888A8;font-size:13px;font-family:inherit;cursor:pointer;">Войти</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 7 — CHAT SCREEN
+================================================================ -->
+<div class="slide mockup-slide" id="s7">
+  <span class="slide-number">07 / 14</span>
+
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen" style="background:var(--bg);display:flex;flex-direction:column;">
+
+      <!-- Header -->
+      <div style="padding:10px 16px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="28" stroke="rgba(255,255,255,0.8)" stroke-width="2.5"/>
+            <path d="M32 18 C36 24 28 28 32 32 C36 36 28 40 32 46" stroke="#E8A020" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <circle cx="32" cy="32" r="2.5" fill="#E8A020"/>
+          </svg>
+          <div>
+            <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#EEEEF4;letter-spacing:1px;">SVIT</div>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div style="width:5px;height:5px;border-radius:50%;background:#10B981;"></div>
+              <span style="font-size:9px;color:#8888A8;">На связи · отвечает мгновенно</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:16px;color:#8888A8;letter-spacing:1px;">···</div>
+      </div>
+
+      <!-- Messages -->
+      <div style="flex:1;padding:12px 12px 8px;display:flex;flex-direction:column;gap:10px;overflow:hidden;">
+
+        <!-- AI bubble -->
+        <div style="max-width:85%;align-self:flex-start;">
+          <div style="background:#1E1C2C;border-radius:4px 16px 16px 16px;padding:10px 12px;border:1px solid #2E2B42;">
+            <div style="font-size:11px;color:#EEEEF4;line-height:1.5;">Нашёл 3 рейса Киев → Барселона 15-22 июня. Лучший вариант:</div>
+            <!-- Flight mini card -->
+            <div style="margin-top:8px;background:#28263A;border-radius:10px;padding:8px 10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:10px;color:#8888A8;font-family:'DM Mono',monospace;">VY 7822</span>
+                <span style="font-size:11px;font-weight:700;color:#E8A020;font-family:'DM Sans',sans-serif;">$189</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-size:12px;font-weight:700;color:#EEEEF4;font-family:'DM Sans',sans-serif;">09:40</span>
+                <div style="flex:1;height:1px;background:#2E2B42;position:relative;">
+                  <div style="position:absolute;top:-5px;left:50%;transform:translateX(-50%);font-size:8px;color:#8888A8;">3ч 35м</div>
+                </div>
+                <span style="font-size:12px;font-weight:700;color:#EEEEF4;font-family:'DM Sans',sans-serif;">13:15</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:2px;">
+                <span style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">KBP</span>
+                <span style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">BCN</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User bubble -->
+        <div style="max-width:80%;align-self:flex-end;">
+          <div style="background:linear-gradient(135deg,#E8A020,#B87518);border-radius:16px 16px 4px 16px;padding:10px 12px;">
+            <div style="font-size:11px;color:#0E0C1C;font-weight:500;line-height:1.4;">Хочу из Киева в Барселону на неделю</div>
+          </div>
+        </div>
+
+        <!-- Quick replies -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;">
+          <div style="padding:4px 10px;border-radius:14px;border:1px solid #2E2B42;background:#14121E;font-size:9px;color:#8888A8;">Добавить отель</div>
+          <div style="padding:4px 10px;border-radius:14px;border:1px solid #2E2B42;background:#14121E;font-size:9px;color:#8888A8;">Прямые рейсы</div>
+          <div style="padding:4px 10px;border-radius:14px;border:1px solid #2E2B42;background:#14121E;font-size:9px;color:#8888A8;">Дешевле</div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div style="padding:8px 12px 12px;border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;background:#28263A;border-radius:28px;padding:8px 8px 8px 14px;">
+          <span style="flex:1;font-size:11px;color:#8888A8;">Куда летим?</span>
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#E8A020,#B87518);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="#0E0C1C" stroke-width="2.5" stroke-linecap="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#0E0C1C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-desc">
+    <span class="slide-tag">Экран — чат</span>
+    <h2>Главный экран продукта</h2>
+    <p>Чат — центр всей навигации. AI отвечает мгновенно, карточки рейсов появляются прямо в диалоге. Никаких переключений между вкладками поиска.</p>
+    <div class="mockup-features">
+      <div class="mockup-feature"><div class="feature-dot"></div>AI-пузырь: card #1E1C2C, radius 4px 16px 16px 16px</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>User-пузырь: Gold gradient, radius 16px 16px 4px 16px</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Mini FlightCard внутри пузыря AI — elevated #28263A</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Input: elevated #28263A, pill-radius, Gold кнопка отправки</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Quick reply chips: border #2E2B42, surface #14121E</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 8 — FLIGHT CARDS
+================================================================ -->
+<div class="slide mockup-slide" id="s8">
+  <span class="slide-number">08 / 14</span>
+
+  <div class="mockup-desc">
+    <span class="slide-tag">Экран — карточки рейсов</span>
+    <h2>FlightCard — компонент</h2>
+    <p>Карточка рейса — ключевой UI-компонент. Монохромный фон card, Gold акцент для цены, DM Mono для технических данных (коды аэропортов, номера рейсов).</p>
+    <div class="mockup-features">
+      <div class="mockup-feature"><div class="feature-dot"></div>Фон: card #1E1C2C, border #2E2B42, radius 16px</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Цена: H3, color primary #E8A020</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Коды аэропортов: DM Mono 14px, textMuted</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Badge "Дешевле": warning background rgba(232,160,32,0.15)</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>CTA "Посмотреть": Gold gradient, pill, glow-primary</div>
+    </div>
+  </div>
+
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen" style="background:var(--bg);display:flex;flex-direction:column;">
+      <!-- Header -->
+      <div style="padding:10px 16px 8px;border-bottom:1px solid var(--border);">
+        <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#EEEEF4;">Рейсы: Киев → Барселона</div>
+        <div style="font-size:10px;color:#8888A8;">15 июня · 1 пассажир · эконом</div>
+      </div>
+
+      <!-- Filters -->
+      <div style="padding:8px 12px;display:flex;gap:6px;">
+        <div style="padding:4px 10px;border-radius:14px;background:#E8A020;font-size:9px;color:#0E0C1C;font-weight:700;">Все</div>
+        <div style="padding:4px 10px;border-radius:14px;border:1px solid #2E2B42;font-size:9px;color:#8888A8;">Прямые</div>
+        <div style="padding:4px 10px;border-radius:14px;border:1px solid #2E2B42;font-size:9px;color:#8888A8;">По цене</div>
+      </div>
+
+      <!-- Cards -->
+      <div style="flex:1;padding:0 12px;display:flex;flex-direction:column;gap:10px;overflow:hidden;">
+
+        <!-- Card 1: Vueling -->
+        <div style="background:#1E1C2C;border-radius:14px;border:1px solid #2E2B42;padding:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-size:10px;font-weight:600;color:#EEEEF4;">Vueling</div>
+            <span style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">VY 7822</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:#EEEEF4;line-height:1;">09:40</div>
+              <div style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">KBP</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="font-size:8px;color:#8888A8;">3ч 35м</div>
+              <div style="width:100%;height:1px;background:#2E2B42;"></div>
+              <div style="font-size:8px;color:#8888A8;">Прямой</div>
+            </div>
+            <div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:#EEEEF4;line-height:1;">13:15</div>
+              <div style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">BCN</div>
+            </div>
+          </div>
+          <div style="border-top:1px solid #2E2B42;padding-top:8px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:9px;color:#8888A8;">Эконом · Ручная кладь</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:#E8A020;">$189</span>
+              <div style="padding:4px 10px;border-radius:14px;background:linear-gradient(135deg,#E8A020,#B87518);font-size:9px;color:#0E0C1C;font-weight:700;">Выбрать</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Ryanair (cheaper) -->
+        <div style="background:#1E1C2C;border-radius:14px;border:1px solid #2E2B42;padding:12px;position:relative;">
+          <div style="position:absolute;top:-1px;right:12px;background:rgba(232,160,32,0.15);border:1px solid rgba(232,160,32,0.3);border-radius:0 0 6px 6px;padding:2px 8px;font-size:8px;color:#E8A020;font-weight:700;letter-spacing:.5px;text-transform:uppercase;">Дешевле</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-size:10px;font-weight:600;color:#EEEEF4;">Ryanair</div>
+            <span style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">FR 8921</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:#EEEEF4;line-height:1;">14:20</div>
+              <div style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">KBP</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="font-size:8px;color:#8888A8;">3ч 35м</div>
+              <div style="width:100%;height:1px;background:#2E2B42;"></div>
+              <div style="font-size:8px;color:#8888A8;">Прямой</div>
+            </div>
+            <div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:#EEEEF4;line-height:1;">17:55</div>
+              <div style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">BCN</div>
+            </div>
+          </div>
+          <div style="border-top:1px solid #2E2B42;padding-top:8px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:9px;color:#8888A8;">Эконом · Без багажа</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:#E8A020;">$157</span>
+              <div style="padding:4px 10px;border-radius:14px;background:linear-gradient(135deg,#E8A020,#B87518);font-size:9px;color:#0E0C1C;font-weight:700;">Выбрать</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 9 — MY TRIPS
+================================================================ -->
+<div class="slide mockup-slide" id="s9">
+  <span class="slide-number">09 / 14</span>
+
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen" style="background:var(--bg);display:flex;flex-direction:column;">
+
+      <!-- Header -->
+      <div style="padding:10px 16px 8px;">
+        <div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:#EEEEF4;">Мои поездки</div>
+      </div>
+
+      <!-- Active section -->
+      <div style="padding:0 12px;flex:1;overflow:hidden;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#8888A8;margin-bottom:2px;">Активные</div>
+
+        <!-- Active trip card (gold border) -->
+        <div style="background:#1E1C2C;border-radius:14px;border:1px solid;border-image:linear-gradient(135deg,#E8A020,#7C5CFC) 1;padding:1px;position:relative;">
+          <div style="background:#1E1C2C;border-radius:13px;padding:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#EEEEF4;font-family:'DM Sans',sans-serif;">Барселона</div>
+                <div style="font-size:10px;color:#8888A8;">15 — 22 июня 2026</div>
+              </div>
+              <div style="background:rgba(16,185,129,0.15);border-radius:6px;padding:3px 8px;font-size:8px;font-weight:700;color:#10B981;letter-spacing:.5px;text-transform:uppercase;">Подтверждено</div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <div style="background:#28263A;border-radius:8px;padding:6px 10px;flex:1;">
+                <div style="font-size:8px;color:#8888A8;margin-bottom:2px;">Рейс</div>
+                <div style="font-size:10px;color:#EEEEF4;font-weight:600;">KBP → BCN</div>
+                <div style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">VY 7822</div>
+              </div>
+              <div style="background:#28263A;border-radius:8px;padding:6px 10px;flex:1;">
+                <div style="font-size:8px;color:#8888A8;margin-bottom:2px;">Отель</div>
+                <div style="font-size:10px;color:#EEEEF4;font-weight:600;">Hotel Arts</div>
+                <div style="font-size:9px;color:#8888A8;">7 ночей</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#8888A8;margin-top:4px;">Прошедшие</div>
+
+        <!-- Past trip 1 -->
+        <div style="background:#14121E;border-radius:12px;border:1px solid #2E2B42;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#EEEEF4;">Стамбул</div>
+            <div style="font-size:9px;color:#8888A8;">10 — 16 марта 2026</div>
+          </div>
+          <div style="background:rgba(136,136,168,0.12);border-radius:6px;padding:2px 7px;font-size:8px;color:#8888A8;letter-spacing:.5px;text-transform:uppercase;font-weight:600;">Завершено</div>
+        </div>
+
+        <!-- Past trip 2 -->
+        <div style="background:#14121E;border-radius:12px;border:1px solid #2E2B42;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#EEEEF4;">Дубай</div>
+            <div style="font-size:9px;color:#8888A8;">20 — 28 янв. 2026</div>
+          </div>
+          <div style="background:rgba(136,136,168,0.12);border-radius:6px;padding:2px 7px;font-size:8px;color:#8888A8;letter-spacing:.5px;text-transform:uppercase;font-weight:600;">Завершено</div>
+        </div>
+      </div>
+
+      <!-- Bottom tab bar -->
+      <div style="height:52px;background:#14121E;border-top:1px solid #1E1C2C;display:flex;align-items:center;">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#8888A8" stroke-width="1.8"/></svg>
+          <span style="font-size:8px;color:#8888A8;">Чат</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div style="position:relative;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#E8A020"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>
+          </div>
+          <span style="font-size:8px;color:#E8A020;font-weight:600;">Брони</span>
+          <div style="width:16px;height:2px;border-radius:1px;background:#E8A020;margin-top:-1px;"></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#8888A8" stroke-width="1.8"/><line x1="2" y1="10" x2="22" y2="10" stroke="#8888A8" stroke-width="1.8"/></svg>
+          <span style="font-size:8px;color:#8888A8;">Кошелёк</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#8888A8" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#8888A8" stroke-width="1.8"/></svg>
+          <span style="font-size:8px;color:#8888A8;">Профиль</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-desc">
+    <span class="slide-tag">Экран — мои поездки</span>
+    <h2>Управление бронями</h2>
+    <p>Активная поездка выделена градиентной рамкой Gold → Plum — визуальный статусный якорь. Прошедшие поездки уходят в нейтральный muted-стиль.</p>
+    <div class="mockup-features">
+      <div class="mockup-feature"><div class="feature-dot"></div>Активная карта: gradient border Gold → Plum</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Badge "Подтверждено": success rgba(16,185,129,0.15)</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Детали рейса/отеля: elevated #28263A в карточке</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Нижний таббар: active tab gold filled + 2px underline</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 10 — WALLET
+================================================================ -->
+<div class="slide mockup-slide" id="s10">
+  <span class="slide-number">10 / 14</span>
+
+  <div class="mockup-desc">
+    <span class="slide-tag">Экран — кошелёк</span>
+    <h2>Travel-кошелёк</h2>
+    <p>Баланс оформлен как премиальная карта с градиентом Gold → Plum. Методы оплаты в сетке 2x2. История транзакций — компактные строки с иконкой статуса.</p>
+    <div class="mockup-features">
+      <div class="mockup-feature"><div class="feature-dot"></div>Balance card: gradient #E8A020 → #7C5CFC, radius 20px</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Баланс Display 48px DM Sans Bold</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Payment methods: card #1E1C2C, grid 2x2</div>
+      <div class="mockup-feature"><div class="feature-dot"></div>Транзакции: success green / error red семантика</div>
+    </div>
+  </div>
+
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen" style="background:var(--bg);display:flex;flex-direction:column;">
+
+      <!-- Header -->
+      <div style="padding:10px 16px 8px;">
+        <div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:#EEEEF4;">Кошелёк</div>
+      </div>
+
+      <div style="padding:0 12px;flex:1;overflow:hidden;display:flex;flex-direction:column;gap:10px;">
+
+        <!-- Balance Card -->
+        <div style="background:linear-gradient(135deg,#E8A020 0%,#B87518 40%,#7C5CFC 100%);border-radius:20px;padding:18px;position:relative;overflow:hidden;">
+          <div style="position:absolute;right:-20px;top:-20px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,0.08);"></div>
+          <div style="position:absolute;right:20px;bottom:-30px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.06);"></div>
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(14,12,28,0.65);margin-bottom:4px;">Баланс</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;color:#0E0C1C;line-height:1;margin-bottom:12px;">$2,450.00</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+            <div>
+              <div style="font-size:8px;color:rgba(14,12,28,0.55);">SVIT Travel Wallet</div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(14,12,28,0.7);">·· 4892</div>
+          </div>
+        </div>
+
+        <!-- Payment methods -->
+        <div>
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#8888A8;margin-bottom:8px;">Методы оплаты</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="background:#1E1C2C;border:1px solid #2E2B42;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;">
+              <div style="width:20px;height:14px;background:linear-gradient(135deg,#1434CB,#0066FF);border-radius:3px;"></div>
+              <div><div style="font-size:9px;color:#EEEEF4;font-weight:600;">Visa</div><div style="font-size:8px;color:#8888A8;font-family:'DM Mono',monospace;">·· 1234</div></div>
+            </div>
+            <div style="background:#1E1C2C;border:1px solid #2E2B42;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;">
+              <div style="width:20px;height:14px;position:relative;"><div style="position:absolute;left:0;width:12px;height:12px;background:#EB001B;border-radius:50%;top:1px;"></div><div style="position:absolute;right:0;width:12px;height:12px;background:#F79E1B;border-radius:50%;top:1px;opacity:.85;"></div></div>
+              <div><div style="font-size:9px;color:#EEEEF4;font-weight:600;">Mastercard</div><div style="font-size:8px;color:#8888A8;font-family:'DM Mono',monospace;">·· 5678</div></div>
+            </div>
+            <div style="background:#1E1C2C;border:1px solid #2E2B42;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;">
+              <div style="width:20px;height:14px;background:#26A17B;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:white;">T</div>
+              <div><div style="font-size:9px;color:#EEEEF4;font-weight:600;">USDT</div><div style="font-size:8px;color:#8888A8;">TRC-20</div></div>
+            </div>
+            <div style="background:#1E1C2C;border:1px solid #2E2B42;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;">
+              <div style="width:20px;height:20px;background:#000;border-radius:4px;display:flex;align-items:center;justify-content:center;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+              </div>
+              <div><div style="font-size:9px;color:#EEEEF4;font-weight:600;">Apple Pay</div><div style="font-size:8px;color:#8888A8;">Доступно</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions -->
+        <div>
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#8888A8;margin-bottom:8px;">История</div>
+          <div style="display:flex;flex-direction:column;gap:1px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1E1C2C;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 22l9-9-9-9M3 13l9-9" stroke="#10B981" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div><div style="font-size:10px;color:#EEEEF4;">Vueling VY 7822</div><div style="font-size:8px;color:#8888A8;">15 мая 2026</div></div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#F43F5E;">−$189</div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1E1C2C;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#10B981" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#10B981" stroke-width="2"/></svg>
+                </div>
+                <div><div style="font-size:10px;color:#EEEEF4;">Hotel Arts BCN</div><div style="font-size:8px;color:#8888A8;">14 мая 2026</div></div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#F43F5E;">−$840</div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(56,189,248,0.1);display:flex;align-items:center;justify-content:center;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div><div style="font-size:10px;color:#EEEEF4;">Пополнение</div><div style="font-size:8px;color:#8888A8;">10 мая 2026</div></div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#10B981;">+$3,500</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 11 — BUTTONS
+================================================================ -->
+<div class="slide" id="s11">
+  <span class="slide-number">11 / 14</span>
+  <span class="slide-tag">Компоненты — Кнопки</span>
+  <h2 class="slide-title" style="margin-bottom:32px;">Button System</h2>
+
+  <div class="buttons-grid">
+    <div class="btn-showcase">
+      <div class="btn-label">Primary</div>
+      <button class="btn btn-primary">Забронировать</button>
+      <div class="btn-spec">
+        height: 52px · radius: 32px<br>
+        bg: #E8A020 → #B87518<br>
+        text: #0E0C1C · glow-primary
+      </div>
+    </div>
+    <div class="btn-showcase">
+      <div class="btn-label">Secondary</div>
+      <button class="btn btn-secondary">Подробнее</button>
+      <div class="btn-spec">
+        height: 48px · radius: 12px<br>
+        border: 1.5px #7C5CFC<br>
+        text: #7C5CFC
+      </div>
+    </div>
+    <div class="btn-showcase">
+      <div class="btn-label">Outline</div>
+      <button class="btn btn-outline">Изменить</button>
+      <div class="btn-spec">
+        height: 48px · radius: 32px<br>
+        border: 1.5px #E8A020<br>
+        text: #E8A020
+      </div>
+    </div>
+    <div class="btn-showcase">
+      <div class="btn-label">Ghost</div>
+      <button class="btn btn-ghost">Пропустить</button>
+      <div class="btn-spec">
+        height: 48px<br>
+        no bg, no border<br>
+        text: #8888A8
+      </div>
+    </div>
+    <div class="btn-showcase">
+      <div class="btn-label">Danger / Destructive</div>
+      <button class="btn btn-danger">Отменить бронь</button>
+      <div class="btn-spec">
+        height: 48px · radius: 12px<br>
+        bg: rgba(244,63,94,0.12)<br>
+        border: 1px #F43F5E
+      </div>
+    </div>
+    <div class="btn-showcase">
+      <div class="btn-label">Loading State</div>
+      <button class="btn btn-loading">
+        <span class="spinner"></span>
+        Бронируем...
+      </button>
+      <div class="btn-spec">
+        Spinner 18px<br>
+        border-top: #0E0C1C<br>
+        pointer-events: none
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 12 — CHIPS & BADGES
+================================================================ -->
+<div class="slide" id="s12">
+  <span class="slide-number">12 / 14</span>
+  <span class="slide-tag">Компоненты — Chips и Badges</span>
+  <h2 class="slide-title" style="margin-bottom:32px;">Chip &amp; Badge System</h2>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;">
+    <div>
+      <div class="chips-section">
+        <div class="section-label">Quick Reply Chips</div>
+        <div class="chips-row">
+          <div class="chip">Добавить отель</div>
+          <div class="chip">Прямые рейсы</div>
+          <div class="chip chip-active">Дешевле</div>
+        </div>
+        <div style="font-size:12px;color:var(--textDisabled);margin-top:4px;">
+          Inactive: surface + border · Active: primary bg, text #0E0C1C
+        </div>
+      </div>
+
+      <div class="chips-section">
+        <div class="section-label">Filter Chips — Класс</div>
+        <div class="chips-row">
+          <div class="chip chip-active">Эконом</div>
+          <div class="chip">Бизнес</div>
+          <div class="chip">Первый класс</div>
+        </div>
+      </div>
+
+      <div class="chips-section">
+        <div class="section-label">Info Chips (не кликабельные)</div>
+        <div class="chips-row">
+          <div class="chip" style="background:var(--elevated);border-color:transparent;font-size:12px;">Прямой</div>
+          <div class="chip" style="background:var(--elevated);border-color:transparent;font-size:12px;">Бесплатная отмена</div>
+          <div class="chip" style="background:var(--elevated);border-color:transparent;font-size:12px;">WiFi</div>
+        </div>
+      </div>
+
+      <div class="chips-section">
+        <div class="section-label">Provider Chips</div>
+        <div class="chips-row">
+          <div class="chip chip-plum">Aviasales</div>
+          <div class="chip chip-plum">Duffel</div>
+          <div class="chip chip-plum">Booking.com</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="chips-section">
+        <div class="section-label">Status Badges</div>
+        <div class="chips-row">
+          <span class="badge badge-success">Подтверждено</span>
+          <span class="badge badge-warning">Ожидает</span>
+          <span class="badge badge-error">Отменён</span>
+          <span class="badge badge-muted">Завершено</span>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--textDisabled);margin-top:8px;line-height:1.8;">
+          height: 22px · radius: 6px<br>
+          font: 11px Medium Uppercase<br>
+          bg: color rgba(x,0.15)
+        </div>
+      </div>
+
+      <div class="chips-section">
+        <div class="section-label">Informational Badges</div>
+        <div class="chips-row">
+          <span class="badge badge-info">AI-подбор</span>
+          <span class="badge badge-warning">Задержка 40 мин</span>
+          <span class="badge badge-success">Вовремя</span>
+        </div>
+      </div>
+
+      <div class="chips-section">
+        <div class="section-label">Category Chips с иконкой</div>
+        <div class="chips-row">
+          <div class="chip">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#8888A8" stroke-width="1.5"/></svg>
+            С багажом
+          </div>
+          <div class="chip">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#8888A8" stroke-width="1.5"/><polyline points="12 6 12 12 16 14" stroke="#8888A8" stroke-width="1.5"/></svg>
+            Гибкие даты
+          </div>
+        </div>
+      </div>
+
+      <div class="chips-section" style="margin-bottom:0;">
+        <div class="section-label">Таблица размеров</div>
+        <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 16px;font-size:12px;">
+          <span style="color:var(--textMuted);font-weight:600;">Тип</span><span style="color:var(--textMuted);">H</span><span style="color:var(--textMuted);">Radius</span>
+          <span style="color:var(--text);">Status Badge</span><span style="font-family:'DM Mono',monospace;color:var(--textDisabled);">22px</span><span style="font-family:'DM Mono',monospace;color:var(--textDisabled);">6px</span>
+          <span style="color:var(--text);">Filter Chip</span><span style="font-family:'DM Mono',monospace;color:var(--textDisabled);">32px</span><span style="font-family:'DM Mono',monospace;color:var(--textDisabled);">9999px</span>
+          <span style="color:var(--text);">Info Chip</span><span style="font-family:'DM Mono',monospace;color:var(--textDisabled);">28px</span><span style="font-family:'DM Mono',monospace;color:var(--textDisabled);">6px</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 13 — TONE OF VOICE
+================================================================ -->
+<div class="slide" id="s13">
+  <span class="slide-number">13 / 14</span>
+  <span class="slide-tag">Tone of Voice</span>
+  <h2 class="slide-title" style="margin-bottom:28px;">5 правил коммуникации SVIT</h2>
+
+  <table class="tov-table">
+    <thead>
+      <tr>
+        <th style="width:140px;">Принцип</th>
+        <th class="td-ok-cell">Правильно</th>
+        <th class="td-no-cell">Неправильно</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <span class="tov-quality">Уверенный</span>
+          <span style="font-size:11px;color:var(--textDisabled);">Говори факты, не предположения</span>
+        </td>
+        <td class="td-ok-cell">
+          <span style="color:var(--success);font-weight:600;margin-right:6px;">+</span>
+          Нашёл 3 рейса Киев — Барселона на ваши даты. Лучший вариант — Vueling, 09:40, $189.
+        </td>
+        <td class="td-no-cell">
+          <span style="color:var(--error);font-weight:600;margin-right:6px;">−</span>
+          Возможно, вам подойдут следующие варианты перелётов...
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="tov-quality">Конкретный</span>
+          <span style="font-size:11px;color:var(--textDisabled);">Данные вместо абстракций</span>
+        </td>
+        <td class="td-ok-cell">
+          <span style="color:var(--success);font-weight:600;margin-right:6px;">+</span>
+          Отель забронирован. Чек-ин 15 июня, 14:00. Номер оплачен.
+        </td>
+        <td class="td-no-cell">
+          <span style="color:var(--error);font-weight:600;margin-right:6px;">−</span>
+          Ваша заявка на бронирование успешно обработана системой.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="tov-quality">Дружелюбный</span>
+          <span style="font-size:11px;color:var(--textDisabled);">Человек, не робот</span>
+        </td>
+        <td class="td-ok-cell">
+          <span style="color:var(--success);font-weight:600;margin-right:6px;">+</span>
+          Рейс задерживается на 40 минут. Успеете спокойно поужинать в аэропорту.
+        </td>
+        <td class="td-no-cell">
+          <span style="color:var(--error);font-weight:600;margin-right:6px;">−</span>
+          Внимание. Статус рейса изменён. Задержка: 40 минут.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="tov-quality">Лаконичный</span>
+          <span style="font-size:11px;color:var(--textDisabled);">Коротко и по делу</span>
+        </td>
+        <td class="td-ok-cell">
+          <span style="color:var(--success);font-weight:600;margin-right:6px;">+</span>
+          Без багажа дешевле на $32. Добавить?
+        </td>
+        <td class="td-no-cell">
+          <span style="color:var(--error);font-weight:600;margin-right:6px;">−</span>
+          Обращаем ваше внимание на то, что данный тариф предусматривает провоз только ручной клади без регистрируемого багажа...
+        </td>
+      </tr>
+      <tr>
+        <td style="border-bottom:none;">
+          <span class="tov-quality">Проактивный</span>
+          <span style="font-size:11px;color:var(--textDisabled);">Думает за пользователя</span>
+        </td>
+        <td class="td-ok-cell" style="border-bottom:none;">
+          <span style="color:var(--success);font-weight:600;margin-right:6px;">+</span>
+          Через неделю в Лиссабоне дождь. Взять зонт?
+        </td>
+        <td class="td-no-cell" style="border-bottom:none;">
+          <span style="color:var(--error);font-weight:600;margin-right:6px;">−</span>
+          Молчать и ждать вопроса пользователя.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:20px;padding:14px 20px;background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.15);border-radius:10px;">
+    <span style="font-size:12px;font-weight:600;color:var(--error);letter-spacing:1px;text-transform:uppercase;">Запрещено:</span>
+    <span style="font-size:13px;color:var(--textMuted);margin-left:12px;">корпоративные канцеляризмы · восклицания в ошибках · уменьшительно-ласкательные слова · неуместная игривость в критичных сообщениях</span>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SLIDE 14 — FINAL
+================================================================ -->
+<div class="slide" id="s14">
+  <span class="slide-number">14 / 14</span>
+
+  <!-- Stars -->
+  <div class="stars" aria-hidden="true">
+    <div class="star" style="width:2px;height:2px;top:10%;left:10%;opacity:.6;animation:twinkle 3s infinite"></div>
+    <div class="star" style="width:1.5px;height:1.5px;top:20%;left:80%;opacity:.5;animation:twinkle 4s 1s infinite"></div>
+    <div class="star" style="width:1px;height:1px;top:75%;left:15%;opacity:.4;animation:twinkle 2.5s 0.5s infinite"></div>
+    <div class="star" style="width:2px;height:2px;top:85%;left:88%;opacity:.5;animation:twinkle 3.5s 0.8s infinite"></div>
+    <div class="star" style="width:1.5px;height:1.5px;top:40%;left:5%;opacity:.4;animation:twinkle 4.2s 0.3s infinite"></div>
+    <div class="star" style="width:1px;height:1px;top:60%;left:95%;opacity:.35;animation:twinkle 2.8s 1.5s infinite"></div>
+    <div class="star" style="width:2px;height:2px;top:15%;left:45%;opacity:.55;animation:twinkle 3.8s 0.6s infinite"></div>
+    <div class="star" style="width:1px;height:1px;top:90%;left:50%;opacity:.3;animation:twinkle 5s 0.9s infinite"></div>
+  </div>
+
+  <!-- Large compass -->
+  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);opacity:0.04;pointer-events:none;">
+    <svg width="500" height="500" viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="28" stroke="white" stroke-width="2.5"/>
+      <path d="M32 18 C36 24 28 28 32 32 C36 36 28 40 32 46" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <circle cx="32" cy="32" r="2.5" fill="white"/>
+    </svg>
+  </div>
+
+  <div class="final-logo">
+    <span style="color:var(--primary);">S</span><span style="color:var(--text);">VIT</span>
+  </div>
+  <div class="final-slogan">Твой мир. Твой маршрут.</div>
+  <div class="final-domain">svit.travel</div>
+
+  <div class="final-contacts">
+    <div class="contact-item">
+      <strong>Продукт</strong>
+      product@svit.travel
+    </div>
+    <div class="contact-item">
+      <strong>Дизайн</strong>
+      design@svit.travel
+    </div>
+    <div class="contact-item">
+      <strong>Маркетинг</strong>
+      marketing@svit.travel
+    </div>
+    <div class="contact-item">
+      <strong>Пресс</strong>
+      press@svit.travel
+    </div>
+  </div>
+
+  <div style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--textDisabled);letter-spacing:1.5px;text-align:center;">
+    BRANDBOOK v2.0 · МАЙ 2026 · CONFIDENTIAL
+  </div>
+</div>
+
+</body>
+</html>
