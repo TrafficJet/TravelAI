@@ -35,6 +35,9 @@ import { nowpaymentsWebhook } from './handlers/crypto-deposit.handler';
 // Workers
 import { registerPriceAlertWorker } from './workers/priceAlert.worker';
 
+// Jobs
+import { priceAlertChecker } from './jobs/priceAlertChecker';
+
 // Seed
 import { ensureDemoUser } from './lib/seedDemo';
 import { prisma } from './lib/prisma';
@@ -161,6 +164,9 @@ async function start() {
 
     // Start background workers after server is listening
     registerPriceAlertWorker();
+
+    // Start price-alert checker job (push notifications every 6 hours)
+    priceAlertChecker.start();
 
     // Graceful shutdown
     const shutdown = async (signal: string) => {

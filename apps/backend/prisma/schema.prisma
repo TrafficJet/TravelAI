@@ -235,8 +235,10 @@ model SearchHistory {
 model PriceAlert {
   id          String    @id @default(uuid())
   userId      String
-  origin      String
-  destination String
+  type        String    @default("flight") // 'flight' | 'hotel'
+  origin      String    @default("")
+  destination String    @default("")
+  city        String?   // для отелей
   maxPrice    Float
   active      Boolean   @default(true)
   triggeredAt DateTime?
