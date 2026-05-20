@@ -39,12 +39,14 @@ export const authService = {
     await api.post('/auth/logout', { refreshToken });
   },
 
-  async getMe(): Promise<UserProfile> {
+  async getMe(skipAuthRetry = false): Promise<UserProfile> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const config: any = skipAuthRetry ? { _skipAuthRetry: true } : undefined;
     const { data } = await api.get<{
       user: { id: string; email: string; name: string; phone: string | null; createdAt: string };
       wallet: { balance: string; currency: string };
       subscription: { plan: 'FREE' | 'PREMIUM'; status: 'ACTIVE' | 'CANCELLED' | 'EXPIRED'; expiresAt: string | null };
-    }>('/users/me');
+    }>('/users/me', config);
     return {
       id: data.user.id,
       email: data.user.email,

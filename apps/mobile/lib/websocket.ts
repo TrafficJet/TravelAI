@@ -4,7 +4,13 @@ const WS_BASE_URL = (
   process.env.EXPO_PUBLIC_WS_URL ??
   'wss://travel-ai-backend-production-90a0.up.railway.app'
 ).replace(/\/$/, '');
-const RECONNECT_DELAY_MS = 5_000;
+
+// How long to wait for the WebSocket handshake before giving up (ms)
+const CONNECT_TIMEOUT_MS = 8_000;
+// How long to wait before attempting a reconnect (ms)
+const RECONNECT_DELAY_MS = 15_000;
+// Maximum number of consecutive failed connection attempts before giving up
+const MAX_FAILURES = 3;
 
 export type WSNotificationHandler = (notification: AppNotification) => void;
 
@@ -24,7 +30,9 @@ export function createNotificationsWSClient(options: WSClientOptions): WSClient 
 
   let socket: WebSocket | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  let connectTimeoutTimer: ReturnType<typeof setTimeout> | null = null;
   let destroyed = false;
+  let consecutiveFailures = 0;
 
   function clearReconnectTimer(): void {
     if (reconnectTimer !== null) {
@@ -33,21 +41,54 @@ export function createNotificationsWSClient(options: WSClientOptions): WSClient 
     }
   }
 
+  function clearConnectTimeout(): void {
+    if (connectTimeoutTimer !== null) {
+      clearTimeout(connectTimeoutTimer);
+      connectTimeoutTimer = null;
+    }
+  }
+
   function connect(): void {
     if (destroyed) return;
+
+    // Stop trying after too many consecutive failures — the server is unavailable
+    if (consecutiveFailures >= MAX_FAILURES) {
+      if (__DEV__) {
+        console.log(
+          `[WS] Notifications WebSocket gave up after ${consecutiveFailures} failed attempts. ` +
+          'App continues normally without real-time notifications.',
+        );
+      }
+      return;
+    }
 
     try {
       socket = new WebSocket(`${WS_BASE_URL}/ws/notifications`);
     } catch {
+      consecutiveFailures++;
       scheduleReconnect();
       return;
     }
 
+    // Guard against long TCP timeouts (e.g. Railway not reachable): close after
+    // CONNECT_TIMEOUT_MS if the socket has not transitioned to OPEN state yet.
+    connectTimeoutTimer = setTimeout(() => {
+      if (socket && socket.readyState !== WebSocket.OPEN) {
+        if (__DEV__) {
+          console.log('[WS] Notifications WebSocket connection timed out — closing gracefully.');
+        }
+        socket.close();
+        // onclose handler will fire and schedule a reconnect (or give up)
+      }
+    }, CONNECT_TIMEOUT_MS);
+
     socket.onopen = () => {
+      clearConnectTimeout();
       if (destroyed) {
         socket?.close();
         return;
       }
+      consecutiveFailures = 0;
       // Authenticate immediately after opening the connection
       socket?.send(JSON.stringify({ token }));
       onConnected?.();
@@ -70,7 +111,9 @@ export function createNotificationsWSClient(options: WSClientOptions): WSClient 
     };
 
     socket.onclose = () => {
+      clearConnectTimeout();
       socket = null;
+      consecutiveFailures++;
       onDisconnected?.();
       if (!destroyed) {
         scheduleReconnect();
@@ -80,6 +123,7 @@ export function createNotificationsWSClient(options: WSClientOptions): WSClient 
 
   function scheduleReconnect(): void {
     if (destroyed) return;
+    if (consecutiveFailures >= MAX_FAILURES) return;
     clearReconnectTimer();
     reconnectTimer = setTimeout(() => {
       if (!destroyed) connect();
@@ -89,6 +133,7 @@ export function createNotificationsWSClient(options: WSClientOptions): WSClient 
   function disconnect(): void {
     destroyed = true;
     clearReconnectTimer();
+    clearConnectTimeout();
     if (socket) {
       socket.close();
       socket = null;

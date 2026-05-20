@@ -66,9 +66,12 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
+      _skipAuthRetry?: boolean;
     };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Requests marked with _skipAuthRetry bypass the token-refresh logic so
+    // callers (e.g. loadStoredAuth) can handle 401 themselves without noise.
+    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest._skipAuthRetry) {
       if (isRefreshing) {
         // Queue subsequent 401s until refresh completes
         return new Promise((resolve, reject) => {

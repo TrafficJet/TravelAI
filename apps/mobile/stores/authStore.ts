@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Platform } from 'react-native';
+import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { authService } from '../services/authService';
 import type { SocialAuthUserData } from '../services/authService';
@@ -98,11 +99,30 @@ export const useAuthStore = create<AuthStore>((set, get) => {
         set({ accessToken });
 
         try {
-          const user = await authService.getMe();
+          // Pass skipAuthRetry=true so a 401 here is handled below rather than
+          // triggering the global interceptor's refresh+logout cycle, which
+          // produces noisy console errors for demo / stale tokens.
+          const user = await authService.getMe(true);
           if (__DEV__) console.log('[Auth] loadStoredAuth user:', user?.email);
           set({ user, isAuthenticated: true, isLoading: false });
-        } catch {
-          // Token might be expired — try to refresh
+        } catch (getMeErr) {
+          // If the server returns 401 (demo token / stale token), clear local
+          // credentials silently and continue as a guest — no console noise.
+          const is401 =
+            axios.isAxiosError(getMeErr) && getMeErr.response?.status === 401;
+
+          if (is401) {
+            if (__DEV__) {
+              console.log('[Auth] /users/me returned 401 — clearing stored credentials, continuing as guest.');
+            }
+            await storage.removeItem(SECURE_STORE_KEYS.ACCESS_TOKEN);
+            await storage.removeItem(SECURE_STORE_KEYS.REFRESH_TOKEN);
+            set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
+            await get().loadGuestId();
+            return;
+          }
+
+          // Token might be expired for other reasons — try to refresh
           try {
             const tokens = await authService.refresh(refreshToken);
             await storage.setItem(SECURE_STORE_KEYS.ACCESS_TOKEN, tokens.accessToken);
@@ -111,8 +131,10 @@ export const useAuthStore = create<AuthStore>((set, get) => {
             const user = await authService.getMe();
             if (__DEV__) console.log('[Auth] loadStoredAuth user (after refresh):', user?.email);
             set({ user, isAuthenticated: true, isLoading: false });
-          } catch (refreshErr) {
-            console.error('[Auth] Token refresh failed, logging out', refreshErr);
+          } catch {
+            if (__DEV__) {
+              console.log('[Auth] Token refresh failed, clearing credentials.');
+            }
             await storage.removeItem(SECURE_STORE_KEYS.ACCESS_TOKEN);
             await storage.removeItem(SECURE_STORE_KEYS.REFRESH_TOKEN);
             set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });

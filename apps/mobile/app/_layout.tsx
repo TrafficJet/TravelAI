@@ -131,7 +131,7 @@ function ThemedStack({ fontsLoaded, showBrandSplash, onBrandSplashFinish }: Them
           headerShadowVisible: false,
         }}
       >
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
