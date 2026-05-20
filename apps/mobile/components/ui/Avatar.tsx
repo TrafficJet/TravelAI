@@ -49,7 +49,7 @@ export function Avatar({ name, imageUri, size = 44 }: AvatarProps) {
 
   return (
     <LinearGradient
-      colors={[colors.primary, '#14B8A6']}
+      colors={[colors.primary, '#7C5CFC']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.gradient, { width: size, height: size, borderRadius }]}

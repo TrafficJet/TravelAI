@@ -67,7 +67,7 @@ function getTransactionIconBg(type: TransactionType, description: string): strin
   if (type === 'TOPUP') return 'rgba(16,185,129,0.1)';
   if (lower.includes('отель') || lower.includes('hotel')) return 'rgba(232,160,32,0.1)';
   if (lower.includes('рейс') || lower.includes('flight') || lower.includes('авиа') || lower.includes('билет')) {
-    return 'rgba(20,184,166,0.1)';
+    return 'rgba(56,189,248,0.1)';
   }
   return 'rgba(244,63,94,0.15)';
 }
@@ -77,7 +77,7 @@ function getTransactionIconColor(type: TransactionType, description: string): st
   if (type === 'TOPUP') return '#10B981';
   if (lower.includes('отель') || lower.includes('hotel')) return '#E8A020';
   if (lower.includes('рейс') || lower.includes('flight') || lower.includes('авиа') || lower.includes('билет')) {
-    return '#14B8A6';
+    return '#38BDF8';
   }
   return '#F43F5E';
 }
@@ -443,7 +443,7 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
         <TouchableOpacity
           style={heroStyles.actionBtn}
           activeOpacity={0.8}
-          onPress={() => {}}
+          onPress={() => Alert.alert('Скоро', 'Вывод средств будет доступен в следующем обновлении')}
         >
           <Text style={heroStyles.actionIcon}>↑</Text>
           <Text style={heroStyles.actionBtnText}>Вывести</Text>
@@ -451,7 +451,7 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
         <TouchableOpacity
           style={heroStyles.actionBtn}
           activeOpacity={0.8}
-          onPress={() => {}}
+          onPress={() => Alert.alert('Скоро', 'Конвертация валют будет доступна в следующем обновлении')}
         >
           <Text style={heroStyles.actionIcon}>↻</Text>
           <Text style={heroStyles.actionBtnText}>Конвертировать</Text>
@@ -459,7 +459,7 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
         <TouchableOpacity
           style={heroStyles.actionBtn}
           activeOpacity={0.8}
-          onPress={() => {}}
+          onPress={() => Alert.alert('Скоро', 'История транзакций будет доступна в следующем обновлении')}
         >
           <Text style={heroStyles.actionIcon}>≡</Text>
           <Text style={heroStyles.actionBtnText}>История</Text>
@@ -537,7 +537,7 @@ function PaymentMethods() {
       <TouchableOpacity
         style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
         activeOpacity={0.7}
-        onPress={() => {}}
+        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
       >
         <Text style={[pmStyles.icon, { color: '#3B82F6' }]}>▤</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>Visa ••4821</Text>
@@ -545,7 +545,7 @@ function PaymentMethods() {
       <TouchableOpacity
         style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
         activeOpacity={0.7}
-        onPress={() => {}}
+        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
       >
         <Text style={[pmStyles.icon, { color: '#F7931A' }]}>₿</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>Bitcoin</Text>
@@ -553,7 +553,7 @@ function PaymentMethods() {
       <TouchableOpacity
         style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
         activeOpacity={0.7}
-        onPress={() => {}}
+        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
       >
         <Text style={[pmStyles.icon, { color: '#26A17B' }]}>$</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>USDT</Text>
@@ -561,7 +561,7 @@ function PaymentMethods() {
       <TouchableOpacity
         style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
         activeOpacity={0.7}
-        onPress={() => {}}
+        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
       >
         <Text style={[pmStyles.icon, { color: colors.text, fontSize: 14, fontWeight: '700' }]}>Pay</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>Apple Pay</Text>
@@ -569,7 +569,7 @@ function PaymentMethods() {
       <TouchableOpacity
         style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
         activeOpacity={0.7}
-        onPress={() => {}}
+        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
       >
         <Text style={[pmStyles.icon, { color: '#EB001B' }]}>◈</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>MC ••5678</Text>

@@ -12,7 +12,7 @@ import { Platform, ViewStyle } from 'react-native';
 // Цвета теней
 const SHADOW_BLACK  = '#000000';
 const SHADOW_PRIMARY = '#E8A020'; // SVIT Gold — основной акцент
-const SHADOW_CYAN    = '#14B8A6'; // teal-500 — вторичный акцент
+const SHADOW_PURPLE  = '#7C5CFC'; // Void Plum — вторичный акцент
 const SHADOW_ERROR   = '#F43F5E'; // rose-500 — для destructive actions
 
 // ─── Тип токена ───────────────────────────────────────────────────────────────
@@ -87,9 +87,9 @@ export const Shadows = {
     elevation:     12,
   } satisfies ShadowToken,
 
-  // Свечение cyan — secondary акценты, иконки океана
-  cyan: {
-    shadowColor:   SHADOW_CYAN,
+  // Свечение purple — secondary акценты (Void Plum)
+  purple: {
+    shadowColor:   SHADOW_PURPLE,
     shadowOffset:  { width: 0, height: 4 },
     shadowOpacity: 0.30,
     shadowRadius:  12,

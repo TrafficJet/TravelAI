@@ -19,7 +19,7 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
 // Deterministic colour from airline IATA code
 const IATA_PALETTE = [
   '#6366F1', '#0EA5E9', '#10B981', '#E8A020',
-  '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6',
+  '#EF4444', '#8B5CF6', '#EC4899', '#7C5CFC',
 ];
 
 function iataColor(code: string): string {

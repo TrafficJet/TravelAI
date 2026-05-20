@@ -29,7 +29,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const CONFETTI_COLORS = [
   '#6366F1', '#22C55E', '#E8A020', '#EF4444', '#06B6D4', '#EC4899',
-  '#10B981', '#F97316', '#8B5CF6', '#14B8A6',
+  '#10B981', '#F97316', '#8B5CF6', '#7C5CFC',
 ];
 
 interface ConfettiPieceProps {

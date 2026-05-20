@@ -12,10 +12,10 @@ export const lightColors = {
   primaryDark: '#B45309',
   primaryMuted: 'rgba(217,119,6,0.12)',
 
-  // Secondary — Teal
-  secondary: '#0D9488',
-  secondaryLight: '#14B8A6',
-  secondaryDark: '#0F766E',
+  // Secondary — Void Plum
+  secondary: '#7C5CFC',
+  secondaryLight: '#7C5CFC',
+  secondaryDark: '#5A3DD4',
 
   // Text
   text: '#0F0F1A',
