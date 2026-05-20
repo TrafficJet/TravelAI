@@ -74,8 +74,8 @@ const AIRLINES: Record<string, { name: string; code: string }> = {
   PS: { name: 'МАУ (Ukraine International)', code: 'PS' },
 };
 
-// Approximate flight routes with typical duration in minutes and realistic price ranges (EUR)
-// priceRange: [min, max] per person in EUR (used for European routes)
+// Approximate flight routes with typical duration in minutes and realistic price ranges (USD)
+// priceRange: [min, max] per person in USD
 const ROUTE_DATA: Record<string, { duration: number; airlines: string[]; priceRange?: [number, number] }> = {
   // Moscow routes (Russian airlines excluded — using neutral carriers only)
   'SVO-IST': { duration: 200, airlines: ['TK', 'PC'] },
@@ -83,76 +83,76 @@ const ROUTE_DATA: Record<string, { duration: number; airlines: string[]; priceRa
   'SVO-LED': { duration: 75,  airlines: ['TK', 'PC'] },
   'DME-IST': { duration: 195, airlines: ['TK', 'PC'] },
   'LED-IST': { duration: 225, airlines: ['TK', 'PC'] },
-  // Warsaw (WAW) routes — prices in EUR
-  'WAW-BCN': { duration: 180, airlines: ['W6', 'FR', 'LO', 'VY'], priceRange: [49, 180] },  // 3h00m
-  'WAW-MAD': { duration: 195, airlines: ['LO', 'FR', 'IB'],        priceRange: [55, 200] },
-  'WAW-LHR': { duration: 160, airlines: ['LO', 'BA', 'W6'],        priceRange: [49, 160] },  // 2h40m
-  'WAW-CDG': { duration: 160, airlines: ['LO', 'AF', 'FR'],         priceRange: [55, 170] },
-  'WAW-AMS': { duration: 130, airlines: ['LO', 'KL', 'W6'],         priceRange: [49, 150] },
-  'WAW-FCO': { duration: 165, airlines: ['LO', 'FR', 'W6'],         priceRange: [49, 165] },
-  'WAW-VIE': { duration: 100, airlines: ['LO', 'OS'],               priceRange: [55, 130] },
-  'WAW-BER': { duration: 95,  airlines: ['LO', 'EW', 'FR'],         priceRange: [45, 120] },
-  'WAW-DXB': { duration: 380, airlines: ['EK', 'LH', 'TK'],         priceRange: [350, 600] }, // 6h20m
-  'WAW-IST': { duration: 185, airlines: ['TK', 'LO', 'W6'],         priceRange: [120, 320] },
-  // Kyiv Boryspil (KBP) routes — prices in EUR
-  'KBP-BCN': { duration: 210, airlines: ['W6', 'PS', 'FR'],         priceRange: [59, 200] },  // 3h30m
-  'KBP-DXB': { duration: 390, airlines: ['EK', 'PS', 'TK'],         priceRange: [350, 580] }, // 6h30m
-  'KBP-IST': { duration: 140, airlines: ['TK', 'PS', 'W6'],         priceRange: [80, 250] },
-  'KBP-LHR': { duration: 195, airlines: ['PS', 'BA', 'W6'],         priceRange: [90, 280] },
-  'KBP-WAW': { duration: 90,  airlines: ['LO', 'PS', 'W6'],         priceRange: [49, 130] },
-  // London (LHR/LGW/STN) routes — prices in EUR
-  'LHR-FCO': { duration: 155, airlines: ['BA', 'IB', 'FR', 'W6'],   priceRange: [45, 180] },  // 2h35m London→Rome
-  'LHR-MAD': { duration: 150, airlines: ['BA', 'IB', 'VY'],         priceRange: [49, 170] },
-  'LHR-BCN': { duration: 145, airlines: ['BA', 'VY', 'FR'],         priceRange: [45, 160] },
-  'LHR-CDG': { duration: 85,  airlines: ['BA', 'AF'],               priceRange: [55, 180] },
-  'LHR-AMS': { duration: 80,  airlines: ['BA', 'KL'],               priceRange: [55, 160] },
-  'LHR-BER': { duration: 120, airlines: ['BA', 'EW', 'LH'],         priceRange: [49, 150] },
-  'LHR-FRA': { duration: 115, airlines: ['BA', 'LH'],               priceRange: [55, 170] },
-  'LHR-VIE': { duration: 135, airlines: ['BA', 'OS'],               priceRange: [65, 190] },
-  'LHR-PRG': { duration: 130, airlines: ['BA', 'W6'],               priceRange: [55, 160] },
-  'LHR-WAW': { duration: 160, airlines: ['BA', 'LO', 'W6'],         priceRange: [49, 160] },
-  'LHR-IST': { duration: 225, airlines: ['BA', 'TK'],               priceRange: [90, 280] },
-  'LHR-DXB': { duration: 420, airlines: ['BA', 'EK'],               priceRange: [320, 650] },
-  // Rome (FCO) routes — prices in EUR
-  'FCO-LHR': { duration: 155, airlines: ['BA', 'IB', 'FR', 'W6'],   priceRange: [45, 180] },  // Rome→London
-  'FCO-WAW': { duration: 165, airlines: ['LO', 'FR', 'W6'],         priceRange: [49, 165] },
-  'FCO-BCN': { duration: 135, airlines: ['VY', 'FR', 'IB'],         priceRange: [39, 140] },
-  'FCO-MAD': { duration: 145, airlines: ['IB', 'VY', 'FR'],         priceRange: [45, 160] },
-  'FCO-CDG': { duration: 135, airlines: ['AF', 'FR'],               priceRange: [49, 155] },
-  'FCO-AMS': { duration: 150, airlines: ['KL', 'FR'],               priceRange: [55, 165] },
-  'FCO-BER': { duration: 135, airlines: ['EW', 'FR', 'LH'],         priceRange: [45, 150] },
-  'FCO-FRA': { duration: 130, airlines: ['LH', 'FR'],               priceRange: [55, 160] },
-  'FCO-VIE': { duration: 105, airlines: ['OS', 'FR'],               priceRange: [49, 140] },
-  'FCO-IST': { duration: 195, airlines: ['TK', 'FR'],               priceRange: [80, 240] },
-  'FCO-DXB': { duration: 390, airlines: ['EK', 'FR'],               priceRange: [280, 580] },
+  // Warsaw (WAW) routes — prices in USD
+  'WAW-BCN': { duration: 180, airlines: ['W6', 'FR', 'LO', 'VY'], priceRange: [54, 197] },  // 3h00m
+  'WAW-MAD': { duration: 195, airlines: ['LO', 'FR', 'IB'],        priceRange: [60, 218] },
+  'WAW-LHR': { duration: 160, airlines: ['LO', 'BA', 'W6'],        priceRange: [54, 175] },  // 2h40m
+  'WAW-CDG': { duration: 160, airlines: ['LO', 'AF', 'FR'],        priceRange: [60, 186] },
+  'WAW-AMS': { duration: 130, airlines: ['LO', 'KL', 'W6'],        priceRange: [54, 164] },
+  'WAW-FCO': { duration: 165, airlines: ['LO', 'FR', 'W6'],        priceRange: [54, 180] },
+  'WAW-VIE': { duration: 100, airlines: ['LO', 'OS'],              priceRange: [60, 142] },
+  'WAW-BER': { duration: 95,  airlines: ['LO', 'EW', 'FR'],        priceRange: [49, 131] },
+  'WAW-DXB': { duration: 380, airlines: ['EK', 'LH', 'TK'],        priceRange: [382, 655] }, // 6h20m
+  'WAW-IST': { duration: 185, airlines: ['TK', 'LO', 'W6'],        priceRange: [131, 349] },
+  // Kyiv Boryspil (KBP) routes — prices in USD
+  'KBP-BCN': { duration: 210, airlines: ['W6', 'FR', 'TK'],        priceRange: [65, 218] },  // 3h30m
+  'KBP-DXB': { duration: 390, airlines: ['FZ', 'G9', 'TK', 'W6'], priceRange: [382, 633] }, // 6h30m; real carriers: flydubai, Air Arabia, Turkish Airlines, Wizz Air
+  'KBP-IST': { duration: 140, airlines: ['TK', 'W6', 'PC'],        priceRange: [88, 273] },
+  'KBP-LHR': { duration: 195, airlines: ['BA', 'W6', 'TK'],        priceRange: [99, 306] },
+  'KBP-WAW': { duration: 90,  airlines: ['LO', 'W6', 'FR'],        priceRange: [54, 142] },
+  // London (LHR/LGW/STN) routes — prices in USD
+  'LHR-FCO': { duration: 155, airlines: ['BA', 'IB', 'FR', 'W6'],  priceRange: [49, 197] },  // 2h35m London→Rome
+  'LHR-MAD': { duration: 150, airlines: ['BA', 'IB', 'VY'],        priceRange: [54, 186] },
+  'LHR-BCN': { duration: 145, airlines: ['BA', 'VY', 'FR'],        priceRange: [49, 175] },
+  'LHR-CDG': { duration: 85,  airlines: ['BA', 'AF'],              priceRange: [60, 197] },
+  'LHR-AMS': { duration: 80,  airlines: ['BA', 'KL'],              priceRange: [60, 175] },
+  'LHR-BER': { duration: 120, airlines: ['BA', 'EW', 'LH'],        priceRange: [54, 164] },
+  'LHR-FRA': { duration: 115, airlines: ['BA', 'LH'],              priceRange: [60, 186] },
+  'LHR-VIE': { duration: 135, airlines: ['BA', 'OS'],              priceRange: [71, 208] },
+  'LHR-PRG': { duration: 130, airlines: ['BA', 'W6'],              priceRange: [60, 175] },
+  'LHR-WAW': { duration: 160, airlines: ['BA', 'LO', 'W6'],        priceRange: [54, 175] },
+  'LHR-IST': { duration: 225, airlines: ['BA', 'TK'],              priceRange: [99, 306] },
+  'LHR-DXB': { duration: 420, airlines: ['BA', 'EK'],              priceRange: [349, 709] },
+  // Rome (FCO) routes — prices in USD
+  'FCO-LHR': { duration: 155, airlines: ['BA', 'IB', 'FR', 'W6'],  priceRange: [49, 197] },  // Rome→London
+  'FCO-WAW': { duration: 165, airlines: ['LO', 'FR', 'W6'],        priceRange: [54, 180] },
+  'FCO-BCN': { duration: 135, airlines: ['VY', 'FR', 'IB'],        priceRange: [43, 153] },
+  'FCO-MAD': { duration: 145, airlines: ['IB', 'VY', 'FR'],        priceRange: [49, 175] },
+  'FCO-CDG': { duration: 135, airlines: ['AF', 'FR'],              priceRange: [54, 169] },
+  'FCO-AMS': { duration: 150, airlines: ['KL', 'FR'],              priceRange: [60, 180] },
+  'FCO-BER': { duration: 135, airlines: ['EW', 'FR', 'LH'],        priceRange: [49, 164] },
+  'FCO-FRA': { duration: 130, airlines: ['LH', 'FR'],              priceRange: [60, 175] },
+  'FCO-VIE': { duration: 105, airlines: ['OS', 'FR'],              priceRange: [54, 153] },
+  'FCO-IST': { duration: 195, airlines: ['TK', 'FR'],              priceRange: [88, 262] },
+  'FCO-DXB': { duration: 390, airlines: ['EK', 'FR'],              priceRange: [306, 633] },
   // Paris (CDG/ORY) routes
-  'CDG-FCO': { duration: 135, airlines: ['AF', 'FR'],               priceRange: [49, 155] },
-  'CDG-LHR': { duration: 85,  airlines: ['AF', 'BA'],               priceRange: [55, 180] },
-  'CDG-MAD': { duration: 130, airlines: ['AF', 'IB', 'VY'],         priceRange: [55, 170] },
-  'CDG-BCN': { duration: 115, airlines: ['AF', 'VY', 'FR'],         priceRange: [49, 150] },
-  'CDG-AMS': { duration: 75,  airlines: ['AF', 'KL'],               priceRange: [49, 150] },
+  'CDG-FCO': { duration: 135, airlines: ['AF', 'FR'],              priceRange: [54, 169] },
+  'CDG-LHR': { duration: 85,  airlines: ['AF', 'BA'],              priceRange: [60, 197] },
+  'CDG-MAD': { duration: 130, airlines: ['AF', 'IB', 'VY'],        priceRange: [60, 186] },
+  'CDG-BCN': { duration: 115, airlines: ['AF', 'VY', 'FR'],        priceRange: [54, 164] },
+  'CDG-AMS': { duration: 75,  airlines: ['AF', 'KL'],              priceRange: [54, 164] },
   // Amsterdam (AMS) routes
-  'AMS-FCO': { duration: 150, airlines: ['KL', 'FR'],               priceRange: [55, 165] },
-  'AMS-LHR': { duration: 80,  airlines: ['KL', 'BA'],               priceRange: [55, 160] },
-  'AMS-BCN': { duration: 155, airlines: ['KL', 'VY'],               priceRange: [55, 165] },
-  'AMS-MAD': { duration: 165, airlines: ['KL', 'IB'],               priceRange: [65, 180] },
+  'AMS-FCO': { duration: 150, airlines: ['KL', 'FR'],              priceRange: [60, 180] },
+  'AMS-LHR': { duration: 80,  airlines: ['KL', 'BA'],              priceRange: [60, 175] },
+  'AMS-BCN': { duration: 155, airlines: ['KL', 'VY'],              priceRange: [60, 180] },
+  'AMS-MAD': { duration: 165, airlines: ['KL', 'IB'],              priceRange: [71, 197] },
   // Berlin (BER) routes
-  'BER-FCO': { duration: 135, airlines: ['EW', 'FR', 'LH'],         priceRange: [45, 150] },
-  'BER-LHR': { duration: 120, airlines: ['EW', 'BA', 'LH'],         priceRange: [49, 150] },
-  'BER-BCN': { duration: 160, airlines: ['EW', 'VY', 'FR'],         priceRange: [49, 160] },
+  'BER-FCO': { duration: 135, airlines: ['EW', 'FR', 'LH'],        priceRange: [49, 164] },
+  'BER-LHR': { duration: 120, airlines: ['EW', 'BA', 'LH'],        priceRange: [54, 164] },
+  'BER-BCN': { duration: 160, airlines: ['EW', 'VY', 'FR'],        priceRange: [54, 175] },
   // Madrid (MAD) routes
-  'MAD-FCO': { duration: 145, airlines: ['IB', 'VY', 'FR'],         priceRange: [45, 160] },
-  'MAD-LHR': { duration: 150, airlines: ['IB', 'BA', 'VY'],         priceRange: [49, 170] },
+  'MAD-FCO': { duration: 145, airlines: ['IB', 'VY', 'FR'],        priceRange: [49, 175] },
+  'MAD-LHR': { duration: 150, airlines: ['IB', 'BA', 'VY'],        priceRange: [54, 186] },
   // Frankfurt (FRA) routes
-  'FRA-FCO': { duration: 130, airlines: ['LH', 'FR'],               priceRange: [55, 160] },
-  'FRA-LHR': { duration: 115, airlines: ['LH', 'BA'],               priceRange: [55, 170] },
+  'FRA-FCO': { duration: 130, airlines: ['LH', 'FR'],              priceRange: [60, 175] },
+  'FRA-LHR': { duration: 115, airlines: ['LH', 'BA'],              priceRange: [60, 186] },
   // Prague (PRG) routes
-  'PRG-LHR': { duration: 130, airlines: ['W6', 'BA'],               priceRange: [55, 160] },
-  'PRG-FCO': { duration: 120, airlines: ['W6', 'FR'],               priceRange: [45, 140] },
+  'PRG-LHR': { duration: 130, airlines: ['W6', 'BA'],              priceRange: [60, 175] },
+  'PRG-FCO': { duration: 120, airlines: ['W6', 'FR'],              priceRange: [49, 153] },
   // Vienna (VIE) routes
-  'VIE-LHR': { duration: 135, airlines: ['OS', 'BA'],               priceRange: [65, 190] },
-  'VIE-FCO': { duration: 105, airlines: ['OS', 'FR'],               priceRange: [49, 140] },
-  DEFAULT: { duration: 180, airlines: ['BA', 'LH', 'FR'],           priceRange: [79, 350] },
+  'VIE-LHR': { duration: 135, airlines: ['OS', 'BA'],              priceRange: [71, 208] },
+  'VIE-FCO': { duration: 105, airlines: ['OS', 'FR'],              priceRange: [54, 153] },
+  DEFAULT: { duration: 180, airlines: ['BA', 'LH', 'FR'],          priceRange: [87, 382] },
 };
 
 function getRouteData(origin: string, destination: string) {
@@ -168,45 +168,21 @@ function formatISO(date: Date): string {
   return date.toISOString();
 }
 
-// EUR_ORIGIN_AIRPORTS is defined in searchFlightsMock below
-
-// KBP and other European CIS airports use EUR pricing
-const EUR_ORIGIN_AIRPORTS = new Set([
-  // Western Europe
-  'WAW', 'BER', 'PRG', 'VIE', 'AMS', 'FCO', 'MAD', 'BCN', 'CDG', 'LHR',
-  'LGW', 'STN', 'LTN', 'ORY', 'MXP', 'LIN', 'ATH', 'BRU', 'ZRH', 'CPH',
-  'ARN', 'HEL', 'OSL', 'DUB', 'LIS', 'FCO', 'NAP', 'MXP', 'VCE', 'BLQ',
-  'PMI', 'AGP', 'SVQ', 'VLC', 'BIO', 'TLS', 'NCE', 'MRS', 'LYS', 'BOD',
-  'FRA', 'MUC', 'DUS', 'HAM', 'CGN', 'STR', 'NUE', 'TXL', 'SXF',
-  'GVA', 'BSL', 'EDI', 'MAN', 'BHX', 'GLA', 'BRS', 'LPL',
-  // Eastern / Central Europe
-  'OTP', 'SOF', 'BUD', 'LJU', 'ZAG', 'SKP', 'TIA', 'RIX', 'TLL', 'VNO',
-  // Ukraine (prices in EUR for international routes)
-  'KBP', 'ODS', 'LWO',
-]);
 
 export async function searchFlightsMock(params: SearchFlightsParams): Promise<FlightOffer[]> {
   const { origin, destination, departureDate, passengers, cabinClass } = params;
   const route = getRouteData(origin, destination);
   const passengerCount = passengers.adults + (passengers.children ?? 0);
 
-  // All prices in USD or EUR — RUB is NEVER returned to Claude.
-  // European/Ukrainian routes → EUR; all others → USD.
-  const isEurOrUkr = EUR_ORIGIN_AIRPORTS.has(origin.toUpperCase()) || EUR_ORIGIN_AIRPORTS.has(destination.toUpperCase());
-  const currency = isEurOrUkr ? 'EUR' : 'USD';
+  // All prices are always in USD — no EUR or RUB returned to Claude.
+  const currency = 'USD';
 
-  // Use route-specific price range when available, else fall back to generic ranges.
-  // Non-EUR routes: realistic USD prices ($89–$599 range), NOT ruble amounts.
+  // Use route-specific price range when available (already in USD), else fall back to generic USD range.
   let basePrice: number;
-  if (isEurOrUkr) {
-    if (route.priceRange) {
-      const [minP, maxP] = route.priceRange;
-      basePrice = minP + Math.floor(Math.random() * (maxP - minP));
-    } else {
-      basePrice = 49 + Math.floor(Math.random() * 300);
-    }
+  if (route.priceRange) {
+    const [minP, maxP] = route.priceRange;
+    basePrice = minP + Math.floor(Math.random() * (maxP - minP));
   } else {
-    // CIS/Asian routes: $89–$599 USD range
     basePrice = 89 + Math.floor(Math.random() * 510);
   }
 
@@ -231,7 +207,7 @@ export async function searchFlightsMock(params: SearchFlightsParams): Promise<Fl
     const totalPrice = Math.round(basePrice * priceMultiplier * passengerCount);
 
     // Baggage: low-cost — carry-on only (base fare), full-service — 23 kg included
-    const baggage = isLowCost ? 'Только ручная кладь (багаж +€15-30)' : '1 место 23 кг';
+    const baggage = isLowCost ? 'Только ручная кладь (багаж +$15-30)' : '1 место 23 кг';
 
     return {
       offerId: uuidv4(),

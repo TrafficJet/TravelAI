@@ -248,12 +248,13 @@ export async function executeSearchFlights(
   return { ...result, searchId: `search_${Date.now()}`, cacheHit: false };
 }
 
-// RUB → USD conversion rate (hardcoded for MVP; update periodically)
-const RUB_TO_USD_RATE = 90;
+// Currency conversion rates to USD (hardcoded for MVP; update periodically)
+const RUB_TO_USD_RATE = 90;   // 1 USD = 90 RUB
+const EUR_TO_USD_RATE = 1.09; // 1 EUR = 1.09 USD
 
 // Normalise a raw FlightOffer (duffel/aviasales shape) into the flat
 // MobileFlightOffer shape that FlightCard in the mobile app expects.
-// All prices are normalised to USD — RUB amounts are converted automatically.
+// All prices are normalised to USD — EUR and RUB amounts are converted automatically.
 function normaliseMobileOffer(
   offer: FlightOffer,
   origin: string,
@@ -263,11 +264,18 @@ function normaliseMobileOffer(
   const lastSeg  = offer.segments[offer.segments.length - 1];
   const totalDuration = offer.segments.reduce((acc, s) => acc + s.duration, 0);
 
-  // Always convert to USD so the mobile FlightCard never shows ruble-range numbers with a $ sign
+  // Always convert to USD so the mobile FlightCard never shows foreign-currency amounts with a $ sign
   const rawPrice = Number(offer.totalPrice);
-  const isRub = offer.currency?.toUpperCase() === 'RUB';
-  const priceUsd = isRub ? Math.round(rawPrice / RUB_TO_USD_RATE) : rawPrice;
-  const currency = isRub ? 'USD' : (offer.currency ?? 'USD');
+  const srcCurrency = offer.currency?.toUpperCase() ?? 'USD';
+  let priceUsd: number;
+  if (srcCurrency === 'RUB') {
+    priceUsd = Math.round(rawPrice / RUB_TO_USD_RATE);
+  } else if (srcCurrency === 'EUR') {
+    priceUsd = Math.round(rawPrice * EUR_TO_USD_RATE);
+  } else {
+    priceUsd = rawPrice;
+  }
+  const currency = 'USD';
 
   return {
     id:            offer.offerId,
