@@ -72,6 +72,8 @@ const AIRLINES: Record<string, { name: string; code: string }> = {
   EW: { name: 'Eurowings', code: 'EW' },
   LH: { name: 'Lufthansa', code: 'LH' },
   PS: { name: 'МАУ (Ukraine International)', code: 'PS' },
+  J2: { name: 'Azerbaijan Airlines', code: 'J2' },
+  HY: { name: 'Uzbekistan Airways', code: 'HY' },
 };
 
 // Approximate flight routes with typical duration in minutes and realistic price ranges (USD)
@@ -152,7 +154,28 @@ const ROUTE_DATA: Record<string, { duration: number; airlines: string[]; priceRa
   // Vienna (VIE) routes
   'VIE-LHR': { duration: 135, airlines: ['OS', 'BA'],              priceRange: [71, 208] },
   'VIE-FCO': { duration: 105, airlines: ['OS', 'FR'],              priceRange: [54, 153] },
-  DEFAULT: { duration: 180, airlines: ['BA', 'LH', 'FR'],          priceRange: [87, 382] },
+  // Tbilisi (TBS) routes
+  'TBS-IST': { duration: 120, airlines: ['TK', 'A9', 'PC'],        priceRange: [109, 273] },
+  'TBS-DXB': { duration: 270, airlines: ['FZ', 'G9', 'EK'],        priceRange: [218, 491] },
+  'TBS-WAW': { duration: 195, airlines: ['W6', 'TK', 'LO'],        priceRange: [131, 327] },
+  'TBS-BCN': { duration: 240, airlines: ['W6', 'TK', 'FR'],        priceRange: [153, 382] },
+  'TBS-LHR': { duration: 225, airlines: ['TK', 'BA'],              priceRange: [175, 436] },
+  // Almaty (ALA) routes
+  'ALA-IST': { duration: 330, airlines: ['TK', 'KC', 'FZ'],        priceRange: [273, 600] },
+  'ALA-DXB': { duration: 300, airlines: ['FZ', 'EK', 'G9', 'KC'],  priceRange: [218, 491] },
+  'ALA-BCN': { duration: 450, airlines: ['TK', 'W6', 'LH'],        priceRange: [382, 764] },
+  'ALA-WAW': { duration: 390, airlines: ['TK', 'W6', 'LO'],        priceRange: [273, 546] },
+  // Baku (GYD) routes
+  'GYD-IST': { duration: 100, airlines: ['TK', 'PC', 'J2'],        priceRange: [87, 218] },
+  'GYD-DXB': { duration: 210, airlines: ['FZ', 'G9', 'EK'],        priceRange: [175, 382] },
+  'GYD-WAW': { duration: 240, airlines: ['W6', 'TK', 'LO'],        priceRange: [153, 382] },
+  // Yerevan (EVN) routes
+  'EVN-IST': { duration: 120, airlines: ['TK', 'PC'],              priceRange: [109, 262] },
+  'EVN-DXB': { duration: 240, airlines: ['FZ', 'G9', 'EK'],        priceRange: [197, 436] },
+  // Tashkent (TAS) routes
+  'TAS-IST': { duration: 360, airlines: ['TK', 'HY'],              priceRange: [262, 546] },
+  'TAS-DXB': { duration: 270, airlines: ['FZ', 'EK', 'G9'],        priceRange: [197, 436] },
+  DEFAULT: { duration: 180, airlines: ['TK', 'FZ', 'W6'],          priceRange: [87, 382] },
 };
 
 function getRouteData(origin: string, destination: string) {

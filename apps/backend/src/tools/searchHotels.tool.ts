@@ -96,18 +96,28 @@ export async function executeSearchHotels(
 
 // Normalise a raw HotelOffer (booking.service shape) into the flat
 // Mobile Hotel shape that HotelCard in the mobile app expects.
+const EUR_TO_USD = 1.09;
+const RUB_TO_USD = 0.011; // 1 RUB ≈ $0.011
+
+function toUSD(price: number, currency: string): number {
+  if (currency === 'EUR') return Math.round(price * EUR_TO_USD);
+  if (currency === 'RUB') return Math.round(price * RUB_TO_USD);
+  return Math.round(price); // already USD
+}
+
 function normaliseMobileHotel(
   hotel: Awaited<ReturnType<typeof searchHotels>>[number],
   checkIn: string,
   checkOut: string,
 ): Record<string, unknown> {
+  const pricePerNightUSD = toUSD(Number(hotel.pricePerNight), hotel.currency);
   return {
     id:            hotel.offerId,
     name:          hotel.hotelName,            // mobile expects 'name'
     address:       hotel.address ?? '',
     stars:         hotel.starRating,           // mobile expects 'stars'
-    pricePerNight: Number(hotel.pricePerNight), // mobile expects pricePerNight:number
-    currency:      hotel.currency,
+    pricePerNight: pricePerNightUSD,           // always USD
+    currency:      'USD',
     rating:        hotel.rating,               // 0-10 scale
     reviewsCount:  hotel.reviewCount,
     amenities:     hotel.amenities ?? [],
@@ -115,7 +125,7 @@ function normaliseMobileHotel(
     checkOut,
     // keep raw fields for booking creation
     offerId:       hotel.offerId,
-    totalPrice:    hotel.totalPrice,
+    totalPrice:    toUSD(Number(hotel.totalPrice), hotel.currency),
     roomType:      hotel.roomType,
     provider:      hotel.provider,
     expiresAt:     hotel.expiresAt,
