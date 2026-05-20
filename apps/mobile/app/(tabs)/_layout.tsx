@@ -75,7 +75,11 @@ function TabIcon({ focused, color, size, glyph, badge }: TabIconProps) {
   });
 
   return (
-    <Animated.View style={[{ position: 'relative' }, animatedStyle]}>
+    <Animated.View
+      style={[{ position: 'relative' }, animatedStyle]}
+      accessible={false}
+      importantForAccessibility="no-hide-descendants"
+    >
       <Text style={{ fontSize: size * 0.85, color, lineHeight: size }}>{glyph}</Text>
       {badge !== undefined && <TabBadge count={badge} />}
     </Animated.View>

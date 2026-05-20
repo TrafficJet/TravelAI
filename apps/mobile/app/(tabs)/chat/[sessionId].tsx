@@ -98,7 +98,9 @@ function EmptyState() {
   const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
-      <Text style={{ fontSize: 64, opacity: 0.25, marginBottom: 24 }}>{'✈'}</Text>
+      <View style={emptyStyles.iconCircle}>
+        <Text style={emptyStyles.iconGlyph}>{'✈'}</Text>
+      </View>
       <Text style={[emptyStyles.title, { color: colors.text }]}>Куда летим?</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
         Напишите маршрут, даты и бюджет — {'\n'}я подберу рейсы, отели и трансфер
@@ -165,6 +167,20 @@ const emptyStyles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingTop: 32,
     paddingBottom: 16,
+  },
+  iconCircle: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: '#28263A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  iconGlyph: {
+    fontSize: 48,
+    color: '#E8A020',
+    lineHeight: 56,
   },
   title: {
     fontSize: 24,
@@ -338,18 +354,35 @@ export default function ChatScreen() {
   ).current;
 
   // ── Offline state ─────────────────────────────────────────────────────────
+  // Uses NetInfo only — WebSocket unavailability does NOT affect this banner.
+  // A 3-second debounce prevents transient states (e.g. WS handshake)
+  // from flashing the banner on every chat open.
   const [isOffline, setIsOffline] = React.useState(false);
+  const offlineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    function applyOfflineState(offline: boolean) {
+      if (offlineTimerRef.current) clearTimeout(offlineTimerRef.current);
+      if (offline) {
+        // Only mark offline after 3 s of sustained disconnection
+        offlineTimerRef.current = setTimeout(() => setIsOffline(true), 3000);
+      } else {
+        setIsOffline(false);
+      }
+    }
+
     const unsubscribe = NetInfo.addEventListener((state) => {
       const offline = state.isConnected === false && state.isInternetReachable === false;
-      setIsOffline(offline);
+      applyOfflineState(offline);
     });
     NetInfo.fetch().then((state) => {
       const offline = state.isConnected === false && state.isInternetReachable === false;
-      setIsOffline(offline);
+      applyOfflineState(offline);
     });
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      if (offlineTimerRef.current) clearTimeout(offlineTimerRef.current);
+    };
   }, []);
 
   // ── Session title ─────────────────────────────────────────────────────────

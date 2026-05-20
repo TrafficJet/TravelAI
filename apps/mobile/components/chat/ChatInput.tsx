@@ -211,10 +211,10 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
         {/* Send button — gradient circle */}
         <Animated.View style={[styles.sendButtonWrap, { transform: [{ scale: sendScale }] }]}>
           <TouchableOpacity
-            onPress={hasText ? handleSend : handleVoice}
-            disabled={disabled && hasText}
+            onPress={handleSend}
+            disabled={!hasText || (disabled && hasText)}
             activeOpacity={0.8}
-            style={disabled && hasText ? styles.sendButtonDisabledWrap : undefined}
+            style={(!hasText || (disabled && hasText)) ? styles.sendButtonDisabledWrap : undefined}
           >
             <LinearGradient
               colors={['#E8A020', '#B87518']}
@@ -226,7 +226,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
                 <ActivityIndicator size="small" color="#0E0C1C" />
               ) : (
                 <Text style={{ fontSize: 18, color: '#0E0C1C', lineHeight: 22 }}>
-                  {hasText ? '↑' : '+'}
+                  {'↑'}
                 </Text>
               )}
             </LinearGradient>
