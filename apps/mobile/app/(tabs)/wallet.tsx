@@ -13,6 +13,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
+import { IconWallet, IconAirplane, IconBed } from '../../components/icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useWalletStore } from '../../stores/walletStore';
@@ -44,20 +45,43 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   UAH: '₴',
 };
 
-// ── Transaction icon (unicode) ────────────────────────────────────────────────
+// ── Transaction icon (SVG) ────────────────────────────────────────────────────
 
-function getTransactionIcon(type: TransactionType, description: string): string {
+function TransactionIcon({ type, description, iconBg, iconColor }: {
+  type: TransactionType;
+  description: string;
+  iconBg: string;
+  iconColor: string;
+}) {
   const lower = description.toLowerCase();
-  if (type === 'TOPUP') return '↓';
-  if (lower.includes('возврат') || lower.includes('refund')) return '↻';
-  if (lower.includes('отель') || lower.includes('hotel')) return '▧';
-  if (
+  const isHotel = lower.includes('отель') || lower.includes('hotel');
+  const isFlight =
     lower.includes('рейс') ||
     lower.includes('flight') ||
     lower.includes('авиа') ||
-    lower.includes('билет')
-  ) return '✈';
-  return '▤';
+    lower.includes('билет');
+
+  let icon: React.ReactNode;
+  if (isHotel) {
+    icon = <IconBed color={iconColor} size={20} />;
+  } else if (isFlight) {
+    icon = <IconAirplane color={iconColor} size={20} />;
+  } else {
+    icon = <IconWallet color={iconColor} size={20} />;
+  }
+
+  return (
+    <View style={{
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: iconBg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      {icon}
+    </View>
+  );
 }
 
 // ── Transaction icon colors ───────────────────────────────────────────────────
@@ -106,20 +130,15 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
 
   const iconBg = getTransactionIconBg(transaction.type, transaction.description);
   const iconColor = getTransactionIconColor(transaction.type, transaction.description);
-  const iconGlyph = getTransactionIcon(transaction.type, transaction.description);
 
   return (
     <View style={[txStyles.row, { backgroundColor: '#1E1C2C', borderColor: '#2E2B42' }]}>
-      <View style={{
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: iconBg,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <Text style={{ fontSize: 18, color: iconColor, lineHeight: 22 }}>{iconGlyph}</Text>
-      </View>
+      <TransactionIcon
+        type={transaction.type}
+        description={transaction.description}
+        iconBg={iconBg}
+        iconColor={iconColor}
+      />
       <View style={txStyles.info}>
         <Text style={[txStyles.label, { color: colors.text }]} numberOfLines={1}>{transaction.description}</Text>
         <Text style={[txStyles.date, { color: colors.textMuted }]}>{formatDate(transaction.createdAt)}</Text>
@@ -539,7 +558,7 @@ function PaymentMethods() {
         activeOpacity={0.7}
         onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
       >
-        <Text style={[pmStyles.icon, { color: '#3B82F6' }]}>▤</Text>
+        <Text style={[pmStyles.icon, { color: '#3B82F6', fontSize: 14, fontWeight: '700' as const }]}>VISA</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>Visa ••4821</Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -571,7 +590,7 @@ function PaymentMethods() {
         activeOpacity={0.7}
         onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
       >
-        <Text style={[pmStyles.icon, { color: '#EB001B' }]}>◈</Text>
+        <Text style={[pmStyles.icon, { color: '#EB001B', fontSize: 12, fontWeight: '700' as const }]}>MC</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>MC ••5678</Text>
       </TouchableOpacity>
     </View>
@@ -725,7 +744,7 @@ export default function WalletScreen() {
         }
         ListEmptyComponent={
           <View style={styles.emptyTransactions}>
-            <Text style={styles.emptyIcon}>▤</Text>
+            <IconWallet color="#8888A8" size={56} />
             <Text style={[styles.emptyText, { color: colors.text }]}>Транзакций пока нет</Text>
             <Text style={[styles.emptySubtext, { color: colors.textMuted }]}>
               Пополните кошелёк, чтобы начать бронировать

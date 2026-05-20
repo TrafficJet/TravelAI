@@ -12,6 +12,12 @@ import { Typography } from '../../constants/typography';
 import { useTranslation } from 'react-i18next';
 import { useNotificationsContext } from '../../context/NotificationsContext';
 import { useTheme } from '../../src/theme/ThemeContext';
+import {
+  IconChat,
+  IconAirplane,
+  IconWallet,
+  IconPerson,
+} from '../../components/icons';
 
 // ── Badge component ───────────────────────────────────────────────────────────
 
@@ -51,11 +57,11 @@ interface TabIconProps {
   focused: boolean;
   color: string;
   size: number;
-  glyph: string;
+  renderIcon: (color: string, size: number) => React.ReactNode;
   badge?: number;
 }
 
-function TabIcon({ focused, color, size, glyph, badge }: TabIconProps) {
+function TabIcon({ focused, color, size, renderIcon, badge }: TabIconProps) {
   const focusedSV = useSharedValue(focused ? 1 : 0);
 
   useEffect(() => {
@@ -80,7 +86,7 @@ function TabIcon({ focused, color, size, glyph, badge }: TabIconProps) {
       accessible={false}
       importantForAccessibility="no-hide-descendants"
     >
-      <Text style={{ fontSize: size * 0.85, color, lineHeight: size }}>{glyph}</Text>
+      {renderIcon(color, size)}
       {badge !== undefined && <TabBadge count={badge} />}
     </Animated.View>
   );
@@ -134,7 +140,10 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Чат',
           tabBarIcon: (props) => (
-            <TabIcon {...props} glyph="⊙" />
+            <TabIcon
+              {...props}
+              renderIcon={(color, size) => <IconChat color={color} size={size} />}
+            />
           ),
         }}
       />
@@ -146,7 +155,10 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Поездки',
           tabBarIcon: (props) => (
-            <TabIcon {...props} glyph="⊳" />
+            <TabIcon
+              {...props}
+              renderIcon={(color, size) => <IconAirplane color={color} size={size} />}
+            />
           ),
         }}
       />
@@ -158,7 +170,10 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Кошелёк',
           tabBarIcon: (props) => (
-            <TabIcon {...props} glyph="⊡" />
+            <TabIcon
+              {...props}
+              renderIcon={(color, size) => <IconWallet color={color} size={size} />}
+            />
           ),
         }}
       />
@@ -170,7 +185,10 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: 'Профиль',
           tabBarIcon: (props) => (
-            <TabIcon {...props} glyph="⊚" />
+            <TabIcon
+              {...props}
+              renderIcon={(color, size) => <IconPerson color={color} size={size} />}
+            />
           ),
         }}
       />
@@ -205,7 +223,11 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="chat/[sessionId]"
-        options={{ href: null, headerShown: false }}
+        options={{
+          href: null,
+          tabBarButton: () => null,
+          headerShown: false,
+        }}
       />
     </Tabs>
   );

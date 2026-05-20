@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import { IconAirplane, IconBed, IconChat } from '../../components/icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { router } from 'expo-router';
@@ -39,11 +40,6 @@ const FILTER_TABS: FilterTabConfig[] = [
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function getTypeIconGlyph(booking: Booking): string {
-  if (booking.type === 'HOTEL') return '▧';
-  return '✈';
-}
 
 function formatPrice(price: number | string, currency: string): string {
   const num = typeof price === 'number' ? price : Number(price);
@@ -228,7 +224,7 @@ function FlightCardContent({ booking }: { booking: Booking }) {
       {/* Top row: icon + route + price */}
       <View style={cardStyles.topRow}>
         <View style={[cardStyles.iconCircle, { backgroundColor: `${colors.primary}15` }]}>
-          <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'✈'}</Text>
+          <IconAirplane color={colors.primary} size={20} />
         </View>
         <View style={cardStyles.routeBlock}>
           <Text style={[cardStyles.route, { color: colors.text }]} numberOfLines={1}>
@@ -277,7 +273,7 @@ function HotelCardContent({ booking }: { booking: Booking }) {
       {/* Top row: icon + name + price */}
       <View style={cardStyles.topRow}>
         <View style={[cardStyles.iconCircle, { backgroundColor: `${colors.primary}15` }]}>
-          <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'▧'}</Text>
+          <IconBed color={colors.primary} size={20} />
         </View>
         <View style={cardStyles.routeBlock}>
           <Text style={[cardStyles.route, { color: colors.text }]} numberOfLines={1}>
@@ -470,9 +466,12 @@ function ActiveTripCard({ booking, onPress }: ActiveTripCardProps) {
         <Text style={activeTripStyles.nextLabel}>СЛЕДУЮЩАЯ ПОЕЗДКА</Text>
 
         <View style={activeTripStyles.titleRow}>
-          <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22, marginRight: 8 }}>
-            {isFlight ? '✈' : '▧'}
-          </Text>
+          <View style={{ marginRight: 8 }}>
+            {isFlight
+              ? <IconAirplane color={colors.primary} size={20} />
+              : <IconBed color={colors.primary} size={20} />
+            }
+          </View>
           <Text style={[activeTripStyles.title, { color: colors.text }]} numberOfLines={1}>{title}</Text>
         </View>
 
@@ -566,11 +565,6 @@ interface PastTripCardProps {
 
 type BookingType = 'FLIGHT' | 'HOTEL';
 
-function getTripIconGlyph(type: BookingType): string {
-  if (type === 'HOTEL') return '▧';
-  return '✈';
-}
-
 function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
   const { colors } = useTheme();
   const isFlight = booking.type === 'FLIGHT';
@@ -580,7 +574,6 @@ function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
     : (details.name ?? 'Отель');
   const dateStr = isFlight ? (details.departureDate ?? '') : (details.checkIn ?? '');
   const dateLabel = dateStr ? formatDepartureDate(dateStr) : '';
-  const iconGlyph = getTripIconGlyph(booking.type as BookingType);
 
   return (
     <Animated.View
@@ -593,7 +586,10 @@ function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
         style={[pastCardStyles.card, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
       >
         <View style={[pastCardStyles.iconBlock, { backgroundColor: `${colors.primary}15` }]}>
-          <Text style={{ fontSize: 24, color: colors.primary, lineHeight: 28 }}>{iconGlyph}</Text>
+          {isFlight
+            ? <IconAirplane color={colors.primary} size={26} />
+            : <IconBed color={colors.primary} size={26} />
+          }
         </View>
 
         <View style={pastCardStyles.content}>
@@ -720,7 +716,7 @@ function BookingsEmptyState() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <Text style={{ fontSize: 38, color: colors.primary }}>{'✈️'}</Text>
+        <IconAirplane color={colors.primary} size={48} />
       </LinearGradient>
 
       <Text style={[emptyStyles.title, { color: colors.text }]}>Здесь будут твои поездки</Text>
@@ -740,7 +736,7 @@ function BookingsEmptyState() {
           end={{ x: 1, y: 0 }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Text style={{ fontSize: 18, color: colors.textInverse }}>{'💬'}</Text>
+            <IconChat color={colors.textInverse} size={20} />
             <Text style={[emptyStyles.btnText, { color: colors.textInverse }]}>Начать планировать</Text>
           </View>
         </LinearGradient>

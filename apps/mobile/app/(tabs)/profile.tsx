@@ -38,6 +38,17 @@ import { useNotificationsContext } from '../../context/NotificationsContext';
 import { toast } from '../../lib/toast';
 import i18n from '../../src/i18n';
 import api from '../../services/api';
+import {
+  IconBell,
+  IconSettings,
+  IconPerson,
+  IconAirplane,
+  IconCalendar,
+  IconEarth,
+  IconPhone,
+  IconCard,
+  IconScan,
+} from '../../components/icons';
 
 const LANGUAGE_KEY = 'app_language';
 
@@ -117,7 +128,7 @@ function Avatar({ name, size = 90 }: { name?: string; size?: number }) {
   if (initials === '?') {
     return (
       <View style={[avatarStyles.container, { width: size, height: size, borderRadius: size / 2, backgroundColor: '#28263A' }]}>
-        <Text style={{ fontSize: Math.round(size * 0.46), color: "#8888A8", lineHeight: Math.round(size * 0.46) + 4 }}>{"◯"}</Text>
+        <IconPerson color="#8888A8" size={Math.round(size * 0.46)} />
       </View>
     );
   }
@@ -1596,7 +1607,9 @@ export default function ProfileScreen() {
     return (
       <>
         <View style={[styles.guestScreen, { paddingTop: insets.top + 24 }]}>
-          <Text style={{ fontSize: 80, opacity: 0.4, marginBottom: 24 }}>{'👤'}</Text>
+          <View style={{ opacity: 0.4, marginBottom: 24 }}>
+            <IconPerson color={colors.text} size={80} />
+          </View>
           <Text style={styles.guestTitle}>Войдите в аккаунт</Text>
           <Text style={styles.guestSubtitle}>
             Чтобы видеть брони, кошелёк,{'\n'}историю поисков и сохранять маршруты
@@ -1623,7 +1636,7 @@ export default function ProfileScreen() {
   // ── render helpers ──────────────────────────────────────────────────────────
 
   function renderInfoRow(
-    glyph: string,
+    icon: React.ReactNode,
     label: string,
     value: string,
     isLast = false,
@@ -1631,7 +1644,7 @@ export default function ProfileScreen() {
     return (
       <View style={[styles.infoRow, isLast && styles.infoRowNoBorder]} key={label}>
         <View style={styles.infoRowLeft}>
-          <Text style={{ fontSize: 14, color: colors.primary, marginRight: 6 }}>{glyph}</Text>
+          <View style={{ marginRight: 6 }}>{icon}</View>
           <Text style={styles.infoLabel}>{label}</Text>
         </View>
         <Text style={value ? styles.infoValue : styles.infoValueMuted}>
@@ -1664,7 +1677,7 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.quickLinkIconWrap}>
-                <Text style={{ fontSize: 20, color: colors.primary }}>{'🔔'}</Text>
+                <IconBell color={colors.primary} size={22} />
                 {unreadCount > 0 && (
                   <View style={styles.quickLinkBadge}>
                     <Text style={styles.quickLinkBadgeText}>{unreadCount > 9 ? '9+' : String(unreadCount)}</Text>
@@ -1683,7 +1696,7 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.quickLinkIconWrap}>
-                <Text style={{ fontSize: 20, color: colors.primary }}>{'⚙'}</Text>
+                <IconSettings color={colors.primary} size={22} />
               </View>
               <Text style={styles.quickLinkText}>Настройки</Text>
               <Text style={{ fontSize: 16, color: colors.textMuted }}>{'›'}</Text>
@@ -1816,7 +1829,7 @@ export default function ProfileScreen() {
               ) : (
                 <>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                    <Text style={{ fontSize: 16, color: colors.primary }}>{'⌖'}</Text>
+                    <IconScan color={colors.primary} size={18} />
                     <Text style={styles.scanCardTitle}>Сканировать документ</Text>
                   </View>
                   <Text style={styles.scanCardSub}>Паспорт · Загранпаспорт · Права</Text>
@@ -1844,15 +1857,15 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <View style={styles.card}>
-            {renderInfoRow('📞', 'Телефон', bookingData.phone)}
-            {renderInfoRow('📅', 'Дата рождения', bookingData.dateOfBirth)}
-            {renderInfoRow('🌍', 'Гражданство', bookingData.nationality)}
+            {renderInfoRow(<IconPhone color={colors.primary} size={16} />, 'Телефон', bookingData.phone)}
+            {renderInfoRow(<IconCalendar color={colors.primary} size={16} />, 'Дата рождения', bookingData.dateOfBirth)}
+            {renderInfoRow(<IconEarth color={colors.primary} size={16} />, 'Гражданство', bookingData.nationality)}
             {renderInfoRow(
-              '🪪',
+              <IconCard color={colors.primary} size={16} />,
               'Номер паспорта',
               bookingData.passportNumber ? maskPassport(bookingData.passportNumber) : '',
             )}
-            {renderInfoRow('📆', 'Срок действия паспорта', bookingData.passportExpiry, true)}
+            {renderInfoRow(<IconCalendar color={colors.primary} size={16} />, 'Срок действия паспорта', bookingData.passportExpiry, true)}
           </View>
         </View>
 
@@ -1937,7 +1950,7 @@ export default function ProfileScreen() {
 
         {/* ── About app ───────────────────────────────────────────────── */}
         <View style={styles.aboutSection}>
-          <Text style={{ fontSize: 32, color: colors.primary }}>{'✈'}</Text>
+          <IconAirplane color={colors.primary} size={32} />
           <Text style={styles.aboutName}>SVIT</Text>
           <Text style={styles.aboutVersion}>Версия 1.0.0</Text>
           <Text style={styles.aboutCopy}>Ваш AI-ассистент для путешествий</Text>
@@ -1997,7 +2010,7 @@ export default function ProfileScreen() {
             {scannedData?.firstName || scannedData?.lastName ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Text style={{ fontSize: 16, color: colors.primary }}>{'👤'}</Text>
+                  <IconPerson color={colors.primary} size={18} />
                   <Text style={scanModalStyles.dataLabel}>ФИО</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>
@@ -2009,7 +2022,7 @@ export default function ProfileScreen() {
             {scannedData?.dateOfBirth ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Text style={{ fontSize: 16, color: colors.primary }}>{'📅'}</Text>
+                  <IconCalendar color={colors.primary} size={18} />
                   <Text style={scanModalStyles.dataLabel}>Дата рождения</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.dateOfBirth}</Text>
@@ -2019,7 +2032,7 @@ export default function ProfileScreen() {
             {scannedData?.nationality ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Text style={{ fontSize: 16, color: colors.primary }}>{'🌍'}</Text>
+                  <IconEarth color={colors.primary} size={18} />
                   <Text style={scanModalStyles.dataLabel}>Гражданство</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.nationality}</Text>
@@ -2029,7 +2042,7 @@ export default function ProfileScreen() {
             {scannedData?.documentNumber ? (
               <View style={scanModalStyles.dataRow}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Text style={{ fontSize: 16, color: colors.primary }}>{'🪪'}</Text>
+                  <IconCard color={colors.primary} size={18} />
                   <Text style={scanModalStyles.dataLabel}>Номер документа</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.documentNumber}</Text>
@@ -2039,7 +2052,7 @@ export default function ProfileScreen() {
             {scannedData?.expiryDate ? (
               <View style={[scanModalStyles.dataRow, scanModalStyles.dataRowLast]}>
                 <View style={scanModalStyles.dataRowLeft}>
-                  <Text style={{ fontSize: 16, color: colors.primary }}>{'📆'}</Text>
+                  <IconCalendar color={colors.primary} size={18} />
                   <Text style={scanModalStyles.dataLabel}>Срок действия</Text>
                 </View>
                 <Text style={scanModalStyles.dataValue}>{scannedData.expiryDate}</Text>
