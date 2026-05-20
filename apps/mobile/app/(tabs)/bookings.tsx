@@ -720,7 +720,7 @@ function BookingsEmptyState() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <Text style={{ fontSize: 38, color: colors.primary }}>{'🎫'}</Text>
+        <Text style={{ fontSize: 38, color: colors.primary }}>{'✈️'}</Text>
       </LinearGradient>
 
       <Text style={[emptyStyles.title, { color: colors.text }]}>Здесь будут твои поездки</Text>
