@@ -53,12 +53,13 @@ export interface SearchFlightsParams {
 // ---------------------------------------------------------------------------
 
 const AIRLINES: Record<string, { name: string; code: string }> = {
-  SU: { name: 'Аэрофлот', code: 'SU' },
   TK: { name: 'Turkish Airlines', code: 'TK' },
-  FZ: { name: 'Flydubai', code: 'FZ' },
+  FZ: { name: 'flydubai', code: 'FZ' },
   EK: { name: 'Emirates', code: 'EK' },
-  S7: { name: 'S7 Airlines', code: 'S7' },
-  U6: { name: 'Уральские авиалинии', code: 'U6' },
+  PC: { name: 'Pegasus Airlines', code: 'PC' },
+  KC: { name: 'Air Astana', code: 'KC' },
+  A9: { name: 'Georgian Airways', code: 'A9' },
+  G9: { name: 'Air Arabia', code: 'G9' },
   LO: { name: 'LOT Polish Airlines', code: 'LO' },
   VY: { name: 'Vueling', code: 'VY' },
   FR: { name: 'Ryanair', code: 'FR' },
@@ -76,12 +77,12 @@ const AIRLINES: Record<string, { name: string; code: string }> = {
 // Approximate flight routes with typical duration in minutes and realistic price ranges (EUR)
 // priceRange: [min, max] per person in EUR (used for European routes)
 const ROUTE_DATA: Record<string, { duration: number; airlines: string[]; priceRange?: [number, number] }> = {
-  // Moscow routes
-  'SVO-IST': { duration: 200, airlines: ['SU', 'TK'] },
-  'SVO-DXB': { duration: 265, airlines: ['SU', 'EK', 'FZ'] },
-  'SVO-LED': { duration: 75,  airlines: ['SU', 'S7'] },
-  'DME-IST': { duration: 195, airlines: ['TK', 'U6'] },
-  'LED-IST': { duration: 225, airlines: ['TK', 'S7'] },
+  // Moscow routes (Russian airlines excluded — using neutral carriers only)
+  'SVO-IST': { duration: 200, airlines: ['TK', 'PC'] },
+  'SVO-DXB': { duration: 265, airlines: ['EK', 'FZ', 'G9'] },
+  'SVO-LED': { duration: 75,  airlines: ['TK', 'PC'] },
+  'DME-IST': { duration: 195, airlines: ['TK', 'PC'] },
+  'LED-IST': { duration: 225, airlines: ['TK', 'PC'] },
   // Warsaw (WAW) routes — prices in EUR
   'WAW-BCN': { duration: 180, airlines: ['W6', 'FR', 'LO', 'VY'], priceRange: [49, 180] },  // 3h00m
   'WAW-MAD': { duration: 195, airlines: ['LO', 'FR', 'IB'],        priceRange: [55, 200] },
