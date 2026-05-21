@@ -163,7 +163,7 @@ function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename,
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 14, color: colors.error, lineHeight: 18 }}>{'🗑'}</Text>
+              <Text style={{ fontSize: 14, color: colors.error, lineHeight: 18 }}>{'✕'}</Text>
             </TouchableOpacity>
           </View>
           <Text style={[itemStyles.time, { color: colors.textMuted }]}>{formatItemTime(session.updatedAt)}</Text>
