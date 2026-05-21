@@ -1121,9 +1121,9 @@ export default function ProfileScreen() {
     scanDocumentCard: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: `${colors.primary}26`,
+      backgroundColor: 'rgba(124,92,252,0.15)',
       borderWidth: 1.5,
-      borderColor: colors.primary,
+      borderColor: '#7C5CFC',
       borderRadius: 14,
       padding: 14,
       marginBottom: 16,
@@ -1179,7 +1179,7 @@ export default function ProfileScreen() {
       flex: 1,
     },
     scanCardTitle: {
-      color: colors.primary,
+      color: '#7C5CFC',
       fontFamily: 'Inter',
       fontSize: Typography.sizes.base,
       fontWeight: Typography.weights.semibold,
@@ -1829,7 +1829,7 @@ export default function ProfileScreen() {
               ) : (
                 <>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                    <IconScan color={colors.primary} size={18} />
+                    <IconScan color="#7C5CFC" size={18} />
                     <Text style={styles.scanCardTitle}>Сканировать документ</Text>
                   </View>
                   <Text style={styles.scanCardSub}>Паспорт · Загранпаспорт · Права</Text>
