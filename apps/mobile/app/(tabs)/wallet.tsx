@@ -774,7 +774,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 22,
     fontWeight: '700' as const,
-    color: '#EEEEF4',
+    color: '#F4F2FF',
   },
   screenSub: {
     fontSize: 10,

@@ -62,8 +62,8 @@ export const darkColors = {
   secondaryLight: '#A98EFD',
   secondaryDark: '#5A3DD4',
 
-  // Text
-  text: '#EEEEF4',
+  // Text — BRANDBOOK: primary #F4F2FF, muted #8888A8
+  text: '#F4F2FF',
   textSecondary: '#C4C4D8',
   textMuted: '#8888A8',
   textDisabled: '#4E4E68',

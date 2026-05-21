@@ -215,13 +215,13 @@ const typingStyles = StyleSheet.create({
 // Note: react-native-markdown-display requires plain objects, not StyleSheet.create
 
 const markdownStyles = {
-  body: { color: '#EEEEF4', fontSize: 15, lineHeight: 22, fontFamily: 'Inter' },
+  body: { color: '#F4F2FF', fontSize: 15, lineHeight: 22, fontFamily: 'Inter' },
   heading1: { color: '#E8A020', fontWeight: 'bold' as const, fontSize: 18, marginBottom: 8, fontFamily: 'Sora' },
   heading2: { color: '#F2B84B', fontWeight: '600' as const, fontSize: 16, marginBottom: 6, fontFamily: 'Sora' },
-  heading3: { color: '#EEEEF4', fontWeight: '600' as const, fontSize: 15, marginBottom: 4, fontFamily: 'Inter' },
-  paragraph: { marginBottom: 10, color: '#EEEEF4' },
+  heading3: { color: '#F4F2FF', fontWeight: '600' as const, fontSize: 15, marginBottom: 4, fontFamily: 'Inter' },
+  paragraph: { marginBottom: 10, color: '#F4F2FF' },
   strong: { color: '#F2B84B', fontWeight: 'bold' as const },
-  em: { color: '#EEEEF4', fontStyle: 'italic' as const },
+  em: { color: '#F4F2FF', fontStyle: 'italic' as const },
   bullet_list: { marginBottom: 8 },
   ordered_list: { marginBottom: 8 },
   bullet_list_item: { marginBottom: 4 },
@@ -242,7 +242,7 @@ const markdownStyles = {
     borderRadius: 8,
     padding: 12,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    color: '#EEEEF4',
+    color: '#F4F2FF',
     fontSize: 13,
     marginBottom: 8,
   },
@@ -254,8 +254,8 @@ const markdownStyles = {
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     fontSize: 13,
   },
-  fence: { backgroundColor: '#1E1C2C', borderRadius: 8, padding: 12, color: '#EEEEF4', fontSize: 13, marginBottom: 8 },
-  text: { color: '#EEEEF4', fontFamily: 'Inter', fontSize: 15, lineHeight: 22 },
+  fence: { backgroundColor: '#1E1C2C', borderRadius: 8, padding: 12, color: '#F4F2FF', fontSize: 13, marginBottom: 8 },
+  text: { color: '#F4F2FF', fontFamily: 'Inter', fontSize: 15, lineHeight: 22 },
   softbreak: { width: '100%' as const },
 };
 

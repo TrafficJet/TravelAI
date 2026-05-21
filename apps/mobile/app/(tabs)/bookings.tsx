@@ -699,7 +699,7 @@ const pastCardStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 13,
     fontWeight: '700' as const,
-    color: '#EEEEF4',
+    color: '#F4F2FF',
     flexShrink: 0,
   },
 });
@@ -986,7 +986,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 22,
     fontWeight: '700',
-    color: '#EEEEF4',
+    color: '#F4F2FF',
   },
   headerSub: {
     fontSize: 10,

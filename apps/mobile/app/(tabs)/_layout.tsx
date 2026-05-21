@@ -8,6 +8,8 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { BottomTabBar } from '@react-navigation/bottom-tabs';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Typography } from '../../constants/typography';
 import { useTranslation } from 'react-i18next';
 import { useNotificationsContext } from '../../context/NotificationsContext';
@@ -18,6 +20,27 @@ import {
   IconWallet,
   IconPerson,
 } from '../../components/icons';
+
+// ── Custom tab bar — hides dynamic chat route from tab strip ──────────────────
+
+const HIDDEN_ROUTE_PATTERN = /^chat\//;
+
+function FilteredTabBar(props: BottomTabBarProps) {
+  const filteredState = {
+    ...props.state,
+    routes: props.state.routes.filter((r) => !HIDDEN_ROUTE_PATTERN.test(r.name)),
+  };
+  const visibleIndex = filteredState.routes.findIndex(
+    (r) => r.key === props.state.routes[props.state.index]?.key,
+  );
+  const safeIndex = visibleIndex >= 0 ? visibleIndex : 0;
+  return (
+    <BottomTabBar
+      {...props}
+      state={{ ...filteredState, index: safeIndex }}
+    />
+  );
+}
 
 // ── Badge component ───────────────────────────────────────────────────────────
 
@@ -104,10 +127,11 @@ export default function TabsLayout() {
 
   return (
     <Tabs
+      tabBar={(props) => <FilteredTabBar {...props} />}
       screenOptions={{
         headerStyle: { backgroundColor: '#0E0C1C' },
-        headerTintColor: '#EEEEF4',
-        headerTitleStyle: { fontWeight: Typography.weights.bold, color: '#EEEEF4' },
+        headerTintColor: '#F4F2FF',
+        headerTitleStyle: { fontWeight: Typography.weights.bold, color: '#F4F2FF' },
         headerShadowVisible: false,
         tabBarStyle: {
           // SVIT brand: bg #0E0C1C, border-top #2E2B42, height 70px
@@ -225,7 +249,6 @@ export default function TabsLayout() {
         name="chat/[sessionId]"
         options={{
           href: null,
-          tabBarButton: () => null,
           headerShown: false,
         }}
       />

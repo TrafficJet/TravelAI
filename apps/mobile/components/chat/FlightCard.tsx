@@ -50,7 +50,6 @@ const AIRLINE_IATA: Record<string, string> = {
   'Finnair': 'AY',
   'Alitalia': 'AZ',
   'ITA Airways': 'AZ',
-  'Aeroflot': 'SU',
   'Ukraine International': 'PS',
   'UIA': 'PS',
   'Qatar Airways': 'QR',

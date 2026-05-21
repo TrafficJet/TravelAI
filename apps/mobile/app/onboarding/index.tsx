@@ -27,7 +27,7 @@ const COLORS = {
   background: '#0E0C1C',
   primary: '#E8A020',
   secondary: '#7C5CFC',
-  white: '#EEEEF4',
+  white: '#F4F2FF',
   subtitle: '#8888A8',
   dotInactive: '#2E2B42',
   textInverse: '#0E0C1C',

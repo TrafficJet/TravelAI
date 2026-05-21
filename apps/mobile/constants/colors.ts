@@ -21,8 +21,8 @@ export const Colors = {
   elevated:   '#28263A',
   overlay:    'rgba(14,12,28,0.75)',
 
-  // Text
-  text:         '#EEEEF4',
+  // Text — BRANDBOOK: primary #F4F2FF
+  text:         '#F4F2FF',
   textMuted:    '#8888A8',
   textDisabled: '#4E4E68',
   textInverse:  '#0E0C1C',
