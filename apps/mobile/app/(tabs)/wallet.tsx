@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -423,9 +423,10 @@ interface HeroCardProps {
   balance: number;
   currency: string;
   onTopUp: () => void;
+  onHistory?: () => void;
 }
 
-function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
+function HeroBalanceCard({ balance, currency, onTopUp, onHistory }: HeroCardProps) {
   const symbol = CURRENCY_SYMBOLS[currency] ?? currency;
 
   const formatted = balance.toLocaleString('en-US', {
@@ -460,29 +461,22 @@ function HeroBalanceCard({ balance, currency, onTopUp }: HeroCardProps) {
           <Text style={heroStyles.actionBtnText}>Пополнить</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={heroStyles.actionBtn}
-          activeOpacity={0.8}
-          onPress={() => Alert.alert('Скоро', 'Вывод средств будет доступен в следующем обновлении')}
+          style={[heroStyles.actionBtn, heroStyles.actionBtnDisabled]}
+          activeOpacity={1}
+          disabled={true}
         >
           <Text style={heroStyles.actionIcon}>↑</Text>
           <Text style={heroStyles.actionBtnText}>Вывести</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={heroStyles.actionBtn}
-          activeOpacity={0.8}
-          onPress={() => Alert.alert('Скоро', 'Конвертация валют будет доступна в следующем обновлении')}
+          style={[heroStyles.actionBtn, heroStyles.actionBtnDisabled]}
+          activeOpacity={1}
+          disabled={true}
         >
           <Text style={heroStyles.actionIcon}>↻</Text>
           <Text style={heroStyles.actionBtnText}>Конвертировать</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={heroStyles.actionBtn}
-          activeOpacity={0.8}
-          onPress={() => Alert.alert('Скоро', 'История транзакций будет доступна в следующем обновлении')}
-        >
-          <Text style={heroStyles.actionIcon}>≡</Text>
-          <Text style={heroStyles.actionBtnText}>История</Text>
-        </TouchableOpacity>
+        {/* Кнопка «История» удалена — секция транзакций уже видна на этом же экране */}
       </View>
     </LinearGradient>
   );
@@ -544,6 +538,9 @@ const heroStyles = StyleSheet.create({
     color: '#0E0C1C',
     textAlign: 'center',
   },
+  actionBtnDisabled: {
+    opacity: 0.4,
+  },
 });
 
 // ── Payment methods row ───────────────────────────────────────────────────────
@@ -568,14 +565,6 @@ function PaymentMethods() {
       >
         <Text style={[pmStyles.icon, { color: '#3B82F6', fontSize: 14, fontWeight: '700' as const }]}>VISA</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>Visa ••4821</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
-        activeOpacity={0.7}
-        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
-      >
-        <Text style={[pmStyles.icon, { color: '#26A17B' }]}>$</Text>
-        <Text style={[pmStyles.label, { color: colors.textMuted }]}>USDT</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
@@ -626,6 +615,7 @@ export default function WalletScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [topUpVisible, setTopUpVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
+  const flatListRef = useRef<FlatList>(null);
 
   const fetchWallet = useCallback(async () => {
     try {
@@ -674,6 +664,7 @@ export default function WalletScreen() {
   return (
     <View style={[styles.container, { backgroundColor: '#0E0C1C', paddingTop: insets.top }]}>
       <FlatList
+        ref={flatListRef}
         data={filteredTransactions}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <EnhancedTransactionItem transaction={item} />}

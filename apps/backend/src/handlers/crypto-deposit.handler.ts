@@ -149,7 +149,11 @@ export async function nowpaymentsWebhook(request: FastifyRequest, reply: Fastify
   }
 
   const rawBody = (request as FastifyRequest & { rawBody?: Buffer }).rawBody;
-  if (rawBody && !verifyWebhookSignature(rawBody, signature)) {
+  if (!rawBody) {
+    request.log.warn('nowpayments webhook: missing raw body');
+    return reply.status(400).send({ error: 'MISSING_RAW_BODY' });
+  }
+  if (!verifyWebhookSignature(rawBody, signature)) {
     request.log.warn('nowpayments webhook: invalid signature');
     return reply.status(401).send({ error: 'INVALID_SIGNATURE' });
   }
@@ -196,12 +200,12 @@ export async function nowpaymentsWebhook(request: FastifyRequest, reply: Fastify
       await prisma.$transaction([
         prisma.wallet.update({
           where: { userId: deposit.userId },
-          data:  { balance: { increment: price_amount } },
+          data:  { balance: { increment: deposit.priceAmount } },
         }),
         prisma.walletTransaction.create({
           data: {
             walletId:    wallet.id,
-            amount:      price_amount,
+            amount:      deposit.priceAmount,
             type:        'TOPUP',
             status:      'COMPLETED',
             description: `Crypto deposit (${deposit.payCurrency})`,
@@ -211,7 +215,7 @@ export async function nowpaymentsWebhook(request: FastifyRequest, reply: Fastify
       ]);
 
       request.log.info(
-        { userId: deposit.userId, amount: price_amount },
+        { userId: deposit.userId, amount: deposit.priceAmount },
         'wallet credited from crypto deposit',
       );
     }

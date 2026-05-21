@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { safeStorage } from '../../utils/safeStorage';
 import { analyticsService } from '../../src/services/analytics.service';
 import { AnalyticsEvents } from '../../src/constants/analytics-events';
+import { SvitLogo } from '../../components/SvitLogo';
 
 // ─── Public constant (consumed by _layout.tsx) ────────────────────────────────
 
@@ -62,75 +63,7 @@ const SLIDES: Slide[] = [
 const TOTAL = SLIDES.length;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// ─── SVIT Logo SVG-style (approximated in RN) ─────────────────────────────────
-
-function SvitLogo() {
-  return (
-    <View style={logoStyles.wrap}>
-      {/* Outer ring */}
-      <View style={logoStyles.ring} />
-      {/* Upper S-arc in teal */}
-      <View style={logoStyles.arcTop} />
-      {/* Lower S-arc in amber */}
-      <View style={logoStyles.arcBottom} />
-      {/* Center dot */}
-      <LinearGradient
-        colors={[COLORS.secondary, COLORS.primary]}
-        style={logoStyles.centerDot}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      />
-    </View>
-  );
-}
-
-const logoStyles = StyleSheet.create({
-  wrap: {
-    width: 72,
-    height: 72,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  ring: {
-    position: 'absolute',
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    borderWidth: 1.5,
-    borderColor: COLORS.secondary,
-    opacity: 0.3,
-  },
-  arcTop: {
-    position: 'absolute',
-    top: 10,
-    left: 18,
-    width: 28,
-    height: 20,
-    borderTopWidth: 3,
-    borderLeftWidth: 3,
-    borderColor: COLORS.secondary,
-    borderRadius: 14,
-    opacity: 0.9,
-  },
-  arcBottom: {
-    position: 'absolute',
-    bottom: 10,
-    right: 18,
-    width: 28,
-    height: 20,
-    borderBottomWidth: 3,
-    borderRightWidth: 3,
-    borderColor: COLORS.primary,
-    borderRadius: 14,
-    opacity: 0.9,
-  },
-  centerDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-});
+// SvitLogo imported from components/SvitLogo.tsx
 
 // ─── Single slide (middle content area) ──────────────────────────────────────
 

@@ -19,6 +19,7 @@ import { Typography, TextPresets } from '../../constants/typography';
 import { Spacing } from '../../constants/spacing';
 import { analytics, Events } from '../../src/analytics';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
+import { SvitLogo } from '../../components/SvitLogo';
 
 export default function RegisterScreen() {
   const { colors } = useTheme();
@@ -85,7 +86,7 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={{ fontSize: 48, color: colors.primary, lineHeight: 52  }}>{'✈'}</Text>
+          <SvitLogo size={80} />
           <Text style={styles.title}>Создать аккаунт</Text>
           <Text style={styles.subtitle}>Начните планировать путешествия</Text>
         </View>

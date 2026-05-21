@@ -4,12 +4,11 @@ import { adminAuth } from '../middleware/admin.middleware';
 
 // HTML layout helper — Bootstrap 5 with sidebar navigation
 // adminSecret is embedded in a meta tag so JS can read it without window.prompt()
-function adminLayout(title: string, content: string, adminSecret?: string): string {
+function adminLayout(title: string, content: string): string {
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="admin-secret" content="${adminSecret ?? ''}">
   <title>${title} — Travel AI Admin</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/css/bootstrap.min.css">
   <style>
@@ -228,7 +227,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       <script>
         async function banUser(id) {
           if (!confirm('Заблокировать пользователя?')) return;
-          const secret = document.querySelector('meta[name="admin-secret"]').content;
+          const secret = sessionStorage.getItem('adminSecret') ?? '';
           const res = await fetch('/admin/users/' + id + '/ban', {
             method: 'POST',
             headers: { 'x-admin-secret': secret }
@@ -240,7 +239,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       </script>`;
 
     reply.header('Content-Type', 'text/html; charset=utf-8');
-    return reply.send(adminLayout('Пользователи', content, process.env.ADMIN_SECRET));
+    return reply.send(adminLayout('Пользователи', content));
   });
 
   // GET /admin/bookings — HTML table of all bookings

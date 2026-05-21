@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useChatStore } from '../../stores/chatStore';
 import { useAuthStore } from '../../stores/authStore';
 import { Spacing } from '../../constants';
 import { useTheme } from '../../src/theme/ThemeContext';
+import { SvitLogo } from '../../components/SvitLogo';
 
 // ── Main entry screen ─────────────────────────────────────────────────────────
 
@@ -23,6 +23,14 @@ export default function ChatEntryScreen() {
 
   // For authenticated users: load sessions and redirect into the last (or new) chat
   const initAuthenticated = useCallback(async () => {
+    // Fast path: if sessions are already loaded — navigate immediately without spinner delay
+    const { sessions: existingSessions } = useChatStore.getState();
+    const lastSession = existingSessions[0];
+    if (lastSession) {
+      router.replace(`/(tabs)/chat/${lastSession.id}` as never);
+      return;
+    }
+
     setHasError(false);
 
     const timeout = new Promise<never>((_, reject) =>
@@ -55,13 +63,27 @@ export default function ChatEntryScreen() {
         const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
         router.navigate((`/(tabs)/chat/${fallbackId}`) as never);
       } else {
-        setHasError(true);
+        // Любая другая ошибка — тоже fallback-навигация, не вечный спиннер
+        try {
+          const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+          router.navigate((`/(tabs)/chat/${fallbackId}`) as never);
+        } catch {
+          setHasError(true);
+        }
       }
     }
   }, [loadSessions, createSession]);
 
   // For guests: create a real session (backend uses X-Guest-ID header)
   const initGuest = useCallback(async () => {
+    // Fast path: if sessions are already loaded — navigate immediately without spinner delay
+    const { sessions: existingSessions } = useChatStore.getState();
+    const lastSession = existingSessions[0];
+    if (lastSession) {
+      router.replace(`/(tabs)/chat/${lastSession.id}` as never);
+      return;
+    }
+
     try {
       const { chatService } = await import('../../services/chatService');
       const response = await chatService.createSession();
@@ -89,19 +111,14 @@ export default function ChatEntryScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, guestId, isAuthLoading]);
 
-  // Safety net: if auth loading hangs for more than 10 s (SecureStore deadlock,
-  // slow device, etc.) bail out with an in-memory guest session so the user is
-  // never stuck on an infinite spinner.
+  // Universal safety net: если через 10 с мы всё ещё на экране-спиннере —
+  // форс-навигация в чат для ВСЕХ пользователей (auth и гость).
   useEffect(() => {
-    const timer = setTimeout(() => {
-      // Only fire if we still haven't navigated away (spinner still visible)
-      const { isAuthenticated: auth, guestId: gid, isLoading: loading } = useAuthStore.getState();
-      if (!auth && (gid === null || loading)) {
-        const emergencyId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-        router.navigate(`/(tabs)/chat/${emergencyId}` as never);
-      }
+    const safetyTimer = setTimeout(() => {
+      const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      router.navigate(`/(tabs)/chat/${fallbackId}` as never);
     }, 10_000);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(safetyTimer);
   }, []);
 
   void sessions; // suppress unused warning
@@ -111,14 +128,7 @@ export default function ChatEntryScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingHorizontal: Spacing.xl }]}>
         <View style={styles.logoWrap}>
-          <LinearGradient
-            colors={['rgba(232,160,32,0.25)', 'rgba(232,160,32,0.06)']}
-            style={styles.logoGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Text style={{ fontSize: 48, color: colors.primary, lineHeight: 52  }}>{'✈'}</Text>
-          </LinearGradient>
+          <SvitLogo size={96} />
         </View>
         <Text style={[styles.brand, { color: colors.text }]}>SVIT</Text>
         <Text style={[styles.errorIcon, { fontSize: 40, color: colors.textMuted }]}>{'☁'}</Text>
@@ -142,14 +152,7 @@ export default function ChatEntryScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background, paddingHorizontal: Spacing.xl }]}>
       <View style={styles.logoWrap}>
-        <LinearGradient
-          colors={['rgba(232,160,32,0.25)', 'rgba(232,160,32,0.06)']}
-          style={styles.logoGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <Text style={{ fontSize: 48, color: colors.primary, lineHeight: 52  }}>{'✈'}</Text>
-        </LinearGradient>
+        <SvitLogo size={96} />
       </View>
       <Text style={[styles.brand, { color: colors.text }]}>SVIT</Text>
       <Text style={[styles.tagline, { color: colors.textMuted }]}>Ваш AI-помощник в путешествиях</Text>
@@ -172,15 +175,6 @@ const styles = StyleSheet.create({
   },
   logoWrap: {
     marginBottom: 8,
-  },
-  logoGradient: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(232,160,32,0.3)',
   },
   brand: {
     fontFamily: 'Sora',

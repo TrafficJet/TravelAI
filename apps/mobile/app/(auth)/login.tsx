@@ -19,6 +19,7 @@ import { Spacing } from '../../constants/spacing';
 import { analyticsService } from '../../src/services/analytics.service';
 import { AnalyticsEvents } from '../../src/constants/analytics-events';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
+import { SvitLogo } from '../../components/SvitLogo';
 
 export default function LoginScreen() {
   const { colors } = useTheme();
@@ -75,9 +76,7 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <View style={styles.logoWrap}>
-            <Text style={{ fontSize: 48, color: colors.primary, lineHeight: 52  }}>{'✈'}</Text>
-          </View>
+          <SvitLogo />
           <Text style={styles.title}>SVIT</Text>
           <Text style={styles.subtitle}>AI-ассистент для путешествий</Text>
         </View>
@@ -167,20 +166,6 @@ function getStyles(colors: ReturnType<typeof useTheme>['colors']) {
       alignItems: 'center',
       marginBottom: Spacing.xl,
       paddingTop: Spacing.lg,
-    },
-    logoWrap: {
-      width: 80,
-      height: 80,
-      borderRadius: 40,
-      backgroundColor: '#E8A020',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: Spacing.md,
-      shadowColor: '#E8A020',
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.6,
-      shadowRadius: 24,
-      elevation: 12,
     },
     title: {
       fontFamily: 'Sora',

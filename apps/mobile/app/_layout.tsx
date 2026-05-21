@@ -26,6 +26,7 @@ import { ThemeProvider, useTheme } from '../src/theme/ThemeContext';
 import { NotificationsProvider } from '../context/NotificationsContext';
 import { initSentry } from '../lib/sentry';
 import { toast } from '../lib/toast';
+import { SvitLogo } from '../components/SvitLogo';
 import { handleDeepLink } from '../lib/deeplinks';
 import { ONBOARDING_KEY } from './onboarding';
 import i18n from '../src/i18n';
@@ -74,6 +75,7 @@ function BrandSplash({ onFinish }: { onFinish: () => void }) {
     <View style={splashStyles.root}>
       <StatusBar style="light" />
       <Animated.View style={[splashStyles.content, { opacity }]}>
+        <SvitLogo size={88} />
         <Text style={splashStyles.brand}>SVIT</Text>
         <Text style={splashStyles.tagline}>AI-ассистент путешественника</Text>
       </Animated.View>
@@ -182,7 +184,7 @@ function ThemedStack({ fontsLoaded, showBrandSplash, onBrandSplashFinish }: Them
           name="terms-of-service"
           options={{ title: 'Условия использования', headerBackTitle: 'Назад' }}
         />
-        <Stack.Screen name="+not-found" options={{ title: 'Не найдено' }} />
+<Stack.Screen name="+not-found" options={{ title: 'Не найдено' }} />
       </Stack>
       <ToastContainer />
 
@@ -202,6 +204,7 @@ export default function RootLayout() {
   const loadFavorites = useFavoritesStore((state) => state.loadFavorites);
   const responseListenerRef = useRef<EventSubscription | null>(null);
   const prevAuthenticatedRef = useRef<boolean>(false);
+  const hasNavigatedRef = useRef<boolean>(false);
 
   // Controls whether to show the custom brand splash
   const [showBrandSplash, setShowBrandSplash] = useState(true);
@@ -304,8 +307,11 @@ export default function RootLayout() {
 
   // Redirect logic — runs after brand splash disappears (showBrandSplash = false)
   // and after auth + fonts are ready.
+  // hasNavigatedRef ensures this fires only once so it cannot race with the
+  // router.navigate() calls inside index.tsx's initAuthenticated / initGuest.
   useEffect(() => {
-    if (isLoading || showBrandSplash) return;
+    if (isLoading || showBrandSplash || hasNavigatedRef.current) return;
+    hasNavigatedRef.current = true;
 
     async function navigate() {
       // Restore saved language before navigating so the first screen is localised
