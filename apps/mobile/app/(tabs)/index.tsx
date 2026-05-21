@@ -18,27 +18,43 @@ import { useTheme } from '../../src/theme/ThemeContext';
 export default function ChatEntryScreen() {
   const { colors } = useTheme();
   const { sessions, loadSessions, createSession } = useChatStore();
-  const { isAuthenticated, guestId } = useAuthStore();
+  const { isAuthenticated, guestId, isLoading: isAuthLoading } = useAuthStore();
   const [hasError, setHasError] = useState(false);
 
   // For authenticated users: load sessions and redirect into the last (or new) chat
   const initAuthenticated = useCallback(async () => {
     setHasError(false);
-    try {
-      await loadSessions();
-      const current = useChatStore.getState().sessions[0];
-      if (current) {
-        router.replace((`/(tabs)/chat/${current.id}`) as never);
-      } else {
-        const id = await createSession();
-        router.replace((`/(tabs)/chat/${id}`) as never);
-      }
-    } catch {
-      // Fallback: try creating a fresh session
+
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('init_timeout')), 8_000),
+    );
+
+    const actualInit = async () => {
       try {
-        const id = await createSession();
-        router.replace((`/(tabs)/chat/${id}`) as never);
+        await loadSessions();
+        const current = useChatStore.getState().sessions[0];
+        if (current) {
+          router.navigate((`/(tabs)/chat/${current.id}`) as never);
+        } else {
+          const id = await createSession();
+          router.navigate((`/(tabs)/chat/${id}`) as never);
+        }
       } catch {
+        // Fallback: try creating a fresh session
+        const id = await createSession();
+        router.navigate((`/(tabs)/chat/${id}`) as never);
+      }
+    };
+
+    try {
+      await Promise.race([actualInit(), timeout]);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : '';
+      if (msg === 'init_timeout') {
+        // Backend slow/unavailable — use a local fallback session ID and continue
+        const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+        router.navigate((`/(tabs)/chat/${fallbackId}`) as never);
+      } else {
         setHasError(true);
       }
     }
@@ -50,15 +66,18 @@ export default function ChatEntryScreen() {
       const { chatService } = await import('../../services/chatService');
       const response = await chatService.createSession();
       const id = response.session.id;
-      router.replace(`/(tabs)/chat/${id}` as never);
+      router.navigate(`/(tabs)/chat/${id}` as never);
     } catch {
       // Backend unavailable — use local ID, session will be created lazily on first message
       const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-      router.replace(`/(tabs)/chat/${fallbackId}` as never);
+      router.navigate(`/(tabs)/chat/${fallbackId}` as never);
     }
   }, []);
 
   useEffect(() => {
+    // Don't navigate until auth store has finished loading from SecureStore
+    if (isAuthLoading) return;
+
     if (isAuthenticated) {
       void initAuthenticated();
     } else if (guestId !== null) {
@@ -68,7 +87,22 @@ export default function ChatEntryScreen() {
     }
     // guestId === null means it's still being loaded — effect will re-run when it's set
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, guestId]);
+  }, [isAuthenticated, guestId, isAuthLoading]);
+
+  // Safety net: if auth loading hangs for more than 10 s (SecureStore deadlock,
+  // slow device, etc.) bail out with an in-memory guest session so the user is
+  // never stuck on an infinite spinner.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Only fire if we still haven't navigated away (spinner still visible)
+      const { isAuthenticated: auth, guestId: gid, isLoading: loading } = useAuthStore.getState();
+      if (!auth && (gid === null || loading)) {
+        const emergencyId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+        router.navigate(`/(tabs)/chat/${emergencyId}` as never);
+      }
+    }, 10_000);
+    return () => clearTimeout(timer);
+  }, []);
 
   void sessions; // suppress unused warning
 

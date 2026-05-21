@@ -558,6 +558,14 @@ function PaymentMethods() {
         activeOpacity={0.7}
         onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
       >
+        <Text style={[pmStyles.icon, { color: colors.text, fontSize: 14, fontWeight: '700' }]}>Pay</Text>
+        <Text style={[pmStyles.label, { color: colors.textMuted }]}>Apple Pay</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
+        activeOpacity={0.7}
+        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
+      >
         <Text style={[pmStyles.icon, { color: '#3B82F6', fontSize: 14, fontWeight: '700' as const }]}>VISA</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>Visa ••4821</Text>
       </TouchableOpacity>
@@ -566,24 +574,8 @@ function PaymentMethods() {
         activeOpacity={0.7}
         onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
       >
-        <Text style={[pmStyles.icon, { color: '#F7931A' }]}>₿</Text>
-        <Text style={[pmStyles.label, { color: colors.textMuted }]}>Bitcoin</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
-        activeOpacity={0.7}
-        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
-      >
         <Text style={[pmStyles.icon, { color: '#26A17B' }]}>$</Text>
         <Text style={[pmStyles.label, { color: colors.textMuted }]}>USDT</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
-        activeOpacity={0.7}
-        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
-      >
-        <Text style={[pmStyles.icon, { color: colors.text, fontSize: 14, fontWeight: '700' }]}>Pay</Text>
-        <Text style={[pmStyles.label, { color: colors.textMuted }]}>Apple Pay</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}

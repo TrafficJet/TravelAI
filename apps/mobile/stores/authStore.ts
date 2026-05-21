@@ -81,7 +81,15 @@ export const useAuthStore = create<AuthStore>((set, get) => {
         }
         set({ guestId });
       } catch {
-        set({ guestId: null });
+        // SecureStore unavailable (e.g. first launch on some simulators) —
+        // generate an in-memory guest ID so the chat entry screen can proceed.
+        // Without this guestId stays null forever and index.tsx spins indefinitely.
+        const fallbackGuestId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+        set({ guestId: fallbackGuestId });
       }
     },
 

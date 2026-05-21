@@ -1136,7 +1136,7 @@ export default function ProfileScreen() {
     passportMini: {
       width: 54,
       height: 74,
-      backgroundColor: '#1D4ED8',
+      backgroundColor: '#7C5CFC',
       borderRadius: 6,
       padding: 6,
       justifyContent: 'space-between',
@@ -1876,7 +1876,7 @@ export default function ProfileScreen() {
             <View style={[styles.switchRow, styles.switchRowNoBorder]}>
               <View style={styles.switchLabel}>
                 <Text style={[styles.switchTitle, { color: colors.text }]}>Язык</Text>
-                <Text style={[styles.switchSubtitle, { color: colors.textSecondary }]}>
+                <Text style={[styles.switchSubtitle, { color: colors.textMuted }]}>
                   Язык интерфейса приложения
                 </Text>
               </View>
