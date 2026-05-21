@@ -99,6 +99,13 @@ export default function ChatEntryScreen() {
       const { chatService } = await import('../../services/chatService');
       const response = await chatService.createSession();
       const id = response.session.id;
+      // Add the new guest session to the store so chat history is populated
+      const newSession = {
+        id,
+        title: response.session.title ?? 'Новый чат',
+        updatedAt: new Date().toISOString(),
+      };
+      useChatStore.setState((state) => ({ sessions: [newSession, ...state.sessions] }));
       router.replace(`/(tabs)/chat/${id}` as never);
     } catch {
       // Backend unavailable — use local ID, session will be created lazily on first message

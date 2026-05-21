@@ -72,7 +72,24 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   loadMessages: async (sessionId: string) => {
     try {
       const response = await chatService.getMessages(sessionId);
-      set({ messages: response.data ?? [] });
+      // The API may return Prisma enum uppercase roles (ASSISTANT, USER, TOOL_USE, TOOL_RESULT).
+      // Cast to unknown first so we can safely inspect and remap them to frontend roles.
+      const raw = (response.data ?? []) as unknown as Array<Omit<Message, 'role'> & { role: string }>;
+      // Map DB roles (Prisma enum uppercase) to frontend roles.
+      // TOOL_USE messages are loading-chip placeholders — skip them because
+      // TOOL_RESULT already carries the card data we care about.
+      const messages: Message[] = raw
+        .filter((m) => m.role !== 'TOOL_USE')
+        .map((m) => ({
+          ...m,
+          role: (
+            m.role === 'TOOL_RESULT' ? 'tool'
+            : m.role === 'ASSISTANT' ? 'assistant'
+            : m.role === 'USER' ? 'user'
+            : m.role.toLowerCase()
+          ) as Message['role'],
+        }));
+      set({ messages });
     } catch (err: unknown) {
       // Guest users receive 401 — show empty messages rather than crashing
       if (is401(err)) {

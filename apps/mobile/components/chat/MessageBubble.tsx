@@ -215,10 +215,10 @@ const typingStyles = StyleSheet.create({
 // Note: react-native-markdown-display requires plain objects, not StyleSheet.create
 
 const markdownStyles = {
-  body: { color: '#F4F2FF', fontSize: 15, lineHeight: 22, fontFamily: 'Inter' },
-  heading1: { color: '#E8A020', fontWeight: 'bold' as const, fontSize: 18, marginBottom: 8, fontFamily: 'Sora' },
-  heading2: { color: '#F2B84B', fontWeight: '600' as const, fontSize: 16, marginBottom: 6, fontFamily: 'Sora' },
-  heading3: { color: '#F4F2FF', fontWeight: '600' as const, fontSize: 15, marginBottom: 4, fontFamily: 'Inter' },
+  body: { color: '#F4F2FF', fontSize: 15, lineHeight: 22 },
+  heading1: { color: '#E8A020', fontWeight: 'bold' as const, fontSize: 18, marginBottom: 8, fontFamily: 'DMSans_700Bold' },
+  heading2: { color: '#F2B84B', fontWeight: '600' as const, fontSize: 16, marginBottom: 6, fontFamily: 'DMSans_700Bold' },
+  heading3: { color: '#F4F2FF', fontWeight: '600' as const, fontSize: 15, marginBottom: 4 },
   paragraph: { marginBottom: 10, color: '#F4F2FF' },
   strong: { color: '#F2B84B', fontWeight: 'bold' as const },
   em: { color: '#F4F2FF', fontStyle: 'italic' as const },
@@ -227,7 +227,7 @@ const markdownStyles = {
   bullet_list_item: { marginBottom: 4 },
   ordered_list_item: { marginBottom: 4 },
   bullet_list_icon: { color: '#E8A020', marginRight: 8, fontSize: 15, lineHeight: 22 },
-  ordered_list_icon: { color: '#E8A020', marginRight: 6, fontSize: 15, lineHeight: 22, fontFamily: 'Inter' },
+  ordered_list_icon: { color: '#E8A020', marginRight: 6, fontSize: 15, lineHeight: 22 },
   hr: { backgroundColor: '#2E2B42', height: 1, marginVertical: 12 },
   blockquote: {
     borderLeftColor: '#E8A020',
@@ -255,7 +255,7 @@ const markdownStyles = {
     fontSize: 13,
   },
   fence: { backgroundColor: '#1E1C2C', borderRadius: 8, padding: 12, color: '#F4F2FF', fontSize: 13, marginBottom: 8 },
-  text: { color: '#F4F2FF', fontFamily: 'Inter', fontSize: 15, lineHeight: 22 },
+  text: { color: '#F4F2FF', fontSize: 15, lineHeight: 22 },
   softbreak: { width: '100%' as const },
 };
 
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginVertical: 5,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     alignItems: 'flex-end',
   },
   rowUser: {
@@ -434,9 +434,9 @@ const styles = StyleSheet.create({
 
   // Avatar: gradient teal→amber circle with "S"
   avatarGradientWrap: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: '#7C5CFC', // fallback; gradient simulated via layered bg
     alignItems: 'center',
     justifyContent: 'center',
@@ -447,19 +447,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   avatarGradientInner: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: '#E8A020',
     alignItems: 'center',
     justifyContent: 'center',
     // gradient approach: top border in teal via shadow
   },
   avatarLetter: {
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: '700',
     color: '#0E0C1C',
-    lineHeight: 11,
+    lineHeight: 14,
   },
 
   // Bubbles — wrapper limits width so TouchableOpacity doesn't stretch full row
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 4,
-    paddingHorizontal: 13,
+    paddingHorizontal: 12,
     paddingVertical: 9,
   },
 
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
-    paddingHorizontal: 13,
+    paddingHorizontal: 12,
     paddingVertical: 10,
   },
 
@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     marginVertical: 6,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,

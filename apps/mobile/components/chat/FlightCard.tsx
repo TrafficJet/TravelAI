@@ -19,7 +19,7 @@ interface Props {
 
 const PROVIDER_CONFIG: Record<FlightProvider, { label: string; bg: string; color: string }> = {
   AVIASALES: { label: 'Aviasales', bg: 'rgba(255, 107, 0, 0.15)', color: '#FF6B00' },
-  DUFFEL:    { label: 'Duffel',    bg: 'rgba(59,  130, 246, 0.15)', color: '#3B82F6' },
+  DUFFEL:    { label: 'Duffel',    bg: 'rgba(124, 92, 252, 0.15)', color: '#7C5CFC' },
 };
 
 const BADGE_CONFIG: Record<BadgeType, { label: string; glyph: string; bg: string; color: string }> = {
@@ -59,14 +59,8 @@ const AIRLINE_IATA: Record<string, string> = {
 };
 
 const AIRLINE_COLORS = [
-  '#E63946',
-  '#2196F3',
-  '#4CAF50',
-  '#FF9800',
-  '#9C27B0',
-  '#00BCD4',
-  '#F44336',
-  '#3F51B5',
+  '#7C5CFC', '#E8A020', '#A98EFD', '#B87518',
+  '#5A3DD4', '#F2B84B', '#3D3565', '#8888A8',
 ];
 
 function airlineColor(name: string): string {
@@ -355,7 +349,7 @@ export function FlightCard({ flight, onBook, badge, provider }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 14,
+    borderRadius: 16,
     paddingHorizontal: 14,
     paddingTop: 14,
     paddingBottom: 16,
@@ -364,8 +358,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
     elevation: 3,
   },
 
@@ -459,7 +453,7 @@ const styles = StyleSheet.create({
   iataCode: {
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
-    fontFamily: 'Sora',
+    fontFamily: 'DMSans_700Bold',
     lineHeight: 28,
   },
   routeTime: {
@@ -499,7 +493,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
-    fontFamily: 'Sora',
+    fontFamily: 'DMSans_700Bold',
     lineHeight: 28,
   },
   cabinText: {
@@ -509,7 +503,12 @@ const styles = StyleSheet.create({
   selectBtn: {
     paddingHorizontal: 18,
     paddingVertical: 10,
-    borderRadius: 22,
+    borderRadius: 32,
+    shadowColor: '#E8A020',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 4,
   },
   selectBtnText: {
     fontFamily: 'Inter',

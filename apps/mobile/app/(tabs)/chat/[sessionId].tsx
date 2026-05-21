@@ -218,7 +218,7 @@ function GuestWelcomeState({ onSignIn }: { onSignIn: () => void }) {
         Войдите, чтобы начать планировать путешествие.
       </Text>
       <TouchableOpacity style={[guestStyles.btn, { backgroundColor: colors.primary }]} onPress={onSignIn} activeOpacity={0.8}>
-        <Text style={{ fontSize: 18, color: '#fff', marginRight: 8 }}>{'👤'}</Text>
+        <Text style={{ fontSize: 18, color: '#0E0C1C', marginRight: 8 }}>{'👤'}</Text>
         <Text style={guestStyles.btnText}>Войти / Зарегистрироваться</Text>
       </TouchableOpacity>
     </View>
@@ -256,7 +256,7 @@ const guestStyles = StyleSheet.create({
     borderRadius: 14,
   },
   btnText: {
-    color: '#fff',
+    color: '#0E0C1C',
     fontSize: 15,
     fontWeight: '600' as const,
     fontFamily: 'Inter',
@@ -489,7 +489,7 @@ export default function ChatScreen() {
           >
             {displayTitle}
           </Text>
-          <Text style={{ fontSize: 10, color: '#10B981' }}>{'● На связи · отвечает мгновенно'}</Text>
+          <Text style={{ fontSize: 10, color: colors.success }}>{'● На связи · отвечает мгновенно'}</Text>
         </View>
       ),
       headerLeft: () => (
@@ -538,9 +538,10 @@ export default function ChatScreen() {
     loadMessages(sessionId)
       .catch(() => {})
       .finally(() => setIsLoading(false));
-    loadWallet().catch(() => {});
+    void loadWallet().catch(() => {});
     analyticsService.page(AnalyticsEvents.NAVIGATION.SCREEN_VIEW, { name: 'Chat', sessionId });
-  }, [sessionId, loadMessages, loadWallet, setStreaming]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, loadMessages, setStreaming]);
 
   const autoSentRef = useRef(false);
   useEffect(() => {
@@ -640,8 +641,8 @@ export default function ChatScreen() {
             navigation.setOptions({
               headerTitle: () => (
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontFamily: 'Sora', fontSize: 17, fontWeight: '700', color: colors.text }}>{title}</Text>
-                  <Text style={{ fontSize: 10, color: '#10B981' }}>{'● На связи · отвечает мгновенно'}</Text>
+                  <Text style={{ fontFamily: 'DMSans_700Bold', fontSize: 17, fontWeight: '700', color: colors.text }}>{title}</Text>
+                  <Text style={{ fontSize: 10, color: colors.success }}>{'● На связи · отвечает мгновенно'}</Text>
                 </View>
               ),
             });

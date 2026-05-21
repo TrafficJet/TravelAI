@@ -253,7 +253,7 @@ export function HotelCard({ hotel, onBook }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 14,
+    borderRadius: 16,
     marginHorizontal: 0,
     marginVertical: 4,
     borderWidth: 1,
@@ -263,8 +263,8 @@ const styles = StyleSheet.create({
       default: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
+        shadowOpacity: 0.35,
+        shadowRadius: 12,
       },
     }),
     elevation: 3,
@@ -279,8 +279,8 @@ const styles = StyleSheet.create({
   photo: {
     width: '100%',
     height: 140,
-    borderTopLeftRadius: 14,
-    borderTopRightRadius: 14,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
   photoOverlay: {
     position: 'absolute',
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
-    fontFamily: 'Sora',
+    fontFamily: 'DMSans_700Bold',
     lineHeight: 22,
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 0, height: 1 },
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   pricePerNight: {
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
-    fontFamily: 'Sora',
+    fontFamily: 'DMSans_700Bold',
     lineHeight: 28,
   },
   pricePerNightLabel: {
@@ -403,8 +403,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.buttonSm,
+    borderRadius: 32,
     paddingVertical: 10,
+    shadowColor: '#E8A020',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 4,
   },
   bookBtnText: {
     fontFamily: 'Inter',

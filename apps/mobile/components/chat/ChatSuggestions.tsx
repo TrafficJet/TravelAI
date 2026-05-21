@@ -32,13 +32,13 @@ export function ChatSuggestions({ suggestions, onSelect }: Props) {
     chip: {
       backgroundColor: colors.card,
       borderWidth: 1,
-      borderColor: colors.border,
-      borderRadius: 20,
+      borderColor: `${colors.primary}50`,
+      borderRadius: 9999,
       paddingHorizontal: 14,
       paddingVertical: 7,
     },
     chipText: {
-      color: colors.textMuted,
+      color: colors.text,
       fontSize: Typography.sizes.sm,
       fontWeight: Typography.weights.medium,
     },
