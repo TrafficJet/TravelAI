@@ -322,7 +322,6 @@ export default function ChatScreen() {
     sessions,
     updateSessionTitle,
     deleteSession,
-    createSession,
   } = useChatStore();
 
   const { isAuthenticated } = useAuthStore();
@@ -338,7 +337,7 @@ export default function ChatScreen() {
   const [pendingBookingId, setPendingBookingId] = React.useState<string | null>(null);
   const [historyVisible, setHistoryVisible] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
-  const [isCreatingNewChat, setIsCreatingNewChat] = useState(false);
+  const headerHeight = Platform.OS === 'ios' ? 100 : 0;
 
   // ── Swipe left → bookings ─────────────────────────────────────────────────
   const swipePanResponder = useRef(
@@ -566,20 +565,6 @@ export default function ChatScreen() {
     scrollToBottom();
   }, [safeMessages.length, streamingText, scrollToBottom]);
 
-  const handleNewChat = useCallback(async () => {
-    if (isCreatingNewChat || isStreaming) return;
-    setIsCreatingNewChat(true);
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      const id = await createSession();
-      router.replace(`/(tabs)/chat/${id}` as never);
-    } catch {
-      Alert.alert('Ошибка', 'Не удалось создать новый чат. Попробуйте снова.');
-    } finally {
-      setIsCreatingNewChat(false);
-    }
-  }, [isCreatingNewChat, isStreaming, createSession]);
-
   async function handleSend(content: string) {
     if (!sessionId) {
       if (__DEV__) console.warn('[ChatScreen] handleSend blocked: no sessionId');
@@ -759,7 +744,7 @@ export default function ChatScreen() {
       <KeyboardAvoidingView
         style={[styles.container, { backgroundColor: colors.background }]}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        keyboardVerticalOffset={headerHeight}
       >
         <View style={styles.skeletonWrap}>
           <SkeletonChatMessage />
@@ -782,13 +767,19 @@ export default function ChatScreen() {
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      keyboardVerticalOffset={headerHeight}
     >
       {/* Offline banner */}
       <OfflineBanner visible={isOffline} />
 
       {displayMessages.length === 0 ? (
-        <EmptyState />
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <EmptyState />
+        </ScrollView>
       ) : (
         <FlatList
           ref={flatListRef}
@@ -862,19 +853,6 @@ export default function ChatScreen() {
         reason={authReason}
       />
 
-      {/* FAB — new chat */}
-      <TouchableOpacity
-        style={[fabStyles.fab, isCreatingNewChat && fabStyles.fabDisabled]}
-        onPress={() => void handleNewChat()}
-        activeOpacity={0.8}
-        disabled={isCreatingNewChat || isStreaming}
-        accessibilityLabel="Новый чат"
-        accessibilityRole="button"
-      >
-        <Text style={{ fontSize: 28, color: '#0E0C1C', lineHeight: 32 }}>
-          {isCreatingNewChat ? '...' : '+'}
-        </Text>
-      </TouchableOpacity>
     </KeyboardAvoidingView>
     </View>
   );
@@ -944,27 +922,3 @@ const styles = StyleSheet.create({
   },
 });
 
-const fabStyles = StyleSheet.create({
-  fab: {
-    position: 'absolute',
-    bottom: 96,
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#E8A020',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // Shadow iOS
-    shadowColor: '#E8A020',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.45,
-    shadowRadius: 10,
-    // Shadow Android
-    elevation: 8,
-    zIndex: 50,
-  },
-  fabDisabled: {
-    opacity: 0.55,
-  },
-});
