@@ -8,6 +8,17 @@ import { AppError } from '../lib/errors';
  */
 export function registerErrorHandler(fastify: FastifyInstance): void {
   fastify.setErrorHandler((error, _request, reply) => {
+    // Rate-limit errors from @fastify/rate-limit — возвращаем 429 вместо 500
+    if (error.statusCode === 429 || (error as any).code === 'FST_RATE_LIMIT_EXCEEDED') {
+      return reply.status(429).send({
+        error: {
+          code: 'RATE_LIMIT_EXCEEDED',
+          message: 'Слишком много запросов. Попробуйте позже.',
+          retryAfter: (error as any).retryAfter ?? 60,
+        },
+      });
+    }
+
     if (error instanceof AppError) {
       return reply.status(error.statusCode).send(error.toJSON());
     }

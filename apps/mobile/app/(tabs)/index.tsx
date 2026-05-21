@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useChatStore } from '../../stores/chatStore';
 import { useAuthStore } from '../../stores/authStore';
 import { Spacing } from '../../constants';
@@ -20,9 +20,16 @@ export default function ChatEntryScreen() {
   const { sessions, loadSessions, createSession } = useChatStore();
   const { isAuthenticated, guestId, isLoading: isAuthLoading } = useAuthStore();
   const [hasError, setHasError] = useState(false);
+  // Prevent concurrent init calls (e.g. from rapid focus events)
+  const isInitiatingRef = useRef(false);
 
-  // For authenticated users: load sessions and redirect into the last (or new) chat
+  // For authenticated users: load sessions and redirect into the last (or new) chat.
+  // Uses router.replace so this screen is removed from the stack — tapping the Chat
+  // tab again will land directly on the session, not back on this spinner.
   const initAuthenticated = useCallback(async () => {
+    if (isInitiatingRef.current) return;
+    isInitiatingRef.current = true;
+
     // Fast path: if sessions are already loaded — navigate immediately without spinner delay
     const { sessions: existingSessions } = useChatStore.getState();
     const lastSession = existingSessions[0];
@@ -42,15 +49,15 @@ export default function ChatEntryScreen() {
         await loadSessions();
         const current = useChatStore.getState().sessions[0];
         if (current) {
-          router.navigate((`/(tabs)/chat/${current.id}`) as never);
+          router.replace(`/(tabs)/chat/${current.id}` as never);
         } else {
           const id = await createSession();
-          router.navigate((`/(tabs)/chat/${id}`) as never);
+          router.replace(`/(tabs)/chat/${id}` as never);
         }
       } catch {
         // Fallback: try creating a fresh session
         const id = await createSession();
-        router.navigate((`/(tabs)/chat/${id}`) as never);
+        router.replace(`/(tabs)/chat/${id}` as never);
       }
     };
 
@@ -61,13 +68,14 @@ export default function ChatEntryScreen() {
       if (msg === 'init_timeout') {
         // Backend slow/unavailable — use a local fallback session ID and continue
         const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-        router.navigate((`/(tabs)/chat/${fallbackId}`) as never);
+        router.replace(`/(tabs)/chat/${fallbackId}` as never);
       } else {
         // Любая другая ошибка — тоже fallback-навигация, не вечный спиннер
         try {
           const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-          router.navigate((`/(tabs)/chat/${fallbackId}`) as never);
+          router.replace(`/(tabs)/chat/${fallbackId}` as never);
         } catch {
+          isInitiatingRef.current = false;
           setHasError(true);
         }
       }
@@ -76,6 +84,9 @@ export default function ChatEntryScreen() {
 
   // For guests: create a real session (backend uses X-Guest-ID header)
   const initGuest = useCallback(async () => {
+    if (isInitiatingRef.current) return;
+    isInitiatingRef.current = true;
+
     // Fast path: if sessions are already loaded — navigate immediately without spinner delay
     const { sessions: existingSessions } = useChatStore.getState();
     const lastSession = existingSessions[0];
@@ -88,40 +99,53 @@ export default function ChatEntryScreen() {
       const { chatService } = await import('../../services/chatService');
       const response = await chatService.createSession();
       const id = response.session.id;
-      router.navigate(`/(tabs)/chat/${id}` as never);
+      router.replace(`/(tabs)/chat/${id}` as never);
     } catch {
       // Backend unavailable — use local ID, session will be created lazily on first message
       const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-      router.navigate(`/(tabs)/chat/${fallbackId}` as never);
+      router.replace(`/(tabs)/chat/${fallbackId}` as never);
     }
   }, []);
 
-  useEffect(() => {
-    // Don't navigate until auth store has finished loading from SecureStore
-    if (isAuthLoading) return;
+  // useFocusEffect fires every time this screen comes into focus (including when
+  // the user taps the Chat tab from another tab). This prevents the spinner deadlock
+  // that occurred when the screen regained focus but useEffect didn't re-fire.
+  useFocusEffect(
+    useCallback(() => {
+      // Reset the initiating flag so a fresh focus always triggers navigation
+      isInitiatingRef.current = false;
 
-    if (isAuthenticated) {
-      void initAuthenticated();
-    } else if (guestId !== null) {
-      // Wait until guestId is loaded from SecureStore before creating a guest session
-      // (avoids race: api interceptor needs guestId to send X-Guest-ID header)
-      void initGuest();
-    }
-    // guestId === null means it's still being loaded — effect will re-run when it's set
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, guestId, isAuthLoading]);
+      if (isAuthLoading) return;
 
-  // Universal safety net: если через 10 с мы всё ещё на экране-спиннере —
-  // форс-навигация в чат для ВСЕХ пользователей (auth и гость).
-  useEffect(() => {
-    const safetyTimer = setTimeout(() => {
-      const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-      router.navigate(`/(tabs)/chat/${fallbackId}` as never);
-    }, 10_000);
-    return () => clearTimeout(safetyTimer);
-  }, []);
+      if (isAuthenticated) {
+        void initAuthenticated();
+      } else if (guestId !== null) {
+        void initGuest();
+      }
+      // guestId === null means it's still being loaded from SecureStore — will re-run when set
+    }, [isAuthenticated, guestId, isAuthLoading, initAuthenticated, initGuest]),
+  );
 
-  void sessions; // suppress unused warning
+  // Universal safety net: if after 8 s we're still on the spinner, force-navigate.
+  // Shorter than before (8 s) because router.replace is now used everywhere.
+  useFocusEffect(
+    useCallback(() => {
+      const safetyTimer = setTimeout(() => {
+        const { isAuthenticated: auth, guestId: gid } = useAuthStore.getState();
+        const { sessions: existingSessions } = useChatStore.getState();
+        const session = existingSessions[0];
+        if (session) {
+          router.replace(`/(tabs)/chat/${session.id}` as never);
+        } else if (auth || gid) {
+          const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+          router.replace(`/(tabs)/chat/${fallbackId}` as never);
+        }
+      }, 8_000);
+      return () => clearTimeout(safetyTimer);
+    }, []),
+  );
+
+  void sessions;
 
   // ── Error state (only when authenticated user's session load failed) ───────
   if (hasError) {

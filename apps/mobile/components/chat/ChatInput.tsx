@@ -185,7 +185,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
           onPress={handleAttach}
           activeOpacity={0.7}
         >
-          <Text style={{ fontSize: 22, color: colors.primary, lineHeight: 26 }}>{'+'}</Text>
+          <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'⊕'}</Text>
         </TouchableOpacity>
 
         {/* Text input — pill shape */}

@@ -468,9 +468,9 @@ describe('GET /api/flights/popular', () => {
 
     expect(res.body).toHaveLength(5);
     expect(res.body[0]).toMatchObject({
-      origin: 'MOW',
+      origin: 'IST',
       destination: 'DXB',
-      label: 'Москва → Дубай',
+      label: 'Стамбул → Дубай',
       count: 1250,
     });
   });

@@ -26,9 +26,25 @@ import { registerErrorHandler } from '../plugins/error-handler.plugin';
 
 const mockBookingFindFirst = jest.fn();
 const mockWalletFindUnique = jest.fn();
-const mockTransaction = jest.fn();
+const mockWalletUpdateMany = jest.fn();
+const mockBookingUpdate = jest.fn();
+const mockWalletTransactionCreate = jest.fn();
 const mockUserFindUnique = jest.fn();
 const mockSubscriptionFindUnique = jest.fn();
+
+// Объект tx, передаваемый в интерактивную транзакцию
+const mockTx = {
+  wallet: {
+    findUnique: (...args: unknown[]) => mockWalletFindUnique(...args),
+    updateMany: (...args: unknown[]) => mockWalletUpdateMany(...args),
+  },
+  booking: {
+    update: (...args: unknown[]) => mockBookingUpdate(...args),
+  },
+  walletTransaction: {
+    create: (...args: unknown[]) => mockWalletTransactionCreate(...args),
+  },
+};
 
 jest.mock('../lib/prisma', () => ({
   prisma: {
@@ -38,14 +54,15 @@ jest.mock('../lib/prisma', () => ({
       findFirst: (...args: unknown[]) => mockBookingFindFirst(...args),
       // count is called by checkBookingLimit — return 0 so limit is not hit
       count: jest.fn().mockResolvedValue(0),
-      update: jest.fn().mockResolvedValue({}),
+      update: (...args: unknown[]) => mockBookingUpdate(...args),
     },
     wallet: {
       findUnique: (...args: unknown[]) => mockWalletFindUnique(...args),
       update: jest.fn().mockResolvedValue({}),
+      updateMany: (...args: unknown[]) => mockWalletUpdateMany(...args),
     },
     walletTransaction: {
-      create: jest.fn().mockResolvedValue({}),
+      create: (...args: unknown[]) => mockWalletTransactionCreate(...args),
     },
     user: {
       findUnique: (...args: unknown[]) => mockUserFindUnique(...args),
@@ -58,7 +75,8 @@ jest.mock('../lib/prisma', () => ({
     notification: {
       create: jest.fn().mockResolvedValue({}),
     },
-    $transaction: (...args: unknown[]) => mockTransaction(...args),
+    // Интерактивная транзакция: вызываем переданный callback с mockTx
+    $transaction: (fn: (tx: typeof mockTx) => Promise<unknown>) => fn(mockTx),
   },
 }));
 
@@ -158,20 +176,38 @@ describe('POST /api/bookings/confirm', () => {
       plan: 'PREMIUM',
       status: 'ACTIVE',
     });
+    // Default: updateMany — успешное списание (переопределяется в конкретных тестах)
+    mockWalletUpdateMany.mockResolvedValue({ count: 1 });
+    mockBookingUpdate.mockResolvedValue({});
+    mockWalletTransactionCreate.mockResolvedValue({
+      id: 'tttttttt-tttt-tttt-tttt-tttttttttttt',
+      amount: { toString: () => '0' },
+      type: 'DEBIT',
+      description: '',
+      bookingId: null,
+      createdAt: new Date(),
+    });
   });
 
   // ── Happy path ─────────────────────────────────────────────────────────────
 
   it('confirms a PENDING booking and returns 200 with CONFIRMED status', async () => {
     const booking = makeBooking();
-    const wallet = makeWallet(10000);
+    const walletInTx = makeWallet(10000);
     const confirmedBooking = makeBooking({ status: 'CONFIRMED' });
-    const updatedWallet = makeWallet(5000);
+    const newWallet = makeWallet(5000);
     const transaction = makeTransaction();
 
     mockBookingFindFirst.mockResolvedValue(booking);
-    mockWalletFindUnique.mockResolvedValue(wallet);
-    mockTransaction.mockResolvedValue([updatedWallet, confirmedBooking, transaction]);
+    // Первый вызов tx.wallet.findUnique — кошелёк внутри транзакции
+    // Второй вызов tx.wallet.findUnique (в Promise.all) — обновлённый кошелёк
+    mockWalletFindUnique
+      .mockResolvedValueOnce(walletInTx)
+      .mockResolvedValueOnce(newWallet);
+    // Успешное списание — count: 1
+    mockWalletUpdateMany.mockResolvedValue({ count: 1 });
+    mockBookingUpdate.mockResolvedValue(confirmedBooking);
+    mockWalletTransactionCreate.mockResolvedValue(transaction);
 
     const res = await request(app.server)
       .post('/api/bookings/confirm')
@@ -193,6 +229,8 @@ describe('POST /api/bookings/confirm', () => {
 
     mockBookingFindFirst.mockResolvedValue(booking);
     mockWalletFindUnique.mockResolvedValue(wallet);
+    // updateMany с условием balance >= 5000 не найдёт записей — count: 0
+    mockWalletUpdateMany.mockResolvedValue({ count: 0 });
 
     const res = await request(app.server)
       .post('/api/bookings/confirm')

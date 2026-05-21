@@ -726,7 +726,16 @@ function BookingsEmptyState() {
 
       <TouchableOpacity
         style={[emptyStyles.btn, { shadowColor: colors.primary }]}
-        onPress={() => router.replace('/(tabs)')}
+        onPress={async () => {
+          try {
+            const { chatService } = await import('../../services/chatService');
+            const response = await chatService.createSession();
+            router.push(`/(tabs)/chat/${response.session.id}` as never);
+          } catch {
+            const fallbackId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+            router.push(`/(tabs)/chat/${fallbackId}` as never);
+          }
+        }}
         activeOpacity={0.8}
       >
         <LinearGradient

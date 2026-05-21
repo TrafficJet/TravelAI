@@ -209,40 +209,64 @@ export async function confirmBooking(request: FastifyRequest, reply: FastifyRepl
     throw Errors.notFound('Бронирование (должно быть в статусе PENDING)');
   }
 
-  const wallet = await prisma.wallet.findUnique({ where: { userId } });
-  if (!wallet) throw Errors.notFound('Кошелёк');
-
   const price = Number(booking.totalPrice);
-  const balance = Number(wallet.balance);
-  if (balance < price) {
-    // 402 with machine-readable fields so the mobile client can display a top-up prompt
-    throw new AppError(402, 'INSUFFICIENT_FUNDS', 'Недостаточно средств на кошельке', {
-      balance,
-      required: price,
-      currency: booking.currency,
-    });
-  }
 
-  // Debit wallet and confirm booking atomically
-  const [updatedWallet, updatedBooking, transaction] = await prisma.$transaction([
-    prisma.wallet.update({
-      where: { id: wallet.id },
-      data: { balance: { decrement: price } },
-    }),
-    prisma.booking.update({
-      where: { id: booking.id },
-      data: { status: 'CONFIRMED' },
-    }),
-    prisma.walletTransaction.create({
-      data: {
-        walletId: wallet.id,
-        amount: price,
-        type: 'DEBIT',
-        description: `Оплата бронирования #${booking.id.slice(0, 8)}`,
-        bookingId: booking.id,
-      },
-    }),
-  ]);
+  // Интерактивная транзакция: атомарная проверка баланса + списание + создание записей.
+  // Optimistic locking через updateMany(where: { balance: { gte: price } }) —
+  // если баланс не достаточен в момент UPDATE, count === 0 и транзакция откатывается.
+  // Два параллельных запроса не смогут оба списать средства.
+  let updatedBooking: Awaited<ReturnType<typeof prisma.booking.update>>;
+  let transaction: Awaited<ReturnType<typeof prisma.walletTransaction.create>>;
+  let updatedWallet: Awaited<ReturnType<typeof prisma.wallet.findUnique>>;
+
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      // Находим кошелёк внутри транзакции чтобы прочитать актуальный баланс
+      const wallet = await tx.wallet.findUnique({ where: { userId } });
+      if (!wallet) throw Errors.notFound('Кошелёк');
+
+      // Атомарное списание только если баланс по-прежнему достаточен
+      const debitResult = await tx.wallet.updateMany({
+        where: { userId, balance: { gte: price } },
+        data: { balance: { decrement: price } },
+      });
+
+      if (debitResult.count === 0) {
+        // Баланс изменился между read и write — insufficient funds
+        throw new AppError(402, 'INSUFFICIENT_FUNDS', 'Недостаточно средств на кошельке', {
+          balance: Number(wallet.balance),
+          required: price,
+          currency: booking.currency,
+        });
+      }
+
+      const [confirmedBooking, walletTx, newWallet] = await Promise.all([
+        tx.booking.update({
+          where: { id: booking.id },
+          data: { status: 'CONFIRMED' },
+        }),
+        tx.walletTransaction.create({
+          data: {
+            walletId: wallet.id,
+            amount: price,
+            type: 'DEBIT',
+            description: `Оплата бронирования #${booking.id.slice(0, 8)}`,
+            bookingId: booking.id,
+          },
+        }),
+        tx.wallet.findUnique({ where: { userId } }),
+      ]);
+
+      return { confirmedBooking, walletTx, newWallet };
+    });
+
+    updatedBooking = result.confirmedBooking;
+    transaction = result.walletTx;
+    updatedWallet = result.newWallet;
+  } catch (err) {
+    // Прокидываем AppError (402 insufficient funds) как есть, остальное — наверх
+    throw err;
+  }
 
   // Fire-and-forget — send booking confirmation email without blocking the response
   prisma.user.findUnique({ where: { id: userId }, select: { email: true } }).then((u) => {
@@ -304,6 +328,6 @@ export async function confirmBooking(request: FastifyRequest, reply: FastifyRepl
       bookingId: transaction.bookingId,
       createdAt: transaction.createdAt.toISOString(),
     },
-    newBalance: updatedWallet.balance.toString(),
+    newBalance: updatedWallet?.balance?.toString() ?? '0',
   });
 }

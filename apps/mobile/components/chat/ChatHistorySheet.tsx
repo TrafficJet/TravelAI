@@ -1,5 +1,4 @@
 import React, {
-  useRef,
   useState,
   useMemo,
   useCallback,
@@ -17,7 +16,7 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler';
+// GestureHandlerRootView и Swipeable убраны — нативный модуль недоступен в Expo Go
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -97,48 +96,13 @@ interface SessionItemProps {
   onDelete: () => void;
   onRename: (session: ChatSession) => void;
   onTogglePin: () => void;
-  onSwipeOpen: (ref: Swipeable) => void;
-  onSwipeClose: (ref: Swipeable) => void;
 }
 
-function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename, onTogglePin, onSwipeOpen, onSwipeClose }: SessionItemProps) {
+function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename, onTogglePin }: SessionItemProps) {
   const { colors } = useTheme();
-  const swipeableRef = useRef<Swipeable>(null);
-
-  function renderRightActions() {
-    return (
-      <TouchableOpacity
-        style={[itemStyles.deleteBtn, { backgroundColor: colors.error }]}
-        onPress={() => {
-          void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-          swipeableRef.current?.close();
-          onDelete();
-        }}
-        activeOpacity={0.8}
-      >
-        <Text style={{ fontSize: 20, color: "#fff", lineHeight: 24 }}>{'🗑'}</Text>
-        <Text style={itemStyles.deleteBtnText}>Удалить</Text>
-      </TouchableOpacity>
-    );
-  }
 
   return (
-    <Swipeable
-      ref={swipeableRef}
-      renderRightActions={renderRightActions}
-      rightThreshold={40}
-      friction={2}
-      overshootRight={false}
-      containerStyle={[itemStyles.outerWrap, { backgroundColor: colors.error }]}
-      onSwipeableWillOpen={(direction) => {
-        if (direction === 'right') {
-          onSwipeOpen(swipeableRef.current!);
-        }
-      }}
-      onSwipeableClose={() => {
-        onSwipeClose(swipeableRef.current!);
-      }}
-    >
+    <View style={[itemStyles.outerWrap, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
       <TouchableOpacity
         onPress={() => {
           void Haptics.selectionAsync();
@@ -191,12 +155,22 @@ function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename,
             >
               <Text style={{ fontSize: 14, color: colors.textMuted, lineHeight: 18  }}>{'•'}</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                onDelete();
+              }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              activeOpacity={0.7}
+            >
+              <Text style={{ fontSize: 14, color: colors.error, lineHeight: 18 }}>{'🗑'}</Text>
+            </TouchableOpacity>
           </View>
           <Text style={[itemStyles.time, { color: colors.textMuted }]}>{formatItemTime(session.updatedAt)}</Text>
           {isActive && <View style={[itemStyles.activeDot, { backgroundColor: colors.primary }]} />}
         </View>
       </TouchableOpacity>
-    </Swipeable>
+    </View>
   );
 }
 
@@ -341,7 +315,6 @@ export function ChatHistorySheet({
   const [pinnedIds, setPinnedIds] = useState<string[]>([]);
   const [renameSession, setRenameSession] = useState<ChatSession | null>(null);
   const [renameText, setRenameText] = useState('');
-  const openSwipeableRef = useRef<Swipeable | null>(null);
 
   // Load pinned chats when sheet opens
   useEffect(() => {
@@ -396,19 +369,6 @@ export function ChatHistorySheet({
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }
 
-  const handleSwipeOpen = useCallback((ref: Swipeable) => {
-    if (openSwipeableRef.current && openSwipeableRef.current !== ref) {
-      openSwipeableRef.current.close();
-    }
-    openSwipeableRef.current = ref;
-  }, []);
-
-  const handleSwipeClose = useCallback((ref: Swipeable) => {
-    if (openSwipeableRef.current === ref) {
-      openSwipeableRef.current = null;
-    }
-  }, []);
-
   const handleNewChat = useCallback(async () => {
     if (isCreating) return;
     setIsCreating(true);
@@ -432,7 +392,7 @@ export function ChatHistorySheet({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <View style={[sheetStyles.container, { backgroundColor: colors.surface, paddingBottom: insets.bottom + 8 }]}>
           {/* Drag handle */}
           <View style={[sheetStyles.handle, { backgroundColor: colors.border }]} />
@@ -496,8 +456,6 @@ export function ChatHistorySheet({
                 onDelete={() => handleSessionDelete(item)}
                 onRename={handleRename}
                 onTogglePin={() => { void handleTogglePin(item.id); }}
-                onSwipeOpen={handleSwipeOpen}
-                onSwipeClose={handleSwipeClose}
               />
             )}
             ListEmptyComponent={
@@ -563,7 +521,7 @@ export function ChatHistorySheet({
             </View>
           </Modal>
         </View>
-      </GestureHandlerRootView>
+      </View>
     </Modal>
   );
 }

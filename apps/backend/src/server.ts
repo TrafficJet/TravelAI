@@ -160,8 +160,10 @@ async function start() {
     await fastify.listen({ port: PORT, host: HOST });
     console.error(`[STARTUP] Server is up and listening on http://${HOST}:${PORT}`);
 
-    // Seed demo user with PREMIUM subscription on every startup (idempotent)
-    await ensureDemoUser(prisma);
+    // Seed demo user only in non-production environments (backdoor prevention)
+    if (process.env.NODE_ENV !== 'production') {
+      await ensureDemoUser(prisma);
+    }
 
     // Start background workers after server is listening
     registerPriceAlertWorker();

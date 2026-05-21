@@ -11,8 +11,8 @@ if (!process.env.JWT_REFRESH_SECRET) {
 const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
-// Access token TTL: 2 hours (extended for demo presentations)
-const ACCESS_TTL = 2 * 60 * 60;
+// Access token TTL: 15 minutes (security hardening)
+const ACCESS_TTL = 15 * 60;
 // Refresh token TTL: 30 days
 const REFRESH_TTL = 30 * 24 * 60 * 60;
 
@@ -36,11 +36,12 @@ export function signRefreshToken(payload: RefreshTokenPayload): string {
 }
 
 export function verifyAccessToken(token: string): AccessTokenPayload {
-  return jwt.verify(token, ACCESS_SECRET) as AccessTokenPayload;
+  // Явное указание алгоритма предотвращает атаку alg:none / algorithm confusion
+  return jwt.verify(token, ACCESS_SECRET, { algorithms: ['HS256'] }) as AccessTokenPayload;
 }
 
 export function verifyRefreshToken(token: string): RefreshTokenPayload {
-  return jwt.verify(token, REFRESH_SECRET) as RefreshTokenPayload;
+  return jwt.verify(token, REFRESH_SECRET, { algorithms: ['HS256'] }) as RefreshTokenPayload;
 }
 
 export function getRefreshExpiresAt(): Date {

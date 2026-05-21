@@ -7,8 +7,14 @@ const DEMO_PASSWORD = 'Demo1234!';
 /**
  * Ensures demo user exists with PREMIUM subscription.
  * Called once on server startup — safe to run multiple times (idempotent).
+ * Skipped automatically in production to prevent a backdoor account.
  */
 export async function ensureDemoUser(prisma: PrismaClient): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('[seed] ensureDemoUser: skipped in production');
+    return;
+  }
+
   try {
     // 1. Upsert user (ensure password and provider are always correct)
     let user = await prisma.user.findUnique({ where: { email: DEMO_EMAIL } });
