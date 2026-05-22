@@ -21,6 +21,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Typography } from '../../constants/typography';
 import { ChatSuggestions } from './ChatSuggestions';
 import { useTheme } from '../../src/theme/ThemeContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface ChatInputHandle {
   /** Programmatically set input text without sending */
@@ -51,6 +52,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
   ref,
 ) {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [text, setText] = useState(initialMessage ?? '');
 
   // Scale animation for send button
@@ -178,7 +180,11 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
       )}
 
       {/* Input row */}
-      <View style={[styles.container, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+      <View style={[styles.container, {
+        backgroundColor: colors.surface,
+        borderTopColor: colors.border,
+        paddingBottom: Math.max(10, insets.bottom > 0 ? insets.bottom : 10),
+      }]}>
         {/* Attach button */}
         <TouchableOpacity
           style={[styles.attachBtn, { backgroundColor: colors.card, borderColor: colors.border }]}

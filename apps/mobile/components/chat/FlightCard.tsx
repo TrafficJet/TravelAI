@@ -162,16 +162,17 @@ const arrowStyles = StyleSheet.create({
 
 // ── Chat navigation helper ────────────────────────────────────────────────────
 
-function navigateToBookFlight(flight: FlightOffer) {
-  const sessions = useChatStore.getState().sessions;
-  const sessionId = sessions[0]?.id;
+async function navigateToBookFlight(flight: FlightOffer) {
+  const store = useChatStore.getState();
+  let sessionId = store.sessions[0]?.id;
   const dateLabel = flight.departureDate ? ` ${flight.departureDate}` : '';
   const message = `Забронируй рейс ${flight.airline} ${flight.origin}→${flight.destination}${dateLabel} ${flight.flightNumber}`;
 
+  if (!sessionId) {
+    try { sessionId = await store.createSession(); } catch { /* ignore */ }
+  }
   if (sessionId) {
     router.push({ pathname: '/(tabs)/chat/[sessionId]', params: { sessionId, initialMessage: message } } as never);
-  } else {
-    router.push({ pathname: '/(tabs)', params: { initialMessage: message } } as never);
   }
 }
 
@@ -204,7 +205,7 @@ export function FlightCard({ flight, onBook, badge, provider }: Props) {
   }
 
   function handleBook() {
-    if (onBook) { onBook(); } else { navigateToBookFlight(flight); }
+    if (onBook) { onBook(); } else { void navigateToBookFlight(flight); }
   }
 
   return (
