@@ -145,9 +145,9 @@ const placeholderStyles = StyleSheet.create({
 
 // ── Chat navigation helper ────────────────────────────────────────────────────
 
-function navigateToBookHotel(hotel: Hotel, nights: number) {
-  const sessions = useChatStore.getState().sessions;
-  const sessionId = sessions[0]?.id;
+async function navigateToBookHotel(hotel: Hotel, nights: number) {
+  const store = useChatStore.getState();
+  let sessionId = store.sessions[0]?.id;
   const nightsLabel = nights > 0
     ? ` ${nights} ${nights === 1 ? 'ночь' : nights < 5 ? 'ночи' : 'ночей'}`
     : '';
@@ -156,10 +156,11 @@ function navigateToBookHotel(hotel: Hotel, nights: number) {
     : '';
   const message = `Забронируй отель ${hotel.name}${datesLabel}${nightsLabel}`;
 
+  if (!sessionId) {
+    try { sessionId = await store.createSession(); } catch { /* ignore */ }
+  }
   if (sessionId) {
     router.push({ pathname: '/(tabs)/chat/[sessionId]', params: { sessionId, initialMessage: message } } as never);
-  } else {
-    router.push({ pathname: '/(tabs)', params: { initialMessage: message } } as never);
   }
 }
 
@@ -196,7 +197,7 @@ export function HotelCard({ hotel, onBook }: Props) {
   }
 
   function handleBook() {
-    if (onBook) { onBook(); } else { navigateToBookHotel(hotel, nights); }
+    if (onBook) { onBook(); } else { void navigateToBookHotel(hotel, nights); }
   }
 
   const topAmenities = hotel.amenities ? hotel.amenities.slice(0, 3) : [];

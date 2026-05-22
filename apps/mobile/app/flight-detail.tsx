@@ -16,6 +16,7 @@ import { useTheme } from '../src/theme/ThemeContext';
 import { Typography } from '../constants/typography';
 import { useChatStore } from '../stores/chatStore';
 import { FavoriteButton } from '../components/ui/FavoriteButton';
+import { toast } from '../lib/toast';
 import type { FlightOffer } from '../types';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -219,16 +220,16 @@ export default function FlightDetailScreen() {
       return;
     }
     try {
-      const { createSession } = useChatStore.getState();
-      const newSessionId = await createSession();
+      const store = useChatStore.getState();
+      let sessionId = store.sessions[0]?.id;
+      if (!sessionId) { sessionId = await store.createSession(); }
       const msg = `Забронируй рейс ${flightNumber} авиакомпании ${airline} из ${origin} в ${destination}${departureDate ? `, ${departureDate}` : ''}, класс ${cabinLabel}. Цена: ${formattedPrice}.`;
       router.push({
         pathname: '/(tabs)/chat/[sessionId]',
-        params: { sessionId: newSessionId, initialMessage: msg },
+        params: { sessionId, initialMessage: msg },
       } as never);
     } catch {
-      // fallback если не авторизован
-      router.push('/(tabs)/chat/new' as never);
+      router.push('/(tabs)' as Parameters<typeof router.push>[0]);
     }
   }, [bookingId, flightNumber, airline, origin, destination, departureDate, cabinLabel, formattedPrice]);
 

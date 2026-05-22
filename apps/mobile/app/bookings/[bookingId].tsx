@@ -372,10 +372,11 @@ const tlStyles = StyleSheet.create({
 export default function BookingDetailScreen() {
   const { colors } = useTheme();
   const { bookingId } = useLocalSearchParams<{ bookingId: string }>();
-  const { currentBooking, loadBooking, confirmBooking, cancelBooking, isLoading, bookingError } =
+  const { currentBooking, loadBooking, confirmBooking, cancelBooking, isLoading } =
     useBookingStore();
   const [isConfirming, setIsConfirming] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
 
   const STATUS_COLORS: Record<BookingStatus, string> = {
     PENDING: colors.warning,
@@ -385,9 +386,23 @@ export default function BookingDetailScreen() {
   };
 
   useEffect(() => {
-    if (bookingId) {
-      loadBooking(bookingId).catch(() => {});
+    if (!bookingId) return;
+
+    // Сначала проверяем локальный store — избегаем лишнего сетевого запроса
+    const { bookings } = useBookingStore.getState();
+    const localBooking = (bookings ?? []).find((b) => b.id === bookingId);
+    if (localBooking) {
+      useBookingStore.setState({ currentBooking: localBooking });
+      return;
     }
+
+    // Если не нашли локально — грузим с бэкенда
+    setLoadError(null);
+    loadBooking(bookingId).catch((err) => {
+      const msg = err instanceof Error ? err.message : 'Не удалось загрузить бронирование';
+      setLoadError(msg);
+      toast.error('Не удалось загрузить бронирование');
+    });
   }, [bookingId, loadBooking]);
 
   async function handleConfirm() {
@@ -470,13 +485,36 @@ export default function BookingDetailScreen() {
     return <LoadingSpinner fullScreen />;
   }
 
+  if (!isLoading && loadError) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background, padding: 32 }}>
+        <Text style={{ fontSize: 40, marginBottom: 16 }}>{'!'}</Text>
+        <Text style={{ color: colors.text, fontSize: 18, fontWeight: '700', marginBottom: 8, textAlign: 'center' }}>
+          Не удалось загрузить
+        </Text>
+        <Text style={{ color: colors.textMuted, fontSize: 14, textAlign: 'center', marginBottom: 24 }}>
+          {loadError}
+        </Text>
+        <TouchableOpacity
+          style={{ backgroundColor: colors.primary, borderRadius: 32, paddingHorizontal: 24, paddingVertical: 12 }}
+          onPress={() => { setLoadError(null); loadBooking(bookingId!).catch((e) => setLoadError(e instanceof Error ? e.message : 'Ошибка')); }}
+        >
+          <Text style={{ color: '#fff', fontWeight: '700' }}>Попробовать снова</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ marginTop: 12 }} onPress={() => router.back()}>
+          <Text style={{ color: colors.textMuted }}>Назад</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   if (!currentBooking) {
     return (
       <View style={[styles.container, errorStyles.center, { backgroundColor: colors.background }]}>
         <Text style={{ fontSize: 40, marginBottom: 16 }}>{'⚠'}</Text>
         <Text style={[errorStyles.title, { color: colors.text }]}>Бронь не найдена</Text>
         <Text style={[errorStyles.sub, { color: colors.textMuted }]}>
-          {bookingError ?? 'Не удалось загрузить бронирование'}
+          Не удалось загрузить бронирование
         </Text>
         <TouchableOpacity
           style={[errorStyles.btn, { backgroundColor: colors.primary }]}
