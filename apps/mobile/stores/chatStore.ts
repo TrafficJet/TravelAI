@@ -27,6 +27,8 @@ interface ChatStore {
   updateMessage: (id: string, updates: Partial<Message>) => void;
   setPendingBooking: (booking: BookingDraft | null) => void;
   updateSessionTitle: (sessionId: string, title: string) => void;
+  pendingMessage: string | null;
+  setPendingMessage: (msg: string | null) => void;
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -36,6 +38,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   isStreaming: false,
   streamingText: '',
   pendingBooking: null,
+  pendingMessage: null,
 
   loadSessions: async () => {
     try {
@@ -151,6 +154,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     })),
 
   setPendingBooking: (booking) => set({ pendingBooking: booking }),
+
+  setPendingMessage: (msg) => set({ pendingMessage: msg }),
 
   updateSessionTitle: (sessionId: string, title: string) => {
     set((state) => ({

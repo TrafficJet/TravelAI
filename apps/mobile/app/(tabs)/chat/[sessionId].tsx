@@ -12,6 +12,7 @@ import {
   ScrollView,
   PanResponder,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import NetInfo from '@react-native-community/netinfo';
 import { useLocalSearchParams, useNavigation, router } from 'expo-router';
 import { useChatStore } from '../../../stores/chatStore';
@@ -218,7 +219,7 @@ function GuestWelcomeState({ onSignIn }: { onSignIn: () => void }) {
         Войдите, чтобы начать планировать путешествие.
       </Text>
       <TouchableOpacity style={[guestStyles.btn, { backgroundColor: colors.primary }]} onPress={onSignIn} activeOpacity={0.8}>
-        <Text style={{ fontSize: 18, color: '#0E0C1C', marginRight: 8 }}>{'👤'}</Text>
+        <Ionicons name="person-outline" size={18} color="#0E0C1C" style={{ marginRight: 8 }} />
         <Text style={guestStyles.btnText}>Войти / Зарегистрироваться</Text>
       </TouchableOpacity>
     </View>
@@ -273,7 +274,7 @@ function GuestInputBanner({ onSignIn }: { onSignIn: () => void }) {
       onPress={onSignIn}
       activeOpacity={0.85}
     >
-      <Text style={{ fontSize: 16, color: colors.primary, marginRight: 8 }}>{'🔒'}</Text>
+      <Ionicons name="lock-closed-outline" size={16} color={colors.primary} style={{ marginRight: 8 }} />
       <Text style={[guestBannerStyles.text, { color: colors.primary }]}>Войдите чтобы общаться с AI-ассистентом</Text>
     </TouchableOpacity>
   );
@@ -323,6 +324,9 @@ export default function ChatScreen() {
     updateSessionTitle,
     deleteSession,
   } = useChatStore();
+
+  const pendingMessage = useChatStore((s) => s.pendingMessage);
+  const setPendingMessage = useChatStore((s) => s.setPendingMessage);
 
   const { isAuthenticated } = useAuthStore();
   const [authModalVisible, setAuthModalVisible] = useState(false);
@@ -552,6 +556,15 @@ export default function ChatScreen() {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessage, isLoading]);
+
+  // Auto-send pendingMessage from store (e.g. from "Book flight/hotel" buttons)
+  useEffect(() => {
+    if (!pendingMessage || isLoading || isStreaming || autoSentRef.current) return;
+    autoSentRef.current = true;
+    setPendingMessage(null);
+    handleSend(pendingMessage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingMessage, isLoading]);
 
   const safeMessages = messages ?? [];
 

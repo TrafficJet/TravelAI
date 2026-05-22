@@ -9,11 +9,12 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../src/theme/ThemeContext';
 import { Typography } from '../constants/typography';
-import { toast } from '../lib/toast';
+import { useChatStore } from '../stores/chatStore';
 import { FavoriteButton } from '../components/ui/FavoriteButton';
 import type { FlightOffer } from '../types';
 
@@ -212,13 +213,24 @@ export default function FlightDetailScreen() {
     arrivalTime: arrivalTime || undefined,
   };
 
-  const handleBook = useCallback(() => {
+  const handleBook = useCallback(async () => {
     if (bookingId) {
-      router.push(`/bookings/${bookingId}`);
-    } else {
-      toast.info('Для бронирования воспользуйтесь чатом с AI');
+      router.push(`/bookings/${bookingId}` as Parameters<typeof router.push>[0]);
+      return;
     }
-  }, [bookingId]);
+    try {
+      const { createSession } = useChatStore.getState();
+      const newSessionId = await createSession();
+      const msg = `Забронируй рейс ${flightNumber} авиакомпании ${airline} из ${origin} в ${destination}${departureDate ? `, ${departureDate}` : ''}, класс ${cabinLabel}. Цена: ${formattedPrice}.`;
+      router.push({
+        pathname: '/(tabs)/chat/[sessionId]',
+        params: { sessionId: newSessionId, initialMessage: msg },
+      } as never);
+    } catch {
+      // fallback если не авторизован
+      router.push('/(tabs)/chat/new' as never);
+    }
+  }, [bookingId, flightNumber, airline, origin, destination, departureDate, cabinLabel, formattedPrice]);
 
   const handleShare = useCallback(async () => {
     try {
@@ -256,7 +268,7 @@ export default function FlightDetailScreen() {
                 onPress={handleShare}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={{ fontSize: 22, color: colors.text, lineHeight: 26  }}>{'⇪'}</Text>
+                <Text style={{ fontSize: 22, color: colors.text, lineHeight: 26  }}>{'↑'}</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -299,7 +311,7 @@ export default function FlightDetailScreen() {
               {/* Line with plane */}
               <View style={styles.flightLine}>
                 <View style={[styles.flightLineDash, { backgroundColor: colors.border }]} />
-                <Text style={styles.planeIcon}>✈</Text>
+                <Text style={styles.planeIcon}>{'✈'}</Text>
                 <View style={[styles.flightLineDash, { backgroundColor: colors.border }]} />
               </View>
               <StopsBadge stops={stopsNum} />
@@ -323,7 +335,7 @@ export default function FlightDetailScreen() {
 
           {departureDate ? (
             <View style={styles.dateRow}>
-              <Text style={{ fontSize: 13, color: colors.textMuted, lineHeight: 17  }}>{'📅'}</Text>
+              <Ionicons name="calendar-outline" size={13} color={colors.textMuted} />
               <Text style={[styles.dateText, { color: colors.textMuted }]}>{formatDate(departureDate)}</Text>
             </View>
           ) : null}
@@ -332,7 +344,7 @@ export default function FlightDetailScreen() {
         {/* ── Flight info card ──────────────────────────────────────────────── */}
         <Animated.View entering={FadeInUp.delay(120).springify()}>
           <InfoCard
-            icon="✈️"
+            icon="✈"
             title="Рейс"
             rows={[
               { label: 'Авиакомпания', value: airline || '—' },
@@ -345,7 +357,7 @@ export default function FlightDetailScreen() {
         {/* ── Date & time card ──────────────────────────────────────────────── */}
         <Animated.View entering={FadeInUp.delay(180).springify()}>
           <InfoCard
-            icon="📅"
+            icon="–"
             title="Дата и время"
             rows={[
               { label: 'Дата вылета', value: departureDate ? formatDate(departureDate) : '—' },
@@ -364,28 +376,28 @@ export default function FlightDetailScreen() {
           <View style={includedCard.grid}>
             <View style={includedCard.item}>
               <View style={[includedCard.iconCircle, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
-                <Text style={includedCard.iconEmoji}>🎒</Text>
+                <Ionicons name="briefcase-outline" size={20} color={colors.primary} />
               </View>
               <Text style={[includedCard.itemLabel, { color: colors.textMuted }]}>Ручная{'\n'}кладь</Text>
               <Text style={[includedCard.itemValue, { color: colors.text }]}>1 × 10 кг</Text>
             </View>
             <View style={includedCard.item}>
               <View style={[includedCard.iconCircle, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
-                <Text style={includedCard.iconEmoji}>🧳</Text>
+                <Ionicons name="bag-handle-outline" size={20} color={colors.primary} />
               </View>
               <Text style={[includedCard.itemLabel, { color: colors.textMuted }]}>Багаж{'\n'}в салон</Text>
               <Text style={[includedCard.itemValue, { color: colors.text }]}>{cabinLabel === 'Эконом' ? '1 × 23 кг' : '2 × 32 кг'}</Text>
             </View>
             <View style={includedCard.item}>
               <View style={[includedCard.iconCircle, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
-                <Text style={includedCard.iconEmoji}>🍽️</Text>
+                <Ionicons name="restaurant-outline" size={20} color={colors.primary} />
               </View>
               <Text style={[includedCard.itemLabel, { color: colors.textMuted }]}>Питание{'\n'}на борту</Text>
               <Text style={[includedCard.itemValue, { color: colors.text }]}>{cabinLabel === 'Эконом' ? 'Снеки' : 'Меню'}</Text>
             </View>
             <View style={includedCard.item}>
               <View style={[includedCard.iconCircle, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
-                <Text style={includedCard.iconEmoji}>💺</Text>
+                <Ionicons name="shirt-outline" size={20} color={colors.primary} />
               </View>
               <Text style={[includedCard.itemLabel, { color: colors.textMuted }]}>Выбор{'\n'}места</Text>
               <Text style={[includedCard.itemValue, { color: colors.text }]}>{cabinLabel === 'Эконом' ? 'Платно' : 'Бесплатно'}</Text>
@@ -399,7 +411,7 @@ export default function FlightDetailScreen() {
             <Text style={[airlineCard.sectionTitle, { color: colors.textMuted }]}>АВИАКОМПАНИЯ</Text>
             <View style={airlineCard.row}>
               <View style={[airlineCard.logoWrap, { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` }]}>
-                <Text style={airlineCard.logoEmoji}>✈️</Text>
+                <Text style={[airlineCard.logoEmoji, { color: colors.primary }]}>{'✈'}</Text>
               </View>
               <View style={airlineCard.info}>
                 <Text style={[airlineCard.name, { color: colors.text }]}>{airline}</Text>
@@ -415,7 +427,7 @@ export default function FlightDetailScreen() {
         {/* ── Price card ───────────────────────────────────────────────────── */}
         <Animated.View entering={FadeInUp.delay(300).springify()}>
           <InfoCard
-            icon="💰"
+            icon="$"
             title="Стоимость"
             rows={[
               {

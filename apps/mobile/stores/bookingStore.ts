@@ -6,6 +6,7 @@ interface BookingStore {
   bookings: Booking[];
   currentBooking: Booking | null;
   isLoading: boolean;
+  bookingError: string | null;
   load: () => Promise<void>;
   loadBooking: (id: string) => Promise<void>;
   appendBookings: (newBookings: Booking[]) => void;
@@ -17,6 +18,7 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
   bookings: [],
   currentBooking: null,
   isLoading: false,
+  bookingError: null,
 
   appendBookings: (newBookings: Booking[]) => {
     const { bookings } = get();
@@ -37,10 +39,12 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
   },
 
   loadBooking: async (id: string) => {
-    set({ isLoading: true });
+    set({ isLoading: true, bookingError: null });
     try {
       const booking = await bookingService.getBooking(id);
       set({ currentBooking: booking });
+    } catch (err) {
+      set({ bookingError: err instanceof Error ? err.message : 'Ошибка загрузки' });
     } finally {
       set({ isLoading: false });
     }

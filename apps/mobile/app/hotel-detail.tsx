@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -9,10 +9,11 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Typography } from '../constants/typography';
-import { toast } from '../lib/toast';
+import { useChatStore } from '../stores/chatStore';
 import { FavoriteButton } from '../components/ui/FavoriteButton';
 import { useTheme } from '../src/theme/ThemeContext';
 import type { Hotel } from '../types';
@@ -208,12 +209,35 @@ const row = StyleSheet.create({
   value: { fontFamily: 'Inter', fontSize: Typography.sizes.base, fontWeight: Typography.weights.medium },
 });
 
+const guestCounterStyles = StyleSheet.create({
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  btn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnText: {
+    fontSize: 20,
+    fontWeight: '600' as const,
+    lineHeight: 24,
+  },
+});
+
 // ── Screen ─────────────────────────────────────────────────────────────────────
 
 export default function HotelDetailScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const raw = useLocalSearchParams();
+  const [guestCount, setGuestCount] = useState<number | null>(null);
+  const [roomCount, setRoomCount] = useState<number | null>(null);
 
   function str(v: string | string[] | undefined, fallback = ''): string {
     if (Array.isArray(v)) return v[0] ?? fallback;
@@ -273,13 +297,28 @@ export default function HotelDetailScreen() {
     guests: parseInt(guests, 10),
   };
 
-  const handleBook = useCallback(() => {
+  const effectiveGuests = guestCount ?? parseInt(guests, 10);
+  const effectiveRooms = roomCount ?? parseInt(rooms, 10);
+
+  const handleBook = useCallback(async () => {
     if (bookingId) {
-      router.push(`/bookings/${bookingId}`);
-    } else {
-      toast.info('Воспользуйтесь чатом с AI');
+      router.push(`/bookings/${bookingId}` as Parameters<typeof router.push>[0]);
+      return;
     }
-  }, [bookingId]);
+    try {
+      const { createSession } = useChatStore.getState();
+      const newSessionId = await createSession();
+      const guestsNum = effectiveGuests;
+      const roomsNum = effectiveRooms;
+      const msg = `Забронируй отель "${name}"${city ? ` в ${city}` : ''}${checkIn ? ` с заездом ${checkIn}` : ''}${checkOut ? ` по ${checkOut}` : ''}, ${guestsNum} ${guestsNum === 1 ? 'гость' : guestsNum < 5 ? 'гостя' : 'гостей'}, ${roomsNum} ${roomsNum === 1 ? 'номер' : 'номера'}. Цена: ${formattedPricePerNight}/ночь.`;
+      router.push({
+        pathname: '/(tabs)/chat/[sessionId]',
+        params: { sessionId: newSessionId, initialMessage: msg },
+      } as never);
+    } catch {
+      router.push('/(tabs)/chat/new' as never);
+    }
+  }, [bookingId, name, city, checkIn, checkOut, effectiveGuests, effectiveRooms, formattedPricePerNight]);
 
   const handleShare = useCallback(async () => {
     try {
@@ -326,14 +365,14 @@ export default function HotelDetailScreen() {
                 onPress={handleShare}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={{ fontSize: 22, color: colors.text, lineHeight: 26  }}>{'⇪'}</Text>
+                <Text style={{ fontSize: 22, color: colors.text, lineHeight: 26  }}>{'↑'}</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
 
           {/* Photo placeholder icon */}
           <Animated.View entering={FadeIn.duration(400)} style={styles.photoIconArea}>
-            <Text style={styles.photoIcon}>🏨</Text>
+            <Ionicons name="business" size={56} color={colors.primary} />
           </Animated.View>
 
           {/* Name overlaid on photo */}
@@ -348,7 +387,7 @@ export default function HotelDetailScreen() {
                   {stars > 0 ? <StarRow count={stars} /> : null}
                   {(address || city) ? (
                     <View style={styles.locationRow}>
-                      <Text style={{ fontSize: 13, color: colors.textMuted, lineHeight: 17  }}>{'📍'}</Text>
+                      <Ionicons name="location-sharp" size={13} color={colors.textMuted} />
                       <Text style={[styles.locationText, { color: colors.textMuted }]} numberOfLines={1}>
                         {[address, city].filter(Boolean).join(', ')}
                       </Text>
@@ -396,8 +435,62 @@ export default function HotelDetailScreen() {
           {nights > 0 ? (
             <InfoRow icon="moon-outline" label="Ночей" value={String(nights)} />
           ) : null}
-          <InfoRow icon="people-outline" label="Гости" value={guests} />
-          <InfoRow icon="bed-outline" label="Номеров" value={rooms} />
+          {/* ── Guest counter ── */}
+          <View style={[row.container, { borderBottomColor: colors.border }]}>
+            <View style={[row.iconWrap, { backgroundColor: `${colors.primary}18` }]}>
+              <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'•'}</Text>
+            </View>
+            <View style={row.content}>
+              <Text style={[row.label, { color: colors.textMuted }]}>Взрослые</Text>
+              <Text style={[row.value, { color: colors.text }]}>{effectiveGuests}</Text>
+            </View>
+            <View style={guestCounterStyles.controls}>
+              <TouchableOpacity
+                style={[guestCounterStyles.btn, { borderColor: colors.border }]}
+                onPress={() => setGuestCount(Math.max(1, effectiveGuests - 1))}
+                activeOpacity={0.7}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={[guestCounterStyles.btnText, { color: colors.primary }]}>-</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[guestCounterStyles.btn, { borderColor: colors.border }]}
+                onPress={() => setGuestCount(Math.min(10, effectiveGuests + 1))}
+                activeOpacity={0.7}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={[guestCounterStyles.btnText, { color: colors.primary }]}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          {/* ── Rooms counter ── */}
+          <View style={[row.container, { borderBottomColor: colors.border }]}>
+            <View style={[row.iconWrap, { backgroundColor: `${colors.primary}18` }]}>
+              <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'•'}</Text>
+            </View>
+            <View style={row.content}>
+              <Text style={[row.label, { color: colors.textMuted }]}>Номеров</Text>
+              <Text style={[row.value, { color: colors.text }]}>{effectiveRooms}</Text>
+            </View>
+            <View style={guestCounterStyles.controls}>
+              <TouchableOpacity
+                style={[guestCounterStyles.btn, { borderColor: colors.border }]}
+                onPress={() => setRoomCount(Math.max(1, effectiveRooms - 1))}
+                activeOpacity={0.7}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={[guestCounterStyles.btnText, { color: colors.primary }]}>-</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[guestCounterStyles.btn, { borderColor: colors.border }]}
+                onPress={() => setRoomCount(Math.min(10, effectiveRooms + 1))}
+                activeOpacity={0.7}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={[guestCounterStyles.btnText, { color: colors.primary }]}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </Animated.View>
 
         {/* ── Price card ────────────────────────────────────────────────────── */}
@@ -456,7 +549,7 @@ export default function HotelDetailScreen() {
               {/* Pin */}
               <View style={styles.mapPin}>
                 <View style={[styles.mapPinCircle, { backgroundColor: `${colors.primary}20`, borderColor: colors.primary, shadowColor: colors.primary }]}>
-                  <Text style={{ fontSize: 20, color: colors.primary, lineHeight: 24  }}>{'📍'}</Text>
+                  <Ionicons name="location-sharp" size={20} color={colors.primary} />
                 </View>
                 <View style={[styles.mapPinTail, { backgroundColor: colors.primary }]} />
               </View>
@@ -464,7 +557,7 @@ export default function HotelDetailScreen() {
             </LinearGradient>
             {/* Address row */}
             <View style={styles.addressRow}>
-              <Text style={{ fontSize: 16, color: colors.primary, lineHeight: 20  }}>{'📍'}</Text>
+              <Ionicons name="location-sharp" size={16} color={colors.primary} />
               <Text style={[styles.addressText, { color: colors.text }]}>
                 {[address, city].filter(Boolean).join(', ')}
               </Text>

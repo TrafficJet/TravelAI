@@ -8,6 +8,7 @@ import {
   Share,
   TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useBookingStore } from '../../stores/bookingStore';
@@ -92,7 +93,7 @@ function FlightDetailsBlock({ details }: { details: FlightDetails }) {
   return (
     <View style={[detailStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={detailStyles.sectionHeader}>
-        <Text style={{ fontSize: 16, color: colors.primary, lineHeight: 20  }}>{'✈'}</Text>
+        <Ionicons name="airplane-outline" size={16} color={colors.primary} />
         <Text style={[detailStyles.sectionTitle, { color: colors.primary }]}>РЕЙС</Text>
       </View>
       <View style={detailStyles.row}>
@@ -127,7 +128,7 @@ function HotelDetailsBlock({ details, currency }: { details: HotelDetails; curre
   return (
     <View style={[detailStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={detailStyles.sectionHeader}>
-        <Text style={{ fontSize: 16, color: colors.primary, lineHeight: 20  }}>{'🛏'}</Text>
+        <Ionicons name="bed-outline" size={16} color={colors.primary} />
         <Text style={[detailStyles.sectionTitle, { color: colors.primary }]}>ОТЕЛЬ</Text>
       </View>
       <Text style={[detailStyles.hotelName, { color: colors.text }]}>{details.name}</Text>
@@ -223,8 +224,8 @@ interface TimelineStep {
 }
 
 const TIMELINE_STEPS: TimelineStep[] = [
-  { key: 'PENDING',   label: 'Ожидает',       icon: '🕐' },
-  { key: 'CONFIRMED', label: 'Подтверждено',   icon: '✅' },
+  { key: 'PENDING',   label: 'Ожидает',       icon: '...' },
+  { key: 'CONFIRMED', label: 'Подтверждено',   icon: '✓' },
 ];
 
 function StatusTimeline({ status }: { status: BookingStatus }) {
@@ -233,7 +234,12 @@ function StatusTimeline({ status }: { status: BookingStatus }) {
   if (status === 'FAILED' || status === 'CANCELLED') {
     return (
       <View style={[tlStyles.cancelledWrap, { backgroundColor: `${colors.error}12`, borderColor: `${colors.error}30` }]}>
-        <Text style={tlStyles.cancelledIcon}>{status === 'CANCELLED' ? '🚫' : '❌'}</Text>
+        <Ionicons
+          name={status === 'CANCELLED' ? 'ban-outline' : 'close-circle-outline'}
+          size={28}
+          color={colors.error}
+          style={tlStyles.cancelledIcon}
+        />
         <View>
           <Text style={[tlStyles.cancelledTitle, { color: colors.error }]}>
             {status === 'CANCELLED' ? 'Бронирование отменено' : 'Ошибка бронирования'}
@@ -349,7 +355,7 @@ const tlStyles = StyleSheet.create({
     gap: 12,
   },
   cancelledIcon: {
-    fontSize: 28,
+    flexShrink: 0,
   },
   cancelledTitle: {
     fontSize: Typography.sizes.base,
@@ -366,7 +372,7 @@ const tlStyles = StyleSheet.create({
 export default function BookingDetailScreen() {
   const { colors } = useTheme();
   const { bookingId } = useLocalSearchParams<{ bookingId: string }>();
-  const { currentBooking, loadBooking, confirmBooking, cancelBooking, isLoading } =
+  const { currentBooking, loadBooking, confirmBooking, cancelBooking, isLoading, bookingError } =
     useBookingStore();
   const [isConfirming, setIsConfirming] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
@@ -460,8 +466,26 @@ export default function BookingDetailScreen() {
     Alert.alert('Скоро', 'Скачивание PDF-билета будет доступно в следующем обновлении.');
   }
 
-  if (isLoading || !currentBooking) {
+  if (isLoading) {
     return <LoadingSpinner fullScreen />;
+  }
+
+  if (!currentBooking) {
+    return (
+      <View style={[styles.container, errorStyles.center, { backgroundColor: colors.background }]}>
+        <Text style={{ fontSize: 40, marginBottom: 16 }}>{'⚠'}</Text>
+        <Text style={[errorStyles.title, { color: colors.text }]}>Бронь не найдена</Text>
+        <Text style={[errorStyles.sub, { color: colors.textMuted }]}>
+          {bookingError ?? 'Не удалось загрузить бронирование'}
+        </Text>
+        <TouchableOpacity
+          style={[errorStyles.btn, { backgroundColor: colors.primary }]}
+          onPress={() => router.replace('/(tabs)/bookings' as never)}
+        >
+          <Text style={errorStyles.btnText}>В мои брони</Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   const statusColor = STATUS_COLORS[currentBooking.status];
@@ -634,4 +658,12 @@ const styles = StyleSheet.create({
   secondaryDivider: {
     width: 1,
   },
+});
+
+const errorStyles = StyleSheet.create({
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
+  title: { fontFamily: 'Sora', fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 8 },
+  sub: { fontFamily: 'Inter', fontSize: 14, textAlign: 'center', lineHeight: 20, marginBottom: 24 },
+  btn: { paddingHorizontal: 24, paddingVertical: 14, borderRadius: 100 },
+  btnText: { color: '#fff', fontFamily: 'Inter', fontSize: 15, fontWeight: '700' },
 });
