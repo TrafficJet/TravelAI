@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Typography } from '../../constants/typography';
-import { Radius } from '../../constants/radius';
 import { FavoriteButton } from '../ui/FavoriteButton';
 import { useTheme } from '../../src/theme/ThemeContext';
 import type { Hotel } from '../../types';
@@ -113,20 +113,73 @@ const amenityStyles = StyleSheet.create({
   },
 });
 
-// ── HotelCard ─────────────────────────────────────────────────────────────────
+// ── Hotel banner helpers ───────────────────────────────────────────────────────
 
-const FALLBACK_HOTEL_IMAGE = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80';
+const HOTEL_GRADIENT_PAIRS: Array<[string, string]> = [
+  ['#7C5CFC', '#A98EFD'],
+  ['#E8A020', '#F2B84B'],
+  ['#10B981', '#34D399'],
+  ['#3B82F6', '#60A5FA'],
+  ['#EF4444', '#F87171'],
+  ['#8B5CF6', '#A78BFA'],
+  ['#F59E0B', '#FCD34D'],
+  ['#06B6D4', '#22D3EE'],
+];
+
+function hotelGradient(name: string): [string, string] {
+  let h = 0;
+  for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+  return HOTEL_GRADIENT_PAIRS[h % HOTEL_GRADIENT_PAIRS.length];
+}
+
+function hotelInitials(name: string): string {
+  const words = name.trim().split(/\s+/);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
+function HotelBanner({ name }: { name: string }) {
+  const [from, to] = hotelGradient(name);
+  return (
+    <LinearGradient
+      colors={[from, to]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={bannerStyles.container}
+    >
+      <Text style={bannerStyles.initials}>{hotelInitials(name)}</Text>
+    </LinearGradient>
+  );
+}
+
+const bannerStyles = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: 140,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  initials: {
+    color: 'rgba(255,255,255,0.35)',
+    fontSize: 72,
+    fontWeight: '800',
+    fontFamily: 'DMSans_700Bold',
+    letterSpacing: 4,
+  },
+});
+
+// ── HotelCard ─────────────────────────────────────────────────────────────────
 
 export function HotelCard({ hotel, onBook }: Props) {
   const { colors } = useTheme();
-  const [imgError, setImgError] = useState(false);
   const nights =
     hotel.checkIn && hotel.checkOut ? nightsCount(hotel.checkIn, hotel.checkOut) : 0;
   const currencySymbol = formatCurrency(hotel.currency);
   const total = nights > 0 ? hotel.pricePerNight * nights : undefined;
-  const photoUri = (!imgError && hotel.imageUrl)
-    ? hotel.imageUrl
-    : FALLBACK_HOTEL_IMAGE;
 
   function handlePress() {
     router.push({
@@ -156,16 +209,11 @@ export function HotelCard({ hotel, onBook }: Props) {
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.82} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
 
-      {/* ── Photo section with overlay ── */}
+      {/* ── Banner: gradient background + large initials ── */}
       <View style={styles.photoContainer}>
-        <Image
-          source={{ uri: photoUri }}
-          style={styles.photo}
-          resizeMode="cover"
-          onError={() => setImgError(true)}
-        />
+        <HotelBanner name={hotel.name} />
 
-        {/* Dark gradient overlay at the bottom of the photo */}
+        {/* Dark gradient overlay at the bottom of the banner */}
         <LinearGradient
           colors={['transparent', 'rgba(0,0,0,0.7)']}
           style={styles.photoOverlay}
@@ -177,7 +225,7 @@ export function HotelCard({ hotel, onBook }: Props) {
             <View style={styles.overlayBottom}>
               {(hotel.address || hotel.city) && (
                 <View style={styles.locationRow}>
-                  <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)' }}>{'📍'}</Text>
+                  <Ionicons name="location-sharp" size={11} color="rgba(255,255,255,0.9)" />
                   <Text style={styles.locationText} numberOfLines={1}>
                     {[hotel.address, hotel.city].filter(Boolean).join(' · ')}
                   </Text>
@@ -211,7 +259,7 @@ export function HotelCard({ hotel, onBook }: Props) {
         {/* ── Dates row ── */}
         {hotel.checkIn && hotel.checkOut && (
           <View style={styles.datesRow}>
-            <Text style={{ fontSize: 13, color: colors.textMuted, marginRight: 4 }}>{'📅'}</Text>
+            <Ionicons name="calendar-outline" size={13} color={colors.textMuted} style={{ marginRight: 4 }} />
             <Text style={[styles.datesText, { color: colors.text }]}>
               {formatDate(hotel.checkIn)} — {formatDate(hotel.checkOut)}
             </Text>
@@ -270,17 +318,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 
-  // Photo area
+  // Banner area
   photoContainer: {
     width: '100%',
     height: 140,
     position: 'relative',
-  },
-  photo: {
-    width: '100%',
-    height: 140,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
   },
   photoOverlay: {
     position: 'absolute',
