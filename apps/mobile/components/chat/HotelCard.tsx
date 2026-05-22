@@ -103,7 +103,12 @@ const HOTEL_GRADIENTS: [string, string][] = [
 
 function hotelGradientColors(hotel: Hotel): [string, string] {
   let h = 0;
-  const seed = hotel.id ?? hotel.name;
+  const seed = [hotel.name, hotel.address, hotel.city, String(hotel.pricePerNight)]
+    .filter(Boolean)
+    .join('-')
+    .replace(/\s+/g, '-')
+    .toLowerCase()
+    .slice(0, 60);
   for (const c of seed) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
   return HOTEL_GRADIENTS[h % HOTEL_GRADIENTS.length];
 }

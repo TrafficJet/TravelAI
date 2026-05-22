@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { Typography } from '../../constants/typography';
 import { FavoriteButton } from '../ui/FavoriteButton';
 import { useTheme } from '../../src/theme/ThemeContext';
+import { useChatStore } from '../../stores/chatStore';
 import type { FlightOffer, FlightProvider } from '../../types';
 
 type BadgeType = 'budget' | 'value' | 'premium';
@@ -30,34 +31,6 @@ const BADGE_CONFIG: Record<BadgeType, { label: string; glyph: string; bg: string
 
 // ── Airline logo helpers ───────────────────────────────────────────────────────
 
-const AIRLINE_IATA: Record<string, string> = {
-  'Wizz Air': 'W6',
-  'Ryanair': 'FR',
-  'LOT Polish Airlines': 'LO',
-  'LOT': 'LO',
-  'British Airways': 'BA',
-  'Lufthansa': 'LH',
-  'Air France': 'AF',
-  'KLM': 'KL',
-  'Turkish Airlines': 'TK',
-  'easyJet': 'U2',
-  'EasyJet': 'U2',
-  'Iberia': 'IB',
-  'Vueling': 'VY',
-  'Swiss': 'LX',
-  'Austrian': 'OS',
-  'SAS': 'SK',
-  'Finnair': 'AY',
-  'Alitalia': 'AZ',
-  'ITA Airways': 'AZ',
-  'Ukraine International': 'PS',
-  'UIA': 'PS',
-  'Qatar Airways': 'QR',
-  'Emirates': 'EK',
-  'Pegasus': 'PC',
-  'Flydubai': 'FZ',
-};
-
 const AIRLINE_COLORS = [
   '#7C5CFC', '#E8A020', '#A98EFD', '#B87518',
   '#5A3DD4', '#F2B84B', '#3D3565', '#8888A8',
@@ -78,21 +51,6 @@ interface AirlineLogoProps {
 }
 
 function AirlineLogo({ name }: AirlineLogoProps) {
-  const iata = AIRLINE_IATA[name];
-  const [failed, setFailed] = useState(false);
-
-  if (iata && !failed) {
-    return (
-      <Image
-        source={{ uri: `https://pics.avs.io/80/80/${iata}.png` }}
-        style={logoStyles.logo}
-        resizeMode="contain"
-        onError={() => setFailed(true)}
-      />
-    );
-  }
-
-  // Fallback: coloured circle with initials
   return (
     <View style={[logoStyles.fallback, { backgroundColor: airlineColor(name) }]}>
       <Text style={logoStyles.fallbackText}>{airlineInitials(name)}</Text>
@@ -101,14 +59,6 @@ function AirlineLogo({ name }: AirlineLogoProps) {
 }
 
 const logoStyles = StyleSheet.create({
-  logo: {
-    width: 36,
-    height: 36,
-    borderRadius: 8,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-  },
   fallback: {
     width: 36,
     height: 36,
@@ -210,6 +160,21 @@ const arrowStyles = StyleSheet.create({
   },
 });
 
+// ── Chat navigation helper ────────────────────────────────────────────────────
+
+function navigateToBookFlight(flight: FlightOffer) {
+  const sessions = useChatStore.getState().sessions;
+  const sessionId = sessions[0]?.id;
+  const dateLabel = flight.departureDate ? ` ${flight.departureDate}` : '';
+  const message = `Забронируй рейс ${flight.airline} ${flight.origin}→${flight.destination}${dateLabel} ${flight.flightNumber}`;
+
+  if (sessionId) {
+    router.push({ pathname: '/(tabs)/chat/[sessionId]', params: { sessionId, initialMessage: message } } as never);
+  } else {
+    router.push({ pathname: '/(tabs)', params: { initialMessage: message } } as never);
+  }
+}
+
 // ── FlightCard ────────────────────────────────────────────────────────────────
 
 export function FlightCard({ flight, onBook, badge, provider }: Props) {
@@ -233,8 +198,13 @@ export function FlightCard({ flight, onBook, badge, provider }: Props) {
         durationMin: String(flight.durationMin ?? 0),
         flightNumber: flight.flightNumber,
         cabin: flight.cabin,
+        departureDate: flight.departureDate ?? '',
       },
     } as never);
+  }
+
+  function handleBook() {
+    if (onBook) { onBook(); } else { navigateToBookFlight(flight); }
   }
 
   return (
@@ -335,11 +305,11 @@ export function FlightCard({ flight, onBook, badge, provider }: Props) {
         {/* Select button */}
         <TouchableOpacity
           style={[styles.selectBtn, { backgroundColor: colors.primary }]}
-          onPress={onBook ?? handlePress}
+          onPress={handleBook}
           activeOpacity={0.8}
           hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
         >
-          <Text style={[styles.selectBtnText, { color: colors.textInverse }]}>Выбрать →</Text>
+          <Text style={[styles.selectBtnText, { color: colors.textInverse }]}>Забронировать →</Text>
         </TouchableOpacity>
       </View>
 

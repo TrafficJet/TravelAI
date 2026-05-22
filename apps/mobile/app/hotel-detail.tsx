@@ -136,7 +136,7 @@ function AmenityTile({ id }: { id: string }) {
         amenityStyles.iconWrap,
         { backgroundColor: `${colors.primary}15`, borderColor: `${colors.primary}30` },
       ]}>
-        <Text style={{ fontSize: 20, color: colors.primary, lineHeight: 24  }}>{'•'}</Text>
+        <Ionicons name={(AMENITY_ICONS[id] ?? 'checkmark-circle') as any} size={22} color={colors.primary} />
       </View>
       <Text style={[amenityStyles.label, { color: colors.textMuted }]} numberOfLines={1}>{label}</Text>
     </View>
@@ -179,7 +179,7 @@ function InfoRow({
   return (
     <View style={[row.container, { borderBottomColor: colors.border }]}>
       <View style={[row.iconWrap, { backgroundColor: `${colors.primary}18` }]}>
-        <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22  }}>{'•'}</Text>
+        <Ionicons name={icon as any} size={18} color={colors.primary} />
       </View>
       <View style={row.content}>
         <Text style={[row.label, { color: colors.textMuted }]}>{label}</Text>
@@ -316,7 +316,7 @@ export default function HotelDetailScreen() {
         params: { sessionId: newSessionId, initialMessage: msg },
       } as never);
     } catch {
-      router.push('/(tabs)/chat/new' as never);
+      router.push('/(tabs)' as Parameters<typeof router.push>[0]);
     }
   }, [bookingId, name, city, checkIn, checkOut, effectiveGuests, effectiveRooms, formattedPricePerNight]);
 
@@ -438,7 +438,7 @@ export default function HotelDetailScreen() {
           {/* ── Guest counter ── */}
           <View style={[row.container, { borderBottomColor: colors.border }]}>
             <View style={[row.iconWrap, { backgroundColor: `${colors.primary}18` }]}>
-              <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'•'}</Text>
+              <Ionicons name={'people-outline' as any} size={18} color={colors.primary} />
             </View>
             <View style={row.content}>
               <Text style={[row.label, { color: colors.textMuted }]}>Взрослые</Text>
@@ -466,7 +466,7 @@ export default function HotelDetailScreen() {
           {/* ── Rooms counter ── */}
           <View style={[row.container, { borderBottomColor: colors.border }]}>
             <View style={[row.iconWrap, { backgroundColor: `${colors.primary}18` }]}>
-              <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'•'}</Text>
+              <Ionicons name={'bed-outline' as any} size={18} color={colors.primary} />
             </View>
             <View style={row.content}>
               <Text style={[row.label, { color: colors.textMuted }]}>Номеров</Text>
@@ -491,6 +491,38 @@ export default function HotelDetailScreen() {
               </TouchableOpacity>
             </View>
           </View>
+        </Animated.View>
+
+        {/* ── Room options ──────────────────────────────────────────────────── */}
+        <Animated.View entering={FadeInUp.delay(170).springify()} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Варианты номеров</Text>
+          {[
+            { type: 'Стандарт', desc: 'Завтрак включён', price: pricePerNight, highlights: ['Завтрак включён'] },
+            { type: 'Делюкс с видом', desc: 'Завтрак + трансфер', price: Math.round(pricePerNight * 1.3), highlights: ['Завтрак + трансфер'] },
+          ].map((room, idx) => (
+            <TouchableOpacity
+              key={idx}
+              onPress={handleBook}
+              activeOpacity={0.85}
+              style={[{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 12,
+                borderTopWidth: idx > 0 ? StyleSheet.hairlineWidth : 0,
+                borderTopColor: colors.border,
+              }]}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: 'Inter', fontSize: 15, fontWeight: '600', color: colors.text }}>{room.type}</Text>
+                <Text style={{ fontFamily: 'Inter', fontSize: 12, color: colors.textMuted, marginTop: 2 }}>{room.desc}</Text>
+              </View>
+              <View style={{ alignItems: 'flex-end', gap: 4 }}>
+                <Text style={{ fontFamily: 'DMSans_700Bold', fontSize: 17, color: colors.primary }}>{currencySymbol}{room.price.toLocaleString('ru-RU')}</Text>
+                <Text style={{ fontFamily: 'Inter', fontSize: 10, color: colors.textMuted }}>/ {nights > 0 ? `${nights} ноч.` : 'ночь'}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
         </Animated.View>
 
         {/* ── Price card ────────────────────────────────────────────────────── */}
