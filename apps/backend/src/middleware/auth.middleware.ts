@@ -40,18 +40,18 @@ export async function authenticate(request: FastifyRequest, reply: FastifyReply)
     if (err instanceof TokenExpiredError) {
       // Expired access token — client should use refresh token
       const appErr = Errors.unauthorized('Access token expired');
-      reply.status(appErr.statusCode).send(appErr.toJSON());
+      return reply.status(appErr.statusCode).send(appErr.toJSON());
     } else if (err instanceof NotBeforeError) {
       const appErr = Errors.unauthorized('Token not yet valid');
-      reply.status(appErr.statusCode).send(appErr.toJSON());
+      return reply.status(appErr.statusCode).send(appErr.toJSON());
     } else if (err instanceof JsonWebTokenError) {
       // Malformed / invalid signature / wrong algorithm
       const appErr = Errors.unauthorized('Invalid token');
-      reply.status(appErr.statusCode).send(appErr.toJSON());
+      return reply.status(appErr.statusCode).send(appErr.toJSON());
     } else {
       // Unexpected error
       const appErr = Errors.unauthorized('Authentication failed');
-      reply.status(appErr.statusCode).send(appErr.toJSON());
+      return reply.status(appErr.statusCode).send(appErr.toJSON());
     }
   }
 }
