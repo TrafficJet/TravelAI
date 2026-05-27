@@ -452,7 +452,7 @@ export default function FlightDetailScreen() {
           onPress={handleBook}
           activeOpacity={0.85}
         >
-          <Text style={styles.bookBtnText}>
+          <Text style={[styles.bookBtnText, { color: colors.textInverse }]}>
             Забронировать{priceNum > 0 ? ` · ${formattedPrice}` : ''}
           </Text>
         </TouchableOpacity>
@@ -743,7 +743,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   bookBtnText: {
-    color: '#fff',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,

@@ -508,8 +508,8 @@ export default function ExploreScreen() {
           onPress={() => router.push('/hotels-map')}
           activeOpacity={0.8}
         >
-          <Text style={{ fontSize: 18, color: "#fff", lineHeight: 22 }}>{'🗺'}</Text>
-          <Text style={styles.mapBtnText}>Карта</Text>
+          <Text style={{ fontSize: 18, color: colors.textInverse, lineHeight: 22 }}>{'🗺'}</Text>
+          <Text style={[styles.mapBtnText, { color: colors.textInverse }]}>Карта</Text>
         </TouchableOpacity>
       </Animated.View>
 
@@ -693,7 +693,6 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   mapBtnText: {
-    color: '#fff',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,

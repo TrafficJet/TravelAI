@@ -46,7 +46,7 @@ export function EmptyState({ icon, title, subtitle, onAction, actionLabel }: Emp
     },
     actionBtnText: {
       ...TextPresets.button,
-      color: '#0A0A14',
+      color: colors.textInverse,
     },
   }), [colors]);
 

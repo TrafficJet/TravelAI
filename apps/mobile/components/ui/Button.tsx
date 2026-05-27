@@ -59,7 +59,7 @@ export function Button({
   }
 
   const activityIndicatorColor =
-    variant === 'primary' || variant === 'destructive' ? '#0A0A14' : colors.primary;
+    variant === 'primary' || variant === 'destructive' ? colors.textInverse : colors.primary;
 
   const styles = React.useMemo(() => StyleSheet.create({
     base: {
@@ -75,41 +75,43 @@ export function Button({
     },
     primary: {
       backgroundColor: colors.primary,
-      shadowColor: '#E8A020',
+      shadowColor: colors.primary,
       shadowOffset: { width: 0, height: 0 },
       shadowRadius: 16,
       shadowOpacity: 0.25,
       elevation: 8,
     },
     secondary: {
-      backgroundColor: colors.surface,
+      backgroundColor: 'transparent',
       borderWidth: 1.5,
-      borderColor: colors.border,
+      borderColor: colors.secondary,
     },
     ghost: {
       backgroundColor: 'transparent',
     },
     destructive: {
-      backgroundColor: colors.error,
+      backgroundColor: colors.errorLight,
+      borderWidth: 1,
+      borderColor: colors.error,
     },
     disabled: {
       opacity: 0.4,
     },
     text: {
       ...TextPresets.button,
-      color: '#0A0A14',
+      color: colors.textInverse,
     },
     textPrimary: {
-      color: '#0A0A14',
+      color: colors.textInverse,
     },
     textSecondary: {
-      color: colors.primary,
+      color: colors.secondary,
     },
     textGhost: {
-      color: colors.primary,
+      color: colors.textMuted,
     },
     textDestructive: {
-      color: '#0A0A14',
+      color: colors.error,
     },
   }), [colors]);
 

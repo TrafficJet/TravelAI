@@ -499,7 +499,7 @@ export default function BookingDetailScreen() {
           style={{ backgroundColor: colors.primary, borderRadius: 32, paddingHorizontal: 24, paddingVertical: 12 }}
           onPress={() => { setLoadError(null); loadBooking(bookingId!).catch((e) => setLoadError(e instanceof Error ? e.message : 'Ошибка')); }}
         >
-          <Text style={{ color: '#fff', fontWeight: '700' }}>Попробовать снова</Text>
+          <Text style={{ color: colors.textInverse, fontWeight: '700' }}>Попробовать снова</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ marginTop: 12 }} onPress={() => router.back()}>
           <Text style={{ color: colors.textMuted }}>Назад</Text>
@@ -520,7 +520,7 @@ export default function BookingDetailScreen() {
           style={[errorStyles.btn, { backgroundColor: colors.primary }]}
           onPress={() => router.replace('/(tabs)/bookings' as never)}
         >
-          <Text style={errorStyles.btnText}>В мои брони</Text>
+          <Text style={[errorStyles.btnText, { color: colors.textInverse }]}>В мои брони</Text>
         </TouchableOpacity>
       </View>
     );
@@ -703,5 +703,5 @@ const errorStyles = StyleSheet.create({
   title: { fontFamily: 'Sora', fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 8 },
   sub: { fontFamily: 'Inter', fontSize: 14, textAlign: 'center', lineHeight: 20, marginBottom: 24 },
   btn: { paddingHorizontal: 24, paddingVertical: 14, borderRadius: 100 },
-  btnText: { color: '#fff', fontFamily: 'Inter', fontSize: 15, fontWeight: '700' },
+  btnText: { fontFamily: 'Inter', fontSize: 15, fontWeight: '700' },
 });

@@ -212,50 +212,53 @@ const typingStyles = StyleSheet.create({
 });
 
 // ── Markdown styles for AI bubble (SVIT brand theme) ─────────────────────────
-// Note: react-native-markdown-display requires plain objects, not StyleSheet.create
+// react-native-markdown-display requires plain objects, not StyleSheet.create.
+// Values here match design tokens from constants/colors.ts exactly.
+// tokens: text=#F4F2FF, primary=#E8A020, primaryLight=#F2B84B,
+//         card=#1E1C2C, elevated=#28263A, border=#2E2B42, secondary=#7C5CFC
 
 const markdownStyles = {
-  body: { color: '#F4F2FF', fontSize: 15, lineHeight: 22 },
-  heading1: { color: '#E8A020', fontWeight: 'bold' as const, fontSize: 18, marginBottom: 8, fontFamily: 'DMSans_700Bold' },
-  heading2: { color: '#F2B84B', fontWeight: '600' as const, fontSize: 16, marginBottom: 6, fontFamily: 'DMSans_700Bold' },
-  heading3: { color: '#F4F2FF', fontWeight: '600' as const, fontSize: 15, marginBottom: 4 },
-  paragraph: { marginBottom: 10, color: '#F4F2FF' },
-  strong: { color: '#F2B84B', fontWeight: 'bold' as const },
-  em: { color: '#F4F2FF', fontStyle: 'italic' as const },
+  body: { color: '#F4F2FF', fontSize: 15, lineHeight: 22 },           // colors.text
+  heading1: { color: '#E8A020', fontWeight: 'bold' as const, fontSize: 18, marginBottom: 8, fontFamily: 'Sora' }, // colors.primary
+  heading2: { color: '#F2B84B', fontWeight: '600' as const, fontSize: 16, marginBottom: 6, fontFamily: 'Sora' }, // colors.primaryLight
+  heading3: { color: '#F4F2FF', fontWeight: '600' as const, fontSize: 15, marginBottom: 4 }, // colors.text
+  paragraph: { marginBottom: 10, color: '#F4F2FF' },                  // colors.text
+  strong: { color: '#F2B84B', fontWeight: 'bold' as const },           // colors.primaryLight
+  em: { color: '#F4F2FF', fontStyle: 'italic' as const },              // colors.text
   bullet_list: { marginBottom: 8 },
   ordered_list: { marginBottom: 8 },
   bullet_list_item: { marginBottom: 4 },
   ordered_list_item: { marginBottom: 4 },
-  bullet_list_icon: { color: '#E8A020', marginRight: 8, fontSize: 15, lineHeight: 22 },
-  ordered_list_icon: { color: '#E8A020', marginRight: 6, fontSize: 15, lineHeight: 22 },
-  hr: { backgroundColor: '#2E2B42', height: 1, marginVertical: 12 },
+  bullet_list_icon: { color: '#E8A020', marginRight: 8, fontSize: 15, lineHeight: 22 },  // colors.primary
+  ordered_list_icon: { color: '#E8A020', marginRight: 6, fontSize: 15, lineHeight: 22 }, // colors.primary
+  hr: { backgroundColor: '#2E2B42', height: 1, marginVertical: 12 },   // colors.border
   blockquote: {
-    borderLeftColor: '#E8A020',
+    borderLeftColor: '#E8A020',   // colors.primary
     borderLeftWidth: 3,
     paddingLeft: 12,
-    backgroundColor: '#1E1C2C',
+    backgroundColor: '#1E1C2C',   // colors.card
     borderRadius: 4,
     marginVertical: 6,
   },
   code_block: {
-    backgroundColor: '#1E1C2C',
+    backgroundColor: '#1E1C2C',   // colors.card
     borderRadius: 8,
     padding: 12,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    color: '#F4F2FF',
+    color: '#F4F2FF',             // colors.text
     fontSize: 13,
     marginBottom: 8,
   },
   code_inline: {
-    backgroundColor: '#28263A',
-    color: '#7C5CFC',
+    backgroundColor: '#28263A',   // colors.elevated
+    color: '#7C5CFC',             // colors.secondary
     borderRadius: 3,
     paddingHorizontal: 4,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     fontSize: 13,
   },
-  fence: { backgroundColor: '#1E1C2C', borderRadius: 8, padding: 12, color: '#F4F2FF', fontSize: 13, marginBottom: 8 },
-  text: { color: '#F4F2FF', fontSize: 15, lineHeight: 22 },
+  fence: { backgroundColor: '#1E1C2C', borderRadius: 8, padding: 12, color: '#F4F2FF', fontSize: 13, marginBottom: 8 }, // colors.card / colors.text
+  text: { color: '#F4F2FF', fontSize: 15, lineHeight: 22 },            // colors.text
   softbreak: { width: '100%' as const },
 };
 
@@ -288,7 +291,7 @@ const contentStyles = StyleSheet.create({
   userText: {
     fontSize: Typography.sizes.base,
     lineHeight: 21,
-    color: '#0E0C1C',
+    color: '#0E0C1C', // colors.textInverse — dark text on gold gradient bubble
     fontFamily: 'Inter',
     fontWeight: '500',
   },
@@ -432,33 +435,31 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
 
-  // Avatar: gradient teal→amber circle with "S"
+  // Avatar: gold circle with "S" (matches colors.secondary/primary/textInverse tokens)
   avatarGradientWrap: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#7C5CFC', // fallback; gradient simulated via layered bg
+    backgroundColor: '#7C5CFC', // colors.secondary — token value
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 6,
     marginBottom: 2,
     flexShrink: 0,
-    // We use a simple split background trick: top half teal, bottom half amber
     overflow: 'hidden',
   },
   avatarGradientInner: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#E8A020',
+    backgroundColor: '#E8A020', // colors.primary — token value
     alignItems: 'center',
     justifyContent: 'center',
-    // gradient approach: top border in teal via shadow
   },
   avatarLetter: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0E0C1C',
+    color: '#0E0C1C', // colors.textInverse — token value
     lineHeight: 14,
   },
 
@@ -478,11 +479,11 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
 
-  // AI bubble: bg #1E1C2C, border 1px #28263A, radius 4 16 16 16
+  // AI bubble: bg colors.card, border colors.elevated, radius 4 16 16 16 per brandbook
   bubbleAssistant: {
-    backgroundColor: '#1E1C2C',
+    backgroundColor: '#1E1C2C', // colors.card — token value
     borderWidth: 1,
-    borderColor: '#28263A',
+    borderColor: '#28263A',     // colors.elevated — token value (elevated as border)
     borderTopLeftRadius: 4,
     borderTopRightRadius: 16,
     borderBottomLeftRadius: 16,

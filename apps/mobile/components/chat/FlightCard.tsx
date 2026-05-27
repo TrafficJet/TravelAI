@@ -24,7 +24,7 @@ const PROVIDER_CONFIG: Record<FlightProvider, { label: string; bg: string; color
 };
 
 const BADGE_CONFIG: Record<BadgeType, { label: string; glyph: string; bg: string; color: string }> = {
-  budget:  { label: 'Дешевле',       glyph: '⚡',  bg: 'rgba(16, 185, 129, 0.15)', color: '#10B981' },
+  budget:  { label: 'Дешевле',       glyph: '⚡',  bg: 'rgba(16, 185, 129, 0.15)', color: '#10B981' }, // success color — matches colors.success token
   value:   { label: 'Лучший выбор',  glyph: '★', bg: 'rgba(232, 160, 32, 0.15)', color: '#E8A020' },
   premium: { label: 'Премиум',       glyph: '✦',   bg: 'rgba(124, 92, 252, 0.15)', color: '#7C5CFC' },
 };
@@ -51,9 +51,10 @@ interface AirlineLogoProps {
 }
 
 function AirlineLogo({ name }: AirlineLogoProps) {
+  const { colors } = useTheme();
   return (
     <View style={[logoStyles.fallback, { backgroundColor: airlineColor(name) }]}>
-      <Text style={logoStyles.fallbackText}>{airlineInitials(name)}</Text>
+      <Text style={[logoStyles.fallbackText, { color: colors.text }]}>{airlineInitials(name)}</Text>
     </View>
   );
 }
@@ -67,7 +68,6 @@ const logoStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   fallbackText: {
-    color: '#FFFFFF',
     fontFamily: 'Inter',
     fontSize: 13,
     fontWeight: '700',
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   iataCode: {
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
-    fontFamily: 'DMSans_700Bold',
+    fontFamily: 'Sora',
     lineHeight: 28,
   },
   routeTime: {
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
-    fontFamily: 'DMSans_700Bold',
+    fontFamily: 'Sora',
     lineHeight: 28,
   },
   cabinText: {

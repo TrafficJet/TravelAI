@@ -61,7 +61,7 @@ function OfflineBanner({ visible }: { visible: boolean }) {
       style={[bannerStyles.container, { backgroundColor: colors.error, transform: [{ translateY }] }]}
       pointerEvents="none"
     >
-      <Text style={bannerStyles.text}>Нет подключения к интернету</Text>
+      <Text style={[bannerStyles.text, { color: colors.textInverse }]}>Нет подключения к интернету</Text>
     </Animated.View>
   );
 }
@@ -78,7 +78,6 @@ const bannerStyles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: '#fff',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },
@@ -99,8 +98,8 @@ function EmptyState() {
   const { colors } = useTheme();
   return (
     <View style={emptyStyles.container}>
-      <View style={emptyStyles.iconCircle}>
-        <Text style={emptyStyles.iconGlyph}>{'✈'}</Text>
+      <View style={[emptyStyles.iconCircle, { backgroundColor: colors.elevated }]}>
+        <Text style={[emptyStyles.iconGlyph, { color: colors.primary }]}>{'✈'}</Text>
       </View>
       <Text style={[emptyStyles.title, { color: colors.text }]}>Куда летим?</Text>
       <Text style={[emptyStyles.subtitle, { color: colors.textMuted }]}>
@@ -166,21 +165,18 @@ const emptyStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
-    paddingTop: 32,
-    paddingBottom: 16,
+    paddingVertical: 24,
   },
   iconCircle: {
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: '#28263A',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
   },
   iconGlyph: {
     fontSize: 48,
-    color: '#E8A020',
     lineHeight: 56,
   },
   title: {
@@ -219,8 +215,8 @@ function GuestWelcomeState({ onSignIn }: { onSignIn: () => void }) {
         Войдите, чтобы начать планировать путешествие.
       </Text>
       <TouchableOpacity style={[guestStyles.btn, { backgroundColor: colors.primary }]} onPress={onSignIn} activeOpacity={0.8}>
-        <Ionicons name="person-outline" size={18} color="#0E0C1C" style={{ marginRight: 8 }} />
-        <Text style={guestStyles.btnText}>Войти / Зарегистрироваться</Text>
+        <Ionicons name="person-outline" size={18} color={colors.textInverse} style={{ marginRight: 8 }} />
+        <Text style={[guestStyles.btnText, { color: colors.textInverse }]}>Войти / Зарегистрироваться</Text>
       </TouchableOpacity>
     </View>
   );
@@ -257,7 +253,6 @@ const guestStyles = StyleSheet.create({
     borderRadius: 14,
   },
   btnText: {
-    color: '#0E0C1C',
     fontSize: 15,
     fontWeight: '600' as const,
     fontFamily: 'Inter',
@@ -323,6 +318,7 @@ export default function ChatScreen() {
     sessions,
     updateSessionTitle,
     deleteSession,
+    createSession,
   } = useChatStore();
 
   const pendingMessage = useChatStore((s) => s.pendingMessage);
@@ -470,12 +466,17 @@ export default function ChatScreen() {
   useEffect(() => {
     if (!sessionId) return;
     const session = (sessions ?? []).find((s) => s.id === sessionId);
-    const title = session?.title ?? currentSession?.title ?? 'Новый чат';
+    const sessionTitle = session?.title ?? currentSession?.title ?? 'Новый чат';
     if (session) {
       setCurrentSession(session);
     }
+
+    // Если сообщений нет — это новый чат, показываем "Новый чат"
+    const hasMessages = (messages ?? []).length > 0;
+    const rawTitle = hasMessages ? sessionTitle : 'Новый чат';
+
     // Strip emoji & special chars that render as [?] on iOS 26 beta
-    const displayTitle = title
+    const displayTitle = rawTitle
       // eslint-disable-next-line no-control-regex
       .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}\u{1F300}-\u{1F9FF}]/gu, '')
       .replace(/[^\p{L}\p{N}\p{Z}\p{P}\-→]/gu, '')
@@ -492,7 +493,7 @@ export default function ChatScreen() {
           >
             {displayTitle}
           </Text>
-          <Text style={{ fontSize: 10, color: colors.success }}>{'● На связи · отвечает мгновенно'}</Text>
+          <Text style={{ fontFamily: 'Inter', fontSize: 11, color: colors.textMuted }}>{'AI-ассистент SVIT'}</Text>
         </View>
       ),
       headerLeft: () => (
@@ -508,32 +509,30 @@ export default function ChatScreen() {
       headerRight: () => (
         <View style={chatHeaderStyles.rightGroup}>
           <TouchableOpacity
-            style={chatHeaderStyles.profileBtn}
+            style={chatHeaderStyles.newChatBtn}
             onPress={() => {
-              if (isAuthenticated) {
-                router.push('/(tabs)/profile');
-              } else {
-                setAuthReason('profile');
-                setAuthModalVisible(true);
-              }
+              createSession()
+                .then((id) => router.replace(`/(tabs)/chat/${id}` as never))
+                .catch(() => router.replace('/(tabs)' as never));
             }}
             activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={{ fontSize: 22, color: colors.textMuted }}>{'●'}</Text>
+            <Ionicons name="create-outline" size={22} color={colors.primary} />
           </TouchableOpacity>
-          <View style={chatHeaderStyles.divider} />
           <TouchableOpacity
             style={chatHeaderStyles.menuBtn}
             onPress={handleHeaderMenu}
             activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.textMuted, letterSpacing: 2 }}>{'···'}</Text>
+            <Ionicons name="ellipsis-horizontal" size={22} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
       ),
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId, sessions, currentSession, setCurrentSession, navigation, handleHeaderMenu, historyVisible, isAuthenticated, colors]);
+  }, [sessionId, sessions, currentSession, messages, setCurrentSession, navigation, handleHeaderMenu, historyVisible, isAuthenticated, colors]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -639,8 +638,8 @@ export default function ChatScreen() {
             navigation.setOptions({
               headerTitle: () => (
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontFamily: 'DMSans_700Bold', fontSize: 17, fontWeight: '700', color: colors.text }}>{title}</Text>
-                  <Text style={{ fontSize: 10, color: colors.success }}>{'● На связи · отвечает мгновенно'}</Text>
+                  <Text style={{ fontFamily: 'Sora', fontSize: 15, fontWeight: '700', color: colors.text }}>{title}</Text>
+                  <Text style={{ fontFamily: 'Inter', fontSize: 11, color: colors.textMuted }}>{'AI-ассистент SVIT'}</Text>
                 </View>
               ),
             });
@@ -675,7 +674,8 @@ export default function ChatScreen() {
       setAuthModalVisible(true);
       return;
     }
-    if (!pendingBooking || !pendingBookingId) return;
+    if (!pendingBooking) throw new Error('Нет данных бронирования');
+    if (!pendingBookingId) throw new Error('ID бронирования не получен от сервера — повторите запрос');
     const bookingId = pendingBookingId;
     const bookingType = pendingBooking.type;
     const totalPrice = pendingBooking.totalPrice;
@@ -875,9 +875,10 @@ const chatHeaderStyles = StyleSheet.create({
   historyBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
     paddingHorizontal: 8,
     paddingVertical: 6,
+    minHeight: 44,
+    justifyContent: 'center',
   },
   historyBtnText: {
     fontFamily: 'Inter',
@@ -889,20 +890,17 @@ const chatHeaderStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 4,
-    height: 36,
+    gap: 4,
   },
-  profileBtn: {
-    width: 40,
-    height: 36,
+  newChatBtn: {
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  divider: {
-    width: 4,
-  },
   menuBtn: {
-    width: 40,
-    height: 36,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },

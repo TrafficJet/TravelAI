@@ -59,7 +59,7 @@ export async function getWallet(request: FastifyRequest, reply: FastifyReply) {
   const normalizedCurrency = wallet.currency === 'RUB' ? 'USD' : wallet.currency;
 
   return reply.send({
-    balance: wallet.balance.toString(),
+    balance: Number(wallet.balance),
     currency: normalizedCurrency,
     transactions: wallet.transactions.map(formatTransaction),
   });
@@ -204,7 +204,7 @@ export async function topupWallet(request: FastifyRequest, reply: FastifyReply) 
     }),
   ]);
 
-  const newBalance = updatedWallet.balance.toString();
+  const newBalance = Number(updatedWallet.balance);
   return reply.send({
     message: 'Кошелёк пополнен',
     balance: newBalance,

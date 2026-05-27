@@ -598,7 +598,7 @@ export function FlightFiltersSheet({
               onPress={handleApply}
               activeOpacity={0.8}
             >
-              <Text style={[styles.applyBtnText, { color: '#0A0A14' }]}>Применить</Text>
+              <Text style={[styles.applyBtnText, { color: colors.textInverse }]}>Применить</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -637,12 +637,12 @@ function QuickChip({ label, active, onPress, icon, colors }: QuickChipProps) {
       ]}
     >
       {icon && (
-        <Text style={{ fontSize: 13, color: active ? '#0A0A14' : colors.textMuted, lineHeight: 17, marginRight: 4  }}>{'•'}</Text>
+        <Text style={{ fontSize: 13, color: active ? colors.textInverse : colors.textMuted, lineHeight: 17, marginRight: 4  }}>{'•'}</Text>
       )}
       <Text style={[
         styles.chipText,
         { color: colors.textMuted },
-        active && { color: '#0A0A14', fontWeight: '700' },
+        active && { color: colors.textInverse, fontWeight: '700' },
       ]}>{label}</Text>
     </TouchableOpacity>
   );

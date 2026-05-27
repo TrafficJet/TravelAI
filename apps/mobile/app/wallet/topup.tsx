@@ -145,7 +145,7 @@ function AddressCard({ deposit, depositStatus, onCopy }: AddressCardProps) {
         onPress={onCopy}
         activeOpacity={0.75}
       >
-        <Text style={addrStyles.copyBtnText}>Скопировать адрес</Text>
+        <Text style={[addrStyles.copyBtnText, { color: colors.textInverse }]}>Скопировать адрес</Text>
       </TouchableOpacity>
 
       {/* Timer */}
@@ -395,7 +395,7 @@ export default function TopupScreen() {
             <Text style={[
               styles.tabText,
               { color: colors.textMuted },
-              activeTab === 'card' && { color: '#fff', fontWeight: Typography.weights.bold },
+              activeTab === 'card' && { color: colors.textInverse, fontWeight: Typography.weights.bold },
             ]}>
               Карта
             </Text>
@@ -411,7 +411,7 @@ export default function TopupScreen() {
             <Text style={[
               styles.tabText,
               { color: colors.textMuted },
-              activeTab === 'crypto' && { color: '#fff', fontWeight: Typography.weights.bold },
+              activeTab === 'crypto' && { color: colors.textInverse, fontWeight: Typography.weights.bold },
             ]}>
               Крипто
             </Text>
@@ -850,7 +850,6 @@ const addrStyles = StyleSheet.create({
     alignItems: 'center',
   },
   copyBtnText: {
-    color: '#fff',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },

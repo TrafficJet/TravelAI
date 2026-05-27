@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
-  Alert,
   Animated,
   Text,
   ActivityIndicator,
@@ -101,51 +100,6 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
     });
   }
 
-  function handleVoice() {
-    Alert.alert('Голосовой ввод', 'Скоро будет доступен');
-  }
-
-  function handleAttach() {
-    Alert.alert(
-      'Прикрепить',
-      'Выберите тип вложения',
-      [
-        { text: '📷 Сфотографировать', onPress: () => handlePickMedia('camera') },
-        { text: '🖼️ Из галереи', onPress: () => handlePickMedia('gallery') },
-        { text: '📄 Документ', onPress: () => Alert.alert('Документы', 'Скоро будет доступно') },
-        { text: 'Отмена', style: 'cancel' },
-      ],
-    );
-  }
-
-  async function handlePickMedia(source: 'camera' | 'gallery') {
-    try {
-      const ImagePicker = await import('expo-image-picker');
-      let result;
-      if (source === 'camera') {
-        const perm = await ImagePicker.requestCameraPermissionsAsync();
-        if (perm.status !== 'granted') {
-          Alert.alert('Нет доступа', 'Разрешите доступ к камере в настройках');
-          return;
-        }
-        result = await ImagePicker.launchCameraAsync({ base64: false, quality: 0.8 });
-      } else {
-        const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (perm.status !== 'granted') {
-          Alert.alert('Нет доступа', 'Разрешите доступ к фото в настройках');
-          return;
-        }
-        result = await ImagePicker.launchImageLibraryAsync({ base64: false, quality: 0.8 });
-      }
-      if (!result.canceled && result.assets[0]) {
-        const uri = result.assets[0].uri;
-        onSend(`[Изображение: ${uri}]`);
-      }
-    } catch {
-      Alert.alert('Ошибка', 'Не удалось открыть галерею. Попробуйте ещё раз.');
-    }
-  }
-
   function handleSuggestionSelect(suggestion: string) {
     setText(suggestion);
     if (onSuggestionSelect) {
@@ -185,15 +139,6 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
         borderTopColor: colors.border,
         paddingBottom: Math.max(10, insets.bottom > 0 ? insets.bottom : 10),
       }]}>
-        {/* Attach button */}
-        <TouchableOpacity
-          style={[styles.attachBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
-          onPress={handleAttach}
-          activeOpacity={0.7}
-        >
-          <Text style={{ fontSize: 18, color: colors.primary, lineHeight: 22 }}>{'⊕'}</Text>
-        </TouchableOpacity>
-
         {/* Text input — pill shape */}
         <TextInput
           value={text}
@@ -223,15 +168,15 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
             style={(!hasText || (disabled && hasText)) ? styles.sendButtonDisabledWrap : undefined}
           >
             <LinearGradient
-              colors={['#E8A020', '#B87518']}
+              colors={[colors.primary, colors.primaryDark]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.sendButton}
             >
               {disabled && hasText ? (
-                <ActivityIndicator size="small" color="#0E0C1C" />
+                <ActivityIndicator size="small" color={colors.textInverse} />
               ) : (
-                <Text style={{ fontSize: 18, color: '#0E0C1C', lineHeight: 22 }}>
+                <Text style={{ fontSize: 18, color: colors.textInverse, lineHeight: 22 }}>
                   {'↑'}
                 </Text>
               )}
@@ -299,7 +244,7 @@ const styles = StyleSheet.create({
   },
   sendButtonWrap: {
     flexShrink: 0,
-    shadowColor: '#E8A020',
+    shadowColor: '#E8A020', // colors.primary glow — matches glow-primary token; static required here
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.4,
     shadowRadius: 6,
@@ -314,14 +259,5 @@ const styles = StyleSheet.create({
   },
   sendButtonDisabledWrap: {
     opacity: 0.65,
-  },
-  attachBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
   },
 });

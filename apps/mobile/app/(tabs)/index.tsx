@@ -172,8 +172,8 @@ export default function ChatEntryScreen() {
           onPress={() => isAuthenticated ? void initAuthenticated() : void initGuest()}
           activeOpacity={0.8}
         >
-          <Text style={{ fontSize: 18, color: "#fff", lineHeight: 22 }}>{'↺'}</Text>
-          <Text style={styles.retryBtnText}>Повторить</Text>
+          <Text style={{ fontSize: 18, color: colors.textInverse, lineHeight: 22 }}>{'↺'}</Text>
+          <Text style={[styles.retryBtnText, { color: colors.textInverse }]}>Повторить</Text>
         </TouchableOpacity>
       </View>
     );
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   tagline: {
-    fontFamily: 'Inter',
+    fontFamily: 'Sora',
     fontSize: 14,
     letterSpacing: 0.2,
     textAlign: 'center',
@@ -250,6 +250,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 15,
     fontWeight: '600' as const,
-    color: '#fff',
   },
 });

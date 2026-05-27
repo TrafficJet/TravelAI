@@ -11,6 +11,18 @@ export interface CreateSessionResponse {
   session: SessionData;
 }
 
+// Backend returns { session, messages, pagination } — not the standard PaginatedResponse shape
+export interface GetMessagesResponse {
+  session: SessionData;
+  messages: Message[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    hasNext: boolean;
+  };
+}
+
 export const chatService = {
   async createSession(): Promise<CreateSessionResponse> {
     const { data } = await api.post<CreateSessionResponse>('/chat/sessions', {});
@@ -22,8 +34,8 @@ export const chatService = {
     return data;
   },
 
-  async getMessages(sessionId: string): Promise<PaginatedResponse<Message>> {
-    const { data } = await api.get<PaginatedResponse<Message>>(
+  async getMessages(sessionId: string): Promise<GetMessagesResponse> {
+    const { data } = await api.get<GetMessagesResponse>(
       `/chat/sessions/${sessionId}/messages`,
     );
     return data;

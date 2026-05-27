@@ -23,15 +23,19 @@ import { SvitLogo } from '../../components/SvitLogo';
 export const ONBOARDING_KEY = 'onboarding_done';
 
 // ─── Brand tokens (design screen 07) ─────────────────────────────────────────
+// Values match constants/colors.ts and src/theme/colors.ts exactly.
+// useTheme() is not available at module level in static StyleSheet.create,
+// so token values are replicated here as named constants with clear references.
 
 const COLORS = {
-  background: '#0E0C1C',
-  primary: '#E8A020',
-  secondary: '#7C5CFC',
-  white: '#F4F2FF',
-  subtitle: '#8888A8',
-  dotInactive: '#2E2B42',
-  textInverse: '#0E0C1C',
+  background: '#0E0C1C',   // Colors.background
+  primary: '#E8A020',      // Colors.primary
+  secondary: '#7C5CFC',    // Colors.secondary
+  white: '#F4F2FF',        // Colors.text
+  subtitle: '#8888A8',     // Colors.textMuted
+  dotInactive: '#2E2B42',  // Colors.border
+  textInverse: '#0E0C1C',  // Colors.textInverse
+  textDisabled: '#4E4E68', // Colors.textDisabled
 } as const;
 
 // ─── Slide data ───────────────────────────────────────────────────────────────
@@ -373,7 +377,7 @@ const styles = StyleSheet.create({
   },
   poweredBy: {
     fontSize: 8.5,
-    color: '#4A4A62',
+    color: COLORS.textDisabled,
     letterSpacing: 1,
     textAlign: 'center',
     paddingBottom: 2,

@@ -43,6 +43,9 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   EUR: '€',
   KZT: '₸',
   UAH: '₴',
+  // SVIT internal points — displayed with label rather than symbol
+  SVIT: '',
+  PTS: '',
 };
 
 // ── Transaction icon (SVG) ────────────────────────────────────────────────────
@@ -86,24 +89,28 @@ function TransactionIcon({ type, description, iconBg, iconColor }: {
 
 // ── Transaction icon colors ───────────────────────────────────────────────────
 
+// Token reference: successLight=rgba(16,185,129,0.15), primaryMuted=rgba(232,160,32,0.15),
+// infoLight=rgba(56,189,248,0.15), errorLight=rgba(244,63,94,0.15)
 function getTransactionIconBg(type: TransactionType, description: string): string {
   const lower = description.toLowerCase();
-  if (type === 'TOPUP') return 'rgba(16,185,129,0.1)';
-  if (lower.includes('отель') || lower.includes('hotel')) return 'rgba(232,160,32,0.1)';
+  if (type === 'TOPUP') return 'rgba(16,185,129,0.10)'; // colors.successLight approx
+  if (lower.includes('отель') || lower.includes('hotel')) return 'rgba(232,160,32,0.1)'; // colors.primaryMuted approx
   if (lower.includes('рейс') || lower.includes('flight') || lower.includes('авиа') || lower.includes('билет')) {
-    return 'rgba(56,189,248,0.1)';
+    return 'rgba(56,189,248,0.1)'; // colors.infoLight approx
   }
-  return 'rgba(244,63,94,0.15)';
+  return 'rgba(244,63,94,0.15)'; // colors.errorLight
 }
 
+// Token reference: success=#10B981, primary=#E8A020, info=#38BDF8, error=#F43F5E
+// Static function — cannot call useTheme() here; values are hardcoded to match tokens exactly
 function getTransactionIconColor(type: TransactionType, description: string): string {
   const lower = description.toLowerCase();
-  if (type === 'TOPUP') return '#10B981';
-  if (lower.includes('отель') || lower.includes('hotel')) return '#E8A020';
+  if (type === 'TOPUP') return '#10B981'; // colors.success
+  if (lower.includes('отель') || lower.includes('hotel')) return '#E8A020'; // colors.primary
   if (lower.includes('рейс') || lower.includes('flight') || lower.includes('авиа') || lower.includes('билет')) {
-    return '#38BDF8';
+    return '#38BDF8'; // colors.info
   }
-  return '#F43F5E';
+  return '#F43F5E'; // colors.error
 }
 
 // ── Transaction item ──────────────────────────────────────────────────────────
@@ -117,7 +124,12 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
   const isIncoming = transaction.type === 'TOPUP';
   const amountColor = isIncoming ? colors.success : colors.error;
   const amountPrefix = isIncoming ? '+' : '-';
-  const currencySymbol = CURRENCY_SYMBOLS[transaction.currency] ?? transaction.currency;
+  const upperCurrency = transaction.currency?.toUpperCase() ?? '';
+  // Known monetary currencies get a prefix symbol; SVIT/PTS get a "pts" suffix
+  const isSvitPoints = upperCurrency === 'SVIT' || upperCurrency === 'PTS';
+  const currencySymbol = isSvitPoints
+    ? ''
+    : (CURRENCY_SYMBOLS[upperCurrency] ?? upperCurrency);
 
   function formatDate(dateStr: string): string {
     return new Date(dateStr).toLocaleDateString('ru-RU', {
@@ -132,7 +144,7 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
   const iconColor = getTransactionIconColor(transaction.type, transaction.description);
 
   return (
-    <View style={[txStyles.row, { backgroundColor: '#1E1C2C', borderColor: '#2E2B42' }]}>
+    <View style={[txStyles.row, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <TransactionIcon
         type={transaction.type}
         description={transaction.description}
@@ -145,10 +157,12 @@ function EnhancedTransactionItem({ transaction }: TransactionItemProps) {
       </View>
       <Text style={[txStyles.amount, { color: amountColor }]}>
         {amountPrefix}
-        {parseFloat(transaction.amount).toLocaleString('ru-RU', {
-          maximumFractionDigits: 2,
-        })}{' '}
         {currencySymbol}
+        {parseFloat(transaction.amount).toLocaleString('ru-RU', {
+          minimumFractionDigits: isSvitPoints ? 0 : 2,
+          maximumFractionDigits: isSvitPoints ? 0 : 2,
+        })}
+        {isSvitPoints ? ' pts' : ''}
       </Text>
     </View>
   );
@@ -410,7 +424,7 @@ const modalStyles = StyleSheet.create({
     opacity: 0.6,
   },
   confirmBtnText: {
-    color: '#0E0C1C',
+    color: '#0E0C1C', // colors.textInverse — dark text on primary (gold) button; token value
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
@@ -434,9 +448,10 @@ function HeroBalanceCard({ balance, currency, onTopUp, onHistory }: HeroCardProp
     maximumFractionDigits: 2,
   });
 
+  const { colors: themeColors } = useTheme();
   return (
     <LinearGradient
-      colors={['#E8A020', '#B87518']}
+      colors={[themeColors.primary, themeColors.primaryDark]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={heroStyles.card}
@@ -462,16 +477,18 @@ function HeroBalanceCard({ balance, currency, onTopUp, onHistory }: HeroCardProp
         </TouchableOpacity>
         <TouchableOpacity
           style={[heroStyles.actionBtn, heroStyles.actionBtnDisabled]}
-          activeOpacity={1}
-          disabled={true}
+          activeOpacity={0.6}
+          accessibilityState={{ disabled: true }}
+          onPress={() => Alert.alert('Скоро', 'Вывод средств появится в следующем обновлении')}
         >
           <Text style={heroStyles.actionIcon}>↑</Text>
           <Text style={heroStyles.actionBtnText}>Вывести</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[heroStyles.actionBtn, heroStyles.actionBtnDisabled]}
-          activeOpacity={1}
-          disabled={true}
+          activeOpacity={0.6}
+          accessibilityState={{ disabled: true }}
+          onPress={() => Alert.alert('Скоро', 'Конвертация валют появится в следующем обновлении')}
         >
           <Text style={heroStyles.actionIcon}>↻</Text>
           <Text style={heroStyles.actionBtnText}>Конвертировать</Text>
@@ -497,14 +514,15 @@ const heroStyles = StyleSheet.create({
     fontWeight: '600' as const,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    color: 'rgba(14,12,28,0.55)',
+    // color.textInverse at 55% opacity — on gold gradient background
+    color: 'rgba(14,12,28,0.55)', // colors.textInverse semi-transparent
     marginBottom: 6,
   },
   amount: {
     fontFamily: 'Sora',
     fontSize: 40,
     fontWeight: '700' as const,
-    color: '#0E0C1C',
+    color: '#0E0C1C', // colors.textInverse — dark text on gold background
     letterSpacing: -1,
     marginBottom: 20,
     lineHeight: 48,
@@ -512,7 +530,7 @@ const heroStyles = StyleSheet.create({
   currencySymbol: {
     fontSize: 40,
     fontWeight: '700' as const,
-    color: '#0E0C1C',
+    color: '#0E0C1C', // colors.textInverse — dark text on gold background
   },
   actionsRow: {
     flexDirection: 'row',
@@ -520,7 +538,7 @@ const heroStyles = StyleSheet.create({
   },
   actionBtn: {
     flex: 1,
-    backgroundColor: 'rgba(14,12,28,0.15)',
+    backgroundColor: 'rgba(14,12,28,0.15)', // textInverse at 15% — glass effect on gold
     borderRadius: 12,
     paddingVertical: 8,
     alignItems: 'center',
@@ -528,14 +546,14 @@ const heroStyles = StyleSheet.create({
   },
   actionIcon: {
     fontSize: 16,
-    color: '#0E0C1C',
+    color: '#0E0C1C', // colors.textInverse — dark text on gold background
     lineHeight: 20,
   },
   actionBtnText: {
     fontFamily: 'Inter',
     fontSize: 8.5,
     fontWeight: '600' as const,
-    color: '#0E0C1C',
+    color: '#0E0C1C', // colors.textInverse — dark text on gold background
     textAlign: 'center',
   },
   actionBtnDisabled: {
@@ -549,39 +567,57 @@ function PaymentMethods() {
   const { colors } = useTheme();
 
   return (
-    <View style={pmStyles.row}>
-      <TouchableOpacity
-        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
-        activeOpacity={0.7}
-        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
-      >
-        <Text style={[pmStyles.icon, { color: colors.text, fontSize: 14, fontWeight: '700' }]}>Pay</Text>
-        <Text style={[pmStyles.label, { color: colors.textMuted }]}>Apple Pay</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
-        activeOpacity={0.7}
-        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
-      >
-        <Text style={[pmStyles.icon, { color: '#3B82F6', fontSize: 14, fontWeight: '700' as const }]}>VISA</Text>
-        <Text style={[pmStyles.label, { color: colors.textMuted }]}>Visa ••4821</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[pmStyles.tile, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
-        activeOpacity={0.7}
-        onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
-      >
-        <Text style={[pmStyles.icon, { color: '#EB001B', fontSize: 12, fontWeight: '700' as const }]}>MC</Text>
-        <Text style={[pmStyles.label, { color: colors.textMuted }]}>MC ••5678</Text>
-      </TouchableOpacity>
+    <View style={pmStyles.grid}>
+      <View style={pmStyles.row}>
+        <TouchableOpacity
+          style={[pmStyles.tile, { backgroundColor: colors.card, borderColor: colors.border }]}
+          activeOpacity={0.7}
+          onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
+        >
+          <Text style={[pmStyles.icon, { color: colors.text, fontSize: 14, fontWeight: '700' }]}>Pay</Text>
+          <Text style={[pmStyles.label, { color: colors.textMuted }]}>Apple Pay</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[pmStyles.tile, { backgroundColor: colors.card, borderColor: colors.border }]}
+          activeOpacity={0.7}
+          onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
+        >
+          <Text style={[pmStyles.icon, { color: colors.info, fontSize: 14, fontWeight: '700' as const }]}>VISA</Text>
+          <Text style={[pmStyles.label, { color: colors.textMuted }]}>Visa ••4821</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={pmStyles.row}>
+        <TouchableOpacity
+          style={[pmStyles.tile, { backgroundColor: colors.card, borderColor: colors.border }]}
+          activeOpacity={0.7}
+          onPress={() => Alert.alert('Скоро', 'Управление картами будет доступно в следующем обновлении')}
+        >
+          <Text style={[pmStyles.icon, { color: colors.error, fontSize: 12, fontWeight: '700' as const }]}>MC</Text>
+          <Text style={[pmStyles.label, { color: colors.textMuted }]}>MC ••5678</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[pmStyles.tile, pmStyles.cryptoTile, { backgroundColor: colors.card, borderColor: colors.primary }]}
+          activeOpacity={0.7}
+          onPress={() => Alert.alert('Скоро', 'Оплата криптовалютой (USDT, BTC, ETH) появится в следующем обновлении')}
+        >
+          <Text style={[pmStyles.icon, { color: colors.primary, fontSize: 18, fontWeight: '700' as const }]}>₿</Text>
+          <Text style={[pmStyles.label, { color: colors.primary, fontWeight: '600' as const }]}>Крипто</Text>
+          <View style={[pmStyles.soonBadge, { backgroundColor: `${colors.primary}20` }]}>
+            <Text style={[pmStyles.soonText, { color: colors.primary }]}>Скоро</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const pmStyles = StyleSheet.create({
-  row: {
+  grid: {
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
+    gap: 7,
+  },
+  row: {
     flexDirection: 'row',
     gap: 7,
   },
@@ -589,10 +625,14 @@ const pmStyles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderRadius: 11,
-    paddingVertical: 9,
+    paddingVertical: 11,
     paddingHorizontal: 4,
     alignItems: 'center',
     gap: 4,
+  },
+  cryptoTile: {
+    borderWidth: 1.5,
+    position: 'relative',
   },
   icon: {
     fontSize: 18,
@@ -600,9 +640,23 @@ const pmStyles = StyleSheet.create({
     fontWeight: '600' as const,
   },
   label: {
-    fontSize: 8.5,
+    fontSize: 9,
     textAlign: 'center',
     fontFamily: 'Inter',
+  },
+  soonBadge: {
+    position: 'absolute',
+    top: 5,
+    right: 6,
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+  },
+  soonText: {
+    fontFamily: 'Inter',
+    fontSize: 7,
+    fontWeight: '700' as const,
+    letterSpacing: 0.3,
   },
 });
 
@@ -643,12 +697,12 @@ export default function WalletScreen() {
 
   if (isLoading && (transactions ?? []).length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: '#0E0C1C', paddingTop: insets.top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <SkeletonWalletCard />
         <Skeleton width="40%" height={44} borderRadius={12} style={styles.skeletonBtn} />
         <Skeleton width="60%" height={12} borderRadius={6} style={styles.skeletonLabel} />
         {Array.from({ length: 4 }).map((_, i) => (
-          <View key={i} style={[styles.skeletonRow, { borderBottomColor: '#2E2B42' }]}>
+          <View key={i} style={[styles.skeletonRow, { borderBottomColor: colors.border }]}>
             <Skeleton width={44} height={44} borderRadius={22} />
             <View style={styles.skeletonRowContent}>
               <Skeleton width="55%" height={13} borderRadius={6} />
@@ -662,7 +716,7 @@ export default function WalletScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: '#0E0C1C', paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       <FlatList
         ref={flatListRef}
         data={filteredTransactions}
@@ -672,15 +726,14 @@ export default function WalletScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor="#E8A020"
+            tintColor={colors.primary}
           />
         }
         ListHeaderComponent={
           <View>
             {/* Screen header */}
             <View style={styles.screenHeader}>
-              <Text style={styles.screenTitle}>Кошелёк</Text>
-              <Text style={styles.screenSub}>Оплачивай поездки прямо здесь</Text>
+              <Text style={[styles.screenTitle, { color: colors.text }]}>Кошелёк</Text>
             </View>
 
             {/* Hero gradient balance card */}
@@ -695,18 +748,18 @@ export default function WalletScreen() {
 
             {/* Transaction section label */}
             {filteredTransactions.length > 0 && (
-              <Text style={styles.sectionTitle}>История транзакций</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>История транзакций</Text>
             )}
 
             {/* Filter tabs */}
-            <View style={[styles.tabsContainer, { backgroundColor: '#14121E' }]}>
+            <View style={[styles.tabsContainer, { backgroundColor: colors.surface }]}>
               {FILTER_TABS.map((tab) => (
                 <TouchableOpacity
                   key={tab.key}
                   style={[
                     styles.tabBtn,
                     activeFilter === tab.key && styles.tabBtnActive,
-                    activeFilter === tab.key && { backgroundColor: '#1E1C2C' },
+                    activeFilter === tab.key && { backgroundColor: colors.card },
                   ]}
                   onPress={() => setActiveFilter(tab.key)}
                   activeOpacity={0.7}
@@ -714,8 +767,8 @@ export default function WalletScreen() {
                   <Text
                     style={[
                       styles.tabText,
-                      { color: '#8888A8' },
-                      activeFilter === tab.key && { color: '#E8A020', fontWeight: Typography.weights.semibold },
+                      { color: colors.textMuted },
+                      activeFilter === tab.key && { color: colors.primary, fontWeight: Typography.weights.semibold },
                     ]}
                   >
                     {tab.label}
@@ -727,7 +780,7 @@ export default function WalletScreen() {
         }
         ListEmptyComponent={
           <View style={styles.emptyTransactions}>
-            <IconWallet color="#8888A8" size={56} />
+            <IconWallet color={colors.textMuted} size={56} />
             <Text style={[styles.emptyText, { color: colors.text }]}>Транзакций пока нет</Text>
             <Text style={[styles.emptySubtext, { color: colors.textMuted }]}>
               Пополните кошелёк, чтобы начать бронировать
@@ -757,12 +810,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Sora',
     fontSize: 22,
     fontWeight: '700' as const,
-    color: '#F4F2FF',
-  },
-  screenSub: {
-    fontSize: 10,
-    marginTop: 2,
-    color: '#8888A8',
+    textAlign: 'center',
+    // color set via inline style in WalletScreen
   },
   tabsContainer: {
     flexDirection: 'row',
@@ -798,18 +847,12 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.sm,
     textTransform: 'uppercase',
-    color: '#8888A8',
+    // color set via inline style in WalletScreen
   },
   emptyTransactions: {
     alignItems: 'center',
     paddingVertical: Spacing['2xl'],
     paddingHorizontal: Spacing.lg,
-  },
-  emptyIcon: {
-    fontSize: 56,
-    color: '#8888A8',
-    marginBottom: 12,
-    lineHeight: 64,
   },
   emptyText: {
     fontFamily: 'Inter',

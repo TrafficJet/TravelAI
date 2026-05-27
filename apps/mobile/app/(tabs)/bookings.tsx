@@ -23,6 +23,18 @@ import { toast } from '../../lib/toast';
 import { useTheme } from '../../src/theme/ThemeContext';
 import type { Booking, BookingStatus, FlightDetails, HotelDetails } from '../../types';
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Правильное русское склонение слова «активная [поездка]» */
+function activeTripsLabel(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 19) return `${n} активных`;
+  if (mod10 === 1) return `${n} активная`;
+  if (mod10 >= 2 && mod10 <= 4) return `${n} активные`;
+  return `${n} активных`;
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type FilterTab = 'ALL' | 'ACTIVE' | 'PAST' | 'CANCELLED';
@@ -112,7 +124,7 @@ interface FilterTabsProps {
 function FilterTabs({ active, onChange }: FilterTabsProps) {
   const { colors } = useTheme();
   return (
-    <View style={[tabStyles.row, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+    <View style={[tabStyles.row, { backgroundColor: colors.background, borderTopColor: colors.border, borderBottomColor: colors.border }]}>
       {FILTER_TABS.map((tab) => {
         const isActive = active === tab.key;
         return (
@@ -137,7 +149,9 @@ const tabStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     paddingHorizontal: Spacing.md,
+    borderTopWidth: 1,
     borderBottomWidth: 1,
+    marginBottom: 8,
   },
   tab: {
     marginRight: Spacing.lg,
@@ -248,8 +262,8 @@ function FlightCardContent({ booking }: { booking: Booking }) {
 
       {/* Details button */}
       <View style={cardStyles.detailsRow}>
-        <View style={cardStyles.detailsBtn}>
-          <Text style={cardStyles.detailsBtnText}>Детали</Text>
+        <View style={[cardStyles.detailsBtn, { borderColor: colors.secondary }]}>
+          <Text style={[cardStyles.detailsBtnText, { color: colors.secondary }]}>Детали</Text>
         </View>
       </View>
     </View>
@@ -298,8 +312,8 @@ function HotelCardContent({ booking }: { booking: Booking }) {
 
       {/* Details button */}
       <View style={cardStyles.detailsRow}>
-        <View style={cardStyles.detailsBtn}>
-          <Text style={cardStyles.detailsBtnText}>Детали</Text>
+        <View style={[cardStyles.detailsBtn, { borderColor: colors.secondary }]}>
+          <Text style={[cardStyles.detailsBtnText, { color: colors.secondary }]}>Детали</Text>
         </View>
       </View>
     </View>
@@ -418,7 +432,7 @@ const cardStyles = StyleSheet.create({
   },
   detailsBtn: {
     borderWidth: 1,
-    borderColor: '#7C5CFC',
+    // borderColor set inline via colors.secondary
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 4,
@@ -427,7 +441,7 @@ const cardStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 11,
     fontWeight: '600' as const,
-    color: '#7C5CFC',
+    // color set inline via colors.secondary
   },
 });
 
@@ -484,7 +498,7 @@ function ActiveTripCard({ booking, onPress }: ActiveTripCardProps) {
             <Text style={[activeTripStyles.date, { color: colors.textMuted }]}>{dateLabel}</Text>
           ) : null}
           <View style={activeTripStyles.confirmedBadge}>
-            <Text style={activeTripStyles.confirmedText}>Подтверждено</Text>
+            <Text style={[activeTripStyles.confirmedText, { color: colors.success }]}>Подтверждено</Text>
           </View>
         </View>
       </LinearGradient>
@@ -492,15 +506,19 @@ function ActiveTripCard({ booking, onPress }: ActiveTripCardProps) {
   );
 }
 
+// NOTE: activeTripStyles hex literals in borderColor/nextLabel/confirmedBadge
+// are intentional brand-values matching token colors.secondary and colors.primary.
+// The static StyleSheet cannot reference useTheme() — inline styles handle dynamic parts.
+// P2 improvement: extract to dynamic StyleSheet via colors parameter.
 const activeTripStyles = StyleSheet.create({
   card: {
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.sm,
     borderRadius: 13,
     borderWidth: 1,
-    borderColor: 'rgba(124,92,252,0.35)',
+    borderColor: 'rgba(124,92,252,0.35)', // colors.secondary at 35% opacity
     borderLeftWidth: 3,
-    borderLeftColor: '#7C5CFC',
+    borderLeftColor: '#7C5CFC', // colors.secondary — static, matches token
     overflow: 'hidden',
   },
   gradient: {
@@ -511,7 +529,7 @@ const activeTripStyles = StyleSheet.create({
     fontWeight: '600' as const,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    color: '#E8A020',
+    color: '#E8A020', // colors.primary — static, matches token
     marginBottom: 10,
     fontFamily: 'Inter',
   },
@@ -542,13 +560,13 @@ const activeTripStyles = StyleSheet.create({
     fontSize: 11,
   },
   confirmedBadge: {
-    backgroundColor: 'rgba(16,185,129,0.15)',
+    backgroundColor: 'rgba(16,185,129,0.15)', // successLight
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
   confirmedText: {
-    color: '#10B981',
+    // color set inline via colors.success
     fontSize: 10,
     fontWeight: '600' as const,
     fontFamily: 'Inter',
@@ -583,7 +601,7 @@ function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.85}
-        style={[pastCardStyles.card, { backgroundColor: '#1C1C2E', borderColor: '#2A2A42' }]}
+        style={[pastCardStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
       >
         <View style={[pastCardStyles.iconBlock, { backgroundColor: `${colors.primary}15` }]}>
           {isFlight
@@ -599,7 +617,7 @@ function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
           ) : null}
           <View style={pastCardStyles.tagsRow}>
             <View style={pastCardStyles.tagGreen}>
-              <Text style={pastCardStyles.tagGreenText}>Завершено</Text>
+              <Text style={[pastCardStyles.tagGreenText, { color: colors.success }]}>Завершено</Text>
             </View>
             {isFlight && (
               <View style={pastCardStyles.tagBlue}>
@@ -614,7 +632,7 @@ function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
           </View>
         </View>
 
-        <Text style={pastCardStyles.price}>{formatPrice(booking.totalPrice, booking.currency)}</Text>
+        <Text style={[pastCardStyles.price, { color: colors.text }]}>{formatPrice(booking.totalPrice, booking.currency)}</Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -660,37 +678,37 @@ const pastCardStyles = StyleSheet.create({
     marginTop: 4,
   },
   tagGreen: {
-    backgroundColor: 'rgba(16,185,129,0.12)',
+    backgroundColor: 'rgba(16,185,129,0.12)', // successLight approximation
     borderRadius: 4,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   tagGreenText: {
-    color: '#10B981',
+    // color set inline via colors.success
     fontSize: 9,
     fontWeight: '600' as const,
     fontFamily: 'Inter',
   },
   tagBlue: {
-    backgroundColor: 'rgba(56,189,248,0.12)',
+    backgroundColor: 'rgba(56,189,248,0.12)', // colors.info at 12% opacity
     borderRadius: 4,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   tagBlueText: {
-    color: '#38BDF8',
+    color: '#38BDF8', // colors.info — static, matches token
     fontSize: 9,
     fontWeight: '600' as const,
     fontFamily: 'Inter',
   },
   tagAmber: {
-    backgroundColor: 'rgba(232,160,32,0.12)',
+    backgroundColor: 'rgba(232,160,32,0.12)', // colors.primary at 12% opacity
     borderRadius: 4,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   tagAmberText: {
-    color: '#E8A020',
+    color: '#E8A020', // colors.primary — static, matches token
     fontSize: 9,
     fontWeight: '600' as const,
     fontFamily: 'Inter',
@@ -699,7 +717,7 @@ const pastCardStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 13,
     fontWeight: '700' as const,
-    color: '#F4F2FF',
+    // color set inline via colors.text
     flexShrink: 0,
   },
 });
@@ -902,8 +920,7 @@ export default function BookingsScreen() {
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Мои поездки</Text>
-          <Text style={[styles.headerSub, { color: colors.textMuted }]}>Загрузка...</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Мои поездки</Text>
         </View>
         <FilterTabs active={filter} onChange={setFilter} />
         <SkeletonList />
@@ -915,11 +932,7 @@ export default function BookingsScreen() {
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       {/* Design header: "Мои поездки" in Sora bold 22px */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Мои поездки</Text>
-        <Text style={[styles.headerSub, { color: colors.textMuted }]}>
-          {allBookings.length} {allBookings.length === 1 ? 'поездка' : allBookings.length < 5 ? 'поездки' : 'поездок'}
-          {activeBookings.length > 0 ? ` · ${activeBookings.length} активная` : ''}
-        </Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Мои поездки</Text>
       </View>
 
       <FilterTabs active={filter} onChange={setFilter} />
@@ -988,28 +1001,27 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingBottom: 14,
+    paddingBottom: 20,
     paddingTop: 4,
   },
   headerTitle: {
     fontFamily: 'Sora',
     fontSize: 22,
     fontWeight: '700',
-    color: '#F4F2FF',
-  },
-  headerSub: {
-    fontSize: 10,
-    marginTop: 2,
+    textAlign: 'center',
+    // NOTE: color must be set inline via { color: colors.text } — static styles cannot reference tokens
   },
   sectionLabel: {
+    fontFamily: 'Inter',
     fontSize: 9,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
     paddingHorizontal: 20,
     paddingBottom: 8,
   },
   listContent: {
+    paddingTop: 12,
     paddingBottom: 24,
   },
   emptyContainer: {

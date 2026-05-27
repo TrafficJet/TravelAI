@@ -28,7 +28,8 @@
       },
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "runtimeVersion": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -41,8 +42,15 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.CAMERA",
         "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -88,6 +96,9 @@
       "eas": {
         "projectId": "ec47f236-645f-45af-8860-f352c09c2224"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ec47f236-645f-45af-8860-f352c09c2224"
     }
   }
 }

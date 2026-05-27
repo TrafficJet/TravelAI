@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Tabs, router } from 'expo-router';
+import { Tabs, router, usePathname } from 'expo-router';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -22,10 +22,11 @@ import {
 // ── Badge component ───────────────────────────────────────────────────────────
 
 function TabBadge({ count }: { count: number }) {
+  const { colors } = useTheme();
   if (count <= 0) return null;
   return (
-    <View style={badgeStyles.container}>
-      <Text style={badgeStyles.text}>{count > 99 ? '99+' : String(count)}</Text>
+    <View style={[badgeStyles.container, { backgroundColor: colors.error }]}>
+      <Text style={[badgeStyles.text, { color: colors.text }]}>{count > 99 ? '99+' : String(count)}</Text>
     </View>
   );
 }
@@ -38,13 +39,11 @@ const badgeStyles = StyleSheet.create({
     minWidth: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#F43F5E',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 3,
   },
   text: {
-    color: '#FFFFFF',
     fontSize: 9,
     fontWeight: Typography.weights.bold,
     lineHeight: 11,
@@ -73,7 +72,7 @@ function TabIcon({ focused, color, size, renderIcon, badge }: TabIconProps) {
       damping: 14,
       stiffness: 200,
     });
-    const opacity = withTiming(focusedSV.value === 1 ? 1 : 0.75, { duration: 150 });
+    const opacity = withTiming(focusedSV.value === 1 ? 1 : 1, { duration: 150 });
     return {
       transform: [{ scale }],
       opacity,
@@ -98,35 +97,41 @@ export default function TabsLayout() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
+  const pathname = usePathname();
   useNotificationsContext(); // keep context subscribed for background badge updates
+
+  // Determine if we're inside a chat session (hidden route) → force "Чат" tab active
+  const isInChatRoute = pathname.includes('/chat/');
 
   const tabBarHeight = 70 + (Platform.OS === 'ios' ? insets.bottom : 0);
 
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: '#0E0C1C' },
-        headerTintColor: '#F4F2FF',
-        headerTitleStyle: { fontWeight: Typography.weights.bold, color: '#F4F2FF' },
+        headerStyle: { backgroundColor: colors.background },
+        headerTintColor: colors.text,
+        headerTitleStyle: { fontWeight: Typography.weights.bold, color: colors.text },
         headerShadowVisible: false,
         tabBarStyle: {
-          // SVIT brand: bg #0E0C1C, border-top #2E2B42, height 70px
-          backgroundColor: '#0E0C1C',
-          borderTopColor: '#2E2B42',
+          // SVIT brand: bg surface, border-top border, height 70px
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
           height: tabBarHeight,
           paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
           paddingTop: 10,
         },
-        tabBarActiveTintColor: '#E8A020',
-        tabBarInactiveTintColor: '#4A4A62',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: '#D0CEED',
         tabBarLabelStyle: {
-          fontSize: 8.5,
-          fontWeight: Typography.weights.medium,
+          fontSize: 10,
+          fontWeight: Typography.weights.semibold,
           includeFontPadding: false,
-          letterSpacing: 0.2,
+          letterSpacing: 0.3,
           marginTop: 3,
         },
+        tabBarActiveBackgroundColor: 'transparent',
+        tabBarInactiveBackgroundColor: 'transparent',
         tabBarItemStyle: {
           paddingHorizontal: 0,
         },
@@ -142,6 +147,9 @@ export default function TabsLayout() {
           tabBarIcon: (props) => (
             <TabIcon
               {...props}
+              // Force "focused" visual state when user is inside a chat session (hidden route)
+              focused={props.focused || isInChatRoute}
+              color={props.focused || isInChatRoute ? colors.primary : '#D0CEED'}
               renderIcon={(color, size) => <IconChat color={color} size={size} />}
             />
           ),

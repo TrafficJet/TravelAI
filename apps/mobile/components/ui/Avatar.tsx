@@ -33,7 +33,7 @@ export function Avatar({ name, imageUri, size = 44 }: AvatarProps) {
       overflow: 'hidden',
     },
     initials: {
-      color: '#0A0A14',
+      color: colors.textInverse,
       fontWeight: '700',
     },
   }), [colors]);

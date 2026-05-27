@@ -198,7 +198,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
       elevation: 0,
     },
     searchBtnText: {
-      color: '#0A0A14',
+      color: colors.textInverse,
       fontSize: 15,
       fontWeight: '700',
     },
@@ -302,7 +302,7 @@ export function MultiCityForm({ onSearch, disabled = false }: MultiCityFormProps
         disabled={filledCount === 0 || disabled}
         activeOpacity={0.85}
       >
-        <Text style={{ fontSize: 16, color: "#0A0A14", lineHeight: 20 }}>{'⌕'}</Text>
+        <Text style={{ fontSize: 16, color: colors.textInverse, lineHeight: 20 }}>{'⌕'}</Text>
         <Text style={styles.searchBtnText}>
           Найти{filledCount > 0 ? ` (${filledCount} перелётов)` : ''}
         </Text>

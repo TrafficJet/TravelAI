@@ -247,7 +247,7 @@ export function ToolResultCard(props: ToolResultCardProps) {
             {price.toLocaleString('ru-RU')} {currency}
           </Text>
           <TouchableOpacity style={[legacyStyles.bookBtn, { backgroundColor: colors.primary }]} onPress={onBook}>
-            <Text style={legacyStyles.bookBtnText}>Забронировать</Text>
+            <Text style={[legacyStyles.bookBtnText, { color: colors.textInverse }]}>Забронировать</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -298,7 +298,7 @@ export function ToolResultCard(props: ToolResultCardProps) {
           {data.pricePerNight.toLocaleString('ru-RU')} {currency}/ночь
         </Text>
         <TouchableOpacity style={[legacyStyles.bookBtn, { backgroundColor: colors.primary }]} onPress={onBook}>
-          <Text style={legacyStyles.bookBtnText}>Забронировать</Text>
+          <Text style={[legacyStyles.bookBtnText, { color: colors.textInverse }]}>Забронировать</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -391,7 +391,6 @@ const legacyStyles = StyleSheet.create({
     borderRadius: 32,
   },
   bookBtnText: {
-    color: '#0A0A14',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
   },

@@ -2,13 +2,14 @@ import api from './api';
 import type { WalletTransaction, PaginatedResponse } from '../types';
 
 export interface WalletData {
-  balance: string;
+  balance: number;
   currency: string;
   transactions: WalletTransaction[];
 }
 
 export interface TopupResponse {
-  balance: string;
+  balance: number;
+  newBalance?: number;
   status?: string;
   paymentUrl?: string;
 }

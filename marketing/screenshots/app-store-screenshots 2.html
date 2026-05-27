@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVIT — App Store Screenshots</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS (from BRANDBOOK_SVIT.md)
+   background  #0A0A14   surface    #12121F
+   card        #1C1C2E   elevated   #252538
+   primary     #F59E0B   secondary  #14B8A6
+   text        #F4F4F8   textMuted  #8B8BA7
+   border      #2A2A42   divider    #1E1E30
+   success     #10B981   error      #F43F5E
+   gradient    135deg #F59E0B → #14B8A6
+   ============================================================ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #06060F;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  padding: 48px 24px 64px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Page header ── */
+.page-title {
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 19px; font-weight: 600;
+  color: #F4F4F8;
+  text-align: center;
+  letter-spacing: 4px; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.page-sub {
+  font-size: 11.5px; color: #8B8BA7;
+  text-align: center; letter-spacing: 0.5px;
+  margin-bottom: 52px;
+}
+
+/* ── Gallery ── */
+.gallery {
+  display: flex; flex-wrap: wrap;
+  gap: 44px; justify-content: center;
+}
+
+/* ── Phone wrap ── */
+.pw { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.pn { font-size: 10px; font-weight: 600; color: #4A4A62; letter-spacing: 2px; text-transform: uppercase; }
+
+/* ── iPhone 14 Pro frame 280 × 606 ── */
+.frame {
+  width: 280px; height: 606px;
+  background: #0E0E18;
+  border-radius: 44px;
+  border: 2px solid #252535;
+  box-shadow:
+    0 0 0 1px #0A0A14,
+    0 28px 72px rgba(0,0,0,0.75),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.di { /* Dynamic Island */
+  position: absolute; top: 11px; left: 50%;
+  transform: translateX(-50%);
+  width: 84px; height: 24px;
+  background: #000; border-radius: 18px; z-index: 100;
+}
+.scr { /* Screen area */
+  position: absolute; inset: 0;
+  background: #0A0A14;
+  overflow: hidden; border-radius: 42px;
+}
+
+/* ── Caption ── */
+.cap { width: 280px; text-align: center; }
+.cap-t {
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: #F4F4F8; margin-bottom: 4px;
+}
+.cap-s { font-size: 11px; color: #8B8BA7; line-height: 1.5; }
+
+/* ── Status bar ── */
+.sb {
+  height: 46px; display: flex;
+  align-items: flex-end; justify-content: space-between;
+  padding: 0 22px 8px; flex-shrink: 0;
+  position: relative; z-index: 10;
+}
+.sb-t { font-size: 13px; font-weight: 600; color: #F4F4F8; letter-spacing: -0.3px; }
+.sb-i { display: flex; align-items: center; gap: 5px; }
+
+/* ── Nav bar ── */
+.nb {
+  height: 70px; background: #12121F;
+  border-top: 1px solid #1E1E30;
+  display: flex; align-items: flex-start;
+  justify-content: space-around; padding-top: 10px;
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 50;
+}
+.ni { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.nl { font-size: 8.5px; color: #4A4A62; letter-spacing: 0.2px; }
+.nl.on { color: #F59E0B; }
+
+/* ── Gradient CTA button ── */
+.cta {
+  background: linear-gradient(135deg, #F59E0B 0%, #14B8A6 100%);
+  border-radius: 28px; padding: 13px;
+  text-align: center; font-size: 13px;
+  font-weight: 700; color: #0A0A14;
+}
+
+/* ══════════════════════════
+   SCREEN 1 — CHAT
+   ══════════════════════════ */
+.s1 { display: flex; flex-direction: column; height: 100%; background: #0A0A14; }
+.s1-hdr { padding: 0 20px 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+.s1-hdr-name { font-family: 'Sora','Inter',sans-serif; font-size: 17px; font-weight: 700; color: #F4F4F8; }
+.s1-hdr-sub { font-size: 10px; color: #10B981; margin-top: 1px; }
+.s1-av { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#14B8A6,#F59E0B); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #0A0A14; flex-shrink: 0; }
+.msgs { flex: 1; padding: 0 14px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.mu { align-self: flex-end; background: linear-gradient(135deg,#F59E0B,#E8890A); border-radius: 16px 16px 4px 16px; padding: 9px 13px; max-width: 76%; font-size: 12px; color: #0A0A14; font-weight: 500; line-height: 1.45; }
+.maw { align-self: flex-start; max-width: 90%; }
+.mnr { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.mad { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg,#14B8A6,#F59E0B); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #0A0A14; }
+.man { font-size: 10px; font-weight: 600; color: #14B8A6; }
+.mab { background: #1C1C2E; border: 1px solid #2A2A42; border-radius: 4px 16px 16px 16px; padding: 10px 13px; font-size: 11.5px; color: #F4F4F8; line-height: 1.55; }
+.fm { background: #1C1C2E; border: 1px solid #2A2A42; border-radius: 12px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.fm-r { font-size: 13px; font-weight: 700; color: #F4F4F8; letter-spacing: 1px; }
+.fm-i { font-size: 10px; color: #8B8BA7; margin-top: 2px; }
+.fm-p { font-size: 16px; font-weight: 700; color: #F59E0B; }
+.fm-ps { font-size: 9px; color: #8B8BA7; }
+.ibtn { background: linear-gradient(135deg,#F59E0B,#14B8A6); border-radius: 20px; padding: 7px 14px; font-size: 11px; font-weight: 700; color: #0A0A14; text-align: center; margin-top: 8px; }
+.s1-inp { margin: 8px 14px 76px; background: #1C1C2E; border: 1px solid #2A2A42; border-radius: 24px; padding: 10px 14px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.s1-ph { flex: 1; font-size: 12px; color: #4A4A62; }
+.s1-sd { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,#F59E0B,#14B8A6); display: flex; align-items: center; justify-content: center; }
+
+/* ══════════════════════════
+   SCREEN 2 — FLIGHT RESULTS
+   ══════════════════════════ */
+.s2 { display: flex; flex-direction: column; height: 100%; background: #0A0A14; }
+.s2-hdr { padding: 0 20px 14px; flex-shrink: 0; }
+.s2-lbl { font-size: 9px; color: #8B8BA7; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 3px; }
+.s2-rt { font-family: 'Sora','Inter',sans-serif; font-size: 20px; font-weight: 700; color: #F4F4F8; display: flex; align-items: center; gap: 8px; }
+.s2-dt { font-size: 10px; color: #8B8BA7; margin-top: 2px; }
+.s2-cards { flex: 1; padding: 0 14px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.fc { background: #1C1C2E; border: 1px solid #2A2A42; border-radius: 14px; padding: 11px 13px; position: relative; }
+.fc.top { border-color: #F59E0B; background: linear-gradient(135deg,rgba(245,158,11,0.07),#1C1C2E); }
+.fc-bge { position: absolute; top: -1px; right: 14px; background: linear-gradient(135deg,#F59E0B,#14B8A6); border-radius: 0 0 8px 8px; padding: 2px 8px; font-size: 8px; font-weight: 700; color: #0A0A14; letter-spacing: 0.5px; text-transform: uppercase; }
+.fc-tier { font-size: 8.5px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; display: flex; align-items: center; gap: 5px; margin-bottom: 7px; }
+.td { width: 5px; height: 5px; border-radius: 50%; }
+.fc-bod { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.fc-ts { display: flex; align-items: center; gap: 8px; flex: 1; }
+.fc-t { font-family: 'Sora','Inter',sans-serif; font-size: 16px; font-weight: 700; color: #F4F4F8; }
+.fc-c { font-size: 9px; color: #8B8BA7; text-align: center; }
+.fc-mid { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 44px; }
+.fc-lw { position: relative; width: 100%; height: 14px; }
+.fc-hr { position: absolute; top: 6px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg,#2A2A42,#8B8BA7,#2A2A42); }
+.fc-pl { position: absolute; top: 1px; left: 50%; transform: translateX(-50%); font-size: 10px; }
+.fc-dur { font-size: 8px; color: #8B8BA7; margin-top: 1px; }
+.fc-pw { text-align: right; }
+.fc-p { font-family: 'Sora','Inter',sans-serif; font-size: 18px; font-weight: 700; color: #F59E0B; }
+.fc-pp { font-size: 8.5px; color: #8B8BA7; }
+.fc-ft { display: flex; justify-content: space-between; align-items: center; margin-top: 7px; }
+.fc-al { font-size: 9.5px; color: #8B8BA7; }
+.tg { font-size: 8.5px; font-weight: 600; padding: 2px 7px; border-radius: 5px; color: #14B8A6; background: rgba(20,184,166,0.1); }
+.tg.b { color: #F59E0B; background: rgba(245,158,11,0.1); }
+.s2-ft { padding: 10px 14px 78px; flex-shrink: 0; }
+
+/* ══════════════════════════
+   SCREEN 3 — HOTEL CARD
+   ══════════════════════════ */
+.s3 { display: flex; flex-direction: column; height: 100%; background: #0A0A14; }
+.s3-hero { height: 175px; position: relative; flex-shrink: 0; overflow: hidden; }
+.s3-ov { position: absolute; bottom: 0; left: 0; right: 0; height: 90px; background: linear-gradient(to top,#0A0A14,transparent); z-index: 3; }
+.s3-bk { position: absolute; top: 54px; left: 16px; width: 30px; height: 30px; border-radius: 50%; background: rgba(10,10,20,0.65); display: flex; align-items: center; justify-content: center; z-index: 10; }
+.s3-ht { position: absolute; bottom: 18px; left: 20px; z-index: 10; }
+.s3-hn { font-family: 'Sora','Inter',sans-serif; font-size: 17px; font-weight: 700; color: #F4F4F8; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+.s3-loc { font-size: 10px; color: #14B8A6; margin-top: 2px; }
+.s3-body { flex: 1; padding: 12px 20px 0; overflow: hidden; }
+.s3-rr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.stars { display: flex; gap: 2px; }
+.star { color: #F59E0B; font-size: 12px; }
+.s3-sc { font-size: 13px; font-weight: 700; color: #F4F4F8; margin-left: 5px; }
+.s3-rv { font-size: 9px; color: #8B8BA7; margin-left: 3px; }
+.s3-pr { font-family: 'Sora','Inter',sans-serif; font-size: 22px; font-weight: 700; color: #F59E0B; }
+.s3-pn { font-size: 9px; color: #8B8BA7; }
+.ams { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 11px; }
+.am { background: rgba(20,184,166,0.1); border: 1px solid rgba(20,184,166,0.2); border-radius: 6px; padding: 3px 7px; font-size: 9.5px; color: #14B8A6; }
+.s3-desc { font-size: 10.5px; color: #8B8BA7; line-height: 1.5; margin-bottom: 12px; }
+.s3-opts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.s3-opt { display: flex; justify-content: space-between; align-items: center; background: #1C1C2E; border: 1px solid #2A2A42; border-radius: 10px; padding: 8px 12px; }
+.s3-opt.sel { border-color: #F59E0B; background: rgba(245,158,11,0.05); }
+.s3-on { font-size: 11px; color: #F4F4F8; }
+.s3-os { font-size: 9px; color: #8B8BA7; margin-top: 1px; }
+.s3-op { font-size: 13px; font-weight: 700; color: #F59E0B; }
+.s3-ft { padding: 8px 20px 78px; flex-shrink: 0; }
+
+/* ══════════════════════════
+   SCREEN 4 — MY TRIPS
+   ══════════════════════════ */
+.s4 { display: flex; flex-direction: column; height: 100%; background: #0A0A14; }
+.s4-hdr { padding: 0 20px 14px; flex-shrink: 0; }
+.s4-ti { font-family: 'Sora','Inter',sans-serif; font-size: 22px; font-weight: 700; color: #F4F4F8; }
+.s4-su { font-size: 10px; color: #8B8BA7; margin-top: 2px; }
+.at { margin: 0 14px 14px; background: linear-gradient(135deg,rgba(245,158,11,0.11),rgba(20,184,166,0.07)); border: 1px solid rgba(245,158,11,0.28); border-radius: 16px; padding: 14px; flex-shrink: 0; }
+.at-lb { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #F59E0B; margin-bottom: 6px; }
+.at-m { display: flex; justify-content: space-between; align-items: flex-start; }
+.at-d { font-family: 'Sora','Inter',sans-serif; font-size: 17px; font-weight: 700; color: #F4F4F8; }
+.at-i { font-size: 10px; color: #8B8BA7; margin-top: 2px; }
+.at-bg { font-size: 9px; color: #10B981; font-weight: 600; background: rgba(16,185,129,0.1); padding: 3px 8px; border-radius: 6px; }
+.at-tot { font-size: 13px; font-weight: 700; color: #F4F4F8; text-align: right; margin-top: 4px; }
+.at-st { display: flex; gap: 6px; margin-top: 10px; }
+.at-s { flex: 1; background: rgba(255,255,255,0.04); border-radius: 8px; padding: 6px 0; text-align: center; }
+.at-sl { font-size: 9px; color: #8B8BA7; }
+.at-sv { font-size: 11px; font-weight: 600; color: #F4F4F8; margin-top: 1px; }
+.sl { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #8B8BA7; padding: 0 20px; margin-bottom: 8px; flex-shrink: 0; }
+.tl { flex: 1; padding: 0 14px; display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
+.tc { background: #1C1C2E; border: 1px solid #2A2A42; border-radius: 13px; padding: 11px 13px; display: flex; gap: 11px; align-items: flex-start; }
+.tc-th { width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.tc-th.dxb { background: linear-gradient(135deg,#2D1A0A,#4a2f10); }
+.tc-th.prg { background: linear-gradient(135deg,#1a1a40,#2d2d6a); }
+.tc-inf { flex: 1; }
+.tc-d { font-size: 13px; font-weight: 700; color: #F4F4F8; margin-bottom: 2px; }
+.tc-dt { font-size: 9.5px; color: #8B8BA7; margin-bottom: 5px; }
+.tc-tg { display: flex; gap: 4px; }
+.tt { font-size: 8.5px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+.tt.done { color: #10B981; background: rgba(16,185,129,0.1); }
+.tt.fl { color: #38BDF8; background: rgba(56,189,248,0.1); }
+.tt.ht { color: #F59E0B; background: rgba(245,158,11,0.1); }
+.tc-p { font-size: 13px; font-weight: 700; color: #F4F4F8; }
+.tc-ps { font-size: 9px; color: #8B8BA7; }
+
+/* ══════════════════════════
+   SCREEN 5 — WALLET
+   ══════════════════════════ */
+.s5 { display: flex; flex-direction: column; height: 100%; background: #0A0A14; }
+.s5-hdr { padding: 0 20px 14px; flex-shrink: 0; }
+.s5-ti { font-family: 'Sora','Inter',sans-serif; font-size: 22px; font-weight: 700; color: #F4F4F8; }
+.s5-su { font-size: 10px; color: #8B8BA7; margin-top: 2px; }
+.wc { margin: 0 14px 14px; background: linear-gradient(135deg,#F59E0B 0%,#14B8A6 100%); border-radius: 20px; padding: 18px 20px; position: relative; overflow: hidden; flex-shrink: 0; }
+.wc-bg { position: absolute; inset: 0; background: radial-gradient(circle at 80% 20%,rgba(255,255,255,0.12) 0%,transparent 50%),radial-gradient(circle at 10% 80%,rgba(255,255,255,0.08) 0%,transparent 40%); }
+.wc-lb { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(10,10,20,0.5); margin-bottom: 4px; position: relative; }
+.wc-ba { font-family: 'Sora','Inter',sans-serif; font-size: 30px; font-weight: 700; color: #0A0A14; position: relative; margin-bottom: 14px; }
+.wc-ac { display: flex; gap: 8px; position: relative; }
+.wc-b { background: rgba(10,10,20,0.15); border-radius: 18px; padding: 6px 13px; font-size: 10.5px; font-weight: 600; color: #0A0A14; }
+.pms { margin: 0 14px 14px; display: flex; gap: 7px; flex-shrink: 0; }
+.pm { flex: 1; background: #1C1C2E; border: 1px solid #2A2A42; border-radius: 11px; padding: 9px 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.pm.apm { border-color: rgba(245,158,11,0.4); }
+.pm-ic { font-size: 16px; }
+.pm-lb { font-size: 8.5px; color: #8B8BA7; text-align: center; }
+.pm-lb.ab { color: #F59E0B; }
+.txn-lb { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #8B8BA7; padding: 0 20px; margin-bottom: 7px; flex-shrink: 0; }
+.txns { flex: 1; overflow: hidden; background: #12121F; border-radius: 14px; margin: 0 14px 78px; }
+.txn { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-bottom: 1px solid #1E1E30; }
+.txn:last-child { border-bottom: none; }
+.txn-ic { width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.txn-in { flex: 1; }
+.txn-nm { font-size: 11.5px; font-weight: 500; color: #F4F4F8; }
+.txn-dt { font-size: 9.5px; color: #8B8BA7; margin-top: 1px; }
+.txn-am { font-size: 12.5px; font-weight: 700; }
+.txn-am.db { color: #F43F5E; }
+.txn-am.cr { color: #10B981; }
+
+/* ══════════════════════════
+   SCREEN 6 — ROUTE MAP
+   ══════════════════════════ */
+.s6 { display: flex; flex-direction: column; height: 100%; background: #0A0A14; }
+.s6-hdr { padding: 0 20px 10px; flex-shrink: 0; }
+.s6-ti { font-family: 'Sora','Inter',sans-serif; font-size: 19px; font-weight: 700; color: #F4F4F8; }
+.s6-su { font-size: 10px; color: #8B8BA7; margin-top: 2px; }
+.s6-mp { margin: 0 14px 12px; border-radius: 14px; overflow: hidden; border: 1px solid #2A2A42; flex-shrink: 0; }
+.s6-it { flex: 1; overflow: hidden; padding: 0 16px 78px; display: flex; flex-direction: column; }
+.id { display: flex; gap: 10px; padding: 9px 0; position: relative; }
+.id::before { content: ''; position: absolute; left: 11px; top: 30px; bottom: -9px; width: 2px; background: #2A2A42; }
+.id:last-child::before { display: none; }
+.idt { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #0A0A14; z-index: 1; }
+.idt.d1 { background: linear-gradient(135deg,#F59E0B,#E8890A); }
+.idt.d2 { background: linear-gradient(135deg,#14B8A6,#0F9689); }
+.idt.d3 { background: linear-gradient(135deg,#8B5CF6,#7C3AED); }
+.idc { flex: 1; }
+.idl { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #8B8BA7; margin-bottom: 3px; }
+.ida { font-size: 11px; color: #F4F4F8; line-height: 1.55; }
+.it { display: inline-block; font-size: 8.5px; padding: 1px 5px; border-radius: 4px; font-weight: 600; margin-right: 4px; background: rgba(245,158,11,0.1); color: #F59E0B; }
+.it.tl { background: rgba(20,184,166,0.1); color: #14B8A6; }
+.it.pu { background: rgba(139,92,246,0.1); color: #8B5CF6; }
+
+/* ══════════════════════════
+   SCREEN 7 — ONBOARDING
+   ══════════════════════════ */
+.s7 { display: flex; flex-direction: column; height: 100%; background: #0A0A14; align-items: center; position: relative; overflow: hidden; }
+.s7-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 45% at 50% 28%,rgba(20,184,166,0.13) 0%,transparent 70%),radial-gradient(ellipse 55% 35% at 50% 78%,rgba(245,158,11,0.10) 0%,transparent 65%),#0A0A14; }
+.s7-c { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; padding: 0 24px; justify-content: space-between; }
+.s7-la { display: flex; flex-direction: column; align-items: center; margin-top: 76px; }
+.s7-wm { font-family: 'Sora','Inter',sans-serif; font-size: 34px; font-weight: 700; letter-spacing: 7px; background: linear-gradient(135deg,#14B8A6,#F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-top: 14px; margin-bottom: 4px; }
+.s7-tg { font-size: 10px; font-weight: 600; letter-spacing: 3.5px; text-transform: uppercase; color: #8B8BA7; }
+.s7-hl { font-family: 'Sora','Inter',sans-serif; font-size: 23px; font-weight: 700; color: #F4F4F8; line-height: 1.3; text-align: center; }
+.s7-bd { font-size: 12px; color: #8B8BA7; line-height: 1.6; text-align: center; margin-top: 10px; }
+.s7-ds { display: flex; gap: 6px; justify-content: center; }
+.s7-d { width: 6px; height: 6px; border-radius: 50%; background: #2A2A42; }
+.s7-d.on { width: 20px; border-radius: 3px; background: linear-gradient(90deg,#14B8A6,#F59E0B); }
+.s7-ac { width: 100%; padding-bottom: 32px; display: flex; flex-direction: column; gap: 10px; }
+.s7-ct { background: linear-gradient(135deg,#F59E0B,#14B8A6); border-radius: 28px; padding: 14px; text-align: center; font-size: 14px; font-weight: 700; color: #0A0A14; }
+.s7-sc { text-align: center; font-size: 11px; color: #8B8BA7; }
+.s7-sc span { color: #14B8A6; font-weight: 500; }
+.s7-pw { font-size: 8.5px; color: #4A4A62; letter-spacing: 1px; text-align: center; padding-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">SVIT</h1>
+<p class="page-sub">App Store Screenshots &middot; 7 экранов &middot; iPhone 14 Pro &middot; Тёмная тема &middot; v1.0 &middot; Май 2026</p>
+
+<!-- SVG status-bar icons helper (inline, reused) -->
+<svg style="display:none">
+  <symbol id="ico-signal" viewBox="0 0 16 11"><rect x="0" y="3" width="3" height="8" rx="0.5" fill="#F4F4F8"/><rect x="4.5" y="2" width="3" height="9" rx="0.5" fill="#F4F4F8"/><rect x="9" y="0.5" width="3" height="10.5" rx="0.5" fill="#F4F4F8"/><rect x="13.5" y="0.5" width="2.5" height="10.5" rx="0.5" fill="#F4F4F8" opacity="0.3"/></symbol>
+  <symbol id="ico-wifi" viewBox="0 0 15 11"><path fill="#F4F4F8" d="M7.5 2.5C9.5 2.5 11.3 3.3 12.6 4.6L14 3.2C12.3 1.5 10 0.5 7.5 0.5C5 0.5 2.7 1.5 1 3.2L2.4 4.6C3.7 3.3 5.5 2.5 7.5 2.5ZM7.5 5.5C8.8 5.5 9.9 6 10.7 6.8L12.1 5.4C10.9 4.2 9.3 3.5 7.5 3.5C5.7 3.5 4.1 4.2 2.9 5.4L4.3 6.8C5.1 6 6.2 5.5 7.5 5.5ZM7.5 8.5C8.1 8.5 8.6 8.7 9 9.1L7.5 10.6L6 9.1C6.4 8.7 6.9 8.5 7.5 8.5Z"/></symbol>
+  <symbol id="ico-batt" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#F4F4F8" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#F4F4F8"/><path d="M23 4v4a2 2 0 000-4z" fill="#F4F4F8" opacity="0.4"/></symbol>
+</svg>
+
+<div class="gallery">
+
+<!-- ══════════════════════════════════════════════
+     01  CHAT INTERFACE
+     ══════════════════════════════════════════════ -->
+<div class="pw">
+  <span class="pn">01</span>
+  <div class="frame">
+    <div class="di"></div>
+    <div class="scr">
+      <div class="s1">
+        <!-- Status bar -->
+        <div class="sb">
+          <span class="sb-t">9:41</span>
+          <div class="sb-i">
+            <svg width="16" height="11"><use href="#ico-signal"/></svg>
+            <svg width="15" height="11"><use href="#ico-wifi"/></svg>
+            <svg width="25" height="12"><use href="#ico-batt"/></svg>
+          </div>
+        </div>
+        <!-- Header -->
+        <div class="s1-hdr">
+          <div>
+            <div class="s1-hdr-name">SVIT <span style="font-size:11px;color:#8B8BA7;font-weight:400;">AI</span></div>
+            <div class="s1-hdr-sub">● На связи · отвечает мгновенно</div>
+          </div>
+          <div class="s1-av">S</div>
+        </div>
+        <!-- Messages -->
+        <div class="msgs">
+          <div class="maw">
+            <div class="mnr"><div class="mad">S</div><span class="man">SVIT AI</span></div>
+            <div class="mab">Привет! Куда летим? Напиши направление и бюджет — найду лучшее.</div>
+          </div>
+          <div class="mu">Хочу в Барселону на выходные, бюджет €300</div>
+          <div class="maw">
+            <div class="mnr"><div class="mad">S</div><span class="man">SVIT AI</span></div>
+            <div class="mab">
+              Нашёл. Киев — Барселона, 24–26 мая.<br>
+              <span style="color:#14B8A6;font-weight:600;">Ryanair</span>, прямой, 3 ч 20 мин.<br>
+              Три варианта отеля готовы.
+            </div>
+            <div class="fm">
+              <div><div class="fm-r">KBP → BCN</div><div class="fm-i">Сб 07:15 · 3ч 20м · Прямой</div></div>
+              <div style="text-align:right;"><div class="fm-p">€89</div><div class="fm-ps">на чел.</div></div>
+            </div>
+            <div class="ibtn">Посмотреть варианты →</div>
+          </div>
+        </div>
+        <!-- Input -->
+        <div class="s1-inp">
+          <div class="s1-ph">Напиши куда хочешь...</div>
+          <div class="s1-sd">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0A0A14" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </div>
+        </div>
+        <!-- Nav -->
+        <div class="nb">
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="nl on">Чат</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="nl">Поездки</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="nl">Кошелёк</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Профиль</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="cap-t">Напиши — и всё готово</div><div class="cap-s">Скажи куда хочешь. SVIT найдёт рейс и отель.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     02  FLIGHT RESULTS
+     ══════════════════════════════════════════════ -->
+<div class="pw">
+  <span class="pn">02</span>
+  <div class="frame">
+    <div class="di"></div>
+    <div class="scr">
+      <div class="s2">
+        <div class="sb">
+          <span class="sb-t">9:41</span>
+          <div class="sb-i"><svg width="16" height="11"><use href="#ico-signal"/></svg><svg width="25" height="12"><use href="#ico-batt"/></svg></div>
+        </div>
+        <div class="s2-hdr">
+          <div class="s2-lbl">Рейсы найдены · 3 варианта</div>
+          <div class="s2-rt">KBP <svg width="18" height="12" viewBox="0 0 24 12" fill="none"><line x1="0" y1="6" x2="20" y2="6" stroke="#8B8BA7" stroke-width="1.5"/><polyline points="14,1 20,6 14,11" stroke="#8B8BA7" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg> BCN</div>
+          <div class="s2-dt">24 мая · 1 пасс. · Туда-обратно</div>
+        </div>
+        <div class="s2-cards">
+          <!-- Budget — best pick -->
+          <div class="fc top">
+            <div class="fc-bge">лучший выбор</div>
+            <div class="fc-tier"><div class="td" style="background:#14B8A6;"></div><span style="color:#14B8A6;">💸 Бюджет</span></div>
+            <div class="fc-bod">
+              <div class="fc-ts">
+                <div><div class="fc-t">07:15</div><div class="fc-c">KBP</div></div>
+                <div class="fc-mid"><div class="fc-lw"><div class="fc-hr"></div><div class="fc-pl">✈</div></div><div class="fc-dur">3ч 20м · прямой</div></div>
+                <div><div class="fc-t">09:35</div><div class="fc-c">BCN</div></div>
+              </div>
+              <div class="fc-pw"><div class="fc-p">€89</div><div class="fc-pp">на чел.</div></div>
+            </div>
+            <div class="fc-ft"><span class="fc-al">Ryanair · FR4412</span><span class="tg">без багажа</span></div>
+          </div>
+          <!-- Optimal -->
+          <div class="fc">
+            <div class="fc-tier"><div class="td" style="background:#F59E0B;"></div><span style="color:#F59E0B;">⚖ Оптимум</span></div>
+            <div class="fc-bod">
+              <div class="fc-ts">
+                <div><div class="fc-t">12:40</div><div class="fc-c">KBP</div></div>
+                <div class="fc-mid"><div class="fc-lw"><div class="fc-hr"></div><div class="fc-pl">✈</div></div><div class="fc-dur">3ч 10м · прямой</div></div>
+                <div><div class="fc-t">14:50</div><div class="fc-c">BCN</div></div>
+              </div>
+              <div class="fc-pw"><div class="fc-p">€134</div><div class="fc-pp">на чел.</div></div>
+            </div>
+            <div class="fc-ft"><span class="fc-al">Vueling · VY8832</span><span class="tg b">20кг багаж</span></div>
+          </div>
+          <!-- Comfort -->
+          <div class="fc">
+            <div class="fc-tier"><div class="td" style="background:#8B5CF6;"></div><span style="color:#8B5CF6;">👑 Комфорт</span></div>
+            <div class="fc-bod">
+              <div class="fc-ts">
+                <div><div class="fc-t">18:05</div><div class="fc-c">KBP</div></div>
+                <div class="fc-mid"><div class="fc-lw"><div class="fc-hr"></div><div class="fc-pl">✈</div></div><div class="fc-dur">3ч 15м · прямой</div></div>
+                <div><div class="fc-t">20:20</div><div class="fc-c">BCN</div></div>
+              </div>
+              <div class="fc-pw"><div class="fc-p">€218</div><div class="fc-pp">на чел.</div></div>
+            </div>
+            <div class="fc-ft"><span class="fc-al">Iberia · IB3124</span><span class="tg b">23кг + место</span></div>
+          </div>
+        </div>
+        <div class="s2-ft"><div class="cta">Выбрать рейс и отель</div></div>
+        <div class="nb">
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="nl">Чат</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="nl on">Поездки</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="nl">Кошелёк</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Профиль</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="cap-t">Билеты за секунды</div><div class="cap-s">AI ищет среди сотен рейсов и выбирает лучший.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     03  HOTEL CARD
+     ══════════════════════════════════════════════ -->
+<div class="pw">
+  <span class="pn">03</span>
+  <div class="frame">
+    <div class="di"></div>
+    <div class="scr">
+      <div class="s3">
+        <div class="s3-hero">
+          <!-- Illustrated Barcelona hotel night scene -->
+          <svg viewBox="0 0 280 175" width="280" height="175" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;">
+            <defs>
+              <linearGradient id="hsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0A1E2E"/><stop offset="100%" stop-color="#0F3040"/></linearGradient>
+              <linearGradient id="hbld" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#102030"/><stop offset="100%" stop-color="#081520"/></linearGradient>
+            </defs>
+            <rect width="280" height="175" fill="url(#hsky)"/>
+            <!-- Stars -->
+            <circle cx="20" cy="18" r="1.2" fill="#F4F4F8" opacity="0.5"/><circle cx="60" cy="12" r="0.8" fill="#F4F4F8" opacity="0.4"/><circle cx="105" cy="22" r="1.5" fill="#F4F4F8" opacity="0.6"/><circle cx="180" cy="10" r="1" fill="#F4F4F8" opacity="0.45"/><circle cx="230" cy="26" r="1.8" fill="#F59E0B" opacity="0.7"/><circle cx="250" cy="14" r="0.9" fill="#F4F4F8" opacity="0.3"/>
+            <!-- Building -->
+            <rect x="55" y="45" width="170" height="130" fill="url(#hbld)"/>
+            <!-- Teal windows -->
+            <g fill="#14B8A6" opacity="0.3"><rect x="68" y="56" width="13" height="9" rx="2"/><rect x="89" y="56" width="13" height="9" rx="2"/><rect x="110" y="56" width="13" height="9" rx="2"/><rect x="131" y="56" width="13" height="9" rx="2"/><rect x="152" y="56" width="13" height="9" rx="2"/><rect x="173" y="56" width="13" height="9" rx="2"/><rect x="194" y="56" width="13" height="9" rx="2"/><rect x="68" y="72" width="13" height="9" rx="2"/><rect x="89" y="72" width="13" height="9" rx="2"/><rect x="110" y="72" width="13" height="9" rx="2"/><rect x="131" y="72" width="13" height="9" rx="2"/><rect x="152" y="72" width="13" height="9" rx="2"/><rect x="173" y="72" width="13" height="9" rx="2"/><rect x="194" y="72" width="13" height="9" rx="2"/><rect x="68" y="88" width="13" height="9" rx="2"/><rect x="89" y="88" width="13" height="9" rx="2"/><rect x="110" y="88" width="13" height="9" rx="2"/><rect x="131" y="88" width="13" height="9" rx="2"/><rect x="152" y="88" width="13" height="9" rx="2"/><rect x="173" y="88" width="13" height="9" rx="2"/><rect x="194" y="88" width="13" height="9" rx="2"/></g>
+            <!-- Warm amber windows (lit) -->
+            <g fill="#F59E0B" opacity="0.75"><rect x="89" y="56" width="13" height="9" rx="2"/><rect x="152" y="72" width="13" height="9" rx="2"/><rect x="68" y="88" width="13" height="9" rx="2"/><rect x="194" y="56" width="13" height="9" rx="2"/><rect x="131" y="88" width="13" height="9" rx="2"/></g>
+            <!-- Sea -->
+            <path d="M 0 148 C 40 140,80 145,120 140 C 160 135,200 138,240 133 L 280 130 L 280 175 L 0 175 Z" fill="#091828" opacity="0.8"/>
+            <path d="M 0 150 C 50 146,100 149,150 145 C 200 141,240 144,280 140" fill="none" stroke="#14B8A6" stroke-width="0.7" opacity="0.3"/>
+            <!-- Palms -->
+            <line x1="22" y1="175" x2="22" y2="128" stroke="#071A0A" stroke-width="4"/>
+            <ellipse cx="22" cy="126" rx="16" ry="8" fill="#0A280C" opacity="0.8"/>
+            <line x1="258" y1="175" x2="258" y2="118" stroke="#071A0A" stroke-width="3"/>
+            <ellipse cx="258" cy="116" rx="13" ry="7" fill="#0A280C" opacity="0.7"/>
+            <!-- Entrance glow -->
+            <rect x="120" y="118" width="40" height="27" rx="3" fill="#F59E0B" opacity="0.12"/>
+          </svg>
+          <!-- Status bar overlay -->
+          <div style="position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 20px 8px;z-index:20;">
+            <span style="font-size:13px;font-weight:600;color:#F4F4F8;text-shadow:0 1px 4px rgba(0,0,0,0.8);">9:41</span>
+          </div>
+          <div class="s3-bk"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F4F4F8" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="s3-ov"></div>
+          <div class="s3-ht">
+            <div class="s3-hn">Hotel Arts Barcelona</div>
+            <div class="s3-loc">📍 Barceloneta Beach</div>
+          </div>
+        </div>
+        <!-- Body -->
+        <div class="s3-body">
+          <div class="s3-rr">
+            <div style="display:flex;align-items:center;">
+              <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+              <span class="s3-sc">4.8</span><span class="s3-rv">(1 247)</span>
+            </div>
+            <div style="text-align:right;"><div class="s3-pr">€112</div><div class="s3-pn">за ночь</div></div>
+          </div>
+          <div class="ams">
+            <span class="am">Бассейн</span><span class="am">Wi-Fi</span><span class="am">Пляж</span><span class="am">Ресторан</span><span class="am">Спа</span>
+          </div>
+          <div class="s3-desc">5-звёздочный отель на берегу Средиземного моря. Прямой выход на пляж Барселонета, панорамный бассейн на 43-м этаже.</div>
+          <div class="s3-opts">
+            <div class="s3-opt"><div><div class="s3-on">Стандарт · 2 ночи</div><div class="s3-os">Завтрак включён</div></div><div class="s3-op">€224</div></div>
+            <div class="s3-opt sel"><div><div class="s3-on">Делюкс с видом · 2 ночи</div><div class="s3-os">Завтрак + трансфер</div></div><div class="s3-op">€290</div></div>
+          </div>
+        </div>
+        <div class="s3-ft"><div class="cta">Забронировать</div></div>
+        <div class="nb">
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="nl">Чат</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="nl on">Поездки</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="nl">Кошелёк</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Профиль</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="cap-t">Три варианта отеля</div><div class="cap-s">Бюджетный, стандарт или люкс — выбираешь ты.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     04  MY TRIPS
+     ══════════════════════════════════════════════ -->
+<div class="pw">
+  <span class="pn">04</span>
+  <div class="frame">
+    <div class="di"></div>
+    <div class="scr">
+      <div class="s4">
+        <div class="sb">
+          <span class="sb-t">9:41</span>
+          <div class="sb-i"><svg width="16" height="11"><use href="#ico-signal"/></svg><svg width="25" height="12"><use href="#ico-batt"/></svg></div>
+        </div>
+        <div class="s4-hdr">
+          <div class="s4-ti">Мои поездки</div>
+          <div class="s4-su">3 поездки · 1 активная</div>
+        </div>
+        <!-- Active trip card -->
+        <div class="at">
+          <div class="at-lb">Следующая поездка</div>
+          <div class="at-m">
+            <div><div class="at-d">Барселона</div><div class="at-i">24–26 мая · Ryanair + Hotel Arts</div></div>
+            <div><div class="at-bg">Подтверждено</div><div class="at-tot">€401</div></div>
+          </div>
+          <div class="at-st">
+            <div class="at-s"><div class="at-sl">Вылет</div><div class="at-sv">24 мая</div></div>
+            <div class="at-s"><div class="at-sl">Отель</div><div class="at-sv">Arts BCN</div></div>
+            <div class="at-s"><div class="at-sl">Ночей</div><div class="at-sv">2</div></div>
+          </div>
+        </div>
+        <div class="sl">Прошлые поездки</div>
+        <div class="tl">
+          <div class="tc">
+            <div class="tc-th dxb">🏙</div>
+            <div class="tc-inf">
+              <div class="tc-d">Дубай</div>
+              <div class="tc-dt">10–16 марта 2026</div>
+              <div class="tc-tg"><span class="tt done">Завершено</span><span class="tt fl">Рейс</span><span class="tt ht">Отель</span></div>
+            </div>
+            <div style="text-align:right;"><div class="tc-p">€680</div><div class="tc-ps">итого</div></div>
+          </div>
+          <div class="tc">
+            <div class="tc-th prg">🏰</div>
+            <div class="tc-inf">
+              <div class="tc-d">Прага</div>
+              <div class="tc-dt">28 янв – 1 фев 2026</div>
+              <div class="tc-tg"><span class="tt done">Завершено</span><span class="tt fl">Рейс</span></div>
+            </div>
+            <div style="text-align:right;"><div class="tc-p">€245</div><div class="tc-ps">итого</div></div>
+          </div>
+        </div>
+        <div class="nb">
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="nl">Чат</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="nl on">Поездки</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="nl">Кошелёк</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Профиль</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="cap-t">Все поездки в одном месте</div><div class="cap-s">Брони, маршруты и документы — всегда под рукой.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     05  WALLET
+     ══════════════════════════════════════════════ -->
+<div class="pw">
+  <span class="pn">05</span>
+  <div class="frame">
+    <div class="di"></div>
+    <div class="scr">
+      <div class="s5">
+        <div class="sb">
+          <span class="sb-t">9:41</span>
+          <div class="sb-i"><svg width="16" height="11"><use href="#ico-signal"/></svg><svg width="25" height="12"><use href="#ico-batt"/></svg></div>
+        </div>
+        <div class="s5-hdr">
+          <div class="s5-ti">Кошелёк</div>
+          <div class="s5-su">Оплачивай поездки прямо здесь</div>
+        </div>
+        <div class="wc">
+          <div class="wc-bg"></div>
+          <div class="wc-lb">Баланс SVIT</div>
+          <div class="wc-ba">$1 240.00</div>
+          <div class="wc-ac"><div class="wc-b">Пополнить</div><div class="wc-b">Вывести</div><div class="wc-b">Перевод</div></div>
+        </div>
+        <!-- Payment methods -->
+        <div class="pms">
+          <div class="pm"><div class="pm-ic">💳</div><div class="pm-lb">Visa ••4821</div></div>
+          <div class="pm"><div class="pm-ic">₿</div><div class="pm-lb">Bitcoin</div></div>
+          <div class="pm"><div class="pm-ic">🪙</div><div class="pm-lb">USDT</div></div>
+          <div class="pm apm"><div class="pm-ic" style="font-size:10px;font-weight:700;color:#F59E0B;">МИР</div><div class="pm-lb ab">Карта Мир</div></div>
+        </div>
+        <div class="txn-lb">История транзакций</div>
+        <div class="txns">
+          <div class="txn"><div class="txn-ic" style="background:rgba(20,184,166,0.1);">✈</div><div class="txn-in"><div class="txn-nm">Ryanair · KBP→BCN</div><div class="txn-dt">24 мая 2026</div></div><div class="txn-am db">−€89</div></div>
+          <div class="txn"><div class="txn-ic" style="background:rgba(245,158,11,0.1);">🏨</div><div class="txn-in"><div class="txn-nm">Hotel Arts Barcelona</div><div class="txn-dt">24 мая 2026</div></div><div class="txn-am db">−€224</div></div>
+          <div class="txn"><div class="txn-ic" style="background:rgba(16,185,129,0.1);font-size:16px;color:#10B981;font-weight:700;">+</div><div class="txn-in"><div class="txn-nm">Пополнение</div><div class="txn-dt">22 мая 2026</div></div><div class="txn-am cr">+$500</div></div>
+          <div class="txn"><div class="txn-ic" style="background:rgba(20,184,166,0.1);">✈</div><div class="txn-in"><div class="txn-nm">Emirates · KBP→DXB</div><div class="txn-dt">10 марта 2026</div></div><div class="txn-am db">−€310</div></div>
+          <div class="txn"><div class="txn-ic" style="background:rgba(245,158,11,0.1);">🏨</div><div class="txn-in"><div class="txn-nm">Atlantis The Palm</div><div class="txn-dt">10 марта 2026</div></div><div class="txn-am db">−€370</div></div>
+        </div>
+        <div class="nb">
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="nl">Чат</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="nl">Поездки</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="nl on">Кошелёк</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Профиль</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="cap-t">Платишь как удобно</div><div class="cap-s">Карта, Мир, криптовалюта — выбирай любой способ.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     06  ROUTE MAP
+     ══════════════════════════════════════════════ -->
+<div class="pw">
+  <span class="pn">06</span>
+  <div class="frame">
+    <div class="di"></div>
+    <div class="scr">
+      <div class="s6">
+        <div class="sb">
+          <span class="sb-t">9:41</span>
+          <div class="sb-i"><svg width="16" height="11"><use href="#ico-signal"/></svg><svg width="25" height="12"><use href="#ico-batt"/></svg></div>
+        </div>
+        <div class="s6-hdr">
+          <div class="s6-ti">Маршрут · Барселона</div>
+          <div class="s6-su">24–26 мая · 2 ночи</div>
+        </div>
+        <!-- Stylized map -->
+        <div class="s6-mp">
+          <svg viewBox="0 0 252 132" width="100%" height="132" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0C1E2E"/><stop offset="100%" stop-color="#091828"/></linearGradient>
+              <linearGradient id="rg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#14B8A6"/></linearGradient>
+              <filter id="gl"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <rect width="252" height="132" fill="url(#mbg)"/>
+            <!-- Grid -->
+            <g stroke="#162030" stroke-width="0.5" opacity="0.8"><line x1="0" y1="33" x2="252" y2="33"/><line x1="0" y1="66" x2="252" y2="66"/><line x1="0" y1="99" x2="252" y2="99"/><line x1="63" y1="0" x2="63" y2="132"/><line x1="126" y1="0" x2="126" y2="132"/><line x1="189" y1="0" x2="189" y2="132"/></g>
+            <!-- Sea -->
+            <path d="M 0 90 C 50 84,90 88,130 82 C 170 76,200 70,252 65 L 252 132 L 0 132 Z" fill="#091828" opacity="0.7"/>
+            <path d="M 0 88 C 40 82,80 86,120 80 C 160 74,195 68,252 63" fill="none" stroke="#14B8A6" stroke-width="1" opacity="0.35"/>
+            <!-- Route arc -->
+            <path d="M 44 94 C 65 76,100 60,126 52 C 152 44,178 40,200 46" fill="none" stroke="url(#rg)" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <!-- Kyiv -->
+            <circle cx="44" cy="94" r="5" fill="#F59E0B" filter="url(#gl)"/>
+            <circle cx="44" cy="94" r="9" fill="none" stroke="#F59E0B" stroke-width="1" opacity="0.35"/>
+            <text x="44" y="110" text-anchor="middle" font-size="8" fill="#F4F4F8" font-family="Inter,sans-serif" font-weight="600">Київ</text>
+            <!-- Mid -->
+            <circle cx="126" cy="52" r="3.5" fill="#8B5CF6" filter="url(#gl)"/>
+            <text x="126" y="66" text-anchor="middle" font-size="7" fill="#8B8BA7" font-family="Inter,sans-serif">El Prat</text>
+            <!-- Barcelona -->
+            <circle cx="200" cy="46" r="6" fill="#14B8A6" filter="url(#gl)"/>
+            <circle cx="200" cy="46" r="11" fill="none" stroke="#14B8A6" stroke-width="1" opacity="0.35"/>
+            <text x="200" y="34" text-anchor="middle" font-size="8.5" fill="#F4F4F8" font-family="Inter,sans-serif" font-weight="700">Barcelona</text>
+            <!-- Hotel pin -->
+            <g transform="translate(209,54)"><rect x="-7" y="-5" width="14" height="10" rx="3" fill="#F59E0B"/><text x="0" y="2.5" text-anchor="middle" font-size="7" fill="#0A0A14" font-weight="700">H</text></g>
+            <!-- Plane -->
+            <text x="130" y="40" font-size="11" text-anchor="middle" opacity="0.75">✈</text>
+            <!-- Distance -->
+            <rect x="76" y="68" width="52" height="13" rx="4" fill="rgba(10,10,20,0.85)"/>
+            <text x="102" y="78" text-anchor="middle" font-size="7.5" fill="#8B8BA7" font-family="Inter,sans-serif">2 621 км</text>
+          </svg>
+        </div>
+        <!-- Itinerary -->
+        <div class="s6-it">
+          <div class="id">
+            <div class="idt d1">1</div>
+            <div class="idc">
+              <div class="idl">День 1 · 24 мая</div>
+              <div class="ida"><span class="it">10:00</span>Barceloneta Beach<br><span class="it">13:00</span>La Barceloneta · обед<br><span class="it">16:00</span>Sagrada Família</div>
+            </div>
+          </div>
+          <div class="id">
+            <div class="idt d2">2</div>
+            <div class="idc">
+              <div class="idl">День 2 · 25 мая</div>
+              <div class="ida"><span class="it tl">09:30</span>Park Güell<br><span class="it tl">12:00</span>La Rambla<br><span class="it tl">20:00</span>El Born · ужин</div>
+            </div>
+          </div>
+          <div class="id">
+            <div class="idt d3">3</div>
+            <div class="idc">
+              <div class="idl">День 3 · 26 мая</div>
+              <div class="ida"><span class="it pu">08:00</span>Завтрак · чек-аут<br><span class="it pu">11:15</span>Вылет BCN→KBP</div>
+            </div>
+          </div>
+        </div>
+        <div class="nb">
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="nl">Чат</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="nl on">Поездки</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="nl">Кошелёк</span></div>
+          <div class="ni"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A4A62" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Профиль</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="cap-t">Маршрут на каждый день</div><div class="cap-s">AI составит план активностей под твой стиль.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     07  ONBOARDING
+     ══════════════════════════════════════════════ -->
+<div class="pw">
+  <span class="pn">07</span>
+  <div class="frame">
+    <div class="di"></div>
+    <div class="scr" style="overflow:hidden;">
+      <div class="s7">
+        <div class="s7-bg"></div>
+        <div class="s7-c">
+          <!-- Status bar -->
+          <div style="position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 22px 8px;z-index:10;">
+            <span style="font-size:13px;font-weight:600;color:#F4F4F8;">9:41</span>
+            <div style="display:flex;gap:5px;align-items:center;">
+              <svg width="16" height="11"><use href="#ico-signal"/></svg>
+              <svg width="25" height="12"><use href="#ico-batt"/></svg>
+            </div>
+          </div>
+          <!-- Logo area -->
+          <div class="s7-la">
+            <!-- S-Horizon logo with brand gradients -->
+            <svg width="72" height="72" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="sg" x1="0.5" y1="0" x2="0.5" y2="1">
+                  <stop offset="0%" stop-color="#14B8A6"/>
+                  <stop offset="100%" stop-color="#F59E0B"/>
+                </linearGradient>
+              </defs>
+              <circle cx="256" cy="256" r="220" fill="none" stroke="url(#sg)" stroke-width="7" opacity="0.3"/>
+              <line x1="256" y1="36" x2="256" y2="72" stroke="#14B8A6" stroke-width="7" stroke-linecap="round"/>
+              <line x1="256" y1="440" x2="256" y2="476" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"/>
+              <line x1="440" y1="256" x2="476" y2="256" stroke="url(#sg)" stroke-width="7" stroke-linecap="round"/>
+              <line x1="36" y1="256" x2="72" y2="256" stroke="url(#sg)" stroke-width="7" stroke-linecap="round"/>
+              <path d="M 256 256 C 318 256,344 228,344 200 C 344 154,312 130,256 130 C 222 130,196 143,182 162" fill="none" stroke="#14B8A6" stroke-width="20" stroke-linecap="round"/>
+              <path d="M 256 256 C 194 256,168 284,168 312 C 168 358,200 382,256 382 C 290 382,316 369,330 350" fill="none" stroke="#F59E0B" stroke-width="20" stroke-linecap="round"/>
+              <circle cx="256" cy="256" r="15" fill="url(#sg)"/>
+              <circle cx="256" cy="256" r="6" fill="#0A0A14"/>
+            </svg>
+            <div class="s7-wm">SVIT</div>
+            <div class="s7-tg">AI Travel</div>
+          </div>
+          <!-- Hero text -->
+          <div>
+            <div class="s7-hl">Весь мир<br>в одном чате</div>
+            <div class="s7-bd">Напиши куда хочешь — SVIT найдёт рейс, отель и маршрут. Без форм, без вкладок.</div>
+          </div>
+          <!-- Pagination dots -->
+          <div class="s7-ds">
+            <div class="s7-d on"></div>
+            <div class="s7-d"></div>
+            <div class="s7-d"></div>
+          </div>
+          <!-- CTA -->
+          <div class="s7-ac">
+            <div class="s7-ct">Начать путешествие</div>
+            <div class="s7-sc">Уже есть аккаунт? <span>Войти</span></div>
+            <div class="s7-pw">Powered by Claude AI</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="cap-t">Напиши — и всё готово</div><div class="cap-s">Скажи куда хочешь. SVIT найдёт рейс и отель.</div></div>
+</div>
+
+</div><!-- /gallery -->
+
+<div style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid #1E1E30;">
+  <p style="font-size:10px;color:#4A4A62;letter-spacing:1px;">SVIT AI Travel Assistant &middot; App Store Screenshots v1.0 &middot; Май 2026</p>
+  <p style="font-size:9px;color:#4A4A62;margin-top:3px;">Фрейм 280&times;606px &middot; Палитра брендбука: bg #0A0A14 &middot; primary #F59E0B &middot; secondary #14B8A6</p>
+</div>
+
+</body>
+</html>

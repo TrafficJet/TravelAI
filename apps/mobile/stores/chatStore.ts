@@ -77,7 +77,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       const response = await chatService.getMessages(sessionId);
       // The API may return Prisma enum uppercase roles (ASSISTANT, USER, TOOL_USE, TOOL_RESULT).
       // Cast to unknown first so we can safely inspect and remap them to frontend roles.
-      const raw = (response.data ?? []) as unknown as Array<Omit<Message, 'role'> & { role: string }>;
+      // Backend returns { session, messages, pagination } — read .messages not .data
+      const raw = (response.messages ?? []) as unknown as Array<Omit<Message, 'role'> & { role: string }>;
       // Map DB roles (Prisma enum uppercase) to frontend roles.
       // TOOL_USE messages are loading-chip placeholders — skip them because
       // TOOL_RESULT already carries the card data we care about.

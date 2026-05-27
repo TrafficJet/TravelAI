@@ -60,10 +60,10 @@ export default function LoginScreen() {
   }
 
   async function handleDemoLogin() {
-    setEmail('demo@travelai.app');
+    setEmail('demo@svit.app');
     setPassword('Demo1234!');
     setErrors({});
-    await handleLogin('demo@travelai.app', 'Demo1234!');
+    await handleLogin('demo@svit.app', 'Demo1234!');
   }
 
   return (
@@ -202,7 +202,7 @@ function getStyles(colors: ReturnType<typeof useTheme>['colors']) {
     demoBtn: {
       backgroundColor: 'transparent',
       borderWidth: 1.5,
-      borderColor: '#7C5CFC',
+      borderColor: colors.secondary,
       borderRadius: 28,
       paddingHorizontal: Spacing.md,
       marginBottom: Spacing.md,
@@ -215,11 +215,11 @@ function getStyles(colors: ReturnType<typeof useTheme>['colors']) {
     },
     demoBtnTitle: {
       ...TextPresets.button,
-      color: '#7C5CFC',
+      color: colors.secondary,
     },
     demoBtnHint: {
       ...TextPresets.caption,
-      color: '#7C5CFC',
+      color: colors.secondary,
       opacity: 0.75,
       marginTop: 2,
     },
@@ -228,7 +228,7 @@ function getStyles(colors: ReturnType<typeof useTheme>['colors']) {
       marginBottom: Spacing.sm,
       height: 56,
       borderRadius: 28,
-      backgroundColor: '#E8A020',
+      backgroundColor: colors.primary,
     },
     forgotLink: {
       alignItems: 'center',

@@ -31,11 +31,12 @@ function iataColor(code: string): string {
 }
 
 function AirlineLogo({ code }: { code: string }) {
+  const { colors } = useTheme();
   const letters = code.slice(0, 2).toUpperCase();
   const bg = iataColor(code);
   return (
     <View style={[logoStyles.wrap, { backgroundColor: bg }]}>
-      <Text style={logoStyles.letters}>{letters}</Text>
+      <Text style={[logoStyles.letters, { color: colors.text }]}>{letters}</Text>
     </View>
   );
 }
@@ -49,7 +50,6 @@ const logoStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   letters: {
-    color: '#FFFFFF',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.bold,

@@ -44,7 +44,7 @@ export const authService = {
     const config: any = skipAuthRetry ? { _skipAuthRetry: true } : undefined;
     const { data } = await api.get<{
       user: { id: string; email: string; name: string; phone: string | null; createdAt: string };
-      wallet: { balance: string; currency: string };
+      wallet: { balance: number; currency: string };
       subscription: { plan: 'FREE' | 'PREMIUM'; status: 'ACTIVE' | 'CANCELLED' | 'EXPIRED'; expiresAt: string | null };
     }>('/users/me', config);
     return {
@@ -54,7 +54,7 @@ export const authService = {
       phone: data.user.phone ?? undefined,
       createdAt: data.user.createdAt,
       wallet: {
-        balance: parseFloat(data.wallet.balance),
+        balance: data.wallet.balance,
         currency: data.wallet.currency,
       },
       subscription: {

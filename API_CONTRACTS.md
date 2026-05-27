@@ -160,8 +160,8 @@ interface SuccessResponse {
 interface MeResponse {
   user: UserProfile;
   wallet: {
-    balance: string;   // Decimal как строка: "1500.00"
-    currency: string;  // "RUB"
+    balance: number;   // число (было строкой — исправлено)
+    currency: string;  // "USD"
   };
   subscription: {
     plan: SubscriptionPlan;
@@ -203,8 +203,8 @@ interface UpdateProfileResponse {
 **Response `200`**
 ```typescript
 interface WalletResponse {
-  balance: string;        // "1500.00"
-  currency: string;       // "RUB"
+  balance: number;        // число (было строкой — исправлено)
+  currency: string;       // "USD"
   transactions: WalletTransaction[];
 }
 
@@ -235,8 +235,11 @@ interface TopupRequest {
 **Response `200`**
 ```typescript
 interface TopupResponse {
-  newBalance: string;           // "2000.00"
+  message: string;
+  balance: number;              // новый баланс (число)
+  newBalance: number;           // то же, для обратной совместимости
   transaction: WalletTransaction;
+  allowedAmounts: number[];
 }
 ```
 
@@ -606,7 +609,7 @@ interface ConfirmBookingRequest {
 interface ConfirmBookingResponse {
   booking: BookingDetail;         // обновлённая бронь со статусом CONFIRMED
   transaction: WalletTransaction; // запись о списании
-  newBalance: string;             // остаток на кошельке
+  newBalance: number;             // остаток на кошельке (число, было строкой — исправлено)
 }
 ```
 

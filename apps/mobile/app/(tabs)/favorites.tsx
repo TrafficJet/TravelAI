@@ -38,7 +38,7 @@ function TabSelector({ active, onChange }: TabSelectorProps) {
         onPress={() => onChange('hotels')}
         activeOpacity={0.75}
       >
-        <Text style={[tabStyles.label, { color: colors.textMuted }, active === 'hotels' && { color: '#fff' }]}>
+        <Text style={[tabStyles.label, { color: colors.textMuted }, active === 'hotels' && { color: colors.textInverse }]}>
           Отели
         </Text>
       </TouchableOpacity>
@@ -50,7 +50,7 @@ function TabSelector({ active, onChange }: TabSelectorProps) {
         onPress={() => onChange('flights')}
         activeOpacity={0.75}
       >
-        <Text style={[tabStyles.label, { color: colors.textMuted }, active === 'flights' && { color: '#fff' }]}>
+        <Text style={[tabStyles.label, { color: colors.textMuted }, active === 'flights' && { color: colors.textInverse }]}>
           Рейсы
         </Text>
       </TouchableOpacity>

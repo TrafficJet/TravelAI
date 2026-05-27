@@ -328,6 +328,6 @@ export async function confirmBooking(request: FastifyRequest, reply: FastifyRepl
       bookingId: transaction.bookingId,
       createdAt: transaction.createdAt.toISOString(),
     },
-    newBalance: updatedWallet?.balance?.toString() ?? '0',
+    newBalance: updatedWallet ? Number(updatedWallet.balance) : 0,
   });
 }

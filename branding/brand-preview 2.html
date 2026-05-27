@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVIT — Brand Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0A0A14;
+      --surface:      #12121F;
+      --card:         #1C1C2E;
+      --elevated:     #252538;
+      --primary:      #F59E0B;
+      --primary-light:#FCD34D;
+      --primary-dark: #B45309;
+      --secondary:    #14B8A6;
+      --secondary-light:#5EEAD4;
+      --text:         #F4F4F8;
+      --text-muted:   #8B8BA7;
+      --text-disabled:#4A4A62;
+      --border:       #2A2A42;
+      --divider:      #1E1E30;
+      --success:      #10B981;
+      --error:        #F43F5E;
+      --info:         #38BDF8;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ─── Layout ──────────────────────────────────────── */
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 64px 40px;
+    }
+
+    .section {
+      margin-bottom: 80px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-disabled);
+      margin-bottom: 32px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--divider);
+      margin-bottom: 80px;
+    }
+
+    /* ─── Hero ────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0A0A14 0%, #0F0F1E 60%, #1A1008 100%);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 80px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 80px;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+
+    /* ─── S-Horizon Symbol (inline SVG, scalable) ──────── */
+    .s-symbol {
+      display: inline-block;
+    }
+
+    /* ─── Logo panels ─────────────────────────────────── */
+    .logo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .logo-panel {
+      border-radius: 16px;
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .logo-panel.dark {
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .logo-panel.light {
+      background: #F8F8F4;
+      border: 1px solid #E5E5E0;
+    }
+
+    .logo-panel-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .logo-panel.dark .logo-panel-label { color: var(--text-disabled); }
+    .logo-panel.light .logo-panel-label { color: #9CA3AF; }
+
+    /* ─── App Icon ────────────────────────────────────── */
+    .device-frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .icon-showcase {
+      display: flex;
+      gap: 32px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-item-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── Colour swatches ─────────────────────────────── */
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .swatch {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .swatch-color {
+      height: 72px;
+    }
+
+    .swatch-info {
+      padding: 10px 12px;
+      background: var(--card);
+    }
+
+    .swatch-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .swatch-hex {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    /* ─── Typography showcase ─────────────────────────── */
+    .type-sample + .type-sample { margin-top: 28px; }
+
+    .type-meta {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-disabled);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    /* ─── UX Copy examples ────────────────────────────── */
+    .copy-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .copy-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .copy-context {
+      font-size: 11px;
+      color: var(--text-disabled);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 500;
+      min-width: 120px;
+      padding-top: 2px;
+    }
+
+    .copy-text {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .copy-text .highlight {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .copy-text .accent {
+      color: var(--secondary);
+    }
+
+    /* ─── Gradient strip ──────────────────────────────── */
+    .gradient-strip {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #14B8A6, #F59E0B);
+      margin-bottom: 48px;
+    }
+
+    /* ─── Signature horizontal line ──────────────────── */
+    .horizon-bar {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, #14B8A6 0%, #F59E0B 100%);
+      border-radius: 999px;
+      opacity: 0.4;
+      margin: 80px 0;
+    }
+
+    /* ─── Pattern preview ─────────────────────────────── */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .pattern-box {
+      border-radius: 16px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pattern-box span { position: relative; z-index: 2; }
+
+    footer {
+      text-align: center;
+      padding-top: 40px;
+      padding-bottom: 20px;
+      color: var(--text-disabled);
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ─── HERO ──────────────────────────────────────────── -->
+  <div class="hero">
+    <!-- Inline S-Horizon symbol, large -->
+    <svg viewBox="0 0 120 200" width="72" height="120" style="margin-bottom:32px; display:block; margin-left:auto; margin-right:auto;">
+      <defs>
+        <linearGradient id="hTeal" x1="1" y1="0" x2="0" y2="0">
+          <stop offset="0%" stop-color="#5EEAD4"/>
+          <stop offset="100%" stop-color="#14B8A6"/>
+        </linearGradient>
+        <linearGradient id="hAmber" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#FCD34D"/>
+          <stop offset="100%" stop-color="#F59E0B"/>
+        </linearGradient>
+        <filter id="hGlow">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Top arc — teal -->
+      <path d="M 60 100 C 96 100, 108 80, 108 60 C 108 40, 96 20, 60 20 C 38 20, 20 32, 16 48"
+        fill="none" stroke="url(#hTeal)" stroke-width="12" stroke-linecap="round" filter="url(#hGlow)"/>
+      <!-- Bottom arc — amber -->
+      <path d="M 60 100 C 24 100, 12 120, 12 140 C 12 160, 24 180, 60 180 C 82 180, 100 168, 104 152"
+        fill="none" stroke="url(#hAmber)" stroke-width="12" stroke-linecap="round" filter="url(#hGlow)"/>
+      <!-- Center dot -->
+      <circle cx="60" cy="100" r="14" fill="#0A0A14" stroke="#252538" stroke-width="2"/>
+      <circle cx="60" cy="100" r="6" fill="#F59E0B" filter="url(#hGlow)"/>
+      <circle cx="60" cy="94" r="3" fill="#14B8A6" opacity="0.9"/>
+    </svg>
+
+    <div style="font-family:'Sora',sans-serif; font-size:56px; font-weight:700; letter-spacing:12px; color:#F4F4F8; margin-bottom:12px;">SVIT</div>
+    <div style="font-size:12px; letter-spacing:5px; text-transform:uppercase; color:#8B8BA7; margin-bottom:40px;">AI TRAVEL</div>
+
+    <!-- Horizon gradient bar -->
+    <div style="width:200px; height:2px; background:linear-gradient(90deg,#14B8A6,#F59E0B); border-radius:999px; margin:0 auto 32px;"></div>
+
+    <div style="font-family:'Sora',sans-serif; font-size:22px; font-weight:500; color:#8B8BA7; line-height:1.4;">
+      Весь мир — в одном приложении
+    </div>
+  </div>
+
+  <!-- ─── ЛОГОТИП ─────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">01 — Логотип</div>
+    <div class="logo-grid">
+      <!-- Dark background -->
+      <div class="logo-panel dark">
+        <svg viewBox="0 0 400 140" width="320" height="112">
+          <defs>
+            <filter id="dg1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect width="400" height="140" fill="#0A0A14"/>
+          <!-- Top arc teal -->
+          <path d="M 60 70 C 82 70, 88 58, 88 46 C 88 34, 82 22, 60 22 C 46 22, 36 28, 33 35"
+            fill="none" stroke="#14B8A6" stroke-width="7" stroke-linecap="round"/>
+          <!-- Bottom arc amber -->
+          <path d="M 60 70 C 38 70, 32 82, 32 94 C 32 106, 38 118, 60 118 C 74 118, 84 112, 87 105"
+            fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"/>
+          <!-- Center dot -->
+          <circle cx="60" cy="70" r="6" fill="none" stroke="#14B8A6" stroke-width="1.5" opacity="0.4"/>
+          <circle cx="60" cy="70" r="3.5" fill="#F59E0B"/>
+          <circle cx="60" cy="67" r="1.5" fill="#14B8A6" opacity="0.9"/>
+          <!-- Separator -->
+          <line x1="110" y1="38" x2="110" y2="102" stroke="#2A2A42" stroke-width="1"/>
+          <!-- Wordmark -->
+          <text x="130" y="97" font-family="'SF Pro Display','Helvetica Neue',Arial,sans-serif" font-weight="700" font-size="54" letter-spacing="6" fill="#F4F4F8">SVIT</text>
+          <!-- Tagline -->
+          <text x="132" y="116" font-family="'SF Pro Display','Helvetica Neue',Arial,sans-serif" font-weight="400" font-size="11" letter-spacing="4" fill="#8B8BA7">AI TRAVEL</text>
+        </svg>
+        <div class="logo-panel-label">На тёмном фоне</div>
+      </div>
+
+      <!-- Light background -->
+      <div class="logo-panel light">
+        <svg viewBox="0 0 400 140" width="320" height="112">
+          <rect width="400" height="140" fill="#F8F8F4"/>
+          <!-- Top arc teal -->
+          <path d="M 60 70 C 82 70, 88 58, 88 46 C 88 34, 82 22, 60 22 C 46 22, 36 28, 33 35"
+            fill="none" stroke="#0F766E" stroke-width="7" stroke-linecap="round"/>
+          <!-- Bottom arc amber -->
+          <path d="M 60 70 C 38 70, 32 82, 32 94 C 32 106, 38 118, 60 118 C 74 118, 84 112, 87 105"
+            fill="none" stroke="#B45309" stroke-width="7" stroke-linecap="round"/>
+          <!-- Center dot -->
+          <circle cx="60" cy="70" r="3.5" fill="#B45309"/>
+          <circle cx="60" cy="67" r="1.5" fill="#0F766E" opacity="0.9"/>
+          <!-- Separator -->
+          <line x1="110" y1="38" x2="110" y2="102" stroke="#E5E5E0" stroke-width="1"/>
+          <!-- Wordmark dark -->
+          <text x="130" y="97" font-family="'SF Pro Display','Helvetica Neue',Arial,sans-serif" font-weight="700" font-size="54" letter-spacing="6" fill="#0A0A14">SVIT</text>
+          <!-- Tagline -->
+          <text x="132" y="116" font-family="'SF Pro Display','Helvetica Neue',Arial,sans-serif" font-weight="400" font-size="11" letter-spacing="4" fill="#9CA3AF">AI TRAVEL</text>
+        </svg>
+        <div class="logo-panel-label" style="color:#9CA3AF;">На светлом фоне</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─── APP ICON ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">02 — App Store Icon</div>
+    <div class="icon-showcase">
+
+      <!-- Large App Store size -->
+      <div class="icon-item">
+        <svg viewBox="0 0 512 512" width="160" height="160" style="border-radius:36px; display:block;">
+          <defs>
+            <linearGradient id="ibg" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stop-color="#0A0A14"/>
+              <stop offset="100%" stop-color="#1A1008"/>
+            </linearGradient>
+            <linearGradient id="iteal" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#5EEAD4"/>
+              <stop offset="100%" stop-color="#14B8A6"/>
+            </linearGradient>
+            <linearGradient id="iamber" x1="1" y1="0" x2="0" y2="0">
+              <stop offset="0%" stop-color="#FCD34D"/>
+              <stop offset="100%" stop-color="#F59E0B"/>
+            </linearGradient>
+            <filter id="ig1"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="ig2"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <radialGradient id="iaur" cx="0.5" cy="0.15" r="0.5">
+              <stop offset="0%" stop-color="#14B8A6" stop-opacity="0.12"/>
+              <stop offset="100%" stop-color="#14B8A6" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="idawn" cx="0.5" cy="0.85" r="0.5">
+              <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.1"/>
+              <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="512" height="512" rx="114" ry="114" fill="url(#ibg)"/>
+          <rect width="512" height="512" rx="114" ry="114" fill="url(#iaur)"/>
+          <rect width="512" height="512" rx="114" ry="114" fill="url(#idawn)"/>
+          <!-- Top arc -->
+          <path d="M 256 256 C 310 256, 342 230, 342 192 C 342 154, 310 118, 256 118 C 220 118, 190 132, 175 152"
+            fill="none" stroke="url(#iteal)" stroke-width="28" stroke-linecap="round" filter="url(#ig1)"/>
+          <!-- Bottom arc -->
+          <path d="M 256 256 C 202 256, 170 282, 170 320 C 170 358, 202 394, 256 394 C 292 394, 322 380, 337 360"
+            fill="none" stroke="url(#iamber)" stroke-width="28" stroke-linecap="round" filter="url(#ig1)"/>
+          <!-- Center dot -->
+          <circle cx="256" cy="256" r="22" fill="none" stroke="#14B8A6" stroke-width="2" opacity="0.3"/>
+          <circle cx="256" cy="256" r="14" fill="#0A0A14" stroke="#252538" stroke-width="1.5"/>
+          <circle cx="256" cy="256" r="7" fill="#F59E0B" filter="url(#ig2)"/>
+          <circle cx="256" cy="251" r="3" fill="#14B8A6" opacity="0.9"/>
+        </svg>
+        <div class="icon-item-label">App Store — 160px</div>
+      </div>
+
+      <!-- Medium — home screen -->
+      <div class="icon-item">
+        <svg viewBox="0 0 512 512" width="76" height="76" style="border-radius:18px; display:block;">
+          <defs>
+            <linearGradient id="ibg2" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stop-color="#0A0A14"/>
+              <stop offset="100%" stop-color="#1A1008"/>
+            </linearGradient>
+            <linearGradient id="iteal2" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#5EEAD4"/>
+              <stop offset="100%" stop-color="#14B8A6"/>
+            </linearGradient>
+            <linearGradient id="iamber2" x1="1" y1="0" x2="0" y2="0">
+              <stop offset="0%" stop-color="#FCD34D"/>
+              <stop offset="100%" stop-color="#F59E0B"/>
+            </linearGradient>
+            <filter id="ig3"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect width="512" height="512" rx="114" ry="114" fill="url(#ibg2)"/>
+          <path d="M 256 256 C 310 256, 342 230, 342 192 C 342 154, 310 118, 256 118 C 220 118, 190 132, 175 152"
+            fill="none" stroke="url(#iteal2)" stroke-width="28" stroke-linecap="round" filter="url(#ig3)"/>
+          <path d="M 256 256 C 202 256, 170 282, 170 320 C 170 358, 202 394, 256 394 C 292 394, 322 380, 337 360"
+            fill="none" stroke="url(#iamber2)" stroke-width="28" stroke-linecap="round" filter="url(#ig3)"/>
+          <circle cx="256" cy="256" r="14" fill="#0A0A14" stroke="#252538" stroke-width="1.5"/>
+          <circle cx="256" cy="256" r="7" fill="#F59E0B"/>
+          <circle cx="256" cy="251" r="3" fill="#14B8A6" opacity="0.9"/>
+        </svg>
+        <div class="icon-item-label">Home Screen — 76px</div>
+      </div>
+
+      <!-- Small — spotlight -->
+      <div class="icon-item">
+        <svg viewBox="0 0 512 512" width="40" height="40" style="border-radius:9px; display:block;">
+          <defs>
+            <linearGradient id="ibg3" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stop-color="#0A0A14"/>
+              <stop offset="100%" stop-color="#1A1008"/>
+            </linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="114" ry="114" fill="url(#ibg3)"/>
+          <path d="M 256 256 C 310 256, 342 230, 342 192 C 342 154, 310 118, 256 118 C 220 118, 190 132, 175 152"
+            fill="none" stroke="#14B8A6" stroke-width="28" stroke-linecap="round"/>
+          <path d="M 256 256 C 202 256, 170 282, 170 320 C 170 358, 202 394, 256 394 C 292 394, 322 380, 337 360"
+            fill="none" stroke="#F59E0B" stroke-width="28" stroke-linecap="round"/>
+          <circle cx="256" cy="256" r="14" fill="#0A0A14"/>
+          <circle cx="256" cy="256" r="7" fill="#F59E0B"/>
+        </svg>
+        <div class="icon-item-label">Spotlight — 40px</div>
+      </div>
+
+      <!-- Comparison context -->
+      <div class="icon-item" style="margin-left:24px; padding-left:24px; border-left:1px solid var(--border);">
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <!-- Airbnb placeholder for comparison context -->
+          <div style="width:60px; height:60px; border-radius:14px; background:#FF5A5F; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; color:white;">A</div>
+          <!-- SVIT icon -->
+          <svg viewBox="0 0 512 512" width="60" height="60" style="border-radius:14px; display:block;">
+            <defs>
+              <linearGradient id="ibg4" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0%" stop-color="#0A0A14"/>
+                <stop offset="100%" stop-color="#1A1008"/>
+              </linearGradient>
+              <linearGradient id="iteal4" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#5EEAD4"/>
+                <stop offset="100%" stop-color="#14B8A6"/>
+              </linearGradient>
+              <linearGradient id="iamber4" x1="1" y1="0" x2="0" y2="0">
+                <stop offset="0%" stop-color="#FCD34D"/>
+                <stop offset="100%" stop-color="#F59E0B"/>
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" rx="114" ry="114" fill="url(#ibg4)"/>
+            <path d="M 256 256 C 310 256, 342 230, 342 192 C 342 154, 310 118, 256 118 C 220 118, 190 132, 175 152"
+              fill="none" stroke="url(#iteal4)" stroke-width="28" stroke-linecap="round"/>
+            <path d="M 256 256 C 202 256, 170 282, 170 320 C 170 358, 202 394, 256 394 C 292 394, 322 380, 337 360"
+              fill="none" stroke="url(#iamber4)" stroke-width="28" stroke-linecap="round"/>
+            <circle cx="256" cy="256" r="14" fill="#0A0A14" stroke="#252538" stroke-width="1.5"/>
+            <circle cx="256" cy="256" r="7" fill="#F59E0B"/>
+            <circle cx="256" cy="251" r="3" fill="#14B8A6" opacity="0.9"/>
+          </svg>
+          <!-- Maps placeholder -->
+          <div style="width:60px; height:60px; border-radius:14px; background:linear-gradient(135deg,#34C759,#00C7BE); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; color:white;">M</div>
+          <!-- Booking placeholder -->
+          <div style="width:60px; height:60px; border-radius:14px; background:#003580; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; color:white;">B</div>
+        </div>
+        <div class="icon-item-label" style="margin-top:10px;">Рядом с конкурентами</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─── ЦВЕТА ──────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">03 — Цветовая палитра</div>
+
+    <!-- Horizon gradient bar — signature element -->
+    <div style="margin-bottom:40px;">
+      <div class="type-meta" style="margin-bottom:12px;">Фирменный градиент — «Рассвет над горизонтом»</div>
+      <div style="height:48px; border-radius:12px; background:linear-gradient(90deg, #14B8A6 0%, #0F766E 20%, #F59E0B 80%, #FCD34D 100%); position:relative; overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.05) 50%,transparent 100%);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        <span style="font-size:11px;color:var(--text-muted);font-family:monospace;">#14B8A6 Aurora Teal</span>
+        <span style="font-size:11px;color:var(--text-muted);font-family:monospace;">#F59E0B Amber Horizon</span>
+      </div>
+    </div>
+
+    <div class="swatch-grid">
+      <!-- Primary -->
+      <div class="swatch">
+        <div class="swatch-color" style="background:#F59E0B;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Primary</span>
+          <span class="swatch-hex">#F59E0B</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FCD34D;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Primary Light</span>
+          <span class="swatch-hex">#FCD34D</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#B45309;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Primary Dark</span>
+          <span class="swatch-hex">#B45309</span>
+        </div>
+      </div>
+
+      <!-- Secondary -->
+      <div class="swatch">
+        <div class="swatch-color" style="background:#14B8A6;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Secondary</span>
+          <span class="swatch-hex">#14B8A6</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#5EEAD4;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Secondary Light</span>
+          <span class="swatch-hex">#5EEAD4</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0F766E;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Secondary Dark</span>
+          <span class="swatch-hex">#0F766E</span>
+        </div>
+      </div>
+
+      <!-- Backgrounds -->
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0A0A14; border-bottom:1px solid var(--border);"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Background</span>
+          <span class="swatch-hex">#0A0A14</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#12121F; border-bottom:1px solid var(--border);"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Surface</span>
+          <span class="swatch-hex">#12121F</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1C1C2E; border-bottom:1px solid var(--border);"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Card</span>
+          <span class="swatch-hex">#1C1C2E</span>
+        </div>
+      </div>
+
+      <!-- Semantic -->
+      <div class="swatch">
+        <div class="swatch-color" style="background:#10B981;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Success</span>
+          <span class="swatch-hex">#10B981</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#F43F5E;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Error</span>
+          <span class="swatch-hex">#F43F5E</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#38BDF8;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Info</span>
+          <span class="swatch-hex">#38BDF8</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─── ТИПОГРАФИКА ─────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">04 — Типографика</div>
+
+    <!-- Sora specimens -->
+    <div class="type-sample">
+      <div class="type-meta">Sora Bold 700 — Display / 40px</div>
+      <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:40px; line-height:1.2; color:var(--text);">
+        Куда летим?
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta">Sora SemiBold 600 — H1 / 32px</div>
+      <div style="font-family:'Sora',sans-serif; font-weight:600; font-size:32px; line-height:1.25; color:var(--text);">
+        Ваши брони
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta">Sora SemiBold 600 — H2 / 24px</div>
+      <div style="font-family:'Sora',sans-serif; font-weight:600; font-size:24px; line-height:1.33; color:var(--text);">
+        Рейсы из Киева в Барселону
+      </div>
+    </div>
+
+    <div style="height:1px; background:var(--divider); margin:32px 0;"></div>
+
+    <!-- Inter specimens -->
+    <div class="type-sample">
+      <div class="type-meta">Inter Regular 400 — Body / 16px</div>
+      <div style="font-size:16px; line-height:1.5; color:var(--text);">
+        Нашёл прямой рейс. Vueling, вылет 14:20, прилёт 17:05. Включён ручной багаж.
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta">Inter Regular 400 — Small / 14px · color: textMuted</div>
+      <div style="font-size:14px; line-height:1.43; color:var(--text-muted);">
+        23 июня · 2 ч 45 мин · Прямой
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta">Inter SemiBold 600 — Overline / 10px · uppercase · ls:1.5px</div>
+      <div style="font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-disabled);">
+        Активные брони
+      </div>
+    </div>
+
+    <!-- Price sample -->
+    <div class="type-sample">
+      <div class="type-meta">Sora Bold 700 — Display · primary color</div>
+      <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:40px; color:var(--primary);">
+        ₽18 400
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─── UX COPY ─────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">05 — UX-копи в стиле SVIT</div>
+    <div class="copy-list">
+
+      <div class="copy-item">
+        <div class="copy-context">Приветствие</div>
+        <div class="copy-text">Готов. <span class="highlight">Куда летим?</span></div>
+      </div>
+
+      <div class="copy-item">
+        <div class="copy-context">AI нашёл рейс</div>
+        <div class="copy-text">
+          Москва — Дубай, <span class="highlight">23 июня</span>. S7, прямой, 5 ч 10 мин. <span class="highlight">От ₽18 400.</span> Бронировать?
+        </div>
+      </div>
+
+      <div class="copy-item">
+        <div class="copy-context">Подтверждение</div>
+        <div class="copy-text">Всё готово. Рейс и отель забронированы. Детали — в разделе <span class="accent">Брони</span>.</div>
+      </div>
+
+      <div class="copy-item">
+        <div class="copy-context">Задержка рейса</div>
+        <div class="copy-text">Ваш рейс SU 151 задерживается на <span class="highlight">55 минут</span>. Новое время вылета — 16:40. Следим за обновлениями.</div>
+      </div>
+
+      <div class="copy-item">
+        <div class="copy-context">Пустой экран</div>
+        <div class="copy-text">Пока нет активных поездок. <span class="accent">Напишите, куда хотите</span> — разберёмся вместе.</div>
+      </div>
+
+      <div class="copy-item">
+        <div class="copy-context">Ошибка оплаты</div>
+        <div class="copy-text">Платёж не прошёл. Проверьте данные карты и попробуйте ещё раз.</div>
+      </div>
+
+      <div class="copy-item">
+        <div class="copy-context">Проактивно</div>
+        <div class="copy-text">До вашего рейса <span class="highlight">48 часов</span>. Регистрация уже открыта — <span class="accent">сделать за вас?</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─── ФИРМЕННЫЙ ПАТТЕРН / ФОНЫ ──────────────────────── -->
+  <div class="section">
+    <div class="section-label">06 — Фоны и паттерны</div>
+    <div class="pattern-grid">
+
+      <!-- Splash gradient -->
+      <div class="pattern-box" style="background:linear-gradient(135deg, #0A0A14 0%, #0F0F1E 60%, #2D1A0A 100%);">
+        <span>Splash Screen</span>
+      </div>
+
+      <!-- Aurora top -->
+      <div class="pattern-box" style="background:linear-gradient(180deg, #0A1A18 0%, #0A0A14 50%, #1A1008 100%);">
+        <span>Aurora Top</span>
+      </div>
+
+      <!-- Premium card -->
+      <div class="pattern-box" style="background:linear-gradient(135deg, #14B8A6 0%, #0A0A14 40%, #F59E0B 100%); opacity:0.9;">
+        <span style="color:rgba(255,255,255,0.8);">Premium Card</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── S-HORIZON SYMBOL BREAKDOWN ────────────────────── -->
+  <div class="section">
+    <div class="section-label">07 — Анатомия символа S-Horizon</div>
+    <div style="display:grid; grid-template-columns:auto 1fr; gap:60px; align-items:center;">
+
+      <!-- Symbol breakdown -->
+      <svg viewBox="0 0 240 360" width="140" height="210">
+        <defs>
+          <filter id="bGlow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+
+        <!-- Annotation: top arc label -->
+        <text x="158" y="62" font-family="'Inter',sans-serif" font-size="13" fill="#8B8BA7" font-style="italic">Aurora Teal</text>
+        <text x="158" y="77" font-family="'Inter',sans-serif" font-size="11" fill="#4A4A62" font-family-variant="monospace">#14B8A6</text>
+        <line x1="150" y1="70" x2="135" y2="75" stroke="#2A2A42" stroke-width="1" stroke-dasharray="3 2"/>
+
+        <!-- Top arc — teal -->
+        <path d="M 90 180 C 138 180, 152 154, 152 130 C 152 106, 138 80, 90 80 C 66 80, 46 90, 40 106"
+          fill="none" stroke="#14B8A6" stroke-width="13" stroke-linecap="round" filter="url(#bGlow)"/>
+
+        <!-- Annotation: bottom arc label -->
+        <text x="10" y="296" font-family="'Inter',sans-serif" font-size="13" fill="#8B8BA7" font-style="italic">Amber Horizon</text>
+        <text x="10" y="311" font-family="'Inter',sans-serif" font-size="11" fill="#4A4A62">#F59E0B</text>
+        <line x1="80" y1="302" x2="70" y2="288" stroke="#2A2A42" stroke-width="1" stroke-dasharray="3 2"/>
+
+        <!-- Bottom arc — amber -->
+        <path d="M 90 180 C 42 180, 28 206, 28 230 C 28 254, 42 280, 90 280 C 114 280, 134 270, 140 254"
+          fill="none" stroke="#F59E0B" stroke-width="13" stroke-linecap="round" filter="url(#bGlow)"/>
+
+        <!-- Center waypoint -->
+        <circle cx="90" cy="180" r="18" fill="none" stroke="#14B8A6" stroke-width="1.5" opacity="0.3"/>
+        <circle cx="90" cy="180" r="11" fill="#0A0A14" stroke="#252538" stroke-width="1.5"/>
+        <circle cx="90" cy="180" r="5.5" fill="#F59E0B" filter="url(#bGlow)"/>
+        <circle cx="90" cy="175" r="2.5" fill="#14B8A6" opacity="0.9"/>
+
+        <!-- Annotation: center dot -->
+        <text x="116" y="177" font-family="'Inter',sans-serif" font-size="11" fill="#8B8BA7">Waypoint</text>
+        <text x="116" y="190" font-family="'Inter',sans-serif" font-size="10" fill="#4A4A62">«Ты здесь»</text>
+        <line x1="114" y1="183" x2="105" y2="183" stroke="#2A2A42" stroke-width="1" stroke-dasharray="3 2"/>
+      </svg>
+
+      <!-- Explanation -->
+      <div>
+        <div style="font-family:'Sora',sans-serif; font-size:20px; font-weight:600; color:var(--text); margin-bottom:20px;">
+          Символ S-Horizon
+        </div>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <div style="width:3px; flex-shrink:0; background:#14B8A6; border-radius:2px; margin-top:4px; align-self:stretch;"></div>
+            <div>
+              <div style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:4px;">Верхняя дуга — Aurora Teal</div>
+              <div style="font-size:13px; color:var(--text-muted); line-height:1.5;">Горизонт, море, северное сияние. То, куда летим — небо и мир впереди.</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <div style="width:3px; flex-shrink:0; background:#F59E0B; border-radius:2px; margin-top:4px; align-self:stretch;"></div>
+            <div>
+              <div style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:4px;">Нижняя дуга — Amber Horizon</div>
+              <div style="font-size:13px; color:var(--text-muted); line-height:1.5;">Рассвет, земля, авиационные огни. Момент отправления, тепло и движение.</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <div style="width:3px; flex-shrink:0; background:linear-gradient(180deg,#14B8A6,#F59E0B); border-radius:2px; margin-top:4px; align-self:stretch;"></div>
+            <div>
+              <div style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:4px;">Центральная точка — Waypoint</div>
+              <div style="font-size:13px; color:var(--text-muted); line-height:1.5;">Место встречи двух миров. Навигационная метафора: «ты здесь», и оба пути открыты.</div>
+            </div>
+          </div>
+
+          <div style="margin-top:8px; padding:16px; background:var(--card); border:1px solid var(--border); border-radius:12px;">
+            <div style="font-size:12px; color:var(--text-muted); line-height:1.6;">
+              Символ читается как S — первая буква SVIT. Одновременно это навигационная точка на маршруте и горизонт рассвета. Простая геометрия, которая не требует объяснений.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="horizon-bar"></div>
+
+  <footer>
+    SVIT — Brand Identity v1.0 · Май 2026 · Все токены, логотипы и цвета — часть брендбука BRANDBOOK_SVIT.md
+  </footer>
+
+</div>
+</body>
+</html>

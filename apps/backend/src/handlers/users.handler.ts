@@ -83,7 +83,7 @@ export async function getMe(request: FastifyRequest, reply: FastifyReply) {
       createdAt: user.createdAt.toISOString(),
     },
     wallet: {
-      balance: user.wallet?.balance.toString() ?? '0.00',
+      balance: user.wallet ? Number(user.wallet.balance) : 0,
       currency: user.wallet?.currency ?? 'USD',
     },
     subscription: {

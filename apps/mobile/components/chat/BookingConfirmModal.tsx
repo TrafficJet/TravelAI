@@ -272,9 +272,9 @@ export function BookingConfirmModal({
               disabled={isLoading || isWalletLoading}
             >
               {isLoading || isWalletLoading ? (
-                <ActivityIndicator color="#fff" size="small" />
+                <ActivityIndicator color={colors.textInverse} size="small" />
               ) : (
-                <Text style={staticStyles.confirmText}>
+                <Text style={[staticStyles.confirmText, { color: colors.textInverse }]}>
                   {hasEnoughBalance ? 'Оплатить' : 'Пополнить кошелёк'}
                 </Text>
               )}
@@ -351,7 +351,7 @@ const staticStyles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     alignItems: 'center',
-    borderRadius: Radius.buttonSm,
+    borderRadius: Radius.md,
     borderWidth: 1.5,
   },
   cancelText: {
@@ -363,13 +363,12 @@ const staticStyles = StyleSheet.create({
     flex: 2,
     paddingVertical: 14,
     alignItems: 'center',
-    borderRadius: Radius.buttonSm,
+    borderRadius: Radius.button,
   },
   confirmBtnDisabled: {
     opacity: 0.5,
   },
   confirmText: {
-    color: '#0A0A14',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,

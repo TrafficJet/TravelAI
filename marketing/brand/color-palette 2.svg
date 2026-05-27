@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 540" width="880" height="540">
+  <!--
+    SVIT — Color Palette
+    Brand colors reference sheet
+    Version: 1.0 | May 2026
+  -->
+  <defs>
+    <style>
+      .label-hex  { font-family: 'SF Mono', 'Geist Mono', 'Fira Code', monospace; font-size: 13px; font-weight: 600; }
+      .label-name { font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; }
+      .section    { font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; }
+      .title      { font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
+      .subtitle   { font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; font-weight: 400; letter-spacing: 0.04em; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="880" height="540" fill="#0E0E18" rx="16"/>
+
+  <!-- Title -->
+  <text x="40" y="52" class="title" fill="#FFFFFF">SVIT — Brand Colors</text>
+  <text x="40" y="72" class="subtitle" fill="rgba(255,255,255,0.38)">Color palette v1.0 · May 2026</text>
+
+  <!-- ─── ROW 1: Primary + Secondary ─── -->
+
+  <!-- Section label -->
+  <text x="40" y="108" class="section" fill="rgba(255,255,255,0.28)">Core Brand</text>
+
+  <!-- SVIT Gold — Primary -->
+  <rect x="40"  y="118" width="180" height="120" rx="12" fill="#E8A020"/>
+  <text x="52"  y="202" class="label-hex"  fill="#1A1A1A">#E8A020</text>
+  <text x="52"  y="220" class="label-name" fill="rgba(0,0,0,0.55)">SVIT Gold · Primary</text>
+
+  <!-- Gold Light -->
+  <rect x="232" y="118" width="120" height="120" rx="12" fill="#F2B84B"/>
+  <text x="244" y="202" class="label-hex"  fill="#1A1A1A">#F2B84B</text>
+  <text x="244" y="220" class="label-name" fill="rgba(0,0,0,0.5)">Gold Light</text>
+
+  <!-- Gold Dark -->
+  <rect x="364" y="118" width="120" height="120" rx="12" fill="#B87518"/>
+  <text x="376" y="202" class="label-hex"  fill="#FFFFFF">#B87518</text>
+  <text x="376" y="220" class="label-name" fill="rgba(255,255,255,0.55)">Gold Dark</text>
+
+  <!-- Void Plum — Secondary (not typical travel blue/green) -->
+  <rect x="516" y="118" width="180" height="120" rx="12" fill="#7C5CFC"/>
+  <text x="528" y="202" class="label-hex"  fill="#FFFFFF">#7C5CFC</text>
+  <text x="528" y="220" class="label-name" fill="rgba(255,255,255,0.7)">Void Plum · Secondary</text>
+
+  <!-- Plum Light -->
+  <rect x="708" y="118" width="120" height="120" rx="12" fill="#A98EFD"/>
+  <text x="720" y="202" class="label-hex"  fill="#1A1A1A">#A98EFD</text>
+  <text x="720" y="220" class="label-name" fill="rgba(0,0,0,0.5)">Plum Light</text>
+
+  <!-- ─── ROW 2: Backgrounds + Surfaces ─── -->
+
+  <text x="40" y="272" class="section" fill="rgba(255,255,255,0.28)">Backgrounds &amp; Surfaces</text>
+
+  <!-- Background -->
+  <rect x="40"  y="282" width="130" height="90" rx="10" fill="#0E0C1C" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+  <text x="52"  y="342" class="label-hex"  fill="#FFFFFF">#0E0C1C</text>
+  <text x="52"  y="358" class="label-name" fill="rgba(255,255,255,0.38)">Background</text>
+
+  <!-- Surface -->
+  <rect x="182" y="282" width="130" height="90" rx="10" fill="#14121E" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="194" y="342" class="label-hex"  fill="#FFFFFF">#14121E</text>
+  <text x="194" y="358" class="label-name" fill="rgba(255,255,255,0.38)">Surface</text>
+
+  <!-- Card -->
+  <rect x="324" y="282" width="130" height="90" rx="10" fill="#1E1C2C" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="336" y="342" class="label-hex"  fill="#FFFFFF">#1E1C2C</text>
+  <text x="336" y="358" class="label-name" fill="rgba(255,255,255,0.38)">Card</text>
+
+  <!-- Elevated -->
+  <rect x="466" y="282" width="130" height="90" rx="10" fill="#28263A" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="478" y="342" class="label-hex"  fill="#FFFFFF">#28263A</text>
+  <text x="478" y="358" class="label-name" fill="rgba(255,255,255,0.38)">Elevated</text>
+
+  <!-- Border -->
+  <rect x="608" y="282" width="110" height="90" rx="10" fill="#2E2B42" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="620" y="342" class="label-hex"  fill="#FFFFFF">#2E2B42</text>
+  <text x="620" y="358" class="label-name" fill="rgba(255,255,255,0.38)">Border</text>
+
+  <!-- Near White -->
+  <rect x="730" y="282" width="110" height="90" rx="10" fill="#F2F2F6"/>
+  <text x="742" y="342" class="label-hex"  fill="#1A1A1A">#F2F2F6</text>
+  <text x="742" y="358" class="label-name" fill="rgba(0,0,0,0.45)">Near White</text>
+
+  <!-- ─── ROW 3: Semantic ─── -->
+
+  <text x="40" y="404" class="section" fill="rgba(255,255,255,0.28)">Semantic</text>
+
+  <!-- Success -->
+  <rect x="40"  y="414" width="120" height="72" rx="10" fill="#10B981"/>
+  <text x="52"  y="458" class="label-hex"  fill="#FFFFFF">#10B981</text>
+  <text x="52"  y="474" class="label-name" fill="rgba(255,255,255,0.65)">Success</text>
+
+  <!-- Warning — same as primary (intentional) -->
+  <rect x="172" y="414" width="120" height="72" rx="10" fill="#E8A020"/>
+  <text x="184" y="458" class="label-hex"  fill="#1A1A1A">#E8A020</text>
+  <text x="184" y="474" class="label-name" fill="rgba(0,0,0,0.5)">Warning</text>
+
+  <!-- Error -->
+  <rect x="304" y="414" width="120" height="72" rx="10" fill="#F43F5E"/>
+  <text x="316" y="458" class="label-hex"  fill="#FFFFFF">#F43F5E</text>
+  <text x="316" y="474" class="label-name" fill="rgba(255,255,255,0.65)">Error</text>
+
+  <!-- Info -->
+  <rect x="436" y="414" width="120" height="72" rx="10" fill="#38BDF8"/>
+  <text x="448" y="458" class="label-hex"  fill="#1A1A1A">#38BDF8</text>
+  <text x="448" y="474" class="label-name" fill="rgba(0,0,0,0.5)">Info</text>
+
+  <!-- Text -->
+  <rect x="568" y="414" width="120" height="72" rx="10" fill="#EEEEF4"/>
+  <text x="580" y="458" class="label-hex"  fill="#1A1A1A">#EEEEF4</text>
+  <text x="580" y="474" class="label-name" fill="rgba(0,0,0,0.45)">Text</text>
+
+  <!-- Text Muted -->
+  <rect x="700" y="414" width="140" height="72" rx="10" fill="#8888A8"/>
+  <text x="712" y="458" class="label-hex"  fill="#FFFFFF">#8888A8</text>
+  <text x="712" y="474" class="label-name" fill="rgba(255,255,255,0.7)">Text Muted</text>
+</svg>

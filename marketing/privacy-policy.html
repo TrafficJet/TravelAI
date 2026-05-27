@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Политика конфиденциальности — SVIT</title>
+  <meta name="description" content="Политика конфиденциальности приложения SVIT — AI-ассистент для путешествий." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background:     '#0E0C1C',
+            surface:        '#14121E',
+            card:           '#1E1C2C',
+            elevated:       '#28263A',
+            primary:        '#E8A020',
+            primaryLight:   '#F2B84B',
+            primaryDark:    '#B87518',
+            secondary:      '#7C5CFC',
+            secondaryLight: '#A98EFD',
+            secondaryDark:  '#5A3DD4',
+            svitText:       '#EEEEF4',
+            textMuted:      '#8888A8',
+            textDisabled:   '#4E4E68',
+            success:        '#10B981',
+            warning:        '#E8A020',
+            error:          '#F43F5E',
+            info:           '#38BDF8',
+            border:         '#2E2B42',
+            divider:        '#1E1C2C',
+            gradientStart:  '#0E0C1C',
+            gradientEnd:    '#1E1428',
+          },
+          fontFamily: {
+            display: ['"DM Sans"', 'sans-serif'],
+            mono:    ['"DM Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Base */
+    body {
+      background-color: #0E0C1C;
+      color: #EEEEF4;
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Компас-символ SVG внутри логотипа */
+    .logo-symbol {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #14121E; }
+    ::-webkit-scrollbar-thumb { background: #2E2B42; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7C5CFC; }
+
+    /* Sticky sidebar */
+    .sidebar-nav {
+      position: sticky;
+      top: 88px;
+      max-height: calc(100vh - 112px);
+      overflow-y: auto;
+    }
+
+    /* Sidebar nav link active */
+    .sidebar-link {
+      display: block;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 21px;
+      color: #8888A8;
+      transition: all 0.15s ease;
+      border-left: 2px solid transparent;
+      text-decoration: none;
+    }
+    .sidebar-link:hover {
+      color: #EEEEF4;
+      background-color: #14121E;
+      border-left-color: #7C5CFC;
+    }
+    .sidebar-link.active {
+      color: #E8A020;
+      background-color: rgba(232, 160, 32, 0.08);
+      border-left-color: #E8A020;
+    }
+
+    /* Prose — читаемость длинного текста */
+    .prose-svit p {
+      font-size: 16px;
+      line-height: 26px;
+      color: #EEEEF4;
+      margin-bottom: 16px;
+    }
+    .prose-svit p:last-child { margin-bottom: 0; }
+
+    .prose-svit h2 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 26px;
+      line-height: 32px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #EEEEF4;
+      margin-bottom: 20px;
+      margin-top: 0;
+    }
+
+    .prose-svit h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 26px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #EEEEF4;
+      margin-bottom: 12px;
+      margin-top: 28px;
+    }
+
+    .prose-svit ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px 0;
+    }
+    .prose-svit ul li {
+      font-size: 16px;
+      line-height: 26px;
+      color: #EEEEF4;
+      padding: 6px 0 6px 24px;
+      position: relative;
+    }
+    .prose-svit ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 15px;
+      width: 6px;
+      height: 6px;
+      background-color: #E8A020;
+      border-radius: 50%;
+    }
+
+    /* Section separator */
+    .section-block {
+      padding-top: 48px;
+      margin-top: 0;
+    }
+    .section-block:first-child { padding-top: 0; }
+
+    /* Horizontal divider */
+    .section-divider {
+      height: 1px;
+      background: #2E2B42;
+      margin: 0 0 48px 0;
+    }
+    .section-divider:first-of-type { display: none; }
+
+    /* Hero gradient */
+    .hero-bg {
+      background: linear-gradient(135deg, #0E0C1C 60%, #1E1428 100%);
+    }
+
+    /* Header blur */
+    .header-blur {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(14, 12, 28, 0.85);
+      border-bottom: 1px solid #2E2B42;
+    }
+
+    /* Gold underline for wordmark */
+    .wordmark-dot {
+      color: #E8A020;
+    }
+
+    /* Footer */
+    .footer-bg {
+      background: #14121E;
+      border-top: 1px solid #2E2B42;
+    }
+
+    /* Mobile TOC */
+    details summary { list-style: none; }
+    details summary::-webkit-details-marker { display: none; }
+
+    /* Smooth scroll */
+    html { scroll-behavior: smooth; }
+
+    /* Table */
+    .prose-svit table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      font-size: 15px;
+    }
+    .prose-svit table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: #1E1C2C;
+      color: #8888A8;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid #2E2B42;
+    }
+    .prose-svit table td {
+      padding: 10px 14px;
+      color: #EEEEF4;
+      border-bottom: 1px solid #1E1C2C;
+      line-height: 22px;
+      vertical-align: top;
+    }
+    .prose-svit table tr:last-child td {
+      border-bottom: none;
+    }
+    .prose-svit table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+    .table-wrap {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #2E2B42;
+      margin-bottom: 24px;
+    }
+
+    /* Partner block */
+    .partner-block {
+      background: #14121E;
+      border: 1px solid #2E2B42;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+    }
+    .partner-block p {
+      margin-bottom: 4px !important;
+    }
+    .partner-block p:last-child {
+      margin-bottom: 0 !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ============================================================
+       HEADER
+  ============================================================ -->
+  <header class="fixed top-0 left-0 right-0 z-50 header-blur">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+
+      <!-- Logo lockup -->
+      <a href="https://getsvit.com" class="flex items-center gap-2.5 no-underline group" aria-label="SVIT — на главную">
+        <!-- Compass symbol (Dark версия: кольцо белое, S-игла Gold) -->
+        <svg class="logo-symbol" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- Outer ring -->
+          <circle cx="14" cy="14" r="12.5" stroke="rgba(255,255,255,0.90)" stroke-width="1.5"/>
+          <!-- Cardinal ticks -->
+          <line x1="14" y1="2" x2="14" y2="5" stroke="rgba(255,255,255,0.90)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="14" y1="23" x2="14" y2="26" stroke="rgba(255,255,255,0.90)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="2" y1="14" x2="5" y2="14" stroke="rgba(255,255,255,0.90)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="23" y1="14" x2="26" y2="14" stroke="rgba(255,255,255,0.90)" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- S-needle (Gold) -->
+          <path d="M14 8 C11 8 10 10.5 12.5 12 C15 13.5 16 15.5 13 17 C10.5 18 10 20 14 20"
+                stroke="#E8A020" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <!-- Center dot -->
+          <circle cx="14" cy="14" r="1.5" fill="#E8A020"/>
+        </svg>
+        <!-- Wordmark -->
+        <span style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em; color: #EEEEF4; line-height: 1;">
+          SVIT
+        </span>
+      </a>
+
+      <!-- Nav -->
+      <nav class="flex items-center gap-1" aria-label="Основная навигация">
+        <a href="https://getsvit.com" class="hidden sm:block px-4 py-2 text-sm text-textMuted hover:text-svitText transition-colors duration-150 rounded-lg hover:bg-surface">
+          Главная
+        </a>
+        <a href="https://getsvit.com/terms" class="hidden sm:block px-4 py-2 text-sm text-textMuted hover:text-svitText transition-colors duration-150 rounded-lg hover:bg-surface">
+          Условия использования
+        </a>
+        <a href="https://getsvit.com" class="ml-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-150"
+           style="background: #E8A020; color: #0E0C1C; font-family: 'DM Sans', sans-serif;">
+          Скачать
+        </a>
+      </nav>
+
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section class="hero-bg pt-16" aria-label="Заголовок страницы">
+    <div class="max-w-6xl mx-auto px-6 pt-16 pb-12">
+
+      <!-- Breadcrumb -->
+      <div class="flex items-center gap-2 mb-6" aria-label="Хлебные крошки">
+        <a href="https://getsvit.com" class="text-textMuted hover:text-svitText transition-colors text-sm">getsvit.com</a>
+        <span class="text-textDisabled text-sm">/</span>
+        <span class="text-textMuted text-sm">Политика конфиденциальности</span>
+      </div>
+
+      <!-- Overline tag -->
+      <p class="text-secondary text-xs font-semibold uppercase tracking-widest mb-4">Юридический документ</p>
+
+      <!-- Title -->
+      <h1 style="font-family: 'DM Sans', sans-serif; font-size: clamp(28px, 5vw, 40px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: #EEEEF4; margin: 0 0 16px 0;">
+        Политика конфиденциальности
+      </h1>
+
+      <!-- Meta row -->
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full" style="background: #10B981;"></span>
+          <span class="text-sm text-textMuted">Актуальная версия</span>
+        </div>
+        <div class="text-sm" style="font-family: 'DM Mono', monospace; color: #8888A8;">
+          Обновлено: 25 мая 2026
+        </div>
+        <div class="text-sm" style="font-family: 'DM Mono', monospace; color: #8888A8;">
+          Версия: 1.0
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom fade into page bg -->
+    <div style="height: 1px; background: #2E2B42;"></div>
+  </section>
+
+
+  <!-- ============================================================
+       MAIN — sidebar + content
+  ============================================================ -->
+  <main class="max-w-6xl mx-auto px-6 py-12">
+    <div class="flex gap-10 lg:gap-16 relative">
+
+      <!-- ===== SIDEBAR (desktop sticky) ===== -->
+      <aside class="hidden lg:block w-56 flex-shrink-0" aria-label="Навигация по разделам">
+        <nav class="sidebar-nav">
+
+          <!-- Label -->
+          <p class="placeholder-label mb-3" style="color: #4E4E68; font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;">Содержание</p>
+
+          <a href="#section-collection"    class="sidebar-link">1. Сбор данных</a>
+          <a href="#section-usage"         class="sidebar-link">2. Использование данных</a>
+          <a href="#section-sharing"       class="sidebar-link">3. Передача третьим лицам</a>
+          <a href="#section-storage"       class="sidebar-link">4. Хранение и защита</a>
+          <a href="#section-rights"        class="sidebar-link">5. Права пользователей</a>
+          <a href="#section-contacts"      class="sidebar-link">6. Контакты</a>
+
+          <!-- Divider -->
+          <div class="mt-6 pt-6" style="border-top: 1px solid #2E2B42;">
+            <p class="mb-3" style="font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #4E4E68;">Другие документы</p>
+            <a href="https://getsvit.com/terms" class="sidebar-link">Условия использования</a>
+            <a href="https://getsvit.com" class="sidebar-link">На главную</a>
+          </div>
+
+          <!-- Support pill -->
+          <div class="mt-6 p-3 rounded-xl" style="background: rgba(124,92,252,0.08); border: 1px solid rgba(124,92,252,0.2);">
+            <p style="font-size: 12px; color: #8888A8; margin: 0 0 4px 0;">Вопросы?</p>
+            <a href="mailto:support@getsvit.com" style="font-size: 13px; color: #A98EFD; text-decoration: none; font-weight: 500;">
+              support@getsvit.com
+            </a>
+          </div>
+
+        </nav>
+      </aside>
+
+
+      <!-- ===== CONTENT ===== -->
+      <div class="flex-1 min-w-0">
+
+        <!-- Mobile TOC -->
+        <details class="lg:hidden mb-8 rounded-xl overflow-hidden" style="background: #14121E; border: 1px solid #2E2B42;">
+          <summary class="px-5 py-4 cursor-pointer flex items-center justify-between" style="color: #EEEEF4; font-weight: 500; font-size: 15px; list-style: none; user-select: none;">
+            <span>Содержание</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: #8888A8; flex-shrink: 0;">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </summary>
+          <div class="px-5 pb-4 flex flex-col gap-1">
+            <a href="#section-collection" class="sidebar-link">1. Сбор данных</a>
+            <a href="#section-usage"      class="sidebar-link">2. Использование данных</a>
+            <a href="#section-sharing"    class="sidebar-link">3. Передача третьим лицам</a>
+            <a href="#section-storage"    class="sidebar-link">4. Хранение и защита</a>
+            <a href="#section-rights"     class="sidebar-link">5. Права пользователей</a>
+            <a href="#section-contacts"   class="sidebar-link">6. Контакты</a>
+          </div>
+        </details>
+
+        <!-- Intro block (Кратко о главном) -->
+        <div class="mb-10 p-6 rounded-2xl" style="background: #14121E; border: 1px solid #2E2B42; max-width: 720px;">
+          <p style="font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #7C5CFC; margin: 0 0 10px 0;">Кратко о главном</p>
+          <p style="font-size: 15px; line-height: 24px; color: #EEEEF4; margin: 0 0 12px 0;">
+            SVIT — AI-ассистент для путешествий. Мы собираем только те данные, которые нужны, чтобы помочь тебе найти и забронировать рейсы и отели. <strong>Мы не продаём твои данные рекламодателям.</strong> Данные платёжных карт мы не храним — они обрабатываются напрямую платёжным провайдером.
+          </p>
+          <p style="font-size: 14px; line-height: 22px; color: #8888A8; margin: 0;">
+            Если захочешь удалить свой аккаунт и все данные — напиши нам на <a href="mailto:support@getsvit.com" style="color: #A98EFD; text-decoration: none;">support@getsvit.com</a>.
+          </p>
+        </div>
+
+
+        <!-- ─────────────────────────────────────────
+             SECTION 1: Сбор данных
+             (MD: 1. Кто отвечает + 2. Какие данные)
+        ───────────────────────────────────────── -->
+        <div id="section-collection" class="section-block" style="max-width: 720px; scroll-margin-top: 88px;">
+
+          <div class="prose-svit">
+            <h2>1. Сбор данных</h2>
+
+            <h3>Кто отвечает за твои данные</h3>
+            <p>
+              <strong>ФЛП Марченко Владислав</strong> (далее — «SVIT», «мы»)<br>
+              Электронная почта: <a href="mailto:support@getsvit.com" style="color: #A98EFD; text-decoration: none;">support@getsvit.com</a><br>
+              Идентификатор приложения: <span style="font-family: 'DM Mono', monospace; color: #A98EFD; font-size: 14px;">com.getsvit.app</span>
+            </p>
+            <p>
+              Мы — оператор персональных данных в соответствии с применимым законодательством о защите персональных данных стран СНГ.
+            </p>
+
+            <h3>2.1 Данные, которые ты предоставляешь сам</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Данные</th>
+                    <th>Когда собираем</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Email-адрес</td>
+                    <td>При регистрации</td>
+                  </tr>
+                  <tr>
+                    <td>Имя (по желанию)</td>
+                    <td>При заполнении профиля</td>
+                  </tr>
+                  <tr>
+                    <td>История сообщений в чате с AI</td>
+                    <td>При каждом запросе к ассистенту</td>
+                  </tr>
+                  <tr>
+                    <td>Детали поиска (направления, даты, количество пассажиров)</td>
+                    <td>При поиске рейсов и отелей</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>2.2 Данные, которые собираются автоматически</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Данные</th>
+                    <th>Зачем</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Идентификатор устройства (Device ID)</td>
+                    <td>Для push-уведомлений и безопасности сессии</td>
+                  </tr>
+                  <tr>
+                    <td>Токен авторизации (JWT)</td>
+                    <td>Для поддержания сессии</td>
+                  </tr>
+                  <tr>
+                    <td>IP-адрес</td>
+                    <td>Для защиты от мошенничества</td>
+                  </tr>
+                  <tr>
+                    <td>Тип устройства и версия ОС</td>
+                    <td>Для диагностики технических ошибок</td>
+                  </tr>
+                  <tr>
+                    <td>Данные об использовании приложения (какие экраны открывал, сколько времени провёл)</td>
+                    <td>Для улучшения приложения</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>2.3 Геолокация (опционально)</h3>
+            <p>
+              Мы запрашиваем доступ к геолокации только для одной цели — найти ближайший аэропорт к твоему текущему местоположению. Ты можешь отказать в доступе: это не повлияет на основную функциональность приложения. Геолокация не передаётся третьим лицам в целях рекламы.
+            </p>
+
+            <h3>2.4 Платёжные данные</h3>
+            <p>
+              Мы <strong>не храним</strong> номера карт и CVV. Все платёжные транзакции обрабатываются напрямую сторонними платёжными провайдерами, сертифицированными по стандарту PCI DSS. Нам передаётся только статус транзакции (успешно / отклонено) и обезличенные последние 4 цифры карты для отображения в истории платежей.
+            </p>
+
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+
+        <!-- ─────────────────────────────────────────
+             SECTION 2: Использование данных
+             (MD: 3. Как мы используем твои данные)
+        ───────────────────────────────────────── -->
+        <div id="section-usage" class="section-block" style="max-width: 720px; scroll-margin-top: 88px;">
+
+          <div class="prose-svit">
+            <h2>2. Использование данных</h2>
+
+            <p>Мы используем данные строго для следующих целей:</p>
+
+            <ul>
+              <li><strong>Авторизация и безопасность.</strong> Проверка входа, защита аккаунта, предотвращение несанкционированного доступа.</li>
+              <li><strong>Работа AI-ассистента.</strong> История чата передаётся AI-модели, чтобы ответы были контекстными и точными.</li>
+              <li><strong>Бронирование.</strong> Данные поиска (маршрут, даты, пассажиры) передаются партнёрам по бронированию для обработки заказа.</li>
+              <li><strong>Push-уведомления.</strong> Уведомления об изменениях цены, статусе брони, задержках рейса.</li>
+              <li><strong>Аналитика и улучшение продукта.</strong> Понимаем, как пользователи работают с приложением, чтобы делать его лучше.</li>
+              <li><strong>Поддержка пользователей.</strong> Отвечаем на вопросы и решаем проблемы.</li>
+            </ul>
+
+            <p>Мы не используем данные для продажи рекламы и не передаём данные рекламным сетям.</p>
+
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+
+        <!-- ─────────────────────────────────────────
+             SECTION 3: Передача третьим лицам
+             (MD: 4. С кем мы делимся данными)
+        ───────────────────────────────────────── -->
+        <div id="section-sharing" class="section-block" style="max-width: 720px; scroll-margin-top: 88px;">
+
+          <div class="prose-svit">
+            <h2>3. Передача третьим лицам</h2>
+
+            <p>Мы передаём данные только тем партнёрам, без которых приложение не может работать:</p>
+
+            <div class="partner-block">
+              <h3 style="margin-top: 0; margin-bottom: 8px;">4.1 Anthropic (AI-модель Claude)</h3>
+              <p><strong>Что передаём:</strong> содержание твоих сообщений в чате.</p>
+              <p><strong>Зачем:</strong> Anthropic предоставляет AI-модель Claude, которая отвечает на твои запросы.</p>
+              <p><strong>Политика Anthropic:</strong> <a href="https://www.anthropic.com/privacy" style="color: #A98EFD; text-decoration: none;" target="_blank" rel="noopener">anthropic.com/privacy</a></p>
+              <p>Данные, переданные Anthropic, не используются для обучения модели без явного согласия (в соответствии с условиями Anthropic API).</p>
+            </div>
+
+            <div class="partner-block">
+              <h3 style="margin-top: 0; margin-bottom: 8px;">4.2 Aviasales (поиск и бронирование билетов)</h3>
+              <p><strong>Что передаём:</strong> параметры поиска (маршрут, даты, количество пассажиров) и данные пассажиров, необходимые для бронирования (имя, контактный email).</p>
+              <p><strong>Зачем:</strong> для поиска рейсов и оформления билетов.</p>
+              <p><strong>Политика Aviasales:</strong> <a href="https://www.aviasales.ru/privacy" style="color: #A98EFD; text-decoration: none;" target="_blank" rel="noopener">aviasales.ru/privacy</a></p>
+            </div>
+
+            <div class="partner-block">
+              <h3 style="margin-top: 0; margin-bottom: 8px;">4.3 Firebase (Google) — аналитика и push-уведомления</h3>
+              <p><strong>Что передаём:</strong> обезличенные события использования приложения, Device ID для push-уведомлений.</p>
+              <p><strong>Зачем:</strong> аналитика, диагностика ошибок (Firebase Crashlytics), доставка push-уведомлений.</p>
+              <p><strong>Политика Google:</strong> <a href="https://policies.google.com/privacy" style="color: #A98EFD; text-decoration: none;" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
+            </div>
+
+            <div class="partner-block">
+              <h3 style="margin-top: 0; margin-bottom: 8px;">4.4 Mixpanel — продуктовая аналитика</h3>
+              <p><strong>Что передаём:</strong> обезличенные события (открыл экран, запустил поиск, завершил бронирование).</p>
+              <p><strong>Зачем:</strong> понимаем, какие функции работают хорошо, а какие нужно улучшить.</p>
+              <p><strong>Политика Mixpanel:</strong> <a href="https://mixpanel.com/legal/privacy-policy" style="color: #A98EFD; text-decoration: none;" target="_blank" rel="noopener">mixpanel.com/legal/privacy-policy</a></p>
+            </div>
+
+            <div class="partner-block">
+              <h3 style="margin-top: 0; margin-bottom: 8px;">4.5 Expo (Notifications)</h3>
+              <p><strong>Что передаём:</strong> Device Token для доставки push-уведомлений.</p>
+              <p><strong>Зачем:</strong> инфраструктура push-уведомлений для iOS и Android.</p>
+              <p><strong>Политика Expo:</strong> <a href="https://expo.dev/privacy" style="color: #A98EFD; text-decoration: none;" target="_blank" rel="noopener">expo.dev/privacy</a></p>
+            </div>
+
+            <div class="partner-block">
+              <h3 style="margin-top: 0; margin-bottom: 8px;">4.6 Railway (хостинг)</h3>
+              <p><strong>Что храним:</strong> база данных PostgreSQL с аккаунтами пользователей и историей чатов размещена на серверах Railway.</p>
+              <p><strong>Политика Railway:</strong> <a href="https://railway.app/legal/privacy" style="color: #A98EFD; text-decoration: none;" target="_blank" rel="noopener">railway.app/legal/privacy</a></p>
+            </div>
+
+            <h3>4.7 Правовые требования</h3>
+            <p>
+              Мы можем раскрыть данные государственным органам, если это требуется по закону — например, по судебному решению или законному запросу правоохранительных органов.
+            </p>
+            <p>
+              Мы <strong>не продаём</strong> твои данные третьим лицам ни при каких обстоятельствах.
+            </p>
+
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+
+        <!-- ─────────────────────────────────────────
+             SECTION 4: Хранение и защита
+             (MD: 5 + 7 + 8 + 9 + 10)
+        ───────────────────────────────────────── -->
+        <div id="section-storage" class="section-block" style="max-width: 720px; scroll-margin-top: 88px;">
+
+          <div class="prose-svit">
+            <h2>4. Хранение и защита</h2>
+
+            <ul>
+              <li><strong>Шифрование при передаче:</strong> все данные между приложением и нашими серверами передаются по протоколу HTTPS / TLS 1.2+. Соединение с AI-моделью и партнёрами также защищено шифрованием в транзите.</li>
+              <li><strong>Хранение паролей:</strong> пароли хранятся в виде хэша (bcrypt). Мы не знаем твой пароль.</li>
+              <li><strong>Доступ к данным:</strong> только ограниченный круг разработчиков имеет доступ к производственной базе данных, и только в рамках технической поддержки.</li>
+              <li><strong>История чата:</strong> сообщения хранятся на серверах Railway (PostgreSQL) и доступны тебе в приложении. Ты можешь удалить их в любой момент.</li>
+              <li><strong>Срок хранения:</strong> данные аккаунта хранятся, пока ты пользуешься приложением. После удаления аккаунта все персональные данные удаляются в течение 30 дней, кроме данных, которые мы обязаны хранить по закону (например, транзакционные записи).</li>
+            </ul>
+
+            <!-- Highlight card -->
+            <div class="rounded-xl p-5 mt-2" style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.2);">
+              <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 mt-0.5">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 1.5L2.25 4.5v4.25C2.25 12.5 5.13 16.09 9 17c3.87-.91 6.75-4.5 6.75-8.25V4.5L9 1.5z" stroke="#10B981" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 9l2 2 4-4" stroke="#10B981" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <p style="font-size: 14px; line-height: 22px; color: #10B981; margin: 0; font-weight: 500;">
+                  Мы никогда не храним полные реквизиты платёжных карт на наших серверах. Платёжные данные обрабатываются напрямую сертифицированным PCI DSS провайдером.
+                </p>
+              </div>
+            </div>
+
+            <h3>Cookies и трекинг</h3>
+            <p>
+              Мобильное приложение SVIT не использует cookies в браузерном смысле.
+            </p>
+            <p>
+              Для аналитики и улучшения продукта мы используем обезличенные идентификаторы сессий и Device ID (как описано выше). Ты можешь ограничить сбор данных аналитики через раздел «Профиль&nbsp;→&nbsp;Конфиденциальность» внутри приложения.
+            </p>
+            <p>
+              На нашем сайте svit.travel могут использоваться стандартные аналитические cookies — подробнее в политике конфиденциальности сайта.
+            </p>
+
+            <h3>Дети</h3>
+            <p>
+              Приложение SVIT предназначено для пользователей <strong>от 13 лет и старше</strong>. Мы сознательно не собираем данные детей до 13 лет. Если тебе стало известно, что ребёнок до 13 лет создал аккаунт без согласия родителей — напиши нам на <a href="mailto:support@getsvit.com" style="color: #A98EFD; text-decoration: none;">support@getsvit.com</a>, и мы удалим аккаунт.
+            </p>
+
+            <h3>Международная передача данных</h3>
+            <p>
+              Мы работаем с партнёрами (Anthropic, Firebase, Mixpanel), серверы которых могут находиться за пределами страны твоего проживания. Передача данных осуществляется только с партнёрами, которые обеспечивают уровень защиты, соответствующий требованиям применимого законодательства.
+            </p>
+
+            <h3>Изменения политики</h3>
+            <p>Если мы изменим эту политику — ты узнаешь об этом заранее:</p>
+            <ul>
+              <li>Уведомление появится внутри приложения при следующем входе.</li>
+              <li>Для существенных изменений (новые категории данных, новые партнёры) — отправим push-уведомление или email минимум за 14 дней до вступления изменений в силу.</li>
+            </ul>
+            <p>
+              Продолжение использования приложения после даты вступления изменений в силу означает твоё согласие с обновлённой политикой. Если ты не согласен — ты можешь удалить аккаунт до даты изменений.
+            </p>
+            <p>
+              Актуальная версия всегда доступна по адресу: <a href="https://svit.travel/privacy" style="color: #A98EFD; text-decoration: none;" target="_blank" rel="noopener">svit.travel/privacy</a> и внутри приложения в разделе «Профиль&nbsp;→&nbsp;Конфиденциальность».
+            </p>
+
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+
+        <!-- ─────────────────────────────────────────
+             SECTION 5: Права пользователей
+             (MD: 6. Твои права)
+        ───────────────────────────────────────── -->
+        <div id="section-rights" class="section-block" style="max-width: 720px; scroll-margin-top: 88px;">
+
+          <div class="prose-svit">
+            <h2>5. Права пользователей</h2>
+
+            <p>Ты можешь в любой момент:</p>
+
+            <ul>
+              <li><strong>Получить копию своих данных</strong> — напиши на <a href="mailto:support@getsvit.com" style="color: #A98EFD; text-decoration: none;">support@getsvit.com</a>, и мы вышлем всё, что хранится в твоём аккаунте.</li>
+              <li><strong>Исправить данные</strong> — обнови профиль прямо в приложении или обратись к нам.</li>
+              <li><strong>Удалить аккаунт и все данные</strong> — напиши на <a href="mailto:support@getsvit.com" style="color: #A98EFD; text-decoration: none;">support@getsvit.com</a> с темой «Удалить аккаунт». Мы обработаем запрос в течение 30 дней.</li>
+              <li><strong>Отозвать доступ к геолокации</strong> — через настройки устройства (iOS: Настройки&nbsp;→&nbsp;SVIT&nbsp;→&nbsp;Геопозиция; Android: Настройки&nbsp;→&nbsp;Приложения&nbsp;→&nbsp;SVIT&nbsp;→&nbsp;Разрешения).</li>
+              <li><strong>Отключить push-уведомления</strong> — через настройки устройства или внутри приложения в разделе «Профиль&nbsp;→&nbsp;Уведомления».</li>
+              <li><strong>Возразить против обработки</strong> — если у тебя есть основания полагать, что мы обрабатываем данные неправомерно, напиши нам. Мы рассмотрим запрос и ответим в течение 10 рабочих дней.</li>
+            </ul>
+
+            <p>Для реализации любого из прав — пиши на <a href="mailto:support@getsvit.com" style="color: #A98EFD; text-decoration: none;">support@getsvit.com</a>.</p>
+
+            <!-- Rights grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+              <div class="flex items-start gap-3 p-4 rounded-xl" style="background: #14121E; border: 1px solid #2E2B42;">
+                <span style="font-size: 20px; flex-shrink: 0;" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="10" r="8.5" stroke="#7C5CFC" stroke-width="1.4"/>
+                    <circle cx="10" cy="8" r="2.5" stroke="#7C5CFC" stroke-width="1.4"/>
+                    <path d="M4.5 16c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke="#7C5CFC" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <div>
+                  <p style="font-size: 14px; font-weight: 600; color: #EEEEF4; margin: 0 0 2px 0;">Доступ к данным</p>
+                  <p style="font-size: 13px; color: #8888A8; margin: 0; line-height: 20px;">Получите копию всех ваших данных в машиночитаемом формате</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-4 rounded-xl" style="background: #14121E; border: 1px solid #2E2B42;">
+                <span style="flex-shrink: 0;" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 10h12M13 7l3 3-3 3" stroke="#7C5CFC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <div>
+                  <p style="font-size: 14px; font-weight: 600; color: #EEEEF4; margin: 0 0 2px 0;">Перенос данных</p>
+                  <p style="font-size: 13px; color: #8888A8; margin: 0; line-height: 20px;">Перенесите данные к другому поставщику услуг</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-4 rounded-xl" style="background: #14121E; border: 1px solid #2E2B42;">
+                <span style="flex-shrink: 0;" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 10l2.5 2.5L14 7" stroke="#7C5CFC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="10" cy="10" r="8.5" stroke="#7C5CFC" stroke-width="1.4"/>
+                  </svg>
+                </span>
+                <div>
+                  <p style="font-size: 14px; font-weight: 600; color: #EEEEF4; margin: 0 0 2px 0;">Исправление данных</p>
+                  <p style="font-size: 13px; color: #8888A8; margin: 0; line-height: 20px;">Обновите неточные или устаревшие данные</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-4 rounded-xl" style="background: #14121E; border: 1px solid #2E2B42;">
+                <span style="flex-shrink: 0;" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 6l8 8M14 6l-8 8" stroke="#F43F5E" stroke-width="1.4" stroke-linecap="round"/>
+                    <circle cx="10" cy="10" r="8.5" stroke="#F43F5E" stroke-width="1.4"/>
+                  </svg>
+                </span>
+                <div>
+                  <p style="font-size: 14px; font-weight: 600; color: #EEEEF4; margin: 0 0 2px 0;">Удаление аккаунта</p>
+                  <p style="font-size: 13px; color: #8888A8; margin: 0; line-height: 20px;">Полное удаление аккаунта и персональных данных</p>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+
+        <!-- ─────────────────────────────────────────
+             SECTION 6: Контакты
+             (MD: 11. Контактные данные)
+        ───────────────────────────────────────── -->
+        <div id="section-contacts" class="section-block" style="max-width: 720px; scroll-margin-top: 88px;">
+
+          <div class="prose-svit">
+            <h2>6. Контакты</h2>
+
+            <p>
+              По любым вопросам о конфиденциальности данных — пиши нам:
+            </p>
+
+            <p>
+              <strong>Оператор:</strong> ФЛП Марченко Владислав<br>
+              <strong>Тема письма:</strong> «Конфиденциальность данных» (помогает нам быстрее маршрутизировать запрос)<br>
+              <strong>Срок ответа:</strong> в течение 10 рабочих дней
+            </p>
+
+            <!-- Contact cards -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-2">
+
+              <a href="mailto:support@getsvit.com"
+                 class="flex-1 flex items-center gap-4 p-5 rounded-2xl transition-all duration-150 group"
+                 style="background: #14121E; border: 1px solid #2E2B42; text-decoration: none;"
+                 onmouseover="this.style.borderColor='rgba(124,92,252,0.4)'"
+                 onmouseout="this.style.borderColor='#2E2B42'">
+                <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(124,92,252,0.12);">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.25 4.5h13.5v9.75a.75.75 0 01-.75.75H3a.75.75 0 01-.75-.75V4.5z" stroke="#7C5CFC" stroke-width="1.3" stroke-linejoin="round"/>
+                    <path d="M2.25 4.5L9 10.5l6.75-6" stroke="#7C5CFC" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <p style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #4E4E68; margin: 0 0 2px 0;">Поддержка</p>
+                  <p style="font-size: 14px; color: #A98EFD; margin: 0; font-weight: 500;">support@getsvit.com</p>
+                </div>
+              </a>
+
+              <a href="mailto:privacy@getsvit.com"
+                 class="flex-1 flex items-center gap-4 p-5 rounded-2xl transition-all duration-150"
+                 style="background: #14121E; border: 1px solid #2E2B42; text-decoration: none;"
+                 onmouseover="this.style.borderColor='rgba(124,92,252,0.4)'"
+                 onmouseout="this.style.borderColor='#2E2B42'">
+                <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(124,92,252,0.12);">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 1.5L2.25 4.5v4.25C2.25 12.5 5.13 16.09 9 17c3.87-.91 6.75-4.5 6.75-8.25V4.5L9 1.5z" stroke="#7C5CFC" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="9" cy="9.5" r="1.5" fill="#7C5CFC"/>
+                    <path d="M9 7v1" stroke="#7C5CFC" stroke-width="1.3" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <p style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #4E4E68; margin: 0 0 2px 0;">Вопросы приватности</p>
+                  <p style="font-size: 14px; color: #A98EFD; margin: 0; font-weight: 500;">privacy@getsvit.com</p>
+                </div>
+              </a>
+
+            </div>
+
+            <p class="mt-6" style="font-size: 14px; color: #8888A8; line-height: 22px;">
+              Мы отвечаем на запросы, связанные с персональными данными, в течение 10 рабочих дней. Если вы считаете, что ваши права нарушены, вы также вправе обратиться в надзорный орган по защите данных в вашей юрисдикции.
+            </p>
+
+            <p style="font-size: 13px; color: #4E4E68; margin-top: 32px; font-family: 'DM Mono', monospace;">
+              Последнее обновление: 25 мая 2026 г.
+            </p>
+
+          </div>
+        </div>
+
+        <!-- Bottom spacer -->
+        <div class="h-16"></div>
+
+      </div><!-- /content -->
+    </div><!-- /flex -->
+  </main>
+
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="footer-bg" role="contentinfo">
+    <div class="max-w-6xl mx-auto px-6 py-10">
+
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+
+        <!-- Logo + tagline -->
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <svg width="22" height="22" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="14" cy="14" r="12.5" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+              <line x1="14" y1="2" x2="14" y2="5" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="14" y1="23" x2="14" y2="26" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="2" y1="14" x2="5" y2="14" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="23" y1="14" x2="26" y2="14" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14 8 C11 8 10 10.5 12.5 12 C15 13.5 16 15.5 13 17 C10.5 18 10 20 14 20"
+                    stroke="#E8A020" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <circle cx="14" cy="14" r="1.5" fill="#E8A020"/>
+            </svg>
+            <span style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.12em; color: #EEEEF4;">SVIT</span>
+          </div>
+          <p style="font-size: 13px; color: #4E4E68; margin: 0;">Твой мир. Твой маршрут.</p>
+        </div>
+
+        <!-- Links -->
+        <nav class="flex flex-wrap gap-x-6 gap-y-2" aria-label="Ссылки в футере">
+          <a href="https://getsvit.com" class="text-sm text-textDisabled hover:text-textMuted transition-colors" style="text-decoration: none;">Главная</a>
+          <a href="https://getsvit.com/terms" class="text-sm text-textDisabled hover:text-textMuted transition-colors" style="text-decoration: none;">Условия использования</a>
+          <a href="/privacy" class="text-sm hover:text-textMuted transition-colors" style="color: #8888A8; text-decoration: none;">Политика конфиденциальности</a>
+          <a href="mailto:support@getsvit.com" class="text-sm text-textDisabled hover:text-textMuted transition-colors" style="text-decoration: none;">support@getsvit.com</a>
+        </nav>
+
+      </div>
+
+      <!-- Bottom line -->
+      <div class="mt-8 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3" style="border-top: 1px solid #1E1C2C;">
+        <p style="font-size: 12px; color: #4E4E68; margin: 0;">
+          &copy; 2026 SVIT. Все права защищены.
+        </p>
+        <p style="font-size: 11px; color: #4E4E68; margin: 0; font-family: 'DM Mono', monospace;">
+          getsvit.com/privacy &middot; v1.0
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       JS: Sidebar active state on scroll
+  ============================================================ -->
+  <script>
+    (function () {
+      var sections = [
+        'section-collection',
+        'section-usage',
+        'section-sharing',
+        'section-storage',
+        'section-rights',
+        'section-contacts',
+      ];
+
+      var links = {};
+      sections.forEach(function (id) {
+        var el = document.querySelector('a[href="#' + id + '"]');
+        if (el) links[id] = el;
+      });
+
+      function onScroll() {
+        var scrollY = window.scrollY + 120;
+        var current = sections[0];
+
+        sections.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el && el.offsetTop <= scrollY) current = id;
+        });
+
+        Object.keys(links).forEach(function (id) {
+          links[id].classList.toggle('active', id === current);
+        });
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>SVIT Brandbook v1.0 — 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@page { size: 297mm 210mm; margin: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #080614;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.slide {
+  width: 297mm;
+  min-height: 210mm;
+  height: 210mm;
+  overflow: hidden;
+  page-break-after: always;
+  break-after: page;
+  position: relative;
+  background: #0E0C1C;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── COMMON ELEMENTS ── */
+.pn {
+  position: absolute;
+  bottom: 10mm;
+  right: 18mm;
+  font-size: 9px;
+  color: #4E4E68;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.08em;
+}
+.fl {
+  position: absolute;
+  bottom: 8.5mm;
+  left: 18mm;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.fl-brand {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: #4E4E68;
+  font-family: 'DM Mono', monospace;
+}
+.overline {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7C5CFC;
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+.slide-title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #EEEEF4;
+  margin-bottom: 5px;
+  flex-shrink: 0;
+}
+.gold { color: #E8A020; }
+.plum { color: #7C5CFC; }
+.accent-bar {
+  width: 32px;
+  height: 3px;
+  background: linear-gradient(90deg, #E8A020, #7C5CFC);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.inner {
+  padding: 13mm 18mm 16mm 18mm;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════
+   SLIDE 1 — COVER
+════════════════════════════════════ */
+.s1 {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+.s1-bg-tl {
+  position: absolute; top: -80px; left: -80px;
+  width: 360px; height: 360px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,92,252,0.22) 0%, transparent 65%);
+  pointer-events: none;
+}
+.s1-bg-br {
+  position: absolute; bottom: -100px; right: -60px;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,160,32,0.14) 0%, transparent 65%);
+  pointer-events: none;
+}
+.s1-grid {
+  position: absolute; inset: 0; overflow: hidden;
+  opacity: 0.06; pointer-events: none;
+}
+.s1-content {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column;
+  align-items: center;
+}
+.s1-wordmark {
+  font-size: 88px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #EEEEF4;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+.s1-wordmark span { color: #E8A020; }
+.s1-tagline {
+  font-size: 14px;
+  color: #8888A8;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  margin-bottom: 22px;
+}
+.s1-divider {
+  width: 48px; height: 2px;
+  background: linear-gradient(90deg, #E8A020, #7C5CFC);
+  border-radius: 2px; margin: 0 auto 20px;
+}
+.s1-meta {
+  display: flex; gap: 24px;
+  justify-content: center; align-items: center;
+}
+.s1-meta-item {
+  font-size: 10px; color: #4E4E68;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.s1-dot { width: 3px; height: 3px; border-radius: 50%; background: #2E2B42; }
+
+/* ════════════════════════════════════
+   SLIDE 2 — MISSION / IDENTITY
+════════════════════════════════════ */
+.s2-quote {
+  background: #14121E;
+  border-left: 3px solid #E8A020;
+  border-radius: 0 10px 10px 0;
+  padding: 18px 24px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.s2-quote-text {
+  font-size: 16px; font-weight: 600;
+  line-height: 1.55; color: #EEEEF4;
+}
+.s2-quote-text em { color: #E8A020; font-style: normal; }
+.s2-body {
+  font-size: 12px; line-height: 1.7;
+  color: #8888A8; margin-bottom: 20px; flex-shrink: 0;
+}
+.s2-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; flex: 1;
+}
+.s2-card {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 12px; padding: 20px 20px;
+  display: flex; gap: 14px; align-items: flex-start;
+  align-content: flex-start;
+}
+.s2-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: rgba(232,160,32,0.1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.s2-icon.pu { background: rgba(124,92,252,0.1); }
+.s2-card-title { font-size: 13px; font-weight: 600; color: #EEEEF4; margin-bottom: 4px; }
+.s2-card-desc { font-size: 11.5px; color: #8888A8; line-height: 1.5; }
+.s2-arch {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #1E1C2C; border: 1px solid #2E2B42;
+  border-radius: 999px; padding: 7px 16px;
+  font-size: 12px; color: #8888A8;
+  margin-top: 16px; flex-shrink: 0; align-self: flex-start;
+}
+.s2-arch strong { color: #E8A020; font-weight: 600; }
+.s2-arch .dot { color: #4E4E68; }
+
+/* ════════════════════════════════════
+   SLIDE 3 — LOGO
+════════════════════════════════════ */
+.s3-top {
+  display: flex; gap: 12px;
+  margin-bottom: 14px; flex: 1;
+}
+.s3-main {
+  flex: 2; background: #1E1C2C; border: 1px solid #2E2B42;
+  border-radius: 12px; padding: 28px 20px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.s3-wm { font-size: 18px; font-weight: 700; color: #EEEEF4; letter-spacing: 0.1em; }
+.s3-label { font-size: 10px; color: #8888A8; font-family: 'DM Mono', monospace; }
+.s3-light {
+  flex: 1.5; background: #F2F2F6; border: 1px solid #ddd;
+  border-radius: 12px; padding: 28px 16px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.s3-wm-dark { font-size: 16px; font-weight: 700; color: #1A1A1A; letter-spacing: 0.1em; }
+.s3-label-dark { font-size: 10px; color: #999; font-family: 'DM Mono', monospace; }
+.s3-zone {
+  flex: 1.3; background: #14121E; border: 1px dashed #2E2B42;
+  border-radius: 12px; padding: 18px;
+  display: flex; flex-direction: column;
+  justify-content: center;
+}
+.s3-zone-title { font-size: 10px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.s3-zone-body { font-size: 10.5px; color: #8888A8; line-height: 1.5; }
+.s3-zone-body span { color: #E8A020; }
+
+.s3-rules {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 9px; flex-shrink: 0;
+}
+.s3-rule {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 10px; padding: 10px 12px;
+}
+.s3-rule-label { font-size: 9px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.s3-rule-val { font-size: 10.5px; color: #8888A8; line-height: 1.4; }
+.s3-rule-val.gold { color: #E8A020; }
+
+.s3-donts {
+  display: flex; gap: 9px; margin-top: 12px; flex-shrink: 0;
+}
+.s3-dont {
+  flex: 1; background: rgba(244,63,94,0.05); border: 1px solid rgba(244,63,94,0.18);
+  border-radius: 8px; padding: 8px 10px;
+  display: flex; align-items: center; gap: 7px;
+}
+.s3-dont-x { font-size: 10px; color: #F43F5E; font-weight: 700; flex-shrink: 0; }
+.s3-dont-text { font-size: 10px; color: #8888A8; line-height: 1.3; }
+
+/* ════════════════════════════════════
+   SLIDE 4 — COLORS
+════════════════════════════════════ */
+.s4-swatches {
+  display: flex; gap: 10px;
+  margin-bottom: 16px; flex: 1;
+}
+.s4-swatch {
+  flex: 1; border-radius: 10px; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.s4-swatch-color { flex: 1; min-height: 72px; }
+.s4-swatch-info {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-top: none; padding: 8px 10px;
+  border-radius: 0 0 10px 10px;
+}
+.s4-swatch-name { font-size: 10px; font-weight: 600; color: #EEEEF4; margin-bottom: 2px; }
+.s4-swatch-hex { font-size: 10px; color: #E8A020; font-family: 'DM Mono', monospace; margin-bottom: 2px; }
+.s4-swatch-use { font-size: 9.5px; color: #8888A8; line-height: 1.3; }
+
+.s4-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #4E4E68; font-family: 'DM Mono', monospace; margin-bottom: 8px; flex-shrink: 0; }
+
+.s4-semantic {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 9px; flex-shrink: 0;
+}
+.s4-sem {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 9px; padding: 9px 11px;
+  display: flex; align-items: center; gap: 9px;
+}
+.s4-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.s4-sem-name { font-size: 11px; font-weight: 600; color: #EEEEF4; }
+.s4-sem-hex { font-size: 9.5px; font-family: 'DM Mono', monospace; color: #8888A8; }
+
+.s4-surfaces {
+  display: flex; gap: 9px; margin-top: 12px; flex-shrink: 0;
+}
+.s4-surf {
+  flex: 1; background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 9px; padding: 9px 11px;
+  display: flex; align-items: center; gap: 10px;
+}
+.s4-surf-swatch { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; border: 1px solid #2E2B42; }
+.s4-surf-name { font-size: 11px; font-weight: 600; color: #EEEEF4; }
+.s4-surf-hex { font-size: 9.5px; font-family: 'DM Mono', monospace; color: #8888A8; }
+
+/* ════════════════════════════════════
+   SLIDE 5 — TYPOGRAPHY
+════════════════════════════════════ */
+.s5-fonts {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 14px; flex: 1;
+}
+.s5-font-card {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 11px; padding: 22px 22px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.s5-font-name { font-size: 10px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+.s5-font-sample { font-size: 38px; font-weight: 700; color: #EEEEF4; line-height: 1.1; margin-bottom: 8px; }
+.s5-font-sample.mono { font-family: 'DM Mono', monospace; font-size: 30px; font-weight: 400; }
+.s5-font-desc { font-size: 10.5px; color: #8888A8; line-height: 1.4; }
+.s5-weights { display: flex; gap: 6px; margin-top: 7px; }
+.s5-w {
+  background: #1E1C2C; border: 1px solid #2E2B42;
+  border-radius: 4px; padding: 2px 8px;
+  font-size: 9.5px; color: #8888A8;
+}
+
+.s5-scale {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 9px; flex-shrink: 0;
+}
+.s5-row {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 9px; padding: 14px 14px;
+}
+.s5-row-label { font-size: 9px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.s5-row-sample { color: #EEEEF4; line-height: 1.2; }
+.s5-row-meta { font-size: 9px; color: #4E4E68; font-family: 'DM Mono', monospace; margin-top: 3px; }
+
+/* ════════════════════════════════════
+   SLIDE 6 — TONE OF VOICE
+════════════════════════════════════ */
+.s6-pills {
+  display: flex; gap: 8px; margin-bottom: 14px; flex-shrink: 0; flex-wrap: wrap;
+}
+.s6-pill {
+  background: linear-gradient(135deg, rgba(232,160,32,0.12), rgba(124,92,252,0.12));
+  border: 1px solid #2E2B42; border-radius: 999px;
+  padding: 6px 14px; font-size: 12px; font-weight: 600; color: #EEEEF4;
+}
+.s6-table { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.s6-row {
+  display: grid; grid-template-columns: 100px 1fr 1fr;
+  padding: 0 10px; border-top: 1px solid #1E1C2C;
+  flex: 1; align-items: center;
+}
+.s6-cell-title { font-size: 11.5px; font-weight: 600; color: #EEEEF4; padding: 10px 10px 10px 0; }
+.s6-cell-ok { font-size: 11px; color: #10B981; line-height: 1.45; padding: 10px; }
+.s6-cell-no { font-size: 11px; color: #8888A8; line-height: 1.45; font-style: italic; padding: 10px; }
+.s6-avoid {
+  background: rgba(244,63,94,0.05); border: 1px solid rgba(244,63,94,0.15);
+  border-radius: 9px; padding: 10px 14px;
+  margin-top: 12px; flex-shrink: 0;
+}
+.s6-avoid-title { font-size: 9px; font-weight: 600; color: #F43F5E; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+.s6-avoid-body { font-size: 10.5px; color: #8888A8; line-height: 1.5; }
+
+/* ════════════════════════════════════
+   SLIDE 7 — UI KIT COMPONENTS
+════════════════════════════════════ */
+.s7-cols {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; flex: 1; overflow: hidden;
+}
+.s7-section {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 11px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 9px;
+  overflow: hidden;
+}
+.s7-section-title { font-size: 9px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3px; flex-shrink: 0; }
+.btn-primary {
+  background: #E8A020; border-radius: 32px;
+  padding: 10px 20px; text-align: center;
+  font-size: 13px; font-weight: 600; color: #0E0C1C;
+  flex-shrink: 0; display: inline-block;
+  box-shadow: 0 0 16px rgba(232,160,32,0.25);
+}
+.btn-secondary {
+  background: transparent; border-radius: 12px;
+  border: 1.5px solid #7C5CFC;
+  padding: 9px 20px; text-align: center;
+  font-size: 13px; font-weight: 500; color: #7C5CFC;
+  flex-shrink: 0; display: inline-block;
+}
+.btn-ghost {
+  background: transparent; padding: 9px 20px;
+  text-align: center; font-size: 13px; font-weight: 400; color: #8888A8;
+  flex-shrink: 0; display: inline-block;
+}
+.btn-dest {
+  background: rgba(244,63,94,0.1); border-radius: 12px;
+  border: 1px solid rgba(244,63,94,0.3);
+  padding: 9px 20px; text-align: center;
+  font-size: 13px; font-weight: 500; color: #F43F5E;
+  flex-shrink: 0; display: inline-block;
+}
+.chips-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip-active {
+  background: #E8A020; border-radius: 999px;
+  padding: 4px 12px; font-size: 11px; font-weight: 500; color: #0E0C1C;
+}
+.chip-inactive {
+  background: #14121E; border-radius: 999px; border: 1px solid #2E2B42;
+  padding: 4px 12px; font-size: 11px; color: #8888A8;
+}
+.chip-info {
+  background: #28263A; border-radius: 6px;
+  padding: 3px 10px; font-size: 11px; color: #8888A8;
+}
+.badge-confirmed { background: rgba(16,185,129,0.12); border-radius: 6px; padding: 3px 9px; font-size: 10px; font-weight: 600; color: #10B981; letter-spacing: 0.05em; text-transform: uppercase; display: inline-block; }
+.badge-pending { background: rgba(232,160,32,0.12); border-radius: 6px; padding: 3px 9px; font-size: 10px; font-weight: 600; color: #E8A020; letter-spacing: 0.05em; text-transform: uppercase; display: inline-block; }
+.badge-cancelled { background: rgba(244,63,94,0.12); border-radius: 6px; padding: 3px 9px; font-size: 10px; font-weight: 600; color: #F43F5E; letter-spacing: 0.05em; text-transform: uppercase; display: inline-block; }
+.s7-input {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 12px; padding: 9px 12px;
+  font-size: 12px; color: #8888A8;
+  flex-shrink: 0;
+}
+.s7-input-focus {
+  background: #14121E; border: 1.5px solid #E8A020;
+  border-radius: 12px; padding: 9px 12px;
+  font-size: 12px; color: #EEEEF4;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(232,160,32,0.15);
+}
+
+/* ════════════════════════════════════
+   SLIDE 8 — CHAT SCREEN
+════════════════════════════════════ */
+.s8-cols { display: flex; gap: 14px; flex: 1; overflow: hidden; }
+.s8-phone {
+  width: 148px; flex-shrink: 0;
+  background: #1E1C2C; border-radius: 22px;
+  border: 1.5px solid #2E2B42;
+  padding: 8px; display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.s8-phone-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 6px 6px 6px; flex-shrink: 0;
+}
+.s8-phone-title { font-size: 10px; font-weight: 600; color: #EEEEF4; }
+.s8-phone-dot { width: 6px; height: 6px; border-radius: 50%; background: #10B981; }
+.s8-messages { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.s8-msg-user {
+  background: #E8A020; border-radius: 10px 10px 2px 10px;
+  padding: 6px 9px; font-size: 9px; color: #0E0C1C; font-weight: 500;
+  align-self: flex-end; max-width: 90%;
+}
+.s8-msg-ai {
+  background: #28263A; border-radius: 10px 10px 10px 2px;
+  padding: 6px 9px; font-size: 9px; color: #EEEEF4; line-height: 1.4;
+  align-self: flex-start; max-width: 95%;
+}
+.s8-card {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 8px; padding: 7px 9px; margin-top: 3px;
+}
+.s8-card-route { font-size: 10px; font-weight: 600; color: #EEEEF4; }
+.s8-card-meta { font-size: 8.5px; color: #8888A8; margin-bottom: 3px; }
+.s8-card-price { font-size: 12px; font-weight: 700; color: #E8A020; font-family: 'DM Mono', monospace; }
+.s8-card-btn {
+  background: #E8A020; border-radius: 6px;
+  padding: 4px 0; text-align: center;
+  font-size: 9px; font-weight: 600; color: #0E0C1C;
+  margin-top: 5px;
+}
+.s8-input-bar {
+  background: #28263A; border-radius: 12px;
+  padding: 6px 8px; display: flex; align-items: center;
+  gap: 6px; margin-top: 6px; flex-shrink: 0;
+}
+.s8-input-text { flex: 1; font-size: 8.5px; color: #8888A8; }
+.s8-send { width: 22px; height: 22px; border-radius: 50%; background: #E8A020; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; }
+.s8-desc { flex: 1; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
+.s8-desc-title { font-size: 15px; font-weight: 600; color: #EEEEF4; margin-bottom: 2px; }
+.s8-desc-body { font-size: 11px; color: #8888A8; line-height: 1.6; }
+.s8-features { display: flex; flex-direction: column; gap: 7px; }
+.s8-feat { display: flex; align-items: flex-start; gap: 8px; }
+.s8-feat-dot { width: 6px; height: 6px; border-radius: 50%; background: #E8A020; margin-top: 4px; flex-shrink: 0; }
+.s8-feat-text { font-size: 11px; color: #8888A8; line-height: 1.4; }
+
+/* ════════════════════════════════════
+   SLIDE 9 — WALLET SCREEN
+════════════════════════════════════ */
+.s9-cols { display: flex; gap: 14px; flex: 1; overflow: hidden; }
+.s9-phone {
+  width: 148px; flex-shrink: 0;
+  background: #1E1C2C; border-radius: 22px;
+  border: 1.5px solid #2E2B42;
+  padding: 10px 8px 8px 8px; display: flex; flex-direction: column;
+  overflow: hidden; gap: 7px;
+}
+.s9-balance-card {
+  background: linear-gradient(135deg, #1E1428, #14121E);
+  border-radius: 12px; padding: 10px 10px 8px 10px;
+  border: 1px solid rgba(232,160,32,0.2);
+  flex-shrink: 0;
+}
+.s9-bal-label { font-size: 7.5px; color: #8888A8; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+.s9-bal-amount { font-size: 22px; font-weight: 700; color: #E8A020; font-family: 'DM Mono', monospace; line-height: 1; }
+.s9-bal-sub { font-size: 8px; color: #4E4E68; margin-top: 2px; }
+.s9-pay-methods { display: flex; gap: 5px; margin-top: 6px; }
+.s9-pay {
+  flex: 1; background: rgba(255,255,255,0.04); border: 1px solid #2E2B42;
+  border-radius: 6px; padding: 5px; text-align: center;
+  font-size: 8px; color: #8888A8;
+}
+.s9-txs { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 5px; }
+.s9-tx-label { font-size: 8px; font-weight: 600; color: #4E4E68; letter-spacing: 0.1em; text-transform: uppercase; }
+.s9-tx {
+  background: #14121E; border-radius: 7px; padding: 6px 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.s9-tx-icon { font-size: 12px; flex-shrink: 0; }
+.s9-tx-info { flex: 1; padding: 0 6px; }
+.s9-tx-name { font-size: 8.5px; font-weight: 500; color: #EEEEF4; }
+.s9-tx-date { font-size: 7.5px; color: #4E4E68; }
+.s9-tx-amount { font-size: 10px; font-weight: 600; font-family: 'DM Mono', monospace; }
+.s9-tx-amount.plus { color: #10B981; }
+.s9-tx-amount.minus { color: #EEEEF4; }
+.s9-desc { flex: 1; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
+
+/* ════════════════════════════════════
+   SLIDE 10 — ICONOGRAPHY
+════════════════════════════════════ */
+.s10-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; flex: 1; overflow: hidden;
+}
+.s10-card {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 11px; padding: 14px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 7px; text-align: center;
+}
+.s10-icon { font-size: 28px; line-height: 1; }
+.s10-name { font-size: 10px; font-weight: 600; color: #EEEEF4; }
+.s10-use { font-size: 9.5px; color: #8888A8; line-height: 1.3; }
+
+.s10-principles {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 9px; flex-shrink: 0; margin-top: 10px;
+}
+.s10-rule {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 9px; padding: 9px 11px;
+  display: flex; gap: 8px; align-items: flex-start;
+}
+.s10-rule-num { font-size: 11px; font-weight: 700; color: #7C5CFC; flex-shrink: 0; }
+.s10-rule-text { font-size: 10px; color: #8888A8; line-height: 1.4; }
+
+/* ════════════════════════════════════
+   SLIDE 11 — APP STORE
+════════════════════════════════════ */
+.s11-main { display: flex; gap: 14px; flex: 1; overflow: hidden; }
+.s11-icon-col { display: flex; flex-direction: column; gap: 10px; width: 120px; flex-shrink: 0; }
+.s11-app-icon {
+  width: 96px; height: 96px; border-radius: 22px;
+  background: linear-gradient(135deg, #0E0C1C 0%, #1E1428 100%);
+  border: 1px solid #2E2B42;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.s11-icon-label { font-size: 9px; color: #8888A8; font-family: 'DM Mono', monospace; }
+.s11-screenshots { flex: 1; display: flex; gap: 8px; overflow: hidden; }
+.s11-screen {
+  flex: 1; background: #1E1C2C; border-radius: 14px;
+  border: 1px solid #2E2B42; padding: 8px;
+  display: flex; flex-direction: column; gap: 6px;
+  overflow: hidden;
+}
+.s11-screen-header { font-size: 9px; font-weight: 700; color: #EEEEF4; text-align: center; line-height: 1.3; }
+.s11-screen-body { flex: 1; background: #14121E; border-radius: 8px; padding: 8px; overflow: hidden; }
+.s11-screen-tag { font-size: 8.5px; color: #8888A8; text-align: center; font-family: 'DM Mono', monospace; }
+
+/* ════════════════════════════════════
+   SLIDE 12 — SPLASH SCREEN
+════════════════════════════════════ */
+.s12-main { display: flex; gap: 14px; flex: 1; overflow: hidden; }
+.s12-phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+.s12-phone {
+  width: 128px; height: 210px;
+  background: linear-gradient(135deg, #0E0C1C 0%, #1E1428 100%);
+  border-radius: 22px; border: 1.5px solid #2E2B42;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.s12-phone-glow {
+  position: absolute; width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,92,252,0.15) 0%, transparent 70%);
+  top: 50%; left: 50%; transform: translate(-50%, -60%);
+}
+.s12-phone-wordmark { font-size: 14px; font-weight: 700; color: #EEEEF4; letter-spacing: 0.14em; }
+.s12-phone-slogan { font-size: 8px; color: #8888A8; text-align: center; }
+.s12-phone-powered { position: absolute; bottom: 12px; font-size: 7px; color: #4E4E68; font-family: 'DM Mono', monospace; }
+.s12-desc { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.s12-spec {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 10px; padding: 10px 13px;
+  flex-shrink: 0;
+}
+.s12-spec-title { font-size: 10px; font-weight: 600; color: #EEEEF4; margin-bottom: 6px; }
+.s12-spec-row { display: flex; justify-content: space-between; padding: 4px 0; border-top: 1px solid #1E1C2C; }
+.s12-spec-key { font-size: 10px; color: #8888A8; }
+.s12-spec-val { font-size: 10px; color: #E8A020; font-family: 'DM Mono', monospace; }
+
+/* ════════════════════════════════════
+   SLIDE 13 — RULES
+════════════════════════════════════ */
+.s13-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; overflow: hidden; }
+.s13-dont-section {
+  background: rgba(244,63,94,0.04); border: 1px solid rgba(244,63,94,0.15);
+  border-radius: 11px; padding: 14px 16px;
+  display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+}
+.s13-do-section {
+  background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 11px; padding: 14px 16px;
+  display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+}
+.s13-section-title { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; flex-shrink: 0; }
+.s13-section-title.red { color: #F43F5E; }
+.s13-section-title.green { color: #10B981; }
+.s13-item { display: flex; gap: 8px; align-items: flex-start; }
+.s13-item-icon { font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+.s13-item-text { font-size: 10.5px; color: #8888A8; line-height: 1.4; }
+.s13-sizes {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 11px; padding: 14px 16px;
+  margin-top: 10px; flex-shrink: 0;
+}
+.s13-sizes-title { font-size: 10px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 9px; }
+.s13-size-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; border-top: 1px solid #1E1C2C; }
+.s13-size-key { font-size: 10px; color: #8888A8; width: 150px; flex-shrink: 0; }
+.s13-size-val { font-size: 10px; color: #E8A020; font-family: 'DM Mono', monospace; }
+
+/* ════════════════════════════════════
+   SLIDE 14 — FINAL / CONTACTS
+════════════════════════════════════ */
+.s14 { align-items: center; justify-content: center; text-align: center; }
+.s14-bg {
+  position: absolute; inset: 0; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 40%, rgba(124,92,252,0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+.s14-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+.s14-domain { font-size: 36px; font-weight: 700; color: #E8A020; letter-spacing: -0.02em; margin: 12px 0 6px 0; }
+.s14-slogan { font-size: 15px; color: #8888A8; margin-bottom: 24px; }
+.s14-tagline { font-size: 11px; color: #4E4E68; font-family: 'DM Mono', monospace; letter-spacing: 0.1em; }
+.s14-divider {
+  width: 48px; height: 2px;
+  background: linear-gradient(90deg, #E8A020, #7C5CFC);
+  border-radius: 2px; margin: 18px auto;
+}
+.s14-meta { font-size: 10px; color: #4E4E68; font-family: 'DM Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; }
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 1 — COVER
+══════════════════════════════════════════════════ -->
+<div class="slide s1">
+  <div class="s1-bg-tl"></div>
+  <div class="s1-bg-br"></div>
+
+  <!-- subtle compass grid lines -->
+  <svg class="s1-grid" viewBox="0 0 842 595" preserveAspectRatio="xMidYMid meet">
+    <line x1="421" y1="0" x2="421" y2="595" stroke="#E8A020" stroke-width="0.6"/>
+    <line x1="0" y1="297" x2="842" y2="297" stroke="#E8A020" stroke-width="0.6"/>
+    <circle cx="421" cy="297" r="240" stroke="#E8A020" stroke-width="0.5" fill="none"/>
+    <circle cx="421" cy="297" r="160" stroke="#7C5CFC" stroke-width="0.4" fill="none"/>
+    <circle cx="421" cy="297" r="80" stroke="#E8A020" stroke-width="0.4" fill="none"/>
+    <line x1="251" y1="127" x2="591" y2="467" stroke="#7C5CFC" stroke-width="0.4"/>
+    <line x1="591" y1="127" x2="251" y2="467" stroke="#7C5CFC" stroke-width="0.4"/>
+  </svg>
+
+  <div class="s1-content">
+    <!-- Logo -->
+    <svg width="72" height="72" viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" stroke="#E8A020" stroke-width="2" fill="none" opacity="0.3"/>
+      <circle cx="32" cy="32" r="22" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <line x1="32" y1="4" x2="32" y2="60" stroke="#E8A020" stroke-width="0.8" opacity="0.2"/>
+      <line x1="4" y1="32" x2="60" y2="32" stroke="#E8A020" stroke-width="0.8" opacity="0.2"/>
+      <path d="M32 10 L35 32 L32 30 L29 32 Z" fill="#E8A020"/>
+      <path d="M32 54 L35 32 L32 34 L29 32 Z" fill="#7C5CFC" opacity="0.7"/>
+      <circle cx="32" cy="32" r="3" fill="#E8A020"/>
+      <text x="32" y="37" text-anchor="middle" font-family="DM Sans, sans-serif" font-weight="700" font-size="10" fill="#0E0C1C">S</text>
+    </svg>
+
+    <div class="s1-wordmark">S<span>V</span>IT</div>
+    <div class="s1-tagline">Твой мир. Твой маршрут.</div>
+    <div class="s1-divider"></div>
+    <div class="s1-meta">
+      <span class="s1-meta-item">Brand Identity</span>
+      <span class="s1-dot"></span>
+      <span class="s1-meta-item">v1.0</span>
+      <span class="s1-dot"></span>
+      <span class="s1-meta-item">2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 2 — MISSION & IDENTITY
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">01 — Brand Identity</div>
+    <div class="slide-title">Миссия и <span class="gold">архетип</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s2-quote">
+      <div class="s2-quote-text">SVIT убирает <em>трение между желанием путешествовать</em> и реальной поездкой. Мы не агрегатор — мы умный собеседник.</div>
+    </div>
+
+    <div class="s2-body">
+      SVIT знает больше пользователя о тарифах, маршрутах, рисках и возможностях. Он не просто выполняет запросы — он советует, предупреждает, объясняет. Название от укр. «світ» — мир/свет; звучит как <em>sweet</em> на английском.
+    </div>
+
+    <div class="s2-grid">
+      <!-- Sage card -->
+      <div class="s2-card" style="flex-direction:column;gap:0;align-items:stretch;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="s2-icon" style="width:40px;height:40px;border-radius:10px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#E8A020" stroke-width="1.8"/><path d="M12 4v2M12 18v2M4 12h2M18 12h2" stroke="#E8A020" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3" fill="#E8A020"/></svg>
+          </div>
+          <div>
+            <div class="s2-card-title" style="font-size:15px;margin-bottom:2px">Sage — Мудрец</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="flex:1;height:4px;background:#2E2B42;border-radius:2px;overflow:hidden"><div style="width:70%;height:100%;background:#E8A020;border-radius:2px"></div></div>
+              <span style="font-size:11px;font-weight:700;color:#E8A020;font-family:'DM Mono',monospace">70%</span>
+            </div>
+          </div>
+        </div>
+        <div class="s2-card-desc" style="font-size:12px;margin-bottom:14px">Основной архетип. SVIT знает больше пользователя о тарифах, маршрутах и рисках. Не просто выполняет запросы — советует и предупреждает.</div>
+        <div style="display:flex;flex-direction:column;gap:7px;flex:1">
+          <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:5px;height:5px;border-radius:50%;background:#E8A020;margin-top:5px;flex-shrink:0"></div><span style="font-size:11px;color:#8888A8;line-height:1.4">Держит доверие в кризисных ситуациях (отмена, задержка)</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:5px;height:5px;border-radius:50%;background:#E8A020;margin-top:5px;flex-shrink:0"></div><span style="font-size:11px;color:#8888A8;line-height:1.4">Объясняет решения, даёт конкретные рекомендации</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:5px;height:5px;border-radius:50%;background:#E8A020;margin-top:5px;flex-shrink:0"></div><span style="font-size:11px;color:#8888A8;line-height:1.4">Никогда не оставляет пользователя без ответа</span></div>
+        </div>
+        <div style="background:rgba(232,160,32,0.06);border:1px solid rgba(232,160,32,0.15);border-radius:8px;padding:10px 12px;margin-top:12px">
+          <div style="font-size:9px;color:#E8A020;font-family:'DM Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Пример</div>
+          <div style="font-size:10.5px;color:#EEEEF4;line-height:1.45;font-style:italic">"Нашёл 3 рейса Москва — Барселона. Лучший вариант — Vueling, 14:20, €189."</div>
+        </div>
+      </div>
+      <!-- Explorer card -->
+      <div class="s2-card" style="flex-direction:column;gap:0;align-items:stretch;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="s2-icon pu" style="width:40px;height:40px;border-radius:10px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L15 8l7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" stroke="#7C5CFC" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="s2-card-title" style="font-size:15px;margin-bottom:2px">Explorer — Исследователь</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="flex:1;height:4px;background:#2E2B42;border-radius:2px;overflow:hidden"><div style="width:30%;height:100%;background:#7C5CFC;border-radius:2px"></div></div>
+              <span style="font-size:11px;font-weight:700;color:#7C5CFC;font-family:'DM Mono',monospace">30%</span>
+            </div>
+          </div>
+        </div>
+        <div class="s2-card-desc" style="font-size:12px;margin-bottom:14px">Вторичный архетип. Приложение само вдохновляет на новые направления — не просто обслуживает принятые решения, а инициирует открытия.</div>
+        <div style="display:flex;flex-direction:column;gap:7px;flex:1">
+          <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:5px;height:5px;border-radius:50%;background:#7C5CFC;margin-top:5px;flex-shrink:0"></div><span style="font-size:11px;color:#8888A8;line-height:1.4">Предлагает неожиданные маршруты и направления</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:5px;height:5px;border-radius:50%;background:#7C5CFC;margin-top:5px;flex-shrink:0"></div><span style="font-size:11px;color:#8888A8;line-height:1.4">Проактивные инсайты: лучшие даты, скидки, погода</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:5px;height:5px;border-radius:50%;background:#7C5CFC;margin-top:5px;flex-shrink:0"></div><span style="font-size:11px;color:#8888A8;line-height:1.4">Не перебивает Sage в момент стресса пользователя</span></div>
+        </div>
+        <div style="background:rgba(124,92,252,0.06);border:1px solid rgba(124,92,252,0.15);border-radius:8px;padding:10px 12px;margin-top:12px">
+          <div style="font-size:9px;color:#7C5CFC;font-family:'DM Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Пример</div>
+          <div style="font-size:10.5px;color:#EEEEF4;line-height:1.45;font-style:italic">"Через неделю в Лиссабоне дождь. Взять зонт? Или сдвинуть поездку на пятницу — там +24°C."</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;margin-top:4px">
+      <div style="flex:1;height:1px;background:#1E1C2C"></div>
+      <div style="display:flex;align-items:center;gap:8px;background:#1E1C2C;border:1px solid #2E2B42;border-radius:999px;padding:6px 16px">
+        <svg width="12" height="12" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="2" fill="none"/><path d="M32 8 L34.5 32 L32 30 L29.5 32 Z" fill="#E8A020"/><circle cx="32" cy="32" r="2.5" fill="#E8A020"/></svg>
+        <span style="font-size:11px;color:#8888A8">Слоган:</span>
+        <span style="font-size:11px;font-weight:600;color:#EEEEF4">Your world. Your route.</span>
+        <span style="color:#4E4E68;font-size:11px">·</span>
+        <span style="font-size:11px;color:#8888A8">Домен:</span>
+        <span style="font-size:11px;font-weight:600;color:#E8A020">svit.travel</span>
+      </div>
+      <div style="flex:1;height:1px;background:#1E1C2C"></div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">02 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 3 — LOGO
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">02 — Logo System</div>
+    <div class="slide-title">Логотип и <span class="gold">охранная зона</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s3-top">
+      <!-- Dark version (primary) -->
+      <div class="s3-main">
+        <svg width="52" height="52" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="30" stroke="rgba(255,255,255,0.9)" stroke-width="2" fill="none"/>
+          <circle cx="32" cy="32" r="22" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+          <line x1="32" y1="4" x2="32" y2="60" stroke="rgba(255,255,255,0.15)" stroke-width="0.8"/>
+          <line x1="4" y1="32" x2="60" y2="32" stroke="rgba(255,255,255,0.15)" stroke-width="0.8"/>
+          <path d="M32 10 L35 32 L32 30 L29 32 Z" fill="#E8A020"/>
+          <path d="M32 54 L35 32 L32 34 L29 32 Z" fill="#7C5CFC" opacity="0.6"/>
+          <circle cx="32" cy="32" r="3" fill="#E8A020"/>
+          <text x="32" y="37" text-anchor="middle" font-family="DM Sans, sans-serif" font-weight="700" font-size="10" fill="#0E0C1C">S</text>
+        </svg>
+        <div class="s3-wm">SVIT</div>
+        <div class="s3-label">Dark (основная)</div>
+      </div>
+
+      <!-- Light version -->
+      <div class="s3-light">
+        <svg width="44" height="44" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="30" stroke="#1A1A1A" stroke-width="2" fill="none"/>
+          <circle cx="32" cy="32" r="22" stroke="#1A1A1A" stroke-width="1.5" fill="none" opacity="0.5"/>
+          <line x1="32" y1="4" x2="32" y2="60" stroke="#1A1A1A" stroke-width="0.8" opacity="0.2"/>
+          <line x1="4" y1="32" x2="60" y2="32" stroke="#1A1A1A" stroke-width="0.8" opacity="0.2"/>
+          <path d="M32 10 L35 32 L32 30 L29 32 Z" fill="#1A1A1A"/>
+          <path d="M32 54 L35 32 L32 34 L29 32 Z" fill="#1A1A1A" opacity="0.4"/>
+          <circle cx="32" cy="32" r="3" fill="#1A1A1A"/>
+        </svg>
+        <div class="s3-wm-dark">SVIT</div>
+        <div class="s3-label-dark">Light (маркетинг)</div>
+      </div>
+
+      <!-- Clearance zone -->
+      <div class="s3-zone">
+        <div class="s3-zone-title">Охранная зона</div>
+        <div class="s3-zone-body">
+          Минимальный отступ — <span>50%</span> высоты символа со всех сторон.<br><br>
+          Мин. размер lockup: <span>20px</span> по высоте символа.<br>
+          Мин. символ без подписи: <span>16px</span>.
+        </div>
+      </div>
+    </div>
+
+    <div class="s3-rules">
+      <div class="s3-rule">
+        <div class="s3-rule-label">S-игла</div>
+        <div class="s3-rule-val gold">#E8A020 SVIT Gold</div>
+        <div class="s3-rule-val" style="margin-top:3px">Только в Dark-версии. Единственный цветной элемент.</div>
+      </div>
+      <div class="s3-rule">
+        <div class="s3-rule-label">Кольца</div>
+        <div class="s3-rule-val">Dark: rgba(255,255,255,0.9)<br>Light: #1A1A1A mono</div>
+      </div>
+      <div class="s3-rule">
+        <div class="s3-rule-label">Поворот</div>
+        <div class="s3-rule-val" style="color:#F43F5E">Запрещён. Кольцо всегда строго горизонтально.</div>
+      </div>
+      <div class="s3-rule">
+        <div class="s3-rule-label">Эффекты</div>
+        <div class="s3-rule-val" style="color:#F43F5E">Тени, градиенты, обводки на символ — запрещены.</div>
+      </div>
+    </div>
+
+    <div class="s3-donts">
+      <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Растягивать непропорционально</span></div>
+      <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Поворачивать символ</span></div>
+      <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Менять цвет S-иглы</span></div>
+      <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Пёстрый фон без подложки</span></div>
+      <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Менять шрифт wordmark</span></div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">03 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 4 — COLOR PALETTE
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">03 — Color System</div>
+    <div class="slide-title">Цветовая <span class="gold">палитра</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s4-swatches">
+      <div class="s4-swatch">
+        <div class="s4-swatch-color" style="background:#E8A020"></div>
+        <div class="s4-swatch-info">
+          <div class="s4-swatch-name">SVIT Gold</div>
+          <div class="s4-swatch-hex">#E8A020</div>
+          <div class="s4-swatch-use">CTA, активные элементы, S-игла</div>
+        </div>
+      </div>
+      <div class="s4-swatch">
+        <div class="s4-swatch-color" style="background:#7C5CFC"></div>
+        <div class="s4-swatch-info">
+          <div class="s4-swatch-name">Void Plum</div>
+          <div class="s4-swatch-hex">#7C5CFC</div>
+          <div class="s4-swatch-use">Secondary, AI-индикатор, теги</div>
+        </div>
+      </div>
+      <div class="s4-swatch">
+        <div class="s4-swatch-color" style="background:#0E0C1C"></div>
+        <div class="s4-swatch-info">
+          <div class="s4-swatch-name">Void Dark</div>
+          <div class="s4-swatch-hex">#0E0C1C</div>
+          <div class="s4-swatch-use">Основной фон приложения</div>
+        </div>
+      </div>
+      <div class="s4-swatch">
+        <div class="s4-swatch-color" style="background:#1E1C2C; border-top:1px solid #2E2B42"></div>
+        <div class="s4-swatch-info">
+          <div class="s4-swatch-name">Card</div>
+          <div class="s4-swatch-hex">#1E1C2C</div>
+          <div class="s4-swatch-use">Карточки рейсов и отелей</div>
+        </div>
+      </div>
+      <div class="s4-swatch">
+        <div class="s4-swatch-color" style="background:#EEEEF4"></div>
+        <div class="s4-swatch-info">
+          <div class="s4-swatch-name">Text</div>
+          <div class="s4-swatch-hex">#EEEEF4</div>
+          <div class="s4-swatch-use">Основной текст, заголовки</div>
+        </div>
+      </div>
+      <div class="s4-swatch">
+        <div class="s4-swatch-color" style="background:#8888A8"></div>
+        <div class="s4-swatch-info">
+          <div class="s4-swatch-name">Muted</div>
+          <div class="s4-swatch-hex">#8888A8</div>
+          <div class="s4-swatch-use">Вторичный текст, подписи</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s4-label">Семантические цвета</div>
+    <div class="s4-semantic">
+      <div class="s4-sem">
+        <div class="s4-dot" style="background:#10B981"></div>
+        <div><div class="s4-sem-name">Success</div><div class="s4-sem-hex">#10B981</div></div>
+      </div>
+      <div class="s4-sem">
+        <div class="s4-dot" style="background:#E8A020"></div>
+        <div><div class="s4-sem-name">Warning</div><div class="s4-sem-hex">#E8A020</div></div>
+      </div>
+      <div class="s4-sem">
+        <div class="s4-dot" style="background:#F43F5E"></div>
+        <div><div class="s4-sem-name">Error</div><div class="s4-sem-hex">#F43F5E</div></div>
+      </div>
+      <div class="s4-sem">
+        <div class="s4-dot" style="background:#38BDF8"></div>
+        <div><div class="s4-sem-name">Info</div><div class="s4-sem-hex">#38BDF8</div></div>
+      </div>
+    </div>
+
+    <div class="s4-surfaces">
+      <div class="s4-surf">
+        <div class="s4-surf-swatch" style="background:#14121E"></div>
+        <div><div class="s4-surf-name">Surface</div><div class="s4-surf-hex">#14121E</div></div>
+      </div>
+      <div class="s4-surf">
+        <div class="s4-surf-swatch" style="background:#28263A"></div>
+        <div><div class="s4-surf-name">Elevated</div><div class="s4-surf-hex">#28263A</div></div>
+      </div>
+      <div class="s4-surf">
+        <div class="s4-surf-swatch" style="background:#2E2B42"></div>
+        <div><div class="s4-surf-name">Border</div><div class="s4-surf-hex">#2E2B42</div></div>
+      </div>
+      <div class="s4-surf">
+        <div class="s4-surf-swatch" style="background:linear-gradient(135deg,#0E0C1C,#1E1428)"></div>
+        <div><div class="s4-surf-name">Gradient</div><div class="s4-surf-hex">135° · 2 stops</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">04 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 5 — TYPOGRAPHY
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">04 — Typography</div>
+    <div class="slide-title">Типографическая <span class="gold">система</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s5-fonts">
+      <div class="s5-font-card">
+        <div class="s5-font-name">DM Sans — Display &amp; Heading</div>
+        <div class="s5-font-sample">Aa Bb Cc</div>
+        <div class="s5-font-desc">Геометрический гротеск с бо́льшим x-height. Оптимален для крупных кеглей на тёмном фоне. Google Fonts.</div>
+        <div class="s5-weights">
+          <span class="s5-w">Regular 400</span>
+          <span class="s5-w">Medium 500</span>
+          <span class="s5-w">SemiBold 600</span>
+          <span class="s5-w">Bold 700</span>
+        </div>
+      </div>
+      <div class="s5-font-card">
+        <div class="s5-font-name">DM Mono — Labels &amp; Code</div>
+        <div class="s5-font-sample mono">KBP → JFK</div>
+        <div class="s5-font-desc">Для кодов аэропортов, номеров рейсов, цен, технических меток. Overline-секции.</div>
+        <div class="s5-weights">
+          <span class="s5-w">Regular 400</span>
+          <span class="s5-w">Medium 500</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="s5-scale">
+      <div class="s5-row">
+        <div class="s5-row-label">Display</div>
+        <div class="s5-row-sample" style="font-size:28px;font-weight:700;letter-spacing:-0.04em">$500</div>
+        <div class="s5-row-meta">48px · 700 · -0.04em</div>
+      </div>
+      <div class="s5-row">
+        <div class="s5-row-label">H1</div>
+        <div class="s5-row-sample" style="font-size:22px;font-weight:700;letter-spacing:-0.03em">Барселона</div>
+        <div class="s5-row-meta">34px · 700 · -0.03em</div>
+      </div>
+      <div class="s5-row">
+        <div class="s5-row-label">H2</div>
+        <div class="s5-row-sample" style="font-size:17px;font-weight:600;letter-spacing:-0.02em">Vueling ·14:20</div>
+        <div class="s5-row-meta">26px · 600 · -0.02em</div>
+      </div>
+      <div class="s5-row">
+        <div class="s5-row-label">Body</div>
+        <div class="s5-row-sample" style="font-size:12px;font-weight:400;line-height:1.55">Рейс найден за 3 секунды.</div>
+        <div class="s5-row-meta">16px · 400 · SF/Roboto</div>
+      </div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">05 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 6 — TONE OF VOICE
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">05 — Tone of Voice</div>
+    <div class="slide-title">Голос <span class="gold">бренда</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s6-pills">
+      <span class="s6-pill">Уверенный</span>
+      <span class="s6-pill">Конкретный</span>
+      <span class="s6-pill">Дружелюбный</span>
+      <span class="s6-pill">Лаконичный</span>
+      <span class="s6-pill">Проактивный</span>
+    </div>
+
+    <div class="s6-table">
+      <!-- header row -->
+      <div style="display:grid;grid-template-columns:100px 1fr 1fr;padding:0 10px 8px 10px">
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#4E4E68;font-family:'DM Mono',monospace">Качество</div>
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#4E4E68;font-family:'DM Mono',monospace">Правильно ✓</div>
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#4E4E68;font-family:'DM Mono',monospace">Неправильно ✕</div>
+      </div>
+      <!-- rows -->
+      <div class="s6-row">
+        <div class="s6-cell-title">Уверенный</div>
+        <div class="s6-cell-ok">Нашёл 3 рейса Москва — Барселона. Лучший: Vueling, 14:20, €189.</div>
+        <div class="s6-cell-no">Возможно, вам подойдут следующие варианты перелётов...</div>
+      </div>
+      <div class="s6-row">
+        <div class="s6-cell-title">Конкретный</div>
+        <div class="s6-cell-ok">Отель забронирован. Чек-ин 3 июня, 14:00. Номер оплачен.</div>
+        <div class="s6-cell-no">Ваша заявка успешно обработана системой.</div>
+      </div>
+      <div class="s6-row">
+        <div class="s6-cell-title">Дружелюбный</div>
+        <div class="s6-cell-ok">Рейс задерживается на 40 мин. Успеете поужинать в аэропорту.</div>
+        <div class="s6-cell-no">Внимание. Статус рейса изменён. Задержка: 40 минут.</div>
+      </div>
+      <div class="s6-row">
+        <div class="s6-cell-title">Лаконичный</div>
+        <div class="s6-cell-ok">Без багажа дешевле на ₽4 200. Добавить?</div>
+        <div class="s6-cell-no">Обращаем ваше внимание, что данный тариф предусматривает только ручную кладь...</div>
+      </div>
+      <div class="s6-row">
+        <div class="s6-cell-title">Проактивный</div>
+        <div class="s6-cell-ok">Через неделю в Лиссабоне дождь. Взять зонт?</div>
+        <div class="s6-cell-no">— (молчать и ждать вопроса)</div>
+      </div>
+    </div>
+
+    <div class="s6-avoid">
+      <div class="s6-avoid-title">Избегаем</div>
+      <div class="s6-avoid-body">Корпоративных канцеляризмов · Восклицательных знаков в ошибках · Уменьшительных слов («билетик», «отельчик») · Неуместной игривости в критичных ситуациях</div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">06 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 7 — UI KIT
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">06 — UI Components</div>
+    <div class="slide-title">UI Kit — <span class="gold">компоненты</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s7-cols">
+      <!-- Buttons -->
+      <div class="s7-section">
+        <div class="s7-section-title">Кнопки</div>
+        <div class="btn-primary">Найти рейсы</div>
+        <div class="btn-secondary">Сохранить</div>
+        <div class="btn-ghost">Пропустить</div>
+        <div class="btn-dest">Отменить бронь</div>
+      </div>
+
+      <!-- Chips + Badges -->
+      <div class="s7-section">
+        <div class="s7-section-title">Чипы и статусы</div>
+        <div class="chips-row">
+          <span class="chip-active">Рейсы</span>
+          <span class="chip-inactive">Отели</span>
+          <span class="chip-inactive">Пакеты</span>
+        </div>
+        <div class="chips-row" style="margin-top:4px">
+          <span class="chip-info">Прямой</span>
+          <span class="chip-info">Бесплатная отмена</span>
+          <span class="chip-info">WiFi</span>
+        </div>
+        <div class="chips-row" style="margin-top:6px">
+          <span class="badge-confirmed">Confirmed</span>
+          <span class="badge-pending">Pending</span>
+          <span class="badge-cancelled">Cancelled</span>
+        </div>
+      </div>
+
+      <!-- Input fields -->
+      <div class="s7-section">
+        <div class="s7-section-title">Поля ввода</div>
+        <div class="s7-input">Куда хотите полететь?</div>
+        <div class="s7-input-focus">Барселона ✦</div>
+        <div style="font-size:9.5px;color:#F43F5E;margin-top:2px;display:flex;gap:5px;align-items:center">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#F43F5E" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#F43F5E" stroke-width="2" stroke-linecap="round"/></svg>
+          Выберите аэропорт из списка
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="s7-section">
+        <div class="s7-section-title">Карточка рейса</div>
+        <div style="background:#1E1C2C;border:1px solid #2E2B42;border-radius:10px;padding:10px 12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div style="font-size:10px;color:#8888A8">Vueling · UX1420</div>
+            <span class="badge-confirmed">CONFIRMED</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:16px;font-weight:700;color:#EEEEF4;line-height:1">14:20</div>
+              <div style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace">KBP</div>
+            </div>
+            <div style="text-align:center">
+              <svg width="18" height="12" viewBox="0 0 24 16" fill="none"><path d="M2 8h20M16 4l6 4-6 4" stroke="#E8A020" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div style="font-size:8.5px;color:#4E4E68">2ч 45м</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:16px;font-weight:700;color:#EEEEF4;line-height:1">17:05</div>
+              <div style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace">BCN</div>
+            </div>
+          </div>
+          <div style="border-top:1px solid #2E2B42;margin-top:8px;padding-top:7px;display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:9px;color:#8888A8">Эконом · С багажом</div>
+            <div style="font-size:14px;font-weight:700;color:#E8A020;font-family:'DM Mono',monospace">€189</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">07 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 8 — CHAT SCREEN MOCKUP
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">07 — Screen · Chat</div>
+    <div class="slide-title">Экран <span class="gold">чат-ассистента</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s8-cols">
+      <!-- Phone mockup -->
+      <div class="s8-phone">
+        <div class="s8-phone-header">
+          <div style="display:flex;align-items:center;gap:5px">
+            <svg width="14" height="14" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="2" fill="none" opacity="0.5"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020"/><circle cx="32" cy="32" r="2.5" fill="#E8A020"/></svg>
+            <span class="s8-phone-title">SVIT</span>
+          </div>
+          <div class="s8-phone-dot"></div>
+        </div>
+        <div class="s8-messages">
+          <div class="s8-msg-user">Хочу в Барселону на майские</div>
+          <div class="s8-msg-ai">Нашёл 3 рейса на 1–4 мая. Лучший вариант:</div>
+          <div class="s8-card">
+            <div class="s8-card-route">KBP → BCN</div>
+            <div class="s8-card-meta">Vueling · 14:20 · 2ч 45м · Прямой</div>
+            <div class="s8-card-price">€189</div>
+            <div class="s8-card-btn">Забронировать</div>
+          </div>
+          <div class="s8-msg-ai">Также нашёл 2 отеля рядом с Готическим кварталом. Показать?</div>
+        </div>
+        <div class="s8-input-bar">
+          <span class="s8-input-text">Написать...</span>
+          <div class="s8-send">▶</div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="s8-desc">
+        <div style="flex-shrink:0">
+          <div class="s8-desc-title">AI понимает контекст</div>
+          <div class="s8-desc-body" style="margin-bottom:12px">Пользователь пишет один запрос — SVIT сразу показывает варианты рейсов с ценами. Никаких форм поиска, никаких фильтров.</div>
+          <div class="s8-features">
+            <div class="s8-feat"><div class="s8-feat-dot"></div><div class="s8-feat-text">Реальные цены из GDS в реальном времени</div></div>
+            <div class="s8-feat"><div class="s8-feat-dot"></div><div class="s8-feat-text">Бронирование прямо из сообщения — оплата в один тап</div></div>
+            <div class="s8-feat"><div class="s8-feat-dot"></div><div class="s8-feat-text">AI запоминает предпочтения: класс, багаж, аэропорт</div></div>
+            <div class="s8-feat"><div class="s8-feat-dot"></div><div class="s8-feat-text">Проактивные уведомления: задержки, изменения цен</div></div>
+            <div class="s8-feat"><div class="s8-feat-dot" style="background:#7C5CFC"></div><div class="s8-feat-text">Powered by Claude AI — Anthropic's flagship model</div></div>
+          </div>
+        </div>
+        <div style="flex:1;background:linear-gradient(135deg,rgba(124,92,252,0.12),rgba(232,160,32,0.08));border:1px solid rgba(124,92,252,0.3);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:8.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#7C5CFC">Как это работает</div>
+          <div style="width:24px;height:1px;background:rgba(124,92,252,0.4)"></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="background:#E8A020;border-radius:6px 6px 1px 6px;padding:5px 8px;font-size:9px;color:#0E0C1C;font-weight:500;flex-shrink:0">«Хочу в Барселону на майские»</div>
+              <div style="font-size:9px;color:#4E4E68">→ 1 запрос</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding-left:4px">
+              <div style="width:1px;height:20px;background:rgba(124,92,252,0.4);margin-left:14px;flex-shrink:0"></div>
+              <div style="font-size:9px;color:#8888A8">AI анализирует контекст, даты, бюджет из истории диалога</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="background:#28263A;border-radius:6px 6px 6px 1px;padding:5px 8px;font-size:9px;color:#E8A020;font-weight:600;flex-shrink:0;border:1px solid rgba(124,92,252,0.3)">3 рейса · отель · маршрут</div>
+              <div style="font-size:9px;color:#4E4E68">← готово за 2 сек</div>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;align-items:flex-end">
+            <div style="font-size:10px;color:#4E4E68;font-style:italic;line-height:1.5">Один естественный запрос заменяет 15–20 кликов в обычных агрегаторах. SVIT не требует заполнения форм или выбора фильтров.</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0">
+          <div style="background:#14121E;border:1px solid #2E2B42;border-radius:10px;padding:11px 14px">
+            <div style="font-size:9px;font-weight:600;color:#7C5CFC;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:7px">Дизайн чата</div>
+            <div style="font-size:10.5px;color:#8888A8;line-height:1.5">Пользователь → <span style="color:#E8A020">Gold</span>, r:10/2px<br>AI → <span style="color:#7C5CFC">#28263A</span>, r:2/10px<br>Карточки inline в потоке</div>
+          </div>
+          <div style="background:#14121E;border:1px solid #2E2B42;border-radius:10px;padding:11px 14px">
+            <div style="font-size:9px;font-weight:600;color:#E8A020;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:7px">AI-индикатор</div>
+            <div style="font-size:10.5px;color:#8888A8;line-height:1.5">Фиолетовая пульсирующая точка во время генерации ответа.<br>Цвет: <span style="color:#7C5CFC">#7C5CFC</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">08 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 9 — WALLET SCREEN
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">08 — Screen · Wallet</div>
+    <div class="slide-title">Экран <span class="gold">кошелька</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s9-cols">
+      <!-- Phone mockup -->
+      <div class="s9-phone">
+        <div style="font-size:8.5px;font-weight:700;color:#EEEEF4;letter-spacing:0.05em;margin-bottom:2px;flex-shrink:0">Кошелёк</div>
+        <div class="s9-balance-card">
+          <div class="s9-bal-label">Баланс</div>
+          <div class="s9-bal-amount">$500.00</div>
+          <div class="s9-bal-sub">SVIT Travel Wallet</div>
+          <div class="s9-pay-methods">
+            <div class="s9-pay"> Apple Pay</div>
+            <div class="s9-pay">VISA •• 4242</div>
+          </div>
+        </div>
+        <div class="s9-txs">
+          <div class="s9-tx-label">Транзакции</div>
+          <div class="s9-tx">
+            <span class="s9-tx-icon">✈️</span>
+            <div class="s9-tx-info">
+              <div class="s9-tx-name">Vueling UX1420</div>
+              <div class="s9-tx-date">12 мая 2026</div>
+            </div>
+            <span class="s9-tx-amount minus">−€189</span>
+          </div>
+          <div class="s9-tx">
+            <span class="s9-tx-icon">🏨</span>
+            <div class="s9-tx-info">
+              <div class="s9-tx-name">Hotel Arts Barcelona</div>
+              <div class="s9-tx-date">12 мая 2026</div>
+            </div>
+            <span class="s9-tx-amount minus">−€320</span>
+          </div>
+          <div class="s9-tx">
+            <span class="s9-tx-icon">💳</span>
+            <div class="s9-tx-info">
+              <div class="s9-tx-name">Пополнение</div>
+              <div class="s9-tx-date">10 мая 2026</div>
+            </div>
+            <span class="s9-tx-amount plus">+$500</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="s9-desc">
+        <div style="flex-shrink:0">
+          <div style="font-size:15px;font-weight:600;color:#EEEEF4;margin-bottom:4px">Встроенный кошелёк для путешествий</div>
+          <div style="font-size:11px;color:#8888A8;line-height:1.6;margin-bottom:12px">Пополнение через Apple Pay и банковскую карту. Оплата рейсов и отелей одним касанием прямо из чата.</div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div class="s8-feat"><div class="s8-feat-dot"></div><div class="s8-feat-text">Баланс в USD/EUR с автоконвертацией по курсу ЦБ</div></div>
+            <div class="s8-feat"><div class="s8-feat-dot"></div><div class="s8-feat-text">История всех travel-транзакций в одном месте</div></div>
+            <div class="s8-feat"><div class="s8-feat-dot"></div><div class="s8-feat-text">Apple Pay / Google Pay / VISA / Mastercard</div></div>
+            <div class="s8-feat"><div class="s8-feat-dot"></div><div class="s8-feat-text">Автовозврат при отмене брони — до 7 рабочих дней</div></div>
+            <div class="s8-feat"><div class="s8-feat-dot" style="background:#7C5CFC"></div><div class="s8-feat-text">Мгновенная оплата из баланса кошелька в один тап</div></div>
+          </div>
+        </div>
+        <div style="flex:1;background:linear-gradient(135deg,rgba(232,160,32,0.12),rgba(124,92,252,0.10));border:1px solid rgba(232,160,32,0.3);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:8.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#E8A020">Безопасность платежей</div>
+          <div style="width:24px;height:1px;background:rgba(232,160,32,0.4)"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 8px">
+            <div style="display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 5 4 9 8 9s8-4 8-9V7L12 3z" stroke="#10B981" stroke-width="1.5" fill="none"/></svg><span style="font-size:9.5px;color:#8888A8">PCI DSS Level 1</span></div>
+            <div style="display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#7C5CFC" stroke-width="1.5" fill="none"/><path d="M8 11V7a4 4 0 1 1 8 0v4" stroke="#7C5CFC" stroke-width="1.5"/></svg><span style="font-size:9.5px;color:#8888A8">3DS 2.0</span></div>
+            <div style="display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#E8A020" stroke-width="1.5" fill="none"/><path d="M9 12l2 2 4-4" stroke="#E8A020" stroke-width="1.5"/></svg><span style="font-size:9.5px;color:#8888A8">Instant refunds</span></div>
+            <div style="display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#EEEEF4" stroke-width="1.5" opacity="0.4"/></svg><span style="font-size:9.5px;color:#8888A8">E2E шифрование</span></div>
+          </div>
+          <div style="flex:1;display:flex;align-items:flex-end">
+            <div style="font-size:10px;color:#4E4E68;font-style:italic;line-height:1.5">Все транзакции защищены по стандартам банковской индустрии. Средства клиентов хранятся в лицензированных платёжных партнёрах.</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0">
+          <div style="background:#14121E;border:1px solid #2E2B42;border-radius:10px;padding:11px 14px">
+            <div style="font-size:9px;font-weight:600;color:#7C5CFC;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:7px">Цвет транзакций</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="display:flex;gap:8px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#10B981;flex-shrink:0"></span><span style="font-size:10px;color:#8888A8">Пополнение — <span style="color:#10B981">Success</span></span></div>
+              <div style="display:flex;gap:8px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#EEEEF4;flex-shrink:0"></span><span style="font-size:10px;color:#8888A8">Расходы — <span style="color:#EEEEF4">Text</span></span></div>
+              <div style="display:flex;gap:8px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#E8A020;flex-shrink:0"></span><span style="font-size:10px;color:#8888A8">Баланс — <span style="color:#E8A020">SVIT Gold</span></span></div>
+            </div>
+          </div>
+          <div style="background:#14121E;border:1px solid rgba(232,160,32,0.2);border-radius:10px;padding:11px 14px">
+            <div style="font-size:9px;font-weight:600;color:#E8A020;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:7px">Баланс-карта</div>
+            <div style="font-size:10.5px;color:#8888A8;line-height:1.5">Градиент <span style="color:#EEEEF4">#1E1428→#14121E</span><br>Рамка: <span style="color:#E8A020">Gold 20% opacity</span><br>Сумма: DM Mono Bold 22px</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">09 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 10 — ICONOGRAPHY
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">09 — Iconography</div>
+    <div class="slide-title">Иконография и <span class="gold">стиль</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s10-grid">
+      <div class="s10-card"><div class="s10-icon">✈️</div><div class="s10-name">Самолёт</div><div class="s10-use">Рейсы, бронирование перелётов</div></div>
+      <div class="s10-card"><div class="s10-icon">🌍</div><div class="s10-name">Мир</div><div class="s10-use">Направления, карта, маршруты</div></div>
+      <div class="s10-card"><div class="s10-icon">🏨</div><div class="s10-name">Отель</div><div class="s10-use">Размещение, бронирование жилья</div></div>
+      <div class="s10-card"><div class="s10-icon">💳</div><div class="s10-name">Карта</div><div class="s10-use">Оплата, кошелёк, транзакции</div></div>
+      <div class="s10-card"><div class="s10-icon">⭐</div><div class="s10-name">Рейтинг</div><div class="s10-use">Оценки отелей, избранное</div></div>
+      <div class="s10-card"><div class="s10-icon">🧳</div><div class="s10-name">Багаж</div><div class="s10-use">Опции тарифа, чек-лист</div></div>
+    </div>
+
+    <div class="s10-principles">
+      <div class="s10-rule"><div class="s10-rule-num">1</div><div class="s10-rule-text">Один стиль в одном контексте — не смешивать outline и filled</div></div>
+      <div class="s10-rule"><div class="s10-rule-num">2</div><div class="s10-rule-text">Цвет иконки = цвет контекста. Активный таб → primary #E8A020</div></div>
+      <div class="s10-rule"><div class="s10-rule-num">3</div><div class="s10-rule-text">Иконка без подписи — только в навигации. Везде ещё — иконка + текст</div></div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">10 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 11 — APP STORE
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">10 — App Store Presence</div>
+    <div class="slide-title">App Store / <span class="gold">Google Play</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s11-main">
+      <div class="s11-icon-col">
+        <div class="s11-app-icon">
+          <svg width="56" height="56" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="30" stroke="rgba(255,255,255,0.88)" stroke-width="2" fill="none"/>
+            <circle cx="32" cy="32" r="22" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+            <line x1="32" y1="4" x2="32" y2="60" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/>
+            <line x1="4" y1="32" x2="60" y2="32" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/>
+            <path d="M32 10 L35 32 L32 30 L29 32 Z" fill="#E8A020"/>
+            <path d="M32 54 L35 32 L32 34 L29 32 Z" fill="#7C5CFC" opacity="0.6"/>
+            <circle cx="32" cy="32" r="3" fill="#E8A020"/>
+            <text x="32" y="37" text-anchor="middle" font-family="DM Sans, sans-serif" font-weight="700" font-size="10" fill="#0E0C1C">S</text>
+          </svg>
+        </div>
+        <div class="s11-icon-label">App Icon<br>1024×1024px</div>
+
+        <div style="margin-top:6px;background:#14121E;border:1px solid #2E2B42;border-radius:9px;padding:9px 11px">
+          <div style="font-size:9px;font-weight:600;color:#7C5CFC;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Радиус</div>
+          <div style="font-size:9.5px;color:#8888A8">iOS: маска платформы<br>Android: 22% от размера</div>
+        </div>
+      </div>
+
+      <div class="s11-screenshots">
+        <div class="s11-screen">
+          <div class="s11-screen-header">Просто напишите, куда хотите</div>
+          <div class="s11-screen-body" style="display:flex;flex-direction:column;gap:5px">
+            <div style="background:#28263A;border-radius:7px 7px 1px 7px;padding:5px 7px;font-size:8px;color:#E8A020;align-self:flex-end;max-width:90%">Хочу в Барселону на майские</div>
+            <div style="background:#1E1C2C;border-radius:7px 7px 7px 1px;padding:5px 7px;font-size:8px;color:#EEEEF4;line-height:1.4;max-width:95%">Нашёл 3 рейса KBP → BCN на 1–4 мая. Лучший: €189</div>
+            <div style="background:#28263A;border-radius:7px 7px 1px 7px;padding:5px 7px;font-size:8px;color:#E8A020;align-self:flex-end;max-width:85%;margin-top:2px">Хочу 2-звёздочный отель рядом с морем</div>
+            <div style="background:#1E1C2C;border-radius:7px 7px 7px 1px;padding:5px 7px;font-size:8px;color:#EEEEF4;line-height:1.4;max-width:95%">Нашёл 4 отеля. Ближайший к пляжу: €92/ночь</div>
+            <div style="background:#28263A;border-radius:7px 7px 1px 7px;padding:5px 7px;font-size:8px;color:#E8A020;align-self:flex-end;max-width:70%;margin-top:2px">Бронируй первый</div>
+          </div>
+          <div class="s11-screen-tag">Скриншот 1</div>
+        </div>
+        <div class="s11-screen">
+          <div class="s11-screen-header">Билеты найдены за секунды</div>
+          <div class="s11-screen-body" style="display:flex;flex-direction:column;gap:5px">
+            <div style="background:#1E1C2C;border:1px solid #2E2B42;border-radius:7px;padding:6px 8px">
+              <div style="font-size:9px;font-weight:700;color:#EEEEF4">KBP → BCN</div>
+              <div style="font-size:8px;color:#8888A8;margin:2px 0">Vueling · 14:20 · Прямой</div>
+              <div style="font-size:13px;font-weight:700;color:#E8A020;font-family:'DM Mono',monospace">€189</div>
+              <div style="background:#E8A020;border-radius:5px;padding:3px;text-align:center;font-size:8px;font-weight:600;color:#0E0C1C;margin-top:4px">Забронировать</div>
+            </div>
+            <div style="background:#1E1C2C;border:1px solid #2E2B42;border-radius:7px;padding:6px 8px;opacity:0.65">
+              <div style="font-size:9px;font-weight:700;color:#EEEEF4">KBP → BCN</div>
+              <div style="font-size:8px;color:#8888A8;margin:2px 0">Ryanair · 06:40 · Прямой</div>
+              <div style="font-size:13px;font-weight:700;color:#E8A020;font-family:'DM Mono',monospace">€145</div>
+              <div style="border:1px solid rgba(232,160,32,0.4);border-radius:5px;padding:3px;text-align:center;font-size:8px;color:#E8A020;margin-top:4px">Выбрать</div>
+            </div>
+            <div style="background:#1E1C2C;border:1px solid #2E2B42;border-radius:7px;padding:6px 8px;opacity:0.45">
+              <div style="font-size:9px;font-weight:700;color:#EEEEF4">KBP → BCN</div>
+              <div style="font-size:8px;color:#8888A8;margin:2px 0">Wizz Air · 11:15 · Прямой</div>
+              <div style="font-size:13px;font-weight:700;color:#E8A020;font-family:'DM Mono',monospace">€212</div>
+            </div>
+          </div>
+          <div class="s11-screen-tag">Скриншот 2</div>
+        </div>
+        <div class="s11-screen">
+          <div class="s11-screen-header">Все брони в одном месте</div>
+          <div class="s11-screen-body" style="display:flex;flex-direction:column;gap:5px">
+            <div style="background:#1E1C2C;border-radius:7px;padding:5px 7px;display:flex;align-items:center;gap:5px">
+              <span style="font-size:11px">✈️</span>
+              <div style="flex:1"><div style="font-size:8px;font-weight:600;color:#EEEEF4">KBP → BCN</div><div style="font-size:7.5px;color:#8888A8">1–4 мая · Vueling</div></div>
+              <span class="badge-confirmed" style="font-size:7px;padding:2px 5px">OK</span>
+            </div>
+            <div style="background:#1E1C2C;border-radius:7px;padding:5px 7px;display:flex;align-items:center;gap:5px">
+              <span style="font-size:11px">🏨</span>
+              <div style="flex:1"><div style="font-size:8px;font-weight:600;color:#EEEEF4">Hotel Arts Barcelona</div><div style="font-size:7.5px;color:#8888A8">2–4 мая · €320</div></div>
+              <span class="badge-confirmed" style="font-size:7px;padding:2px 5px">OK</span>
+            </div>
+            <div style="background:#1E1C2C;border-radius:7px;padding:5px 7px;display:flex;align-items:center;gap:5px">
+              <span style="font-size:11px">🚕</span>
+              <div style="flex:1"><div style="font-size:8px;font-weight:600;color:#EEEEF4">Такси BCN → Отель</div><div style="font-size:7.5px;color:#8888A8">1 мая · 15:30</div></div>
+              <span style="font-size:7px;padding:2px 5px;background:rgba(232,160,32,0.15);color:#E8A020;border-radius:4px;font-family:'DM Mono',monospace;border:1px solid rgba(232,160,32,0.3)">—</span>
+            </div>
+            <div style="background:#1E1C2C;border-radius:7px;padding:5px 7px;display:flex;align-items:center;gap:5px;opacity:0.5">
+              <span style="font-size:11px">✈️</span>
+              <div style="flex:1"><div style="font-size:8px;font-weight:600;color:#EEEEF4">BCN → KBP</div><div style="font-size:7.5px;color:#8888A8">4 мая · возврат</div></div>
+              <span class="badge-confirmed" style="font-size:7px;padding:2px 5px">OK</span>
+            </div>
+          </div>
+          <div class="s11-screen-tag">Скриншот 5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">11 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 12 — SPLASH SCREEN
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">11 — Splash Screen</div>
+    <div class="slide-title">Загрузочный <span class="gold">экран</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s12-main">
+      <div class="s12-phone-wrap">
+        <div class="s12-phone">
+          <div class="s12-phone-glow"></div>
+          <svg width="40" height="40" viewBox="0 0 64 64" fill="none" style="position:relative;z-index:2">
+            <circle cx="32" cy="32" r="30" stroke="rgba(255,255,255,0.9)" stroke-width="2" fill="none"/>
+            <circle cx="32" cy="32" r="22" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+            <path d="M32 10 L35 32 L32 30 L29 32 Z" fill="#E8A020"/>
+            <path d="M32 54 L35 32 L32 34 L29 32 Z" fill="#7C5CFC" opacity="0.6"/>
+            <circle cx="32" cy="32" r="3" fill="#E8A020"/>
+            <text x="32" y="37" text-anchor="middle" font-family="DM Sans, sans-serif" font-weight="700" font-size="10" fill="#0E0C1C">S</text>
+          </svg>
+          <div class="s12-phone-wordmark" style="position:relative;z-index:2">SVIT</div>
+          <div class="s12-phone-slogan" style="position:relative;z-index:2">Твой мир.<br>Твой маршрут.</div>
+          <div class="s12-phone-powered">Powered by Claude AI</div>
+        </div>
+        <div style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;text-align:center">Splash Screen</div>
+      </div>
+
+      <div class="s12-desc">
+        <div style="flex-shrink:0">
+          <div style="font-size:15px;font-weight:600;color:#EEEEF4;margin-bottom:4px">Первое впечатление</div>
+          <div style="font-size:11px;color:#8888A8;line-height:1.6">1.5–2 секунды пока грузится auth state. Анимация: fade-in 300ms + scale 0.9→1.0 с задержкой 100ms. Fade-out 200ms при переходе.</div>
+        </div>
+
+        <div class="s12-spec">
+          <div class="s12-spec-title">Технические параметры</div>
+          <div class="s12-spec-row"><span class="s12-spec-key">Фон</span><span class="s12-spec-val">gradient 135° #0E0C1C → #1E1428</span></div>
+          <div class="s12-spec-row"><span class="s12-spec-key">Логотип</span><span class="s12-spec-val">Dark version, высота 72px</span></div>
+          <div class="s12-spec-row"><span class="s12-spec-key">Wordmark</span><span class="s12-spec-val">DM Sans Bold 24px · ls 2px</span></div>
+          <div class="s12-spec-row"><span class="s12-spec-key">Слоган</span><span class="s12-spec-val">System Regular 14px · #8888A8</span></div>
+          <div class="s12-spec-row"><span class="s12-spec-key">Footer</span><span class="s12-spec-val">Powered by Claude AI · 24px bottom</span></div>
+        </div>
+
+        <div style="background:#14121E;border:1px solid #2E2B42;border-radius:10px;padding:11px 14px;flex-shrink:0">
+          <div style="font-size:9px;font-weight:600;color:#7C5CFC;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:7px">Анимация</div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <div style="font-size:10.5px;color:#8888A8">Появление: <span style="color:#EEEEF4">fade-in 300ms + scale 0.9→1.0</span></div>
+            <div style="font-size:10.5px;color:#8888A8">Задержка старта: <span style="color:#EEEEF4">100ms после mount</span></div>
+            <div style="font-size:10.5px;color:#8888A8">Исчезновение: <span style="color:#EEEEF4">fade-out 200ms</span></div>
+          </div>
+        </div>
+
+        <div style="flex:1;background:linear-gradient(135deg,rgba(124,92,252,0.07),rgba(14,12,28,0));border:1px solid rgba(124,92,252,0.2);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:9px;font-weight:600;color:#7C5CFC;letter-spacing:0.1em;text-transform:uppercase">Easing и тайминг</div>
+          <div style="width:20px;height:1px;background:rgba(124,92,252,0.4)"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px">
+            <div><div style="font-size:8.5px;color:#4E4E68;margin-bottom:2px">Вход</div><div style="font-size:10px;color:#EEEEF4;font-family:'DM Mono',monospace">ease-out cubic</div></div>
+            <div><div style="font-size:8.5px;color:#4E4E68;margin-bottom:2px">Выход</div><div style="font-size:10px;color:#EEEEF4;font-family:'DM Mono',monospace">ease-in cubic</div></div>
+            <div><div style="font-size:8.5px;color:#4E4E68;margin-bottom:2px">Длительность</div><div style="font-size:10px;color:#E8A020;font-family:'DM Mono',monospace">300ms total</div></div>
+            <div><div style="font-size:8.5px;color:#4E4E68;margin-bottom:2px">Trigger</div><div style="font-size:10px;color:#EEEEF4;font-family:'DM Mono',monospace">onMount</div></div>
+          </div>
+          <div style="flex:1;display:flex;align-items:flex-end">
+            <div style="font-size:9.5px;color:#4E4E68;line-height:1.6">Splash скрывается через navigation.replace(), не pop. Это предотвращает возврат к загрузочному экрану при свайпе назад.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">12 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 13 — RULES & RESTRICTIONS
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="inner">
+    <div class="overline">12 — Brand Rules</div>
+    <div class="slide-title">Правила и <span class="gold">ограничения</span></div>
+    <div class="accent-bar"></div>
+
+    <div class="s13-cols">
+      <div class="s13-dont-section">
+        <div class="s13-section-title red">Запрещено</div>
+        <div class="s13-item"><span class="s13-item-icon">✕</span><span class="s13-item-text">Растягивать или сжимать логотип непропорционально</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✕</span><span class="s13-item-text">Поворачивать символ — кольцо всегда строго горизонтально</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✕</span><span class="s13-item-text">Добавлять тени, обводки, градиенты к символу</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✕</span><span class="s13-item-text">Менять шрифт wordmark или писать «Свит» кириллицей</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✕</span><span class="s13-item-text">Размещать на пёстром фоне без контрастной подложки</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✕</span><span class="s13-item-text">Использовать логотип меньше минимального размера</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✕</span><span class="s13-item-text">Хардкодить цвета — только токены дизайн-системы</span></div>
+      </div>
+
+      <div class="s13-do-section">
+        <div class="s13-section-title green">Разрешено</div>
+        <div class="s13-item"><span class="s13-item-icon">✓</span><span class="s13-item-text">Использовать Dark-версию на тёмных фонах (основная)</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✓</span><span class="s13-item-text">Использовать Light-версию на светлых маркетинговых фонах</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✓</span><span class="s13-item-text">Монохромная версия для вышивки, тиснения, watermark</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✓</span><span class="s13-item-text">S-игла SVIT Gold #E8A020 в Dark-версии</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✓</span><span class="s13-item-text">Анимировать появление логотипа на splash (scale + fade)</span></div>
+        <div class="s13-item"><span class="s13-item-icon">✓</span><span class="s13-item-text">Отдельный символ без wordmark при размере ≥16px</span></div>
+      </div>
+    </div>
+
+    <div class="s13-sizes">
+      <div class="s13-sizes-title">Минимальные размеры логотипа</div>
+      <div class="s13-size-row"><span class="s13-size-key">Полный lockup (символ + SVIT)</span><span class="s13-size-val">символ ≥ 20px по высоте</span></div>
+      <div class="s13-size-row"><span class="s13-size-key">Только символ</span><span class="s13-size-val">≥ 16px (ниже — детали нечитаемы)</span></div>
+      <div class="s13-size-row"><span class="s13-size-key">Header приложения</span><span class="s13-size-val">28px символ + wordmark</span></div>
+      <div class="s13-size-row"><span class="s13-size-key">Favicon / уведомление</span><span class="s13-size-val">32×32px monochrome</span></div>
+    </div>
+  </div>
+  <div class="fl"><svg width="16" height="16" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#E8A020" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M32 10 L34 32 L32 30.5 L30 32 Z" fill="#E8A020" opacity="0.4"/></svg><span class="fl-brand">SVIT</span></div>
+  <div class="pn">13 / 14</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 14 — FINAL
+══════════════════════════════════════════════════ -->
+<div class="slide s14" style="page-break-after:avoid;break-after:avoid">
+  <div class="s14-bg"></div>
+
+  <!-- subtle compass background -->
+  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.04;pointer-events:none" viewBox="0 0 842 595">
+    <circle cx="421" cy="297" r="260" stroke="#E8A020" stroke-width="1" fill="none"/>
+    <circle cx="421" cy="297" r="180" stroke="#7C5CFC" stroke-width="0.8" fill="none"/>
+    <circle cx="421" cy="297" r="100" stroke="#E8A020" stroke-width="0.6" fill="none"/>
+    <line x1="421" y1="0" x2="421" y2="595" stroke="#E8A020" stroke-width="0.8"/>
+    <line x1="0" y1="297" x2="842" y2="297" stroke="#E8A020" stroke-width="0.8"/>
+    <line x1="236" y1="112" x2="606" y2="482" stroke="#7C5CFC" stroke-width="0.5"/>
+    <line x1="606" y1="112" x2="236" y2="482" stroke="#7C5CFC" stroke-width="0.5"/>
+  </svg>
+
+  <div class="s14-content">
+    <svg width="80" height="80" viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" stroke="rgba(255,255,255,0.9)" stroke-width="2" fill="none"/>
+      <circle cx="32" cy="32" r="22" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+      <line x1="32" y1="4" x2="32" y2="60" stroke="rgba(255,255,255,0.15)" stroke-width="0.8"/>
+      <line x1="4" y1="32" x2="60" y2="32" stroke="rgba(255,255,255,0.15)" stroke-width="0.8"/>
+      <path d="M32 10 L35 32 L32 30 L29 32 Z" fill="#E8A020"/>
+      <path d="M32 54 L35 32 L32 34 L29 32 Z" fill="#7C5CFC" opacity="0.7"/>
+      <circle cx="32" cy="32" r="3" fill="#E8A020"/>
+      <text x="32" y="37" text-anchor="middle" font-family="DM Sans, sans-serif" font-weight="700" font-size="10" fill="#0E0C1C">S</text>
+    </svg>
+
+    <div class="s14-domain">svit.travel</div>
+    <div class="s14-slogan">Your world. Your route.</div>
+    <div class="s14-divider"></div>
+    <div class="s14-tagline">BRAND IDENTITY v1.0 · MAY 2026</div>
+    <div style="margin-top:18px;font-size:10px;color:#4E4E68;font-family:'DM Mono',monospace;letter-spacing:0.08em">
+      Документ является единственным источником правды по визуальному языку SVIT
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -47,8 +47,8 @@ function FeatureRow({ text, included }: Feature) {
   const { colors } = useTheme();
   return (
     <View style={featureStyles.row}>
-      <View style={[featureStyles.iconBox, included ? featureStyles.iconBoxYes : featureStyles.iconBoxNo]}>
-        <Text style={[featureStyles.iconText, included ? featureStyles.iconTextYes : { color: colors.textMuted }]}>
+      <View style={[featureStyles.iconBox, included ? { backgroundColor: `${colors.success}20` } : featureStyles.iconBoxNo]}>
+        <Text style={[featureStyles.iconText, included ? { color: colors.success } : { color: colors.textMuted }]}>
           {included ? '✓' : '✕'}
         </Text>
       </View>
@@ -74,7 +74,7 @@ const featureStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconBoxYes: {
-    backgroundColor: '#2ECC7120',
+    // color applied inline via colors.success
   },
   iconBoxNo: {
     backgroundColor: 'transparent',
@@ -85,7 +85,7 @@ const featureStyles = StyleSheet.create({
     lineHeight: 14,
   },
   iconTextYes: {
-    color: '#2ECC71',
+    // color applied inline via colors.success
   },
   text: {
     fontFamily: 'Inter',
@@ -161,11 +161,11 @@ function FreeCard({ isActive, onSelect }: { isActive: boolean; onSelect: () => v
           </View>
         ) : (
           <TouchableOpacity
-            style={cardStyles.selectBtnWhite}
+            style={[cardStyles.selectBtnWhite, { borderColor: colors.secondary }]}
             onPress={onSelect}
             activeOpacity={0.8}
           >
-            <Text style={cardStyles.selectBtnWhiteText}>Выбрать</Text>
+            <Text style={[cardStyles.selectBtnWhiteText, { color: colors.secondary }]}>Выбрать</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -194,7 +194,7 @@ function PremiumCard({
       <View style={[cardStyles.card, cardStyles.cardPremium, { borderColor: colors.primary, backgroundColor: colors.card }]}>
         {/* Recommended badge */}
         <View style={[cardStyles.recommendedBadge, { backgroundColor: colors.primary }]}>
-          <Text style={cardStyles.recommendedBadgeText}>РЕКОМЕНДУЕМ</Text>
+          <Text style={[cardStyles.recommendedBadgeText, { color: colors.textInverse }]}>РЕКОМЕНДУЕМ</Text>
         </View>
 
         {/* Plan header row */}
@@ -223,9 +223,9 @@ function PremiumCard({
           </View>
         ) : isActive && cancelled ? (
           // Cancelled but still active — show countdown
-          <View style={cardStyles.countdownPill}>
-            <Text style={cardStyles.countdownLabel}>Активен ещё</Text>
-            <Text style={cardStyles.countdownTimer}>{countdown}</Text>
+          <View style={[cardStyles.countdownPill, { backgroundColor: colors.warningLight, borderColor: `${colors.warning}60` }]}>
+            <Text style={[cardStyles.countdownLabel, { color: colors.warning }]}>Активен ещё</Text>
+            <Text style={[cardStyles.countdownTimer, { color: colors.warning }]}>{countdown}</Text>
           </View>
         ) : (
           <TouchableOpacity
@@ -233,7 +233,7 @@ function PremiumCard({
             onPress={onSelect}
             activeOpacity={0.8}
           >
-            <Text style={cardStyles.selectBtnAmberText}>Выбрать</Text>
+            <Text style={[cardStyles.selectBtnAmberText, { color: colors.textInverse }]}>Выбрать</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -304,7 +304,6 @@ const cardStyles = StyleSheet.create({
     marginBottom: 12,
   },
   recommendedBadgeText: {
-    color: '#fff',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.bold,
@@ -323,16 +322,16 @@ const cardStyles = StyleSheet.create({
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
-  // FREE plan — "Выбрать" white button
+  // FREE plan — "Выбрать" secondary outline button
   selectBtnWhite: {
     marginTop: 14,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
     borderRadius: Radius.button,
     paddingVertical: 12,
     alignItems: 'center',
   },
   selectBtnWhiteText: {
-    color: '#000000',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
@@ -358,25 +357,21 @@ const cardStyles = StyleSheet.create({
     alignItems: 'center',
   },
   selectBtnAmberText: {
-    color: '#fff',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.base,
     fontWeight: Typography.weights.bold,
   },
-  // PREMIUM — countdown pill after cancellation
+  // PREMIUM — countdown pill after cancellation (colors applied inline via colors.warning/warningLight)
   countdownPill: {
     marginTop: 14,
-    backgroundColor: '#FF6B3520',
     borderRadius: Radius.button,
     paddingVertical: 10,
     paddingHorizontal: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#FF6B3560',
     gap: 2,
   },
   countdownLabel: {
-    color: '#FF9060',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.semibold,
@@ -384,7 +379,6 @@ const cardStyles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   countdownTimer: {
-    color: '#FF6B35',
     fontFamily: 'Sora',
     fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.extrabold,
@@ -428,7 +422,7 @@ export default function SubscriptionPlansScreen() {
   }
 
   function handleSelectPremium() {
-    console.log('[Subscription] Premium purchase attempted');
+    if (__DEV__) console.log('[Subscription] Premium purchase attempted');
     Alert.alert(
       'Premium — в разработке',
       'Оплата подписки через App Store / Google Play будет доступна в следующем обновлении. Следите за обновлениями!',

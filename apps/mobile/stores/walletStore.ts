@@ -23,7 +23,7 @@ export const useWalletStore = create<WalletStore>((set) => ({
     try {
       const data = await walletService.getWallet();
       set({
-        balance: parseFloat(data.balance),
+        balance: data.balance,
         currency: data.currency === 'RUB' ? 'USD' : (data.currency || 'USD'),
         transactions: data.transactions ?? [],
       });
@@ -38,7 +38,7 @@ export const useWalletStore = create<WalletStore>((set) => ({
     // balance field may still reflect the old value — update only when
     // the payment is not pending.
     if (result.status !== 'pending') {
-      set({ balance: parseFloat(result.balance) });
+      set({ balance: result.balance });
     }
     return result;
   },

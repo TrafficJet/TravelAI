@@ -127,15 +127,15 @@ function Avatar({ name, size = 90 }: { name?: string; size?: number }) {
   // Placeholder (no name): elevated circle + person icon per SVIT Design System
   if (initials === '?') {
     return (
-      <View style={[avatarStyles.container, { width: size, height: size, borderRadius: size / 2, backgroundColor: '#28263A' }]}>
-        <IconPerson color="#8888A8" size={Math.round(size * 0.46)} />
+      <View style={[avatarStyles.container, { width: size, height: size, borderRadius: size / 2, backgroundColor: colors.elevated }]}>
+        <IconPerson color={colors.textMuted} size={Math.round(size * 0.46)} />
       </View>
     );
   }
 
   return (
     <LinearGradient
-      colors={['#E8A020', '#7C5CFC']}
+      colors={[colors.primary, colors.secondary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[avatarStyles.container, { width: size, height: size, borderRadius: size / 2 }]}
@@ -317,7 +317,7 @@ function EditProfileModal({
             activeOpacity={0.8}
           >
             {isSaving ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.textInverse} />
             ) : (
               <Text style={modalStyles.saveBtnText}>Сохранить</Text>
             )}
@@ -798,7 +798,7 @@ export default function ProfileScreen() {
       paddingHorizontal: 2,
     },
     quickLinkBadgeText: {
-      color: '#fff',
+      color: colors.textInverse,
       fontSize: 9,
       fontWeight: '700' as const,
       lineHeight: 10,
@@ -870,7 +870,7 @@ export default function ProfileScreen() {
       borderColor: colors.border,
     },
     cardPremium: {
-      backgroundColor: 'rgba(16,185,129,0.15)',
+      backgroundColor: colors.successLight,
       borderColor: colors.success,
     },
 
@@ -909,7 +909,7 @@ export default function ProfileScreen() {
       paddingHorizontal: Spacing.sm,
       paddingVertical: Spacing.xs,
       borderRadius: Radius.chip,
-      backgroundColor: 'rgba(16,185,129,0.15)',
+      backgroundColor: colors.successLight,
       borderWidth: 1,
       borderColor: colors.success,
     },
@@ -1121,9 +1121,9 @@ export default function ProfileScreen() {
     scanDocumentCard: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: 'rgba(124,92,252,0.15)',
+      backgroundColor: `${colors.primary}18`,
       borderWidth: 1.5,
-      borderColor: '#7C5CFC',
+      borderColor: `${colors.primary}60`,
       borderRadius: 14,
       padding: 14,
       marginBottom: 16,
@@ -1136,7 +1136,7 @@ export default function ProfileScreen() {
     passportMini: {
       width: 54,
       height: 74,
-      backgroundColor: '#7C5CFC',
+      backgroundColor: colors.primary,
       borderRadius: 6,
       padding: 6,
       justifyContent: 'space-between',
@@ -1179,7 +1179,7 @@ export default function ProfileScreen() {
       flex: 1,
     },
     scanCardTitle: {
-      color: '#7C5CFC',
+      color: colors.primary,
       fontFamily: 'Inter',
       fontSize: Typography.sizes.base,
       fontWeight: Typography.weights.semibold,
@@ -1766,7 +1766,7 @@ export default function ProfileScreen() {
         {/* ── Account info block ──────────────────────────────────────── */}
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Данные аккаунта</Text>
+            <Text style={styles.sectionTitleWithIcon}>Данные аккаунта</Text>
             <TouchableOpacity
               onPress={() => setIsEditModalVisible(true)}
               activeOpacity={0.7}
@@ -1782,7 +1782,9 @@ export default function ProfileScreen() {
             </View>
             <View style={[styles.infoRow, !user.phone && styles.infoRowNoBorder]}>
               <Text style={styles.infoLabel}>Email</Text>
-              <Text style={styles.infoValue}>{user.email}</Text>
+              <Text style={styles.infoValue} numberOfLines={1} ellipsizeMode="middle">
+                {user.email}
+              </Text>
             </View>
             {user.phone && (
               <View style={[styles.infoRow, styles.infoRowNoBorder]}>
@@ -1829,7 +1831,7 @@ export default function ProfileScreen() {
               ) : (
                 <>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                    <IconScan color="#7C5CFC" size={18} />
+                    <IconScan color={colors.primary} size={18} />
                     <Text style={styles.scanCardTitle}>Сканировать документ</Text>
                   </View>
                   <Text style={styles.scanCardSub}>Паспорт · Загранпаспорт · Права</Text>

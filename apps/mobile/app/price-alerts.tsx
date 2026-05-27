@@ -399,9 +399,9 @@ function NewAlertForm({ visible, onClose, onCreate }: NewAlertFormProps) {
             disabled={submitting}
           >
             {submitting ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.textInverse} />
             ) : (
-              <Text style={{ color: '#fff', fontSize: Typography.sizes.md, fontWeight: Typography.weights.bold }}>Создать алерт</Text>
+              <Text style={{ color: colors.textInverse, fontSize: Typography.sizes.md, fontWeight: Typography.weights.bold }}>Создать алерт</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -499,7 +499,7 @@ export default function PriceAlertsScreen() {
             onPress={() => setShowForm(true)}
             activeOpacity={0.7}
           >
-            <Text style={styles.addBtnText}>+</Text>
+            <Text style={[styles.addBtnText, { color: colors.textInverse }]}>+</Text>
           </TouchableOpacity>
         </Animated.View>
 
@@ -596,7 +596,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addBtnText: {
-    color: '#fff',
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
     lineHeight: 28,

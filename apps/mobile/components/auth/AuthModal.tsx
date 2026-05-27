@@ -146,7 +146,7 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
                 onPress={() => { setActiveTab('login'); setLoginError(''); setRegError(''); }}
                 activeOpacity={0.7}
               >
-                <Text style={[staticStyles.tabText, { color: activeTab === 'login' ? '#0A0A14' : colors.textMuted }]}>
+                <Text style={[staticStyles.tabText, { color: activeTab === 'login' ? colors.textInverse : colors.textMuted }]}>
                   Войти
                 </Text>
               </TouchableOpacity>
@@ -155,7 +155,7 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
                 onPress={() => { setActiveTab('register'); setLoginError(''); setRegError(''); }}
                 activeOpacity={0.7}
               >
-                <Text style={[staticStyles.tabText, { color: activeTab === 'register' ? '#0A0A14' : colors.textMuted }]}>
+                <Text style={[staticStyles.tabText, { color: activeTab === 'register' ? colors.textInverse : colors.textMuted }]}>
                   Регистрация
                 </Text>
               </TouchableOpacity>
@@ -200,9 +200,9 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
                   activeOpacity={0.85}
                 >
                   {loginLoading ? (
-                    <ActivityIndicator color="#0A0A14" size="small" />
+                    <ActivityIndicator color={colors.textInverse} size="small" />
                   ) : (
-                    <Text style={staticStyles.primaryBtnText}>Войти</Text>
+                    <Text style={[staticStyles.primaryBtnText, { color: colors.textInverse }]}>Войти</Text>
                   )}
                 </TouchableOpacity>
 
@@ -269,9 +269,9 @@ export default function AuthModal({ visible, onClose, reason }: AuthModalProps) 
                   activeOpacity={0.85}
                 >
                   {regLoading ? (
-                    <ActivityIndicator color="#0A0A14" size="small" />
+                    <ActivityIndicator color={colors.textInverse} size="small" />
                   ) : (
-                    <Text style={staticStyles.primaryBtnText}>Создать аккаунт</Text>
+                    <Text style={[staticStyles.primaryBtnText, { color: colors.textInverse }]}>Создать аккаунт</Text>
                   )}
                 </TouchableOpacity>
 
@@ -398,7 +398,6 @@ const staticStyles = StyleSheet.create({
     opacity: 0.6,
   },
   primaryBtnText: {
-    color: '#0A0A14',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,

@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>SVIT Brandbook v1.0 — 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@page { size: 297mm 210mm landscape; margin: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0E0C1C;
+  color: #EEEEF4;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ── SLIDE BASE ── */
+.slide {
+  width: 297mm;
+  height: 210mm;
+  padding: 18mm 20mm 16mm 20mm;
+  overflow: hidden;
+  page-break-after: always;
+  break-after: page;
+  position: relative;
+  background: #0E0C1C;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── SHARED ── */
+.overline {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7C5CFC;
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.h1 {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #EEEEF4;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+.h1 .gold { color: #E8A020; }
+
+.accent-bar {
+  width: 36px;
+  height: 3px;
+  background: #E8A020;
+  border-radius: 2px;
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.page-num {
+  position: absolute;
+  bottom: 14px;
+  right: 20mm;
+  font-size: 10px;
+  color: #4E4E68;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.footer-logo {
+  position: absolute;
+  bottom: 11px;
+  left: 20mm;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.footer-logo svg { opacity: 0.3; }
+.footer-brand {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #4E4E68;
+}
+
+/* compass SVG shorthand */
+.compass-svg { flex-shrink: 0; }
+
+/* ══════════════════════════════
+   SLIDE 1 — COVER
+══════════════════════════════ */
+.s1 {
+  background: #0E0C1C;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.s1-deco-tl {
+  position: absolute; top: -60px; left: -60px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,92,252,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.s1-deco-br {
+  position: absolute; bottom: -80px; right: -50px;
+  width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,160,32,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.s1-wordmark {
+  font-size: 80px; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1;
+  color: #EEEEF4; margin-bottom: 4px;
+}
+.s1-wordmark span { color: #E8A020; }
+.s1-sub {
+  font-size: 15px; color: #8888A8;
+  font-weight: 400; margin-bottom: 24px;
+}
+.s1-divider {
+  width: 44px; height: 2px;
+  background: linear-gradient(90deg, #E8A020, #7C5CFC);
+  border-radius: 2px; margin: 0 auto 20px;
+}
+.s1-meta {
+  display: flex; gap: 28px;
+  justify-content: center; align-items: center;
+}
+.s1-meta-item {
+  font-size: 10px; color: #4E4E68;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.s1-dot { width: 3px; height: 3px; border-radius: 50%; background: #2E2B42; }
+.star { position: absolute; border-radius: 50%; background: #EEEEF4; opacity: 0.4; }
+
+/* ══════════════════════════════
+   SLIDE 2 — BRAND
+══════════════════════════════ */
+.s2-quote {
+  background: #14121E;
+  border-left: 3px solid #E8A020;
+  border-radius: 0 10px 10px 0;
+  padding: 16px 22px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.s2-quote-text {
+  font-size: 16px; font-weight: 600;
+  line-height: 1.5; color: #EEEEF4;
+}
+.s2-quote-text em { color: #E8A020; font-style: normal; }
+.s2-body {
+  font-size: 12px; line-height: 1.7;
+  color: #8888A8; margin-bottom: 20px; flex-shrink: 0;
+}
+.s2-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; flex-shrink: 0;
+}
+.s2-card {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 12px; padding: 14px 16px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.s2-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(232,160,32,0.12);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.s2-icon.pu { background: rgba(124,92,252,0.12); }
+.s2-card-title { font-size: 12px; font-weight: 600; color: #EEEEF4; margin-bottom: 3px; }
+.s2-card-desc { font-size: 11px; color: #8888A8; line-height: 1.4; }
+.s2-arch {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #1E1C2C; border: 1px solid #2E2B42;
+  border-radius: 999px; padding: 6px 14px;
+  font-size: 11px; color: #8888A8;
+  margin-top: 14px; flex-shrink: 0; align-self: flex-start;
+}
+.s2-arch strong { color: #E8A020; font-weight: 600; }
+
+/* ══════════════════════════════
+   SLIDE 3 — LOGO
+══════════════════════════════ */
+.s3-variants {
+  display: flex; gap: 14px;
+  margin-bottom: 18px; flex-shrink: 0;
+}
+.s3-box {
+  flex: 1; border-radius: 12px;
+  padding: 20px 14px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+}
+.s3-box-dark { background: #1E1C2C; border: 1px solid #2E2B42; }
+.s3-box-light { background: #F2F2F6; border: 1px solid #ddd; }
+.s3-box-label { font-size: 10px; color: #8888A8; font-family: 'DM Mono', monospace; text-align: center; }
+.s3-box-light .s3-box-label { color: #999; }
+.s3-wordmark-dark { font-size: 16px; font-weight: 700; color: #EEEEF4; letter-spacing: 0.08em; }
+.s3-wordmark-light { font-size: 16px; font-weight: 700; color: #1A1A1A; letter-spacing: 0.08em; }
+
+.s3-rules {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; flex-shrink: 0;
+}
+.s3-rule-card {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 10px; padding: 12px 14px;
+}
+.s3-rule-title { font-size: 11px; font-weight: 600; color: #EEEEF4; margin-bottom: 4px; }
+.s3-rule-val { font-size: 11px; color: #8888A8; line-height: 1.4; }
+.s3-rule-val.gold { color: #E8A020; }
+
+.s3-donts {
+  display: flex; gap: 10px; margin-top: 14px; flex-shrink: 0;
+}
+.s3-dont {
+  flex: 1; background: rgba(244,63,94,0.06); border: 1px solid rgba(244,63,94,0.2);
+  border-radius: 8px; padding: 8px 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.s3-dont-x { font-size: 11px; color: #F43F5E; font-weight: 700; }
+.s3-dont-text { font-size: 10px; color: #8888A8; line-height: 1.3; }
+
+/* ══════════════════════════════
+   SLIDE 4 — COLORS
+══════════════════════════════ */
+.s4-swatches {
+  display: flex; gap: 12px;
+  margin-bottom: 20px; flex-shrink: 0;
+}
+.s4-swatch {
+  flex: 1; border-radius: 12px; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.s4-swatch-color { height: 80px; flex-shrink: 0; }
+.s4-swatch-info {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-top: none; padding: 10px 12px; flex: 1;
+  border-radius: 0 0 12px 12px;
+}
+.s4-swatch-name { font-size: 11px; font-weight: 600; color: #EEEEF4; margin-bottom: 2px; }
+.s4-swatch-hex { font-size: 10px; color: #E8A020; font-family: 'DM Mono', monospace; margin-bottom: 3px; }
+.s4-swatch-use { font-size: 10px; color: #8888A8; line-height: 1.35; }
+
+.s4-semantic {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; flex-shrink: 0;
+}
+.s4-sem-card {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 10px; padding: 10px 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.s4-sem-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.s4-sem-name { font-size: 11px; font-weight: 600; color: #EEEEF4; }
+.s4-sem-hex { font-size: 10px; font-family: 'DM Mono', monospace; color: #8888A8; }
+
+/* ══════════════════════════════
+   SLIDE 5 — TYPOGRAPHY
+══════════════════════════════ */
+.s5-fonts {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; margin-bottom: 18px; flex-shrink: 0;
+}
+.s5-font-card {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 12px; padding: 16px 18px;
+}
+.s5-font-name { font-size: 11px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.s5-font-sample { font-size: 28px; font-weight: 700; color: #EEEEF4; line-height: 1.1; margin-bottom: 6px; }
+.s5-font-sample.mono { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 400; }
+.s5-font-desc { font-size: 11px; color: #8888A8; line-height: 1.4; }
+.s5-font-weights { display: flex; gap: 8px; margin-top: 8px; }
+.s5-weight-tag {
+  background: #1E1C2C; border: 1px solid #2E2B42;
+  border-radius: 4px; padding: 2px 8px;
+  font-size: 10px; color: #8888A8;
+}
+
+.s5-scale {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; flex-shrink: 0;
+}
+.s5-scale-row {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 10px; padding: 10px 12px;
+}
+.s5-scale-label { font-size: 9px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.s5-scale-preview { color: #EEEEF4; line-height: 1.2; }
+.s5-scale-spec { font-size: 9px; color: #4E4E68; font-family: 'DM Mono', monospace; margin-top: 4px; }
+
+/* ══════════════════════════════
+   SLIDE 6 — NAVIGATION (TAB BAR)
+══════════════════════════════ */
+.s6-tabs {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 14px; margin-bottom: 20px; flex-shrink: 0;
+}
+.s6-tab {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 14px; padding: 20px 14px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+  position: relative;
+}
+.s6-tab.active { border-color: #E8A020; }
+.s6-tab-icon { font-size: 28px; }
+.s6-tab-name { font-size: 12px; font-weight: 600; color: #EEEEF4; }
+.s6-tab-desc { font-size: 10px; color: #8888A8; text-align: center; line-height: 1.3; }
+.s6-tab-active-dot {
+  width: 20px; height: 3px;
+  background: #E8A020; border-radius: 2px;
+  box-shadow: 0 0 8px rgba(232,160,32,0.5);
+}
+.s6-tab-inactive-dot { width: 20px; height: 3px; background: transparent; }
+.s6-active-label {
+  font-size: 10px; color: #E8A020;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.08em; text-align: center;
+  margin-bottom: 6px; flex-shrink: 0;
+}
+.s6-tabbar-preview {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 14px; padding: 14px 20px;
+  display: flex; justify-content: space-around; align-items: center;
+  margin-top: auto; flex-shrink: 0;
+}
+.s6-tb-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+}
+.s6-tb-item svg { opacity: 0.4; }
+.s6-tb-item.active-tb svg { opacity: 1; }
+.s6-tb-label { font-size: 10px; color: #8888A8; }
+.s6-tb-label.active-tb { color: #E8A020; }
+
+/* ══════════════════════════════
+   SLIDE 7 — CHAT SCREEN
+══════════════════════════════ */
+.s7-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 18px; flex: 1; overflow: hidden;
+}
+.s7-left { display: flex; flex-direction: column; overflow: hidden; }
+.s7-right { display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.s7-desc { font-size: 12px; color: #8888A8; line-height: 1.6; margin-bottom: 14px; flex-shrink: 0; }
+
+.s7-phone {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 16px; overflow: hidden;
+  flex: 1; display: flex; flex-direction: column;
+}
+.s7-phone-header {
+  background: #1E1C2C; padding: 12px 14px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid #2E2B42; flex-shrink: 0;
+}
+.s7-phone-title { font-size: 13px; font-weight: 700; color: #EEEEF4; letter-spacing: 0.05em; }
+.s7-phone-sub { font-size: 10px; color: #8888A8; margin-top: 1px; }
+.s7-msgs { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; overflow: hidden; }
+
+.s7-bubble-user {
+  align-self: flex-end; background: #E8A020;
+  border-radius: 12px 12px 2px 12px;
+  padding: 8px 12px; max-width: 80%;
+  font-size: 11px; color: #0E0C1C; font-weight: 500; line-height: 1.4;
+  flex-shrink: 0;
+}
+.s7-bubble-ai {
+  align-self: flex-start; background: #1E1C2C;
+  border: 1px solid #2E2B42;
+  border-radius: 12px 12px 12px 2px;
+  padding: 8px 12px; max-width: 85%;
+  font-size: 11px; color: #EEEEF4; line-height: 1.4;
+  flex-shrink: 0;
+}
+.s7-bubble-ai strong { color: #E8A020; }
+.s7-input-row {
+  display: flex; gap: 6px; padding: 10px 12px;
+  border-top: 1px solid #2E2B42; flex-shrink: 0;
+}
+.s7-input {
+  flex: 1; background: #28263A; border-radius: 999px;
+  padding: 7px 12px; font-size: 10px; color: #8888A8;
+}
+.s7-send-btn {
+  width: 28px; height: 28px; background: #E8A020;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.s7-feature {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 10px; padding: 12px 14px;
+}
+.s7-feature-title { font-size: 11px; font-weight: 600; color: #EEEEF4; margin-bottom: 4px; }
+.s7-feature-desc { font-size: 10px; color: #8888A8; line-height: 1.4; }
+
+/* ══════════════════════════════
+   SLIDE 8 — FLIGHT CARD
+══════════════════════════════ */
+.s8-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 18px; flex: 1; overflow: hidden;
+}
+.s8-card {
+  background: #1E1C2C; border: 1px solid #2E2B42;
+  border-radius: 16px; padding: 18px;
+  display: flex; flex-direction: column; gap: 12px;
+  flex-shrink: 0;
+}
+.s8-airline-row {
+  display: flex; justify-content: space-between;
+  align-items: center;
+}
+.s8-airline-name { font-size: 12px; font-weight: 600; color: #EEEEF4; }
+.s8-flight-code { font-size: 10px; color: #8888A8; font-family: 'DM Mono', monospace; }
+.s8-route-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.s8-time { font-size: 22px; font-weight: 700; color: #EEEEF4; letter-spacing: -0.02em; }
+.s8-arrow { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.s8-arrow-line { width: 100%; height: 1px; background: linear-gradient(90deg, #2E2B42 0%, #E8A020 50%, #2E2B42 100%); }
+.s8-arrow-icon { font-size: 14px; color: #E8A020; }
+.s8-codes { display: flex; justify-content: space-between; }
+.s8-code { font-size: 10px; color: #8888A8; font-family: 'DM Mono', monospace; }
+.s8-divider { height: 1px; background: #2E2B42; }
+.s8-bottom { display: flex; justify-content: space-between; align-items: center; }
+.s8-tags { display: flex; gap: 6px; }
+.s8-tag {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 4px; padding: 3px 8px;
+  font-size: 9px; color: #8888A8;
+}
+.s8-price { font-size: 18px; font-weight: 700; color: #E8A020; }
+.s8-price-sub { font-size: 9px; color: #8888A8; text-align: right; }
+.s8-btn {
+  background: #E8A020; border-radius: 999px;
+  padding: 10px; text-align: center;
+  font-size: 12px; font-weight: 600; color: #0E0C1C;
+}
+
+.s8-notes { display: flex; flex-direction: column; gap: 10px; }
+.s8-note {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 10px; padding: 12px 14px;
+}
+.s8-note-label { font-size: 9px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.s8-note-text { font-size: 11px; color: #8888A8; line-height: 1.4; }
+
+/* ══════════════════════════════
+   SLIDE 9 — HOTEL CARD
+══════════════════════════════ */
+.s9-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 18px; flex: 1; overflow: hidden;
+}
+.s9-card {
+  background: #1E1C2C; border: 1px solid #2E2B42;
+  border-radius: 16px; overflow: hidden;
+  display: flex; flex-direction: column;
+  flex-shrink: 0;
+}
+.s9-photo {
+  height: 100px; flex-shrink: 0;
+  background: linear-gradient(135deg, #28263A 0%, #1E1C2C 50%, #14121E 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.s9-photo-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(14,12,28,0.7) 100%);
+}
+.s9-photo-deco {
+  font-size: 36px; opacity: 0.3;
+}
+.s9-photo-badge {
+  position: absolute; bottom: 8px; right: 8px;
+  background: rgba(14,12,28,0.85); border-radius: 6px;
+  padding: 3px 8px; font-size: 10px; font-weight: 600;
+  color: #10B981;
+}
+.s9-body { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.s9-name { font-size: 14px; font-weight: 700; color: #EEEEF4; }
+.s9-stars { color: #E8A020; font-size: 11px; }
+.s9-rating-row { display: flex; align-items: center; gap: 8px; }
+.s9-rating { font-size: 12px; font-weight: 700; color: #E8A020; }
+.s9-reviews { font-size: 10px; color: #8888A8; }
+.s9-location { font-size: 10px; color: #8888A8; }
+.s9-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.s9-price { font-size: 16px; font-weight: 700; color: #E8A020; }
+.s9-price-sub { font-size: 9px; color: #8888A8; }
+.s9-btn {
+  background: transparent; border: 1.5px solid #7C5CFC;
+  border-radius: 999px; padding: 6px 14px;
+  font-size: 11px; color: #7C5CFC; font-weight: 600;
+}
+
+.s9-notes { display: flex; flex-direction: column; gap: 10px; }
+.s9-note {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 10px; padding: 12px 14px;
+}
+.s9-note-label { font-size: 9px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.s9-note-text { font-size: 11px; color: #8888A8; line-height: 1.4; }
+
+/* ══════════════════════════════
+   SLIDE 10 — WALLET
+══════════════════════════════ */
+.s10-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 18px; flex: 1; overflow: hidden;
+}
+.s10-wallet-card {
+  background: linear-gradient(135deg, #1E1C2C 0%, #14121E 100%);
+  border: 1px solid #2E2B42; border-radius: 16px;
+  padding: 18px; display: flex; flex-direction: column; gap: 12px;
+  flex-shrink: 0;
+}
+.s10-balance-label { font-size: 10px; color: #8888A8; letter-spacing: 0.1em; text-transform: uppercase; }
+.s10-balance { font-size: 36px; font-weight: 700; color: #EEEEF4; letter-spacing: -0.02em; line-height: 1; }
+.s10-balance span { color: #E8A020; }
+.s10-methods { display: flex; gap: 8px; }
+.s10-method {
+  background: #28263A; border-radius: 8px;
+  padding: 6px 10px; font-size: 10px; color: #EEEEF4;
+  display: flex; align-items: center; gap: 6px;
+}
+.s10-actions { display: flex; gap: 10px; }
+.s10-btn-fill {
+  flex: 1; background: #E8A020; border-radius: 999px;
+  padding: 8px; text-align: center;
+  font-size: 11px; font-weight: 600; color: #0E0C1C;
+}
+.s10-btn-out {
+  flex: 1; border: 1.5px solid #2E2B42; border-radius: 999px;
+  padding: 8px; text-align: center;
+  font-size: 11px; font-weight: 600; color: #8888A8;
+}
+.s10-divider { height: 1px; background: #2E2B42; }
+.s10-tx-title { font-size: 11px; font-weight: 600; color: #EEEEF4; margin-bottom: 4px; }
+.s10-tx { display: flex; flex-direction: column; gap: 8px; }
+.s10-tx-item {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.s10-tx-name { font-size: 11px; color: #EEEEF4; }
+.s10-tx-date { font-size: 9px; color: #8888A8; font-family: 'DM Mono', monospace; }
+.s10-tx-amount { font-size: 12px; font-weight: 600; }
+.s10-tx-amount.neg { color: #F43F5E; }
+.s10-tx-amount.pos { color: #10B981; }
+
+.s10-right { display: flex; flex-direction: column; gap: 10px; }
+.s10-note {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 10px; padding: 12px 14px;
+}
+.s10-note-label { font-size: 9px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.s10-note-text { font-size: 11px; color: #8888A8; line-height: 1.4; }
+
+/* ══════════════════════════════
+   SLIDE 11 — TONE OF VOICE
+══════════════════════════════ */
+.s11-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 16px; flex-shrink: 0;
+}
+.s11-tov-card {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 12px; padding: 14px 16px;
+}
+.s11-tov-trait { font-size: 10px; font-weight: 600; color: #7C5CFC; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.s11-tov-do { font-size: 11px; color: #EEEEF4; line-height: 1.45; margin-bottom: 6px; }
+.s11-tov-do em { color: #E8A020; font-style: normal; }
+.s11-tov-dont { font-size: 10px; color: #F43F5E; line-height: 1.4; }
+.s11-tov-dont::before { content: "✕ "; }
+.s11-keywords {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  flex-shrink: 0;
+}
+.s11-kw {
+  background: rgba(232,160,32,0.1); border: 1px solid rgba(232,160,32,0.25);
+  border-radius: 999px; padding: 4px 12px;
+  font-size: 11px; color: #E8A020;
+}
+
+/* ══════════════════════════════
+   SLIDE 12 — DON'TS
+══════════════════════════════ */
+.s12-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; flex: 1; overflow: hidden;
+}
+.s12-dont-card {
+  background: rgba(244,63,94,0.05); border: 1px solid rgba(244,63,94,0.2);
+  border-radius: 12px; padding: 16px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.s12-dont-icon { font-size: 22px; flex-shrink: 0; }
+.s12-dont-title { font-size: 12px; font-weight: 600; color: #F43F5E; margin-bottom: 4px; }
+.s12-dont-desc { font-size: 11px; color: #8888A8; line-height: 1.4; }
+
+/* ══════════════════════════════
+   SLIDE 13 — TECH STACK
+══════════════════════════════ */
+.s13-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px; flex-shrink: 0;
+}
+.s13-tech {
+  background: #14121E; border: 1px solid #2E2B42;
+  border-radius: 12px; padding: 14px 16px;
+}
+.s13-tech-icon { font-size: 20px; margin-bottom: 6px; }
+.s13-tech-name { font-size: 12px; font-weight: 600; color: #EEEEF4; margin-bottom: 3px; }
+.s13-tech-desc { font-size: 10px; color: #8888A8; line-height: 1.4; }
+.s13-tech-tag {
+  display: inline-block; margin-top: 6px;
+  background: rgba(124,92,252,0.12); border-radius: 4px;
+  padding: 2px 8px; font-size: 9px; color: #7C5CFC;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ══════════════════════════════
+   SLIDE 14 — CONTACTS
+══════════════════════════════ */
+.s14 {
+  align-items: center; justify-content: center;
+  text-align: center;
+}
+.s14-deco-t {
+  position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+  width: 350px; height: 350px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,92,252,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.s14-deco-b {
+  position: absolute; bottom: -80px; right: -60px;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,160,32,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.s14-wordmark { font-size: 52px; font-weight: 700; color: #EEEEF4; letter-spacing: -0.02em; line-height: 1; margin-bottom: 4px; }
+.s14-tagline { font-size: 14px; color: #8888A8; margin-bottom: 24px; }
+.s14-divider { width: 44px; height: 2px; background: linear-gradient(90deg,#E8A020,#7C5CFC); border-radius: 2px; margin: 0 auto 24px; }
+.s14-contacts { display: flex; flex-direction: column; gap: 10px; align-items: center; margin-bottom: 24px; }
+.s14-contact-row { display: flex; align-items: center; gap: 8px; }
+.s14-contact-text { font-size: 13px; color: #8888A8; font-family: 'DM Mono', monospace; }
+.s14-slogan {
+  font-size: 16px; font-weight: 600; color: #E8A020;
+  letter-spacing: 0.02em;
+}
+
+@media print {
+  body { margin: 0; }
+  .slide {
+    page-break-after: always;
+    break-after: page;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 1 — COVER
+══════════════════════════════════════════ -->
+<section class="slide s1">
+  <div class="s1-deco-tl"></div>
+  <div class="s1-deco-br"></div>
+  <div class="star" style="width:2px;height:2px;top:15%;left:12%"></div>
+  <div class="star" style="width:3px;height:3px;top:25%;left:82%"></div>
+  <div class="star" style="width:2px;height:2px;top:68%;left:15%"></div>
+  <div class="star" style="width:2px;height:2px;top:72%;left:80%"></div>
+  <div class="star" style="width:2px;height:2px;top:40%;left:6%"></div>
+  <div class="star" style="width:2px;height:2px;top:55%;left:90%"></div>
+
+  <div style="margin-bottom:28px;">
+    <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="44" stroke="rgba(255,255,255,0.88)" stroke-width="2.5"/>
+      <line x1="50" y1="8" x2="50" y2="15" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+      <line x1="50" y1="85" x2="50" y2="92" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+      <line x1="8" y1="50" x2="15" y2="50" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+      <line x1="85" y1="50" x2="92" y2="50" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+      <line x1="19.7" y1="19.7" x2="24.5" y2="24.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+      <line x1="80.3" y1="19.7" x2="75.5" y2="24.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+      <line x1="19.7" y1="80.3" x2="24.5" y2="75.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+      <line x1="80.3" y1="80.3" x2="75.5" y2="75.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+      <path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <circle cx="50" cy="50" r="4" fill="#E8A020"/>
+    </svg>
+  </div>
+
+  <div class="s1-wordmark">S<span>V</span>IT</div>
+  <div class="s1-sub">AI-ассистент путешественника</div>
+  <div class="s1-divider"></div>
+  <div class="s1-meta">
+    <span class="s1-meta-item">Brandbook v1.0</span>
+    <div class="s1-dot"></div>
+    <span class="s1-meta-item">2026</span>
+    <div class="s1-dot"></div>
+    <span class="s1-meta-item">Конфиденциально</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 2 — BRAND / MISSION
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">01 — О бренде</div>
+  <div class="h1">Наша <span class="gold">идея</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s2-quote">
+    <div class="s2-quote-text">
+      SVIT — это AI-помощник, который превращает <em>мечту о путешествии</em> в готовый план.<br>
+      Один разговор с SVIT — и у тебя есть рейсы, отели и трансфер с реальным бронированием.
+    </div>
+  </div>
+
+  <div class="s2-body">
+    <strong style="color:#EEEEF4;">Миссия:</strong> Сделать путешествие доступным, умным и без стресса — для каждого жителя СНГ.
+  </div>
+
+  <div class="s2-grid">
+    <div class="s2-card">
+      <div class="s2-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8A020" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="s2-card-title">Умный собеседник</div>
+        <div class="s2-card-desc">Понимает контекст, помнит предпочтения, действует вместо пользователя</div>
+      </div>
+    </div>
+    <div class="s2-card">
+      <div class="s2-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8A020" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <div>
+        <div class="s2-card-title">Реальное бронирование</div>
+        <div class="s2-card-desc">Рейсы, отели, трансфер — из чата прямо в подтверждение</div>
+      </div>
+    </div>
+    <div class="s2-card">
+      <div class="s2-icon pu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div>
+        <div class="s2-card-title">Для жителей СНГ</div>
+        <div class="s2-card-desc">Русский и украинский языки, понятный интерфейс, локальный контекст</div>
+      </div>
+    </div>
+    <div class="s2-card">
+      <div class="s2-icon pu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div class="s2-card-title">Премиум-опыт</div>
+        <div class="s2-card-desc">Архетип Sage + Explorer: мудрость + вдохновение к новым маршрутам</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="s2-arch">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="rgba(255,255,255,0.88)" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    Архетип: <strong>Sage 70%</strong>&nbsp;·&nbsp;<strong style="color:#7C5CFC;">Explorer 30%</strong>
+  </div>
+
+  <div class="page-num">02</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 3 — LOGO
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">02 — Логотип</div>
+  <div class="h1"><span class="gold">Логотип</span> SVIT</div>
+  <div class="accent-bar"></div>
+
+  <div class="s3-variants">
+    <!-- Dark version -->
+    <div class="s3-box s3-box-dark" style="flex:1.2">
+      <svg width="52" height="52" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="44" stroke="rgba(255,255,255,0.88)" stroke-width="2.5"/>
+        <line x1="50" y1="8" x2="50" y2="15" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+        <line x1="50" y1="85" x2="50" y2="92" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+        <line x1="8" y1="50" x2="15" y2="50" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+        <line x1="85" y1="50" x2="92" y2="50" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+        <path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <circle cx="50" cy="50" r="4" fill="#E8A020"/>
+      </svg>
+      <div class="s3-wordmark-dark">SVIT</div>
+      <span class="s3-box-label">Dark · основная</span>
+    </div>
+    <!-- Card version -->
+    <div class="s3-box s3-box-dark" style="flex:1">
+      <svg width="44" height="44" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="44" stroke="rgba(255,255,255,0.88)" stroke-width="2.5"/>
+        <path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <circle cx="50" cy="50" r="4" fill="#E8A020"/>
+      </svg>
+      <span class="s3-box-label">Только символ</span>
+    </div>
+    <!-- Light version -->
+    <div class="s3-box s3-box-light" style="flex:1.2">
+      <svg width="52" height="52" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="44" stroke="#1A1A1A" stroke-width="2.5"/>
+        <line x1="50" y1="8" x2="50" y2="15" stroke="#1A1A1A" stroke-width="2"/>
+        <line x1="50" y1="85" x2="50" y2="92" stroke="#1A1A1A" stroke-width="2"/>
+        <line x1="8" y1="50" x2="15" y2="50" stroke="#1A1A1A" stroke-width="2"/>
+        <line x1="85" y1="50" x2="92" y2="50" stroke="#1A1A1A" stroke-width="2"/>
+        <path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#B87518" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <circle cx="50" cy="50" r="4" fill="#B87518"/>
+      </svg>
+      <div class="s3-wordmark-light">SVIT</div>
+      <span class="s3-box-label">Light · маркетинг</span>
+    </div>
+  </div>
+
+  <div class="s3-rules">
+    <div class="s3-rule-card">
+      <div class="s3-rule-title">Концепция</div>
+      <div class="s3-rule-val">Компас + S-игла. Внешнее кольцо = навигация. S-образная игла = первая буква SVIT и символ маршрута.</div>
+    </div>
+    <div class="s3-rule-card">
+      <div class="s3-rule-title">Минимальный размер</div>
+      <div class="s3-rule-val gold">Полный lockup: 20px высота<br>Только символ: 16px</div>
+    </div>
+    <div class="s3-rule-card">
+      <div class="s3-rule-title">Охранная зона</div>
+      <div class="s3-rule-val">Отступ со всех сторон — минимум 50% высоты символа</div>
+    </div>
+    <div class="s3-rule-card">
+      <div class="s3-rule-title">S-игла цвет</div>
+      <div class="s3-rule-val gold">SVIT Gold #E8A020 — только в Dark-версии. Единственный акцентный элемент.</div>
+    </div>
+  </div>
+
+  <div class="s3-donts">
+    <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Поворачивать символ</span></div>
+    <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Добавлять тени или свечение</span></div>
+    <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Искажать пропорции</span></div>
+    <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Менять шрифт wordmark</span></div>
+    <div class="s3-dont"><span class="s3-dont-x">✕</span><span class="s3-dont-text">Пёстрый фон без подложки</span></div>
+  </div>
+
+  <div class="page-num">03</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 4 — COLORS
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">03 — Цвета</div>
+  <div class="h1">Фирменные <span class="gold">цвета</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s4-swatches">
+    <div class="s4-swatch">
+      <div class="s4-swatch-color" style="background:#E8A020;"></div>
+      <div class="s4-swatch-info">
+        <div class="s4-swatch-name">SVIT Gold</div>
+        <div class="s4-swatch-hex">#E8A020</div>
+        <div class="s4-swatch-use">Основной акцент, CTA-кнопки, активные табы</div>
+      </div>
+    </div>
+    <div class="s4-swatch">
+      <div class="s4-swatch-color" style="background:#0E0C1C;border:1px solid #2E2B42;"></div>
+      <div class="s4-swatch-info">
+        <div class="s4-swatch-name">Void Plum</div>
+        <div class="s4-swatch-hex">#0E0C1C</div>
+        <div class="s4-swatch-use">Фон приложения, основная поверхность</div>
+      </div>
+    </div>
+    <div class="s4-swatch">
+      <div class="s4-swatch-color" style="background:#1E1C2C;"></div>
+      <div class="s4-swatch-info">
+        <div class="s4-swatch-name">Deep Plum</div>
+        <div class="s4-swatch-hex">#1E1C2C</div>
+        <div class="s4-swatch-use">Карточки, панели, surface второго уровня</div>
+      </div>
+    </div>
+    <div class="s4-swatch">
+      <div class="s4-swatch-color" style="background:#7C5CFC;"></div>
+      <div class="s4-swatch-info">
+        <div class="s4-swatch-name">Soft Violet</div>
+        <div class="s4-swatch-hex">#7C5CFC</div>
+        <div class="s4-swatch-use">Вторичные акценты, AI-индикатор, теги</div>
+      </div>
+    </div>
+    <div class="s4-swatch">
+      <div class="s4-swatch-color" style="background:#EEEEF4;"></div>
+      <div class="s4-swatch-info">
+        <div class="s4-swatch-name">Frost White</div>
+        <div class="s4-swatch-hex">#EEEEF4</div>
+        <div class="s4-swatch-use">Основной текст, заголовки интерфейса</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overline" style="margin-bottom:10px;">Семантические цвета</div>
+  <div class="s4-semantic">
+    <div class="s4-sem-card">
+      <div class="s4-sem-dot" style="background:#10B981;"></div>
+      <div>
+        <div class="s4-sem-name">Success</div>
+        <div class="s4-sem-hex">#10B981</div>
+      </div>
+    </div>
+    <div class="s4-sem-card">
+      <div class="s4-sem-dot" style="background:#E8A020;"></div>
+      <div>
+        <div class="s4-sem-name">Warning</div>
+        <div class="s4-sem-hex">#E8A020</div>
+      </div>
+    </div>
+    <div class="s4-sem-card">
+      <div class="s4-sem-dot" style="background:#F43F5E;"></div>
+      <div>
+        <div class="s4-sem-name">Error</div>
+        <div class="s4-sem-hex">#F43F5E</div>
+      </div>
+    </div>
+    <div class="s4-sem-card">
+      <div class="s4-sem-dot" style="background:#38BDF8;"></div>
+      <div>
+        <div class="s4-sem-name">Info</div>
+        <div class="s4-sem-hex">#38BDF8</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">04</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 5 — TYPOGRAPHY
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">04 — Типографика</div>
+  <div class="h1">Шрифты <span class="gold">SVIT</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s5-fonts">
+    <div class="s5-font-card">
+      <div class="s5-font-name">Display / Heading</div>
+      <div class="s5-font-sample" style="font-family:'DM Sans',sans-serif;">DM Sans</div>
+      <div class="s5-font-desc">Геометрический гротеск. Заголовки, кнопки, ключевые числа. Выглядит свежо в 2026 — Inter уже везде.</div>
+      <div class="s5-font-weights">
+        <span class="s5-weight-tag">400 Regular</span>
+        <span class="s5-weight-tag">500 Medium</span>
+        <span class="s5-weight-tag">600 SemiBold</span>
+        <span class="s5-weight-tag">700 Bold</span>
+      </div>
+    </div>
+    <div class="s5-font-card">
+      <div class="s5-font-name">Accent / Mono</div>
+      <div class="s5-font-sample mono">DM Mono</div>
+      <div class="s5-font-desc">Для кодов аэропортов (KBP, JFK), номеров рейсов, цен, технических данных. Точность и читаемость.</div>
+      <div class="s5-font-weights">
+        <span class="s5-weight-tag">400 Regular</span>
+        <span class="s5-weight-tag">500 Medium</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="overline" style="margin-bottom:10px;">Шкала размеров</div>
+  <div class="s5-scale">
+    <div class="s5-scale-row">
+      <div class="s5-scale-label">Display</div>
+      <div class="s5-scale-preview" style="font-size:26px;font-weight:700;letter-spacing:-0.04em;">$500</div>
+      <div class="s5-scale-spec">48px · Bold · −0.04em</div>
+    </div>
+    <div class="s5-scale-row">
+      <div class="s5-scale-label">H1</div>
+      <div class="s5-scale-preview" style="font-size:22px;font-weight:700;letter-spacing:-0.03em;">Куда летим?</div>
+      <div class="s5-scale-spec">34px · Bold · −0.03em</div>
+    </div>
+    <div class="s5-scale-row">
+      <div class="s5-scale-label">H2</div>
+      <div class="s5-scale-preview" style="font-size:17px;font-weight:600;letter-spacing:-0.02em;">Рейсы</div>
+      <div class="s5-scale-spec">26px · SemiBold · −0.02em</div>
+    </div>
+    <div class="s5-scale-row">
+      <div class="s5-scale-label">Body</div>
+      <div class="s5-scale-preview" style="font-size:13px;font-weight:400;color:#8888A8;">Ваш рейс подтверждён</div>
+      <div class="s5-scale-spec">16px · Regular · SF Pro</div>
+    </div>
+  </div>
+
+  <div class="page-num">05</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 6 — NAVIGATION (TAB BAR)
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">05 — Навигация</div>
+  <div class="h1">Таббар и <span class="gold">навигация</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s6-tabs">
+    <div class="s6-tab active">
+      <div class="s6-tab-active-dot"></div>
+      <div class="s6-tab-icon">💬</div>
+      <div class="s6-tab-name" style="color:#E8A020;">Чат</div>
+      <div class="s6-tab-desc">Основной экран. Диалог с AI-ассистентом SVIT</div>
+    </div>
+    <div class="s6-tab">
+      <div class="s6-tab-inactive-dot"></div>
+      <div class="s6-tab-icon" style="opacity:0.5;">✈</div>
+      <div class="s6-tab-name" style="color:#8888A8;">Поездки</div>
+      <div class="s6-tab-desc">История и активные бронирования</div>
+    </div>
+    <div class="s6-tab">
+      <div class="s6-tab-inactive-dot"></div>
+      <div class="s6-tab-icon" style="opacity:0.5;">💼</div>
+      <div class="s6-tab-name" style="color:#8888A8;">Кошелёк</div>
+      <div class="s6-tab-desc">Баланс и платёжные методы</div>
+    </div>
+    <div class="s6-tab">
+      <div class="s6-tab-inactive-dot"></div>
+      <div class="s6-tab-icon" style="opacity:0.5;">👤</div>
+      <div class="s6-tab-name" style="color:#8888A8;">Профиль</div>
+      <div class="s6-tab-desc">Настройки и предпочтения</div>
+    </div>
+  </div>
+
+  <div class="s6-active-label">← Активный таб: золото + underline indicator</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex-shrink:0;">
+    <div style="background:#14121E;border:1px solid #2E2B42;border-radius:10px;padding:12px 14px;">
+      <div style="font-size:10px;font-weight:600;color:#7C5CFC;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Активный таб</div>
+      <div style="font-size:11px;color:#8888A8;line-height:1.5;">Иконка filled + цвет <span style="color:#E8A020;">#E8A020</span> + underline 3px + glow-primary</div>
+    </div>
+    <div style="background:#14121E;border:1px solid #2E2B42;border-radius:10px;padding:12px 14px;">
+      <div style="font-size:10px;font-weight:600;color:#7C5CFC;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Неактивный таб</div>
+      <div style="font-size:11px;color:#8888A8;line-height:1.5;">Иконка outline + цвет <span style="color:#8888A8;">#8888A8</span> + лейбл Caption 11px</div>
+    </div>
+  </div>
+
+  <div class="page-num">06</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 7 — CHAT SCREEN MOCKUP
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">06 — Экраны</div>
+  <div class="h1">Главный экран — <span class="gold">Чат</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s7-layout">
+    <div class="s7-left">
+      <div class="s7-phone">
+        <div class="s7-phone-header">
+          <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="44" stroke="rgba(255,255,255,0.88)" stroke-width="3"/>
+            <path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <circle cx="50" cy="50" r="5" fill="#E8A020"/>
+          </svg>
+          <div>
+            <div class="s7-phone-title">SVIT</div>
+            <div class="s7-phone-sub">Куда летим?</div>
+          </div>
+        </div>
+        <div class="s7-msgs">
+          <div class="s7-bubble-user">Варшава → Барселона, 10–17 июня, 2 человека</div>
+          <div class="s7-bubble-ai">Нашёл 3 рейса. <strong>Лучший вариант:</strong> Vueling VY6102, 14:20 WAW → 16:45 BCN. $148/чел. Прямой. ✓</div>
+          <div class="s7-bubble-ai">По отелям: <strong>3 варианта в Барселоне</strong> от $72/ночь. Показать?</div>
+        </div>
+        <div class="s7-input-row">
+          <div class="s7-input">Написать SVIT...</div>
+          <div class="s7-send-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0E0C1C" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="s7-right">
+      <div class="s7-feature">
+        <div class="s7-feature-title">Умный разбор запроса</div>
+        <div class="s7-feature-desc">SVIT понимает свободный текст: маршрут, даты, количество пассажиров — без форм и полей</div>
+      </div>
+      <div class="s7-feature">
+        <div class="s7-feature-title">Структурированный ответ</div>
+        <div class="s7-feature-desc">Рейсы, отели, бюджет — в одном диалоге. Каждый элемент интерактивен.</div>
+      </div>
+      <div class="s7-feature">
+        <div class="s7-feature-title">Powered by Claude AI</div>
+        <div class="s7-feature-desc">Anthropic Claude — понимание контекста и памяти разговора на уровне эксперта-travel-агента</div>
+      </div>
+      <div class="s7-feature">
+        <div class="s7-feature-title">Реальные данные</div>
+        <div class="s7-feature-desc">Duffel API — живые тарифы и бронирование рейсов напрямую из чата</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">07</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 8 — FLIGHT CARD
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">07 — Компоненты</div>
+  <div class="h1">Карточка <span class="gold">рейса</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s8-layout">
+    <div>
+      <div class="s8-card">
+        <div class="s8-airline-row">
+          <div>
+            <div class="s8-airline-name">Vueling Airlines</div>
+          </div>
+          <div class="s8-flight-code">VY6102</div>
+        </div>
+        <div class="s8-route-row">
+          <div style="text-align:left;">
+            <div class="s8-time">14:20</div>
+          </div>
+          <div class="s8-arrow">
+            <div class="s8-arrow-icon">✈</div>
+            <div class="s8-arrow-line"></div>
+            <div style="font-size:9px;color:#8888A8;font-family:'DM Mono',monospace;">2ч 25м · Прямой</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="s8-time">16:45</div>
+          </div>
+        </div>
+        <div class="s8-codes">
+          <span class="s8-code">WAW — Варшава</span>
+          <span class="s8-code">BCN — Барселона</span>
+        </div>
+        <div class="s8-divider"></div>
+        <div class="s8-bottom">
+          <div class="s8-tags">
+            <span class="s8-tag">Эконом</span>
+            <span class="s8-tag">+багаж</span>
+          </div>
+          <div style="text-align:right;">
+            <div class="s8-price">$280</div>
+            <div class="s8-price-sub">за 2 чел.</div>
+          </div>
+        </div>
+        <div class="s8-btn">Забронировать</div>
+      </div>
+    </div>
+    <div class="s8-notes">
+      <div class="s8-note">
+        <div class="s8-note-label">Структура карточки</div>
+        <div class="s8-note-text">Авиакомпания + код рейса · маршрут с временем · коды аэропортов · тариф · цена · CTA</div>
+      </div>
+      <div class="s8-note">
+        <div class="s8-note-label">Фон карточки</div>
+        <div class="s8-note-text">card <span style="color:#E8A020;">#1E1C2C</span> · radius-lg 16px · shadow-md · padding space-4 (16px)</div>
+      </div>
+      <div class="s8-note">
+        <div class="s8-note-label">Цена</div>
+        <div class="s8-note-text">H3 · SVIT Gold <span style="color:#E8A020;">#E8A020</span> · Только $. Никаких ₽ или €.</div>
+      </div>
+      <div class="s8-note">
+        <div class="s8-note-label">CTA кнопка</div>
+        <div class="s8-note-text">Primary pill · SVIT Gold фон · тёмный текст #0E0C1C · radius-2xl 32px</div>
+      </div>
+      <div class="s8-note">
+        <div class="s8-note-label">Пересадки</div>
+        <div class="s8-note-text">Badge warning цвет <span style="color:#E8A020;">#E8A020</span> между временем вылета и прилёта</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">08</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 9 — HOTEL CARD
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">08 — Компоненты</div>
+  <div class="h1">Карточка <span class="gold">отеля</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s9-layout">
+    <div>
+      <div class="s9-card">
+        <div class="s9-photo">
+          <div class="s9-photo-overlay"></div>
+          <div class="s9-photo-deco">🏨</div>
+          <div class="s9-photo-badge">8.4/10</div>
+        </div>
+        <div class="s9-body">
+          <div class="s9-name">Hotel Arts Barcelona</div>
+          <div class="s9-stars">★★★★★</div>
+          <div class="s9-rating-row">
+            <span class="s9-rating">8.4</span>
+            <span class="s9-reviews">· 1 240 отзывов · Отлично</span>
+          </div>
+          <div class="s9-location">📍 Порт Олимпик, Барселона</div>
+          <div class="s9-price-row">
+            <div>
+              <div class="s9-price">$89</div>
+              <div class="s9-price-sub">за ночь</div>
+            </div>
+            <div class="s9-btn">Посмотреть</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="s9-notes">
+      <div class="s9-note">
+        <div class="s9-note-label">Структура карточки</div>
+        <div class="s9-note-text">Фото 100px · название · звёзды · рейтинг · адрес · цена + CTA</div>
+      </div>
+      <div class="s9-note">
+        <div class="s9-note-label">Фото отеля</div>
+        <div class="s9-note-text">Высота 140px · radius-lg только у верхних углов · overlay градиент снизу</div>
+      </div>
+      <div class="s9-note">
+        <div class="s9-note-label">Рейтинг</div>
+        <div class="s9-note-text">Число H3 · SVIT Gold. Звёзды 12px Gold. Подпись Caption textMuted.</div>
+      </div>
+      <div class="s9-note">
+        <div class="s9-note-label">CTA кнопка</div>
+        <div class="s9-note-text">Secondary · прозрачный фон · рамка 1.5px Soft Violet #7C5CFC</div>
+      </div>
+      <div class="s9-note">
+        <div class="s9-note-label">Цены</div>
+        <div class="s9-note-text">Только $ · без ₽/€ · формат "$89 / ночь"</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">09</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 10 — WALLET
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">09 — Экраны</div>
+  <div class="h1">Экран <span class="gold">Кошелёк</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s10-layout">
+    <div>
+      <div class="s10-wallet-card">
+        <div>
+          <div class="s10-balance-label">Баланс</div>
+          <div class="s10-balance"><span>$</span>500.00</div>
+        </div>
+        <div class="s10-methods">
+          <div class="s10-method">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E8A020" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Apple Pay
+          </div>
+          <div class="s10-method">Visa *1234</div>
+        </div>
+        <div class="s10-actions">
+          <div class="s10-btn-fill">Пополнить</div>
+          <div class="s10-btn-out">Вывести</div>
+        </div>
+        <div class="s10-divider"></div>
+        <div class="s10-tx-title">История</div>
+        <div class="s10-tx">
+          <div class="s10-tx-item">
+            <div>
+              <div class="s10-tx-name">Vueling VY6102</div>
+              <div class="s10-tx-date">10 JUN 2026</div>
+            </div>
+            <div class="s10-tx-amount neg">−$280</div>
+          </div>
+          <div class="s10-tx-item">
+            <div>
+              <div class="s10-tx-name">Пополнение</div>
+              <div class="s10-tx-date">08 JUN 2026</div>
+            </div>
+            <div class="s10-tx-amount pos">+$500</div>
+          </div>
+          <div class="s10-tx-item">
+            <div>
+              <div class="s10-tx-name">Hotel Arts BCN</div>
+              <div class="s10-tx-date">07 JUN 2026</div>
+            </div>
+            <div class="s10-tx-amount neg">−$89</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="s10-right">
+      <div class="s10-note">
+        <div class="s10-note-label">Баланс</div>
+        <div class="s10-note-text">Display 48px Bold · $ SVIT Gold · число Frost White. Крупно — главный элемент экрана.</div>
+      </div>
+      <div class="s10-note">
+        <div class="s10-note-label">Платёжные методы</div>
+        <div class="s10-note-text">Apple Pay, Visa — chip-элементы. Фон elevated #28263A · radius-sm 6px.</div>
+      </div>
+      <div class="s10-note">
+        <div class="s10-note-label">Кнопки действий</div>
+        <div class="s10-note-text">Пополнить — Primary Gold pill. Вывести — Ghost с рамкой border.</div>
+      </div>
+      <div class="s10-note">
+        <div class="s10-note-label">Транзакции</div>
+        <div class="s10-note-text">Расход красный #F43F5E · доход зелёный #10B981. Дата DM Mono Caption.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">10</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 11 — TONE OF VOICE
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">10 — Голос бренда</div>
+  <div class="h1">Tone of <span class="gold">Voice</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s11-grid">
+    <div class="s11-tov-card">
+      <div class="s11-tov-trait">Уверенно</div>
+      <div class="s11-tov-do">"Нашёл 3 рейса на ваши даты. <em>Лучший вариант</em> — Vueling, 14:20, $148."</div>
+      <div class="s11-tov-dont">Возможно, вам подойдут следующие варианты перелётов...</div>
+    </div>
+    <div class="s11-tov-card">
+      <div class="s11-tov-trait">Конкретно</div>
+      <div class="s11-tov-do">"Отель забронирован. <em>Чек-ин 3 июня, 14:00.</em> Номер оплачен."</div>
+      <div class="s11-tov-dont">Ваша заявка на бронирование успешно обработана системой.</div>
+    </div>
+    <div class="s11-tov-card">
+      <div class="s11-tov-trait">Дружелюбно</div>
+      <div class="s11-tov-do">"Рейс задерживается на 40 минут. <em>Успеете поужинать</em> в аэропорту."</div>
+      <div class="s11-tov-dont">Внимание. Статус рейса изменён. Задержка: 40 минут.</div>
+    </div>
+    <div class="s11-tov-card">
+      <div class="s11-tov-trait">Проактивно</div>
+      <div class="s11-tov-do">"Через неделю в Лиссабоне дождь. <em>Взять зонт?</em>"</div>
+      <div class="s11-tov-dont">Молчать и ждать вопроса пользователя.</div>
+    </div>
+  </div>
+
+  <div class="overline" style="margin-bottom:10px;">Ключевые слова бренда</div>
+  <div class="s11-keywords">
+    <span class="s11-kw">уверенный</span>
+    <span class="s11-kw">конкретный</span>
+    <span class="s11-kw">дружелюбный</span>
+    <span class="s11-kw">лаконичный</span>
+    <span class="s11-kw">проактивный</span>
+    <span class="s11-kw">Sage + Explorer</span>
+    <span class="s11-kw">умный друг</span>
+  </div>
+
+  <div class="page-num">11</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 12 — DON'TS
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">11 — Ограничения</div>
+  <div class="h1">Чего <span class="gold">не делать</span></div>
+  <div class="accent-bar"></div>
+
+  <div class="s12-grid">
+    <div class="s12-dont-card">
+      <div class="s12-dont-icon">🎨</div>
+      <div>
+        <div class="s12-dont-title">Не менять цвета бренда</div>
+        <div class="s12-dont-desc">Палитра утверждена. SVIT Gold #E8A020 и Void Plum #0E0C1C — единственный вариант для тёмной темы.</div>
+      </div>
+    </div>
+    <div class="s12-dont-card">
+      <div class="s12-dont-icon">🔄</div>
+      <div>
+        <div class="s12-dont-title">Не искажать логотип</div>
+        <div class="s12-dont-desc">Не поворачивать, не растягивать, не добавлять тени, не менять шрифт wordmark SVIT.</div>
+      </div>
+    </div>
+    <div class="s12-dont-card">
+      <div class="s12-dont-icon">🔤</div>
+      <div>
+        <div class="s12-dont-title">Не менять шрифты</div>
+        <div class="s12-dont-desc">Только DM Sans (заголовки) и системный шрифт (тело). DM Mono для кодов и цифр.</div>
+      </div>
+    </div>
+    <div class="s12-dont-card">
+      <div class="s12-dont-icon">💰</div>
+      <div>
+        <div class="s12-dont-title">Только доллары $</div>
+        <div class="s12-dont-desc">Не показывать цены в ₽ или €. Все транзакции и тарифы — только в USD ($).</div>
+      </div>
+    </div>
+    <div class="s12-dont-card">
+      <div class="s12-dont-icon">🃏</div>
+      <div>
+        <div class="s12-dont-title">Не упоминать МИР</div>
+        <div class="s12-dont-desc">Россия/МИР не является платёжным методом SVIT. Принимаем: Apple Pay, Visa, Mastercard.</div>
+      </div>
+    </div>
+    <div class="s12-dont-card">
+      <div class="s12-dont-icon">😹</div>
+      <div>
+        <div class="s12-dont-title">Без лишней игривости</div>
+        <div class="s12-dont-desc">Архетип Sage — никаких "билетика" или "отельчика". В критичных ситуациях — серьёзный тон.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">12</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 13 — TECH STACK
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="overline">12 — Технологии</div>
+  <div class="h1"><span class="gold">Технический</span> стек</div>
+  <div class="accent-bar"></div>
+
+  <div class="s13-grid">
+    <div class="s13-tech">
+      <div class="s13-tech-icon">📱</div>
+      <div class="s13-tech-name">React Native + Expo</div>
+      <div class="s13-tech-desc">SDK 53 · Кроссплатформенное мобильное приложение iOS + Android</div>
+      <span class="s13-tech-tag">Expo SDK 53</span>
+    </div>
+    <div class="s13-tech">
+      <div class="s13-tech-icon">🗂</div>
+      <div class="s13-tech-name">Expo Router v4</div>
+      <div class="s13-tech-desc">File-based navigation · Вкладки, стеки, модальные окна</div>
+      <span class="s13-tech-tag">file-based nav</span>
+    </div>
+    <div class="s13-tech">
+      <div class="s13-tech-icon">🔷</div>
+      <div class="s13-tech-name">TypeScript</div>
+      <div class="s13-tech-desc">Strict mode · Типобезопасность на всех уровнях</div>
+      <span class="s13-tech-tag">strict mode</span>
+    </div>
+    <div class="s13-tech">
+      <div class="s13-tech-icon">⚡</div>
+      <div class="s13-tech-name">Fastify + Prisma</div>
+      <div class="s13-tech-desc">Быстрый Node.js backend + PostgreSQL ORM</div>
+      <span class="s13-tech-tag">backend</span>
+    </div>
+    <div class="s13-tech">
+      <div class="s13-tech-icon">🤖</div>
+      <div class="s13-tech-name">Claude AI (Anthropic)</div>
+      <div class="s13-tech-desc">AI-ассистент · Понимание контекста, память разговора</div>
+      <span class="s13-tech-tag">Claude API</span>
+    </div>
+    <div class="s13-tech">
+      <div class="s13-tech-icon">✈</div>
+      <div class="s13-tech-name">Duffel API</div>
+      <div class="s13-tech-desc">Реальное бронирование рейсов · Живые тарифы авиакомпаний</div>
+      <span class="s13-tech-tag">flights</span>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;background:#14121E;border:1px solid #2E2B42;border-radius:10px;padding:12px 16px;flex-shrink:0;">
+    <div style="font-size:9px;font-weight:600;color:#7C5CFC;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Деплой</div>
+    <div style="display:flex;gap:20px;">
+      <div style="font-size:11px;color:#8888A8;">Backend — <span style="color:#EEEEF4;">Railway</span></div>
+      <div style="font-size:11px;color:#8888A8;">DB — <span style="color:#EEEEF4;">PostgreSQL</span></div>
+      <div style="font-size:11px;color:#8888A8;">Mobile — <span style="color:#EEEEF4;">Expo EAS Build</span></div>
+    </div>
+  </div>
+
+  <div class="page-num">13</div>
+  <div class="footer-logo">
+    <svg width="12" height="12" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#EEEEF4" stroke-width="3"/><path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="5" fill="#E8A020"/></svg>
+    <span class="footer-brand">SVIT</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SLIDE 14 — CONTACTS / FINAL
+══════════════════════════════════════════ -->
+<section class="slide s14">
+  <div class="s14-deco-t"></div>
+  <div class="s14-deco-b"></div>
+  <div class="star" style="width:2px;height:2px;top:18%;left:15%"></div>
+  <div class="star" style="width:3px;height:3px;top:28%;left:80%"></div>
+  <div class="star" style="width:2px;height:2px;top:65%;left:12%"></div>
+  <div class="star" style="width:2px;height:2px;top:70%;left:82%"></div>
+
+  <div style="margin-bottom:20px;">
+    <svg width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="44" stroke="rgba(255,255,255,0.88)" stroke-width="2.5"/>
+      <line x1="50" y1="8" x2="50" y2="15" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+      <line x1="50" y1="85" x2="50" y2="92" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+      <line x1="8" y1="50" x2="15" y2="50" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+      <line x1="85" y1="50" x2="92" y2="50" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+      <line x1="19.7" y1="19.7" x2="24.5" y2="24.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+      <line x1="80.3" y1="19.7" x2="75.5" y2="24.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+      <line x1="19.7" y1="80.3" x2="24.5" y2="75.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+      <line x1="80.3" y1="80.3" x2="75.5" y2="75.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+      <path d="M50 22C50 22 62 30 62 40C62 50 38 50 38 60C38 70 50 78 50 78" stroke="#E8A020" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <circle cx="50" cy="50" r="4" fill="#E8A020"/>
+    </svg>
+  </div>
+
+  <div class="s14-wordmark">SVIT</div>
+  <div class="s14-tagline">Твой мир. Твой маршрут.</div>
+  <div class="s14-divider"></div>
+
+  <div class="s14-contacts">
+    <div class="s14-contact-row">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8A020" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span class="s14-contact-text">hello@getsvit.app</span>
+    </div>
+    <div class="s14-contact-row">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="s14-contact-text">getsvit.app</span>
+    </div>
+    <div class="s14-contact-row">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round"><path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-16.48 6.919a2.252 2.252 0 0 0 .004 4.15l4.002 1.599 1.595 4.015a2.252 2.252 0 0 0 4.15-.003l6.921-16.48a2.252 2.252 0 0 0-1.17-2.415z"/></svg>
+      <span class="s14-contact-text">@svit_travel</span>
+    </div>
+  </div>
+
+  <div class="s14-slogan">Путешествуй умнее с SVIT</div>
+</section>
+
+</body>
+</html>

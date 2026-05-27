@@ -20,6 +20,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
+import { IconSearch, IconClose } from '../icons';
 import { safeStorage } from '../../utils/safeStorage';
 import { useChatStore } from '../../stores/chatStore';
 import { TextPresets, Radius, Spacing } from '../../constants';
@@ -27,6 +28,15 @@ import { useTheme } from '../../src/theme/ThemeContext';
 import type { ChatSession } from '../../types';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
+
+/** Strip emoji and non-printable chars that render as [?] boxes on iOS */
+function stripEmoji(str: string): string {
+  return (str ?? '')
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}\u{1F300}-\u{1F9FF}]/gu, '')
+    .replace(/[^\p{L}\p{N}\p{Z}\p{P}\-→]/gu, '')
+    .trim() || 'Новый чат';
+}
 
 function formatItemTime(dateStr: string): string {
   const now = Date.now();
@@ -55,7 +65,9 @@ function SearchBar({ value, onChangeText }: SearchBarProps) {
   const { colors } = useTheme();
   return (
     <View style={[searchStyles.container, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <Text style={{ fontSize: 16, color: colors.textMuted, lineHeight: 20, marginRight: 8  }}>{'⌕'}</Text>
+      <View style={{ marginRight: 8 }}>
+        <IconSearch size={18} color={colors.textMuted} />
+      </View>
       <TextInput
         style={[searchStyles.input, { color: colors.text }]}
         value={value}
@@ -108,6 +120,10 @@ function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename,
           void Haptics.selectionAsync();
           onPress();
         }}
+        onLongPress={() => {
+          void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          onRename(session);
+        }}
         activeOpacity={0.85}
         style={[
           itemStyles.card,
@@ -129,14 +145,19 @@ function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename,
               <Text style={{ fontSize: 11, color: colors.primary, lineHeight: 15, marginRight: 4  }}>{'•'}</Text>
             )}
             <Text style={[itemStyles.title, { color: colors.text }]} numberOfLines={1}>
-              {session.title}
+              {stripEmoji(session.title)}
             </Text>
           </View>
-          {session.lastMessage ? (
-            <Text style={[itemStyles.subtitle, { color: colors.textMuted }]} numberOfLines={1}>
-              {session.lastMessage}
-            </Text>
-          ) : null}
+          {session.lastMessage ? (() => {
+            const clean = session.lastMessage
+              .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}\u{1F300}-\u{1F9FF}\u{1F1E0}-\u{1F1FF}]/gu, '')
+              .trim();
+            return clean.length > 0 ? (
+              <Text style={[itemStyles.subtitle, { color: colors.textMuted }]} numberOfLines={1}>
+                {clean}
+              </Text>
+            ) : null;
+          })() : null}
         </View>
 
         <View style={itemStyles.rightCol}>
@@ -146,14 +167,9 @@ function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename,
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 14, color: isPinned ? colors.primary : colors.textMuted, lineHeight: 18  }}>{'•'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onRename(session)}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              activeOpacity={0.7}
-            >
-              <Text style={{ fontSize: 14, color: colors.textMuted, lineHeight: 18  }}>{'•'}</Text>
+              <Text style={{ fontSize: 13, color: isPinned ? colors.primary : colors.textMuted, lineHeight: 16 }}>
+                {isPinned ? '★' : '☆'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -162,8 +178,9 @@ function SessionItem({ session, isActive, isPinned, onPress, onDelete, onRename,
               }}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               activeOpacity={0.7}
+              style={itemStyles.deleteBtn}
             >
-              <Text style={{ fontSize: 14, color: colors.error, lineHeight: 18 }}>{'✕'}</Text>
+              <IconClose size={14} color={colors.error} />
             </TouchableOpacity>
           </View>
           <Text style={[itemStyles.time, { color: colors.textMuted }]}>{formatItemTime(session.updatedAt)}</Text>
@@ -181,17 +198,7 @@ const itemStyles = StyleSheet.create({
     borderRadius: Radius.card,
   },
   deleteBtn: {
-    width: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.card,
-    gap: 4,
-  },
-  deleteBtnText: {
-    ...TextPresets.label,
-    color: '#fff',
-    fontSize: 10,
-    letterSpacing: 0.5,
+    padding: 2,
   },
   card: {
     flexDirection: 'row',
@@ -407,7 +414,7 @@ export function ChatHistorySheet({
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={{ fontSize: 16, color: colors.textMuted, lineHeight: 20  }}>{'×'}</Text>
+              <IconClose size={16} color={colors.textMuted} />
             </TouchableOpacity>
           </View>
 
@@ -425,11 +432,11 @@ export function ChatHistorySheet({
               end={{ x: 1, y: 0 }}
             >
               {isCreating ? (
-                <ActivityIndicator color="#0A0A14" size="small" />
+                <ActivityIndicator color={colors.textInverse} size="small" />
               ) : (
                 <>
-                  <Text style={sheetStyles.newChatIcon}>+</Text>
-                  <Text style={sheetStyles.newChatText}>Новый чат</Text>
+                  <Text style={[sheetStyles.newChatIcon, { color: colors.textInverse }]}>+</Text>
+                  <Text style={[sheetStyles.newChatText, { color: colors.textInverse }]}>Новый чат</Text>
                 </>
               )}
             </LinearGradient>
@@ -514,7 +521,7 @@ export function ChatHistorySheet({
                     }}
                     activeOpacity={0.7}
                   >
-                    <Text style={renameStyles.saveText}>Сохранить</Text>
+                    <Text style={[renameStyles.saveText, { color: colors.textInverse }]}>Сохранить</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -576,7 +583,6 @@ const renameStyles = StyleSheet.create({
     borderRadius: 8,
   },
   saveText: {
-    color: '#0A0A14',
     fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: '600' as const,
@@ -644,14 +650,12 @@ const sheetStyles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 22,
     fontWeight: '600' as const,
-    color: '#0A0A14',
     lineHeight: Platform.select({ ios: 26, android: 24, default: 26 }),
   },
   newChatText: {
     fontFamily: 'Sora',
     fontSize: 16,
     fontWeight: '600' as const,
-    color: '#0A0A14',
     letterSpacing: 0.2,
   },
   list: {

@@ -518,7 +518,7 @@ export default function HotelDetailScreen() {
                 <Text style={{ fontFamily: 'Inter', fontSize: 12, color: colors.textMuted, marginTop: 2 }}>{room.desc}</Text>
               </View>
               <View style={{ alignItems: 'flex-end', gap: 4 }}>
-                <Text style={{ fontFamily: 'DMSans_700Bold', fontSize: 17, color: colors.primary }}>{currencySymbol}{room.price.toLocaleString('ru-RU')}</Text>
+                <Text style={{ fontFamily: 'Sora', fontSize: 17, fontWeight: '700', color: colors.primary }}>{currencySymbol}{room.price.toLocaleString('ru-RU')}</Text>
                 <Text style={{ fontFamily: 'Inter', fontSize: 10, color: colors.textMuted }}>/ {nights > 0 ? `${nights} ноч.` : 'ночь'}</Text>
               </View>
             </TouchableOpacity>
@@ -616,7 +616,7 @@ export default function HotelDetailScreen() {
           onPress={handleBook}
           activeOpacity={0.85}
         >
-          <Text style={styles.bookBtnText}>
+          <Text style={[styles.bookBtnText, { color: colors.textInverse }]}>
             Забронировать{pricePerNight > 0 ? ` · ${formattedPricePerNight}/ночь` : ''}
           </Text>
         </TouchableOpacity>
@@ -924,7 +924,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   bookBtnText: {
-    color: '#fff',
     fontFamily: 'Inter',
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.bold,
