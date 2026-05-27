@@ -3,6 +3,7 @@ import { searchFlights } from '../services/duffel.service';
 import { searchFlightsCIS } from '../services/aviasales.service';
 import type { FlightOffer } from '../services/duffel.service';
 import { searchCache, getCacheKey } from '../lib/searchCache';
+import { CURRENCY_RATES } from '../lib/currency';
 
 // ---------------------------------------------------------------------------
 // Filter / sort parameters
@@ -248,10 +249,6 @@ export async function executeSearchFlights(
   return { ...result, searchId: `search_${Date.now()}`, cacheHit: false };
 }
 
-// Currency conversion rates to USD (hardcoded for MVP; update periodically)
-const RUB_TO_USD_RATE = 90;   // 1 USD = 90 RUB
-const EUR_TO_USD_RATE = 1.09; // 1 EUR = 1.09 USD
-
 // Normalise a raw FlightOffer (duffel/aviasales shape) into the flat
 // MobileFlightOffer shape that FlightCard in the mobile app expects.
 // All prices are normalised to USD — EUR and RUB amounts are converted automatically.
@@ -269,9 +266,9 @@ function normaliseMobileOffer(
   const srcCurrency = offer.currency?.toUpperCase() ?? 'USD';
   let priceUsd: number;
   if (srcCurrency === 'RUB') {
-    priceUsd = Math.round(rawPrice / RUB_TO_USD_RATE);
+    priceUsd = Math.round(rawPrice * CURRENCY_RATES.RUB_TO_USD);
   } else if (srcCurrency === 'EUR') {
-    priceUsd = Math.round(rawPrice * EUR_TO_USD_RATE);
+    priceUsd = Math.round(rawPrice * CURRENCY_RATES.EUR_TO_USD);
   } else {
     priceUsd = rawPrice;
   }

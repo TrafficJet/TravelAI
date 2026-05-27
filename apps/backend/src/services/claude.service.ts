@@ -469,7 +469,13 @@ export class ClaudeService {
     let anyCacheHit = false;
 
     // Agentic loop: keep calling Claude until no more tool calls
+    const MAX_ITERATIONS = 15;
+    let iterations = 0;
     while (true) {
+      iterations++;
+      if (iterations > MAX_ITERATIONS) {
+        throw new Error(`AI loop exceeded ${MAX_ITERATIONS} iterations — possible infinite loop`);
+      }
       const stream = await client.messages.stream({
         model: MODEL,
         max_tokens: 4096,

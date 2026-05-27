@@ -1,6 +1,7 @@
 import type Anthropic from '@anthropic-ai/sdk';
 import { searchHotels } from '../services/booking.service';
 import { searchCache, getCacheKey } from '../lib/searchCache';
+import { toUSD } from '../lib/currency';
 
 // Claude tool definition for searching hotels
 export const searchHotelsTool: Anthropic.Tool = {
@@ -96,14 +97,7 @@ export async function executeSearchHotels(
 
 // Normalise a raw HotelOffer (booking.service shape) into the flat
 // Mobile Hotel shape that HotelCard in the mobile app expects.
-const EUR_TO_USD = 1.09;
-const RUB_TO_USD = 0.011; // 1 RUB ≈ $0.011
-
-function toUSD(price: number, currency: string): number {
-  if (currency === 'EUR') return Math.round(price * EUR_TO_USD);
-  if (currency === 'RUB') return Math.round(price * RUB_TO_USD);
-  return Math.round(price); // already USD
-}
+// toUSD is imported from src/lib/currency.ts (centralised rates)
 
 function normaliseMobileHotel(
   hotel: Awaited<ReturnType<typeof searchHotels>>[number],
