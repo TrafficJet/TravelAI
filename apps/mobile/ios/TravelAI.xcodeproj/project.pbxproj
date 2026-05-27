@@ -332,7 +332,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "SENTRY_DEBUG_SH=$(${NODE_BINARY:-node} --print \"require('path').dirname(require.resolve('@sentry/react-native/package.json')) + '/scripts/sentry-xcode-debug-files.sh'\")\n/bin/sh \"$SENTRY_DEBUG_SH\"";
+			shellScript = "SENTRY_DEBUG_SH=$(${NODE_BINARY:-node} --print \"require('path').dirname(require.resolve('@sentry/react-native/package.json')) + '/scripts/sentry-xcode-debug-files.sh'\")\n/bin/sh \"$SENTRY_DEBUG_SH\" || true";
 		};
 /* End PBXShellScriptBuildPhase section */
 
