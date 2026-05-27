@@ -126,8 +126,8 @@ export async function executeCreateBooking(input: CreateBookingInput, userId: st
         : `Ваше бронирование создано. Подтвердите оплату.`;
       await sendExpoPush({
         pushToken: u.pushToken,
-        title: 'Бронирование подтверждено',
-        body: pushBody,
+        title: 'Черновик брони создан',
+        body: 'Черновик брони создан — подтвердите оплату в приложении',
         data: { bookingId: booking.id, type: 'booking_created' },
       });
     }

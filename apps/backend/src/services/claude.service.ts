@@ -5,8 +5,8 @@ const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 });
 
-// Claude model to use
-const MODEL = 'claude-opus-4-5';
+// Claude model to use — configurable via CLAUDE_MODEL env var
+const MODEL = process.env.CLAUDE_MODEL ?? 'claude-sonnet-4-6';
 
 // Build the base system prompt with dynamic current date injection
 function buildBaseSystemPrompt(): string {

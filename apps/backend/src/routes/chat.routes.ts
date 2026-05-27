@@ -136,7 +136,7 @@ export async function chatRoutes(fastify: FastifyInstance) {
         type: 'object',
         required: ['content'],
         properties: {
-          content: { type: 'string', minLength: 1, maxLength: 4000 },
+          content: { type: 'string', minLength: 1, maxLength: 2000 },
         },
       },
     },

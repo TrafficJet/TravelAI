@@ -5,7 +5,7 @@ import { searchCache, getCacheKey } from '../lib/searchCache';
 // Claude tool definition for searching hotels
 export const searchHotelsTool: Anthropic.Tool = {
   name: 'search_hotels',
-  description: 'Поиск отелей в заданном городе. Используй когда пользователь хочет найти жильё или отель.',
+  description: 'Поиск отелей в заданном городе. Используй когда пользователь хочет найти жильё или отель. Вызывай только если известен город назначения.',
   input_schema: {
     type: 'object' as const,
     properties: {

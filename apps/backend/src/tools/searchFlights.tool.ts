@@ -22,7 +22,7 @@ export interface FlightFilters {
 export const searchFlightsTool: Anthropic.Tool = {
   name: 'search_flights',
   description:
-    'Поиск авиарейсов по заданным параметрам. Используй этот инструмент когда пользователь хочет найти перелёт.',
+    'Поиск авиарейсов по заданным параметрам. Используй этот инструмент когда пользователь хочет найти перелёт. ВАЖНО: вызывай ТОЛЬКО если известны и origin, и destination. Если origin неизвестен — задай вопрос пользователю, НЕ вызывай этот инструмент.',
   input_schema: {
     type: 'object' as const,
     properties: {
