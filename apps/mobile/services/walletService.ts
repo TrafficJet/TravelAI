@@ -20,8 +20,8 @@ export const walletService = {
     return data;
   },
 
-  async topup(amount: number): Promise<TopupResponse> {
-    const { data } = await api.post<TopupResponse>('/wallet/topup', { amount });
+  async topup(amount: number, paymentMethod: string = 'CARD'): Promise<TopupResponse> {
+    const { data } = await api.post<TopupResponse>('/wallet/topup', { amount, paymentMethod });
     return data;
   },
 

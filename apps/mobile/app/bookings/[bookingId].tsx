@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useBookingStore } from '../../stores/bookingStore';
+import { useWalletStore } from '../../stores/walletStore';
 import { Button } from '../../components/ui/Button';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { useTheme } from '../../src/theme/ThemeContext';
@@ -374,6 +375,7 @@ export default function BookingDetailScreen() {
   const { bookingId } = useLocalSearchParams<{ bookingId: string }>();
   const { currentBooking, loadBooking, confirmBooking, cancelBooking, isLoading } =
     useBookingStore();
+  const walletLoad = useWalletStore((s) => s.load);
   const [isConfirming, setIsConfirming] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [loadError, setLoadError] = React.useState<string | null>(null);
@@ -410,6 +412,7 @@ export default function BookingDetailScreen() {
     setIsConfirming(true);
     try {
       await confirmBooking(currentBooking.id);
+      void walletLoad();
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace({
         pathname: '/booking-success',

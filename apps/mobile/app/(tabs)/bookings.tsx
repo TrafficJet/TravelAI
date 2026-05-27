@@ -581,8 +581,6 @@ interface PastTripCardProps {
   index: number;
 }
 
-type BookingType = 'FLIGHT' | 'HOTEL';
-
 function PastTripCard({ booking, onPress, index }: PastTripCardProps) {
   const { colors } = useTheme();
   const isFlight = booking.type === 'FLIGHT';

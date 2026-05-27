@@ -72,7 +72,7 @@ function TabIcon({ focused, color, size, renderIcon, badge }: TabIconProps) {
       damping: 14,
       stiffness: 200,
     });
-    const opacity = withTiming(focusedSV.value === 1 ? 1 : 1, { duration: 150 });
+    const opacity = withTiming(focusedSV.value === 1 ? 1 : 0.5, { duration: 150 });
     return {
       transform: [{ scale }],
       opacity,
