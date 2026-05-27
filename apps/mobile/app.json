@@ -20,7 +20,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.getsvit.app",
-      "buildNumber": "4",
+      "buildNumber": "8",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Используется для определения ближайших аэропортов",
         "NSCameraUsageDescription": "Для загрузки фото документов",
