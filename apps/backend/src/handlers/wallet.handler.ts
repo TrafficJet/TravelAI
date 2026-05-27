@@ -3,12 +3,12 @@ import { prisma } from '../lib/prisma';
 import { Errors } from '../lib/errors';
 import { processCardTopup, createStripeTopup, isStripeConfigured } from '../services/payment.service';
 
-const ALLOWED_TOPUP_AMOUNTS = [500, 1000, 2000, 5000] as const;
+const ALLOWED_TOPUP_AMOUNTS = [50, 100, 200, 500] as const;
 type AllowedTopupAmount = (typeof ALLOWED_TOPUP_AMOUNTS)[number];
 
 interface TopupBody {
   amount: AllowedTopupAmount;
-  paymentMethod: 'CARD';
+  paymentMethod?: 'CARD';
 }
 
 interface TransactionsQuery {

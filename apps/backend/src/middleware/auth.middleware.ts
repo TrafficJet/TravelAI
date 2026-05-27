@@ -72,8 +72,18 @@ export async function optionalAuth(request: FastifyRequest, reply: FastifyReply)
         request.userEmail = payload.email;
         request.isGuest = false;
         return;
-      } catch {
-        // Token is invalid/expired — fall through to guest handling
+      } catch (err) {
+        // Authorization header was present but JWT is invalid/expired.
+        // Do NOT silently fall through to guest — that would expose data of
+        // authenticated users to requests carrying a stale token.
+        const code =
+          err instanceof TokenExpiredError ? 'TOKEN_EXPIRED' : 'INVALID_TOKEN';
+        const message =
+          err instanceof TokenExpiredError
+            ? 'Токен истёк, войдите снова'
+            : 'Недействительный токен';
+        reply.status(401).send({ error: { code, message } });
+        return;
       }
     }
   }

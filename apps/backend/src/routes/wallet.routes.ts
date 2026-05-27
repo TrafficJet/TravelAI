@@ -10,15 +10,15 @@ export async function walletRoutes(fastify: FastifyInstance) {
   // GET /api/wallet — balance and last 10 transactions
   fastify.get('/', { handler: getWallet });
 
-  // POST /api/wallet/topup — add funds; amount must be one of [500, 1000, 2000, 5000]
+  // POST /api/wallet/topup — add funds; amount must be one of [50, 100, 200, 500]
   fastify.post('/topup', {
     schema: {
       body: {
         type: 'object',
-        required: ['amount', 'paymentMethod'],
+        required: ['amount'],
         properties: {
-          amount: { type: 'number', enum: [500, 1000, 2000, 5000] },
-          paymentMethod: { type: 'string', enum: ['CARD'] },
+          amount: { type: 'number', enum: [50, 100, 200, 500] },
+          paymentMethod: { type: 'string', enum: ['CARD'], default: 'CARD' },
         },
       },
     },
